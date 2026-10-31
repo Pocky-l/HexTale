@@ -228,13 +228,15 @@ public class HextechPurifierBlockEntity extends BlockEntity implements WorldlyCo
             return;
         }
         float want = Math.min(PER_DRAW, Math.min(Thinning.get(land), capacity() - held));
-        if (light < want && !drawLight(level)) {
+        // Dam is rolled first: a free draw works even when the purifier has no light at hand.
+        int dam = strength(PurifierRune.DAM);
+        boolean free = dam > 0 && level.getRandom().nextFloat() < com.pockyl.hextale.runework.HolderRune.at(PurifierRune.FREE, dam);
+        if (!free && light < want && !drawLight(level)) {
             setMode(Mode.UNLIT);
             wait = 40;
             return;
         }
-        int dam = strength(PurifierRune.DAM);
-        if (dam > 0 && level.getRandom().nextFloat() < com.pockyl.hextale.runework.HolderRune.at(PurifierRune.FREE, dam)) {
+        if (free) {
             // Dam: this draw burns no light.
             com.pockyl.hextale.runework.ToolEffects.puff(level, crystalAt(worldPosition), PurifierRune.DAM.rune(), 4, 0.2);
         } else {

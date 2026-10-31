@@ -183,7 +183,10 @@ public class LevitationPlateBlockEntity extends BlockEntity {
         }
     }
 
-    /** Slumber: creatures in the column hang asleep - slowed to a stop, harmless, forgetting whom they hunted. */
+    /**
+     * Slumber: creatures in the column hang asleep - no AI for a while (see {@link com.pockyl.hextale.runework.Slumber}),
+     * so they neither hunt nor shoot, and weakened.
+     */
     private void slumber(ServerLevel level, List<Entity> entities) {
         int slumber = strength(PlateRune.SLUMBER);
         if (slumber <= 0 || level.getGameTime() % 20 != 0) {
@@ -194,7 +197,12 @@ public class LevitationPlateBlockEntity extends BlockEntity {
             if (entity instanceof net.minecraft.world.entity.Mob mob && mob.isAlive()) {
                 mob.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, ticks, 4, true, false, true));
                 mob.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, ticks, 1, true, false, true));
-                mob.setTarget(null);
+                boolean fresh = !com.pockyl.hextale.runework.Slumber.asleep(mob);
+                com.pockyl.hextale.runework.Slumber.lull(mob, ticks);
+                if (fresh && com.pockyl.hextale.runework.Slumber.asleep(mob)) {
+                    // Falling asleep: a soft puff in the rune's colour.
+                    com.pockyl.hextale.runework.ToolEffects.puff(level, mob.position().add(0, mob.getBbHeight() * 0.7, 0), PlateRune.SLUMBER.rune(), 6, 0.3);
+                }
                 if (level.getRandom().nextInt(3) == 0) {
                     level.sendParticles(ModParticles.glint(PlateRune.SLUMBER.rune().color()), mob.getX(), mob.getY() + mob.getBbHeight() + 0.2,
                             mob.getZ(), 2, 0.2, 0.1, 0.2, 0.01);

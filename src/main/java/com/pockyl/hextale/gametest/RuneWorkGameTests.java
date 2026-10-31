@@ -262,6 +262,44 @@ public final class RuneWorkGameTests {
         helper.succeed();
     }
 
+    /**
+     * Drill through a one-block wall: the area lies on the face the player struck (the wall), not on whatever a look
+     * through the hole finds once the block is gone. Broken the real way: a left click on the face, then the break.
+     */
+    @HexTest(padding = 2)
+    public static void drillFollowsTheStruckFaceThroughAWall(GameTestHelper helper) {
+        for (int y = 1; y <= 3; y++) {
+            for (int z = 0; z <= 2; z++) {
+                helper.setBlock(new BlockPos(1, y, z), Blocks.STONE);
+            }
+        }
+        // Behind the wall, on the struck block's level: a flat 3x3 layer would take these.
+        helper.setBlock(new BlockPos(2, 2, 0), Blocks.STONE);
+        helper.setBlock(new BlockPos(2, 2, 2), Blocks.STONE);
+        BlockPos struck = helper.absolutePos(new BlockPos(1, 2, 1));
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        // A survival player: a creative break drops nothing, so no rune would work.
+        player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        // West of the wall, looking east and a little down at it: once the block is gone, a look through the hole lands
+        // on the floor behind the wall.
+        BlockPos stand = helper.absolutePos(new BlockPos(0, 1, 1));
+        player.moveTo(stand.getX() + 0.5, stand.getY(), stand.getZ() + 0.5, -90, 30);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, pickaxe(PickaxeRune.DRILL));
+        player.gameMode.handleBlockBreakAction(struck, net.minecraft.network.protocol.game.ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK,
+                net.minecraft.core.Direction.WEST, (helper.getLevel().getMaxBuildHeight() - 1), 0);
+        player.gameMode.destroyBlock(struck);
+        for (int y = 1; y <= 3; y++) {
+            for (int z = 0; z <= 2; z++) {
+                helper.assertBlockPresent(Blocks.AIR, new BlockPos(1, y, z));
+            }
+        }
+        helper.assertBlockPresent(Blocks.STONE, new BlockPos(2, 2, 0));
+        helper.assertBlockPresent(Blocks.STONE, new BlockPos(2, 2, 2));
+        helper.setBlock(new BlockPos(2, 2, 0), Blocks.AIR);
+        helper.setBlock(new BlockPos(2, 2, 2), Blocks.AIR);
+        helper.succeed();
+    }
+
     /** Erosion takes the ore touching the broken one, not the stone around. */
     @HexTest
     public static void erosionTakesTheWholeVein(GameTestHelper helper) {
@@ -416,6 +454,15 @@ public final class RuneWorkGameTests {
         helper.assertTrue(raise.cost().total() == PickaxeRune.SMELTING.cost(3).total(), "paid for the stars it gets");
         stele(helper, PickaxeRune.SMELTING, 1);
         helper.assertTrue("nothing_new".equals(Ritual.engraving(full, scan(helper)).refusal()), "fewer stars change nothing");
+        // Stars picked by hand on the stele set the rune to exactly them: a strong rune can be made weaker on purpose.
+        ItemStack strong = full.copy();
+        PickaxeRunes.set(strong, raise.after());
+        helper.<RuneSteleBlockEntity>getBlockEntity(STELE).choose(PickaxeRune.SMELTING.rune(), 1, true);
+        Ritual.Engraving lower = Ritual.engraving(strong, scan(helper));
+        helper.assertTrue(lower.possible() && lower.after().stars(PickaxeRune.SMELTING) == 1, "picked stars make a rune weaker");
+        helper.assertTrue(lower.after().count() == 4, "a weaker rune keeps its place");
+        helper.<RuneSteleBlockEntity>getBlockEntity(STELE).choose(PickaxeRune.SMELTING.rune(), 3, true);
+        helper.assertTrue("nothing_new".equals(Ritual.engraving(strong, scan(helper)).refusal()), "the same stars picked change nothing");
         helper.<RuneSteleBlockEntity>getBlockEntity(STELE).choose(ComplexRunes.byKey("fire_water"), 1);
         helper.assertTrue("not_pickaxe".equals(Ritual.engraving(pickaxe(), scan(helper)).refusal()), "steam does not take to a pickaxe");
         helper.succeed();

@@ -56,14 +56,13 @@ public class GrappleHook extends Projectile {
     private static final EntityDataAccessor<Byte> STATE = SynchedEntityData.defineId(GrappleHook.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Float> LENGTH = SynchedEntityData.defineId(GrappleHook.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Direction> FACE = SynchedEntityData.defineId(GrappleHook.class, EntityDataSerializers.DIRECTION);
+    /** The longest rope and the reel speed: synced, because the wearer's own client is the side that reels the rope. */
+    private static final EntityDataAccessor<Float> REACH = SynchedEntityData.defineId(GrappleHook.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> REEL = SynchedEntityData.defineId(GrappleHook.class, EntityDataSerializers.FLOAT);
     /** Each side's hooks by their owner, so a player's tick finds its rope without a search. */
     private static final Map<UUID, GrappleHook> CLIENT_HOOKS = new ConcurrentHashMap<>();
     private static final Map<UUID, GrappleHook> SERVER_HOOKS = new ConcurrentHashMap<>();
 
-    /** The longest rope (the Shift rune's reach); also how far the claw flies before it gives up. */
-    private double reach = 32;
-    /** Blocks a tick the rope shortens while reeling in (the Motor rune). */
-    private double reel = 0.35;
     private boolean breath;
     /** Strength of the Gravity rune (yank a bitten creature to the wearer) and of Blades (cut it); 0 = the claw passes creatures. */
     private int gravity;
@@ -88,8 +87,8 @@ public class GrappleHook extends Projectile {
         setOwner(owner);
         setPos(from);
         launch = from;
-        this.reach = reach;
-        this.reel = reel;
+        entityData.set(REACH, (float) reach);
+        entityData.set(REEL, (float) reel);
         this.breath = breath;
         this.gravity = gravity;
         this.blades = blades;
@@ -102,6 +101,10 @@ public class GrappleHook extends Projectile {
         builder.define(STATE, FLYING);
         builder.define(LENGTH, -1F);
         builder.define(FACE, Direction.UP);
+        // The longest rope (the Shift rune's reach; also how far the claw flies) and the blocks a tick it shortens
+        // while reeling in (the Motor rune).
+        builder.define(REACH, 32F);
+        builder.define(REEL, 0.35F);
     }
 
     private static Map<UUID, GrappleHook> hooks(Level level) {
@@ -134,11 +137,11 @@ public class GrappleHook extends Projectile {
     }
 
     public double reach() {
-        return reach;
+        return entityData.get(REACH);
     }
 
     public double reelSpeed() {
-        return reel;
+        return entityData.get(REEL);
     }
 
     public boolean breath() {
@@ -156,7 +159,7 @@ public class GrappleHook extends Projectile {
     }
 
     public void setLength(double value) {
-        length = Math.max(MIN_LENGTH, Math.min(reach, value));
+        length = Math.max(MIN_LENGTH, Math.min(reach(), value));
         if (!level().isClientSide()) {
             entityData.set(LENGTH, (float) length);
         }
@@ -164,7 +167,7 @@ public class GrappleHook extends Projectile {
 
     /** Server: the wearer's client says how long the rope is now. */
     public void reportLength(double value) {
-        entityData.set(LENGTH, (float) Math.max(MIN_LENGTH, Math.min(reach, value)));
+        entityData.set(LENGTH, (float) Math.max(MIN_LENGTH, Math.min(reach(), value)));
     }
 
     @Nullable
@@ -225,7 +228,7 @@ public class GrappleHook extends Projectile {
         setPos(position().add(motion));
         updateRotation();
         if (!level().isClientSide()) {
-            if (owner == null || !GrappleGauntletItem.holding(owner) || position().distanceTo(launch) > reach) {
+            if (owner == null || !GrappleGauntletItem.holding(owner) || position().distanceTo(launch) > reach()) {
                 retract();
             }
         } else {
@@ -244,7 +247,7 @@ public class GrappleHook extends Projectile {
         stateTicks = 0;
         Player owner = owner();
         if (owner != null) {
-            entityData.set(LENGTH, (float) Math.max(MIN_LENGTH, Math.min(reach, GrappleGauntletItem.grip(owner).distanceTo(at))));
+            entityData.set(LENGTH, (float) Math.max(MIN_LENGTH, Math.min(reach(), GrappleGauntletItem.grip(owner).distanceTo(at))));
         }
         if (level() instanceof ServerLevel server) {
             BlockState state = server.getBlockState(hit.getBlockPos());
@@ -286,7 +289,7 @@ public class GrappleHook extends Projectile {
             return;
         }
         boolean held = owner != null && GrappleGauntletItem.holding(owner) && owner.level() == level()
-                && owner.distanceTo(this) < reach + 8;
+                && owner.distanceTo(this) < reach() + 8;
         boolean bite = bitten == null || !level().getBlockState(bitten).getCollisionShape(level(), bitten).isEmpty();
         if (!held || !bite) {
             retract();

@@ -96,6 +96,9 @@ public class ChemBoilerBlockEntity extends BlockEntity implements HeatUser, Esse
     private long crackedAt = -1000;
     private float syncedPressure = -1;
     private boolean dirty;
+    /** The parts of a millibucket of fumes and of burnt essence the last batches owed (so Dam and Purification count in full). */
+    private float fumesOwed;
+    private float burntOwed;
 
     // Client: the needle follows the pressure with a little lag; the valve jumps when a batch cracks.
     public float needle;
@@ -121,6 +124,11 @@ public class ChemBoilerBlockEntity extends BlockEntity implements HeatUser, Esse
     public float rise() {
         int steam = strength(BoilerRune.STEAM);
         return steam > 0 ? HEAT_RISE * HolderRune.at(BoilerRune.FASTER, steam) : HEAT_RISE;
+    }
+
+    /** Millibuckets drawn from a jar at a time: as much as the flame cracks meanwhile (Steam draws more). */
+    public int drawMb() {
+        return Math.round(DRAW_MB * rise() / HEAT_RISE);
     }
 
     /** Share of a batch that goes up as fumes (Dam keeps some in). */
@@ -240,7 +248,7 @@ public class ChemBoilerBlockEntity extends BlockEntity implements HeatUser, Esse
             if (jar.sticker() != null || jar.tank().contents().kinds() < 2) {
                 continue;
             }
-            EssenceMix taken = jar.tank().drain(Math.min(DRAW_MB, mix.space()), jar.isCreative());
+            EssenceMix taken = jar.tank().drain(Math.min(drawMb(), mix.space()), jar.isCreative());
             if (taken.isEmpty()) {
                 continue;
             }
@@ -267,11 +275,20 @@ public class ChemBoilerBlockEntity extends BlockEntity implements HeatUser, Esse
         EssenceMix batch = mix.drain(amount, false);
         int purifyingFire = strength(BoilerRune.PURIFYING_FIRE);
         boolean clean = purifyingFire > 0 && random.nextFloat() < HolderRune.at(BoilerRune.CLEAN_BATCH, purifyingFire);
-        int fumes = clean ? 0 : Math.round(batch.total() * fumesShare());
+        int fumes = 0;
+        if (!clean) {
+            // Whole millibuckets only; what a batch owes in parts is carried to the next one.
+            float owed = batch.total() * fumesShare() + fumesOwed;
+            fumes = Math.min(batch.total(), (int) owed);
+            fumesOwed = owed - fumes;
+        }
         EssenceMix left = batch.part(batch.total() - fumes);
         if (!clean) {
             EssenceMix known = left.minus(EssenceMix.unknown(left.unknown()));
-            EssenceMix burnt = known.part(Math.min(known.total(), Math.round(known.total() * unknownShare())));
+            float owed = known.total() * unknownShare() + burntOwed;
+            int burn = Math.min(known.total(), (int) owed);
+            burntOwed = owed - burn;
+            EssenceMix burnt = known.part(burn);
             left = left.minus(burnt).plus(EssenceMix.unknown(burnt.total()));
         }
         held.fill(left, false);

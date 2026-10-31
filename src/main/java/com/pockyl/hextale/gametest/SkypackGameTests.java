@@ -71,4 +71,46 @@ public final class SkypackGameTests {
         helper.assertFalse(HextechSkypackItem.fillFrom(level, jar, pack, Vec3.ZERO, 10), "no more air, nothing comes");
         helper.succeed();
     }
+
+    /**
+     * Flamethrower: a wearer launching into a glide (their own ticks; held in place so the cone stays put) scorches the
+     * cow in the jets' wake behind and below them - it burns and is hurt - while the ground never catches fire.
+     */
+    @HexTest(maxTicks = 80)
+    public static void theFlamethrowerScorchesTheWake(GameTestHelper helper) {
+        for (int x = -2; x <= 2; x++) {
+            for (int z = -1; z <= 5; z++) {
+                helper.setBlock(AT.offset(x, -1, z), net.minecraft.world.level.block.Blocks.GRASS_BLOCK);
+                for (int y = 0; y <= 4; y++) {
+                    helper.setBlock(AT.offset(x, y, z), net.minecraft.world.level.block.Blocks.AIR);
+                }
+            }
+        }
+        net.minecraft.world.entity.Mob cow = WeaponRuneGameTests.still(helper, EntityType.COW, AT.offset(0, 0, 3));
+        net.minecraft.world.entity.player.Player wearer = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        ItemStack pack = HextechSkypackItem.full();
+        RuneHolder.SKYPACK.set(pack, PickaxeRunes.EMPTY.with(SkypackRune.FLAMETHROWER.rune(), 3));
+        wearer.setItemSlot(EquipmentSlot.CHEST, pack);
+        BlockPos abs = helper.absolutePos(AT);
+        // Facing north (away from the cow), two blocks up: the wake runs south and down onto the cow.
+        Vec3 hover = new Vec3(abs.getX() + 0.5, abs.getY() + 2, abs.getZ() + 0.5);
+        helper.onEachTick(() -> {
+            wearer.moveTo(hover.x, hover.y, hover.z, 180, 0);
+            wearer.setDeltaMovement(Vec3.ZERO);
+            if (!wearer.isFallFlying()) {
+                wearer.startFallFlying();
+            }
+            wearer.tick();
+        });
+        helper.succeedWhen(() -> {
+            helper.assertTrue(cow.getRemainingFireTicks() > 0 && cow.getHealth() < cow.getMaxHealth(),
+                    "the cow in the wake burns (fire " + cow.getRemainingFireTicks() + ", health " + cow.getHealth() + ")");
+            for (int x = -2; x <= 2; x++) {
+                for (int z = -1; z <= 5; z++) {
+                    helper.assertBlockNotPresent(net.minecraft.world.level.block.Blocks.FIRE, AT.offset(x, 0, z));
+                }
+            }
+            wearer.discard();
+        });
+    }
 }

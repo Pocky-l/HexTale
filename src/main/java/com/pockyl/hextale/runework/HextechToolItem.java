@@ -35,6 +35,13 @@ public final class HextechToolItem {
         }
 
         @Override
+        public net.minecraft.world.InteractionResultHolder<ItemStack> use(net.minecraft.world.level.Level level,
+                net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand) {
+            net.minecraft.world.InteractionResultHolder<ItemStack> blink = blink(level, player, hand);
+            return blink != null ? blink : super.use(level, player, hand);
+        }
+
+        @Override
         public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> tooltipLines, TooltipFlag flag) {
             listRunes(PickaxeRunes.of(stack), tooltipLines::add);
         }
@@ -48,6 +55,13 @@ public final class HextechToolItem {
         @Override
         public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<Item> onBroken) {
             return wear(stack, amount, entity);
+        }
+
+        @Override
+        public net.minecraft.world.InteractionResultHolder<ItemStack> use(net.minecraft.world.level.Level level,
+                net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand) {
+            net.minecraft.world.InteractionResultHolder<ItemStack> blink = blink(level, player, hand);
+            return blink != null ? blink : super.use(level, player, hand);
         }
 
         @Override
@@ -67,9 +81,36 @@ public final class HextechToolItem {
         }
 
         @Override
+        public net.minecraft.world.InteractionResultHolder<ItemStack> use(net.minecraft.world.level.Level level,
+                net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand) {
+            net.minecraft.world.InteractionResultHolder<ItemStack> blink = blink(level, player, hand);
+            return blink != null ? blink : super.use(level, player, hand);
+        }
+
+        @Override
         public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> tooltipLines, TooltipFlag flag) {
             listRunes(PickaxeRunes.of(stack), tooltipLines::add);
         }
+    }
+
+    /**
+     * Right click with the Blink rune: a step through the shadow to the back of the creature in sight, and a blow.
+     * Null when the tool has no Blink (the vanilla use goes on).
+     */
+    static net.minecraft.world.@Nullable InteractionResultHolder<ItemStack> blink(net.minecraft.world.level.Level level,
+            net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (hand != net.minecraft.world.InteractionHand.MAIN_HAND || WeaponRunes.strength(stack, ToolRune.BLINK) <= 0) {
+            return null;
+        }
+        if (player.getCooldowns().isOnCooldown(stack.getItem())) {
+            return net.minecraft.world.InteractionResultHolder.fail(stack);
+        }
+        if (level instanceof net.minecraft.server.level.ServerLevel server) {
+            return WeaponRunes.blink(server, player, stack) ? net.minecraft.world.InteractionResultHolder.success(stack)
+                    : net.minecraft.world.InteractionResultHolder.fail(stack);
+        }
+        return net.minecraft.world.InteractionResultHolder.success(stack);
     }
 
     /** Mending: points of wear are often shrugged off and mended. */

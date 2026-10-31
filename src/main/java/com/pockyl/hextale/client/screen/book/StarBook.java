@@ -217,6 +217,13 @@ public final class StarBook {
         return (float) ((screenY - centreY()) / zoom() + cameraY);
     }
 
+    /** Whether a box of the map (map coordinates) shows at least partly in the sky. */
+    boolean inView(float x0, float y0, float x1, float y1) {
+        float halfW = skyWidth() / 2.0F / zoom();
+        float halfH = skyHeight() / 2.0F / zoom();
+        return x1 >= cameraX - halfW && x0 <= cameraX + halfW && y1 >= cameraY - halfH && y0 <= cameraY + halfH;
+    }
+
     private boolean overSky(double x, double y) {
         return x >= skyLeft() && x < skyLeft() + skyWidth() && y >= skyTop() && y < skyTop() + skyHeight();
     }

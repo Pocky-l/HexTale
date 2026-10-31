@@ -86,6 +86,10 @@ public class AxolotlTankBlockEntity extends BlockEntity implements WorldlyContai
             meals = 1;
             changed();
         }
+        // Healing works whenever the axolotl is fed, also while the slime waits for room.
+        if (meals > 0 && level.getGameTime() % HEALING_EVERY == 0) {
+            heal(level);
+        }
         if (meals <= 0 || output.getCount() >= output.getMaxStackSize()) {
             return;
         }
@@ -93,9 +97,6 @@ public class AxolotlTankBlockEntity extends BlockEntity implements WorldlyContai
         if (progress >= shedTicks()) {
             progress = 0;
             shed(level);
-        }
-        if (level.getGameTime() % HEALING_EVERY == 0) {
-            heal(level);
         }
     }
 

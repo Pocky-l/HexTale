@@ -22,6 +22,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 
 import com.pockyl.hextale.ClientConfig;
 import com.pockyl.hextale.client.ClientKnowledge;
+import com.pockyl.hextale.client.render.DiscStack;
 import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.infusion.InfusionRecipe;
@@ -49,7 +50,9 @@ import com.pockyl.hextale.runework.PylonRune;
 import com.pockyl.hextale.runework.RuneHolder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.IntFunction;
 
 import org.jspecify.annotations.Nullable;
@@ -204,14 +207,18 @@ final class GuidePage {
 
     /** Draws the path in map coordinates (the caller has set up the camera's pose). */
     void renderMap(GuiGraphicsExtractor graphics, RuneKnowledge knowledge, long now, @Nullable Quest hovered) {
-        List<Quest> shown = Guide.client().all().stream().filter(quest -> seen(quest, knowledge)).toList();
-        List<Quest> ahead = Guide.client().all().stream().filter(quest -> !revealAll && ahead(quest, knowledge)).toList();
+        // Links are drawn wherever either end is; everything else only for the steps near the view (the scissor would
+        // throw their pixels away anyway).
+        List<Quest> allShown = Guide.client().all().stream().filter(quest -> seen(quest, knowledge)).toList();
+        List<Quest> allAhead = Guide.client().all().stream().filter(quest -> !revealAll && ahead(quest, knowledge)).toList();
+        List<Quest> shown = allShown.stream().filter(this::nearView).toList();
+        List<Quest> ahead = allAhead.stream().filter(this::nearView).toList();
         focus = hovered;
         renderHaze(graphics, shown);
-        for (Quest quest : ahead) {
+        for (Quest quest : allAhead) {
             renderAheadLink(graphics, quest, hovered);
         }
-        for (Quest quest : shown) {
+        for (Quest quest : allShown) {
             renderLinks(graphics, quest, knowledge, now);
         }
         for (Quest quest : shown) {
@@ -278,6 +285,20 @@ final class GuidePage {
         PixelArt.flush(graphics);
     }
 
+    /** How far round a step its drawing reaches (the widest haze), map pixels. */
+    private static final int DRAWN_REACH = 130;
+
+    private boolean nearView(Quest quest) {
+        return book.inView(quest.x() - DRAWN_REACH, quest.y() - DRAWN_REACH, quest.x() + DRAWN_REACH, quest.y() + DRAWN_REACH);
+    }
+
+    /** Whether a link between two steps may cross the view (its bow stays within a step's reach of the straight line). */
+    private boolean linkInView(Quest a, Quest b) {
+        int reach = 24;
+        return book.inView(Math.min(a.x(), b.x()) - reach, Math.min(a.y(), b.y()) - reach,
+                Math.max(a.x(), b.x()) + reach, Math.max(a.y(), b.y()) + reach);
+    }
+
     /** The step's item; a step for a set of things shows them in turn. */
     private static void icon(GuiGraphicsExtractor graphics, Quest quest, long now) {
         if (quest.landmark()) {
@@ -295,7 +316,7 @@ final class GuidePage {
     /** The faint grey dotted link into a step one beyond the reachable ones. */
     private void renderAheadLink(GuiGraphicsExtractor graphics, Quest quest, @Nullable Quest hovered) {
         for (Quest parent : quest.parents()) {
-            if (parent != quest.parent() && quest != hovered && quest != selected) {
+            if (parent != quest.parent() && quest != hovered && quest != selected || !linkInView(parent, quest)) {
                 continue;
             }
             int[][] path = line(parent, quest);
@@ -339,9 +360,13 @@ final class GuidePage {
             }
             int color = quest.region().color();
             int widest = quest.landmark() ? 220 : 130;
+            int[] widths = new int[5];
+            int[] colours = new int[5];
             for (int ring = 0; ring < 5; ring++) {
-                PixelArt.disc(graphics, quest.x(), quest.y(), widest - ring * widest / 6, PixelArt.argb(color, 0.009F), 0);
+                widths[ring] = widest - ring * widest / 6;
+                colours[ring] = PixelArt.argb(color, 0.009F);
             }
+            DiscStack.draw(graphics, quest.x(), quest.y(), widths, colours);
         }
     }
 
@@ -352,7 +377,7 @@ final class GuidePage {
     private void renderLinks(GuiGraphicsExtractor graphics, Quest quest, RuneKnowledge knowledge, long now) {
         boolean done = Guide.done(quest, knowledge);
         for (Quest parent : quest.parents()) {
-            if (!seen(parent, knowledge)) {
+            if (!seen(parent, knowledge) || !linkInView(parent, quest)) {
                 continue;
             }
             boolean lit = done && Guide.done(parent, knowledge);
@@ -382,8 +407,8 @@ final class GuidePage {
                 Blight.link(graphics, path, lit, now, quest.index());
                 continue;
             }
-            for (int[] p : path) {
-                PixelArt.fill(graphics, p[0], p[1], p[0] + 1, p[1] + 1, color);
+            for (int[] run : link(parent, quest).runs) {
+                PixelArt.fill(graphics, run[0], run[1], run[2], run[1] + 1, color);
             }
             if (!lit) {
                 // A bead of light running along an open link, with a soft glow around it.
@@ -425,6 +450,50 @@ final class GuidePage {
      * bow a little to the side their pair prefers. Every pixel appears once, so translucent links stay even.
      */
     private static int[][] line(Quest from, Quest to) {
+        return link(from, to).path;
+    }
+
+    /** A link's pixels, worked out once and kept while neither end moves (the arcs were re-traced every frame). */
+    private record Link(int[][] path, int[][] runs, long fingerprint) {
+    }
+
+    private static final Map<Quest, Map<Quest, Link>> LINKS = new java.util.WeakHashMap<>();
+
+    private static Link link(Quest from, Quest to) {
+        long fingerprint = ((long) from.x() * 31 + from.y()) * 961 + ((long) to.x() * 31 + to.y()) * 29791
+                + Float.floatToIntBits(to.bow()) * 7L + size(from) * 3L + size(to) + (from == to.parent() ? 1 : 0);
+        Map<Quest, Link> byParent = LINKS.computeIfAbsent(to, key -> new HashMap<>());
+        Link link = byParent.get(from);
+        if (link == null || link.fingerprint != fingerprint) {
+            int[][] path = trace(from, to);
+            link = new Link(path, runs(path), fingerprint);
+            byParent.put(from, link);
+        }
+        return link;
+    }
+
+    /** A path's pixels joined into horizontal runs {x0, y, x1}: one quad per run instead of one per pixel. */
+    private static int[][] runs(int[][] path) {
+        java.util.Set<Long> pixels = new java.util.HashSet<>();
+        for (int[] p : path) {
+            pixels.add((long) p[0] << 32 | (p[1] & 0xFFFFFFFFL));
+        }
+        List<int[]> runs = new ArrayList<>();
+        for (int[] p : path) {
+            long left = (long) (p[0] - 1) << 32 | (p[1] & 0xFFFFFFFFL);
+            if (pixels.contains(left)) {
+                continue;
+            }
+            int x1 = p[0] + 1;
+            while (pixels.contains((long) x1 << 32 | (p[1] & 0xFFFFFFFFL))) {
+                x1++;
+            }
+            runs.add(new int[]{p[0], p[1], x1});
+        }
+        return runs.toArray(int[][]::new);
+    }
+
+    private static int[][] trace(Quest from, Quest to) {
         float dx = to.x() - from.x();
         float dy = to.y() - from.y();
         float length = Math.max(1, Mth.sqrt(dx * dx + dy * dy));

@@ -160,6 +160,20 @@ public final class JarStreamFx {
     /** A camera-facing strip of additive light through the points: full light on its centre line, none at its edges. */
     static void strip(VertexConsumer consumer, PoseStack.Pose pose, Vec3[] points, float[] light, Vector3f eye, float width, int color,
                               float alpha) {
+        strip(consumer, pose, points, light, eye, null, width, color, alpha);
+    }
+
+    /**
+     * The same strip lying flat across {@code normal} (e.g. straight up: a line of light on the ground), so it keeps its
+     * width from any angle - a camera-facing strip seen along its length shrinks to a thread.
+     */
+    static void flatStrip(VertexConsumer consumer, PoseStack.Pose pose, Vec3[] points, float[] light, Vector3f normal, float width, int color,
+                          float alpha) {
+        strip(consumer, pose, points, light, new Vector3f(), normal, width, color, alpha);
+    }
+
+    private static void strip(VertexConsumer consumer, PoseStack.Pose pose, Vec3[] points, float[] light, Vector3f eye,
+                              @org.jspecify.annotations.Nullable Vector3f normal, float width, int color, float alpha) {
         Vector3f[] centre = new Vector3f[points.length];
         Vector3f[] across = new Vector3f[points.length];
         for (int i = 0; i < points.length; i++) {
@@ -167,7 +181,7 @@ public final class JarStreamFx {
             Vec3 next = points[Math.min(points.length - 1, i + 1)];
             Vector3f dir = new Vector3f((float) (next.x - prev.x), (float) (next.y - prev.y), (float) (next.z - prev.z));
             centre[i] = new Vector3f((float) points[i].x, (float) points[i].y, (float) points[i].z);
-            Vector3f side = dir.cross(new Vector3f(eye).sub(centre[i]));
+            Vector3f side = normal != null ? dir.cross(normal, new Vector3f()) : dir.cross(new Vector3f(eye).sub(centre[i]));
             if (side.lengthSquared() < 1.0E-10F) {
                 side.set(0, 1, 0);
             }

@@ -36,6 +36,8 @@ public final class ModNetwork {
         registrar.playToClient(RuneFxPayload.TYPE, RuneFxPayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);
         registrar.playToClient(EssenceFxPayload.TYPE, EssenceFxPayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);
         registrar.playToClient(RuneEffectPayload.TYPE, RuneEffectPayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);
+        registrar.playToClient(WeaponFxPayload.TYPE, WeaponFxPayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);
+        registrar.playToServer(ShockwavePayload.TYPE, ShockwavePayload.STREAM_CODEC, ShockwavePayload::handle);
         registrar.playToClient(PylonLinkPayload.TYPE, PylonLinkPayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);
         registrar.playToClient(OpenStickerPayload.TYPE, OpenStickerPayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);
         registrar.playToClient(ThinningPayload.TYPE, ThinningPayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);

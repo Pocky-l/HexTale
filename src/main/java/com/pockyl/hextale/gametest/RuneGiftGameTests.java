@@ -191,4 +191,155 @@ public final class RuneGiftGameTests {
         helper.assertBlockPresent(Blocks.AIR, nest);
         helper.succeed();
     }
+
+    /**
+     * A player in the level in survival for real: the helper's mock player answers "creative" to every game mode question,
+     * so creatures never take it for a target.
+     */
+    static ServerPlayer survivor(GameTestHelper helper) {
+        var server = helper.getLevel().getServer();
+        var cookie = net.minecraft.server.network.CommonListenerCookie.createInitial(
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "test-survivor"), false);
+        ServerPlayer player = new ServerPlayer(server, helper.getLevel(), cookie.gameProfile(), cookie.clientInformation());
+        net.minecraft.network.Connection connection = new net.minecraft.network.Connection(net.minecraft.network.protocol.PacketFlow.SERVERBOUND);
+        new io.netty.channel.embedded.EmbeddedChannel(connection);
+        server.getPlayerList().placeNewPlayer(connection, player, cookie);
+        player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        return player;
+    }
+
+    private static ItemStack clothes(net.minecraft.world.item.Item piece, RuneHolder holder, com.pockyl.hextale.runework.ClothesRune rune, int stars) {
+        ItemStack stack = new ItemStack(piece);
+        holder.set(stack, PickaxeRunes.EMPTY.with(rune.rune(), stars));
+        return stack;
+    }
+
+    /** Static: real blows at a robe's wearer sooner or later spark back - the attacker is hurt and numbed. */
+    @HexTest
+    public static void staticSparksBackAtACloseAttacker(GameTestHelper helper) {
+        net.minecraft.world.entity.Mob wearer = WeaponRuneGameTests.still(helper, net.minecraft.world.entity.EntityType.ZOMBIE, AT);
+        wearer.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST,
+                clothes(ModItems.RESEARCHER_ROBE.get(), RuneHolder.ROBE, com.pockyl.hextale.runework.ClothesRune.ROBE_STATIC, 3));
+        net.minecraft.world.entity.Mob attacker = WeaponRuneGameTests.still(helper, net.minecraft.world.entity.EntityType.COW, AT.offset(1, 0, 0));
+        ServerLevel level = helper.getLevel();
+        helper.runAfterDelay(2, () -> {
+            for (int i = 0; i < 60 && attacker.getHealth() >= attacker.getMaxHealth(); i++) {
+                wearer.setHealth(wearer.getMaxHealth());
+                wearer.invulnerableTime = 0;
+                wearer.hurt(level.damageSources().mobAttack(attacker), 1);
+            }
+            helper.assertTrue(attacker.getHealth() < attacker.getMaxHealth(), "a spark hit the attacker");
+            helper.assertTrue(attacker.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN), "the spark numbed it");
+            helper.succeed();
+        });
+    }
+
+    /**
+     * Mirage: a blow that leaves the hood's wearer weak hides them - Invisibility, the zombie hunting them loses them and
+     * cannot take them for a target again, the hood rests.
+     */
+    @HexTest(maxTicks = 120)
+    public static void aMirageHidesAWeakenedWearer(GameTestHelper helper) {
+        ServerPlayer player = survivor(helper);
+        BlockPos abs = helper.absolutePos(AT);
+        player.moveTo(abs.getX() + 0.5, abs.getY(), abs.getZ() + 0.5, 0, 0);
+        ItemStack hood = clothes(ModItems.RESEARCHER_HOOD.get(), RuneHolder.HOOD, com.pockyl.hextale.runework.ClothesRune.HOOD_MIRAGE, 2);
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, hood);
+        net.minecraft.world.entity.Mob zombie = WeaponRuneGameTests.still(helper, net.minecraft.world.entity.EntityType.ZOMBIE, AT.offset(3, 0, 0));
+        ServerLevel level = helper.getLevel();
+        // A player that just joined cannot be hurt for three seconds.
+        helper.runAfterDelay(65, () -> {
+            zombie.setTarget(player);
+            helper.assertTrue(zombie.getTarget() == player, "the zombie hunts the player");
+            player.setHealth(10);
+            player.hurt(level.damageSources().mobAttack(zombie), 4);
+            helper.assertTrue(player.getHealth() < player.getMaxHealth() * com.pockyl.hextale.runework.ClothesRune.MIRAGE_HEALTH,
+                    "the blow left the player weak, health " + player.getHealth());
+            helper.assertTrue(player.hasEffect(net.minecraft.world.effect.MobEffects.INVISIBILITY), "the wearer faded");
+            helper.assertTrue(zombie.getTarget() == null, "the zombie lost the trail");
+            zombie.setTarget(player);
+            helper.assertTrue(zombie.getTarget() == null, "and cannot take the hidden one for a target");
+            helper.assertTrue(player.getCooldowns().isOnCooldown(player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD).getItem()), "the hood rests");
+            level.getServer().getPlayerList().remove(player);
+            helper.succeed();
+        });
+    }
+
+    /**
+     * Wavewalk: a wearer caught just under the surface of a pool is set onto it and stays there, standing on the water;
+     * sneaking, they sink. Driven through the player's own ticks (a server-run player moves itself).
+     */
+    @HexTest(maxTicks = 60)
+    public static void wavewalkBootsHoldTheWater(GameTestHelper helper) {
+        for (int x = -2; x <= 2; x++) {
+            for (int z = -2; z <= 2; z++) {
+                boolean rim = Math.abs(x) == 2 || Math.abs(z) == 2;
+                helper.setBlock(AT.offset(x, -2, z), Blocks.STONE);
+                helper.setBlock(AT.offset(x, -1, z), rim ? Blocks.STONE : Blocks.WATER);
+                helper.setBlock(AT.offset(x, 0, z), rim ? Blocks.STONE : Blocks.WATER);
+                helper.setBlock(AT.offset(x, 1, z), Blocks.AIR);
+                helper.setBlock(AT.offset(x, 2, z), Blocks.AIR);
+            }
+        }
+        net.minecraft.world.entity.player.Player walker = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        walker.setItemSlot(net.minecraft.world.entity.EquipmentSlot.FEET,
+                clothes(ModItems.RESEARCHER_BOOTS.get(), RuneHolder.BOOTS, com.pockyl.hextale.runework.ClothesRune.BOOTS_WAVEWALK, 2));
+        BlockPos abs = helper.absolutePos(AT);
+        double surface = abs.getY() + helper.getLevel().getFluidState(abs).getHeight(helper.getLevel(), abs);
+        helper.runAfterDelay(2, () -> {
+            walker.moveTo(abs.getX() + 0.5, surface - 0.4, abs.getZ() + 0.5, 0, 0);
+            for (int i = 0; i < 20; i++) {
+                walker.tick();
+            }
+            helper.assertTrue(Math.abs(walker.getY() - surface) < 0.05, "the wearer stands on the water, feet at " + walker.getY() + ", surface " + surface);
+            helper.assertTrue(com.pockyl.hextale.runework.Wavewalk.onWater(walker), "and the rune knows it");
+            walker.setShiftKeyDown(true);
+            for (int i = 0; i < 40; i++) {
+                walker.tick();
+            }
+            helper.assertTrue(walker.getY() < surface - 0.3, "sneaking, the wearer sinks, feet at " + walker.getY());
+            walker.discard();
+            helper.succeed();
+        });
+    }
+
+    /**
+     * Sunlight Cell: a battery under the open sky drinks charge while the sun is up and the weather dry; one under a roof
+     * never does.
+     */
+    @HexTest(maxTicks = 220)
+    public static void aSunlightCellDrinksTheDaylight(GameTestHelper helper) {
+        BlockPos open = AT;
+        BlockPos roofed = AT.offset(2, 0, 0);
+        helper.setBlock(open.above(), Blocks.AIR);
+        helper.setBlock(open.above(2), Blocks.AIR);
+        helper.setBlock(roofed.above(), Blocks.STONE);
+        ItemStack runed = new ItemStack(ModItems.CRYSTAL_BATTERY.get());
+        RuneHolder.BATTERY.set(runed, PickaxeRunes.EMPTY.with(com.pockyl.hextale.runework.BatteryRune.SUNLIGHT_CELL.rune(), 3));
+        List<com.pockyl.hextale.block.CrystalBatteryBlockEntity> batteries = new java.util.ArrayList<>();
+        for (BlockPos at : List.of(open, roofed)) {
+            helper.setBlock(at, ModBlocks.CRYSTAL_BATTERY.get());
+            com.pockyl.hextale.block.CrystalBatteryBlockEntity battery = helper.<com.pockyl.hextale.block.CrystalBatteryBlockEntity>getBlockEntity(at);
+            battery.applyComponentsFromItemStack(runed);
+            batteries.add(battery);
+        }
+        ServerLevel level = helper.getLevel();
+        boolean[] sunnyAll = {true};
+        boolean[] sunnyAny = {false};
+        helper.onEachTick(() -> {
+            boolean sunny = com.pockyl.hextale.block.CrystalBatteryBlockEntity.sunlit(level, helper.absolutePos(open));
+            sunnyAll[0] &= sunny;
+            sunnyAny[0] |= sunny;
+        });
+        int every = HolderRune.at(com.pockyl.hextale.runework.BatteryRune.SUN_TICKS, 3);
+        helper.runAfterDelay(every * 2 + 10, () -> {
+            helper.assertTrue(batteries.get(1).charge() == 0, "the roofed battery stays empty, got " + batteries.get(1).charge());
+            if (sunnyAll[0]) {
+                helper.assertTrue(batteries.get(0).charge() >= 2, "in the sun it drank charge, got " + batteries.get(0).charge());
+            } else if (!sunnyAny[0]) {
+                helper.assertTrue(batteries.get(0).charge() == 0, "no sun, no charge, got " + batteries.get(0).charge());
+            }
+            helper.succeed();
+        });
+    }
 }

@@ -30,6 +30,20 @@ public enum PylonRune implements HolderRune {
     RADIANCE("life_light");
 
     public static final int SLOTS = 3;
+
+    /**
+     * Whether the rune does something on this pylon: a relay only passes cargo on (its reach counts, nothing else), a
+     * siphon moves essence (reach, pace and amount count; the runes that change carried items do not).
+     */
+    public static boolean worksOn(net.minecraft.world.item.ItemStack pylon, PylonRune rune) {
+        if (pylon.is(com.pockyl.hextale.registry.ModItems.RELAY_PYLON.get())) {
+            return rune == SHIFT;
+        }
+        if (pylon.is(com.pockyl.hextale.registry.ModItems.SIPHON_PYLON.get())) {
+            return rune == SHIFT || rune == MOTOR || rune == LIFT;
+        }
+        return true;
+    }
     /** Chance each carried item that a furnace would smelt arrives smelted (Smelting), by strength. */
     public static final float[] SMELT_CHANCE = {0.1F, 0.2F, 0.3F, 0.4F};
     /** Chance each carried stone arrives ground down (Erosion), by strength. */

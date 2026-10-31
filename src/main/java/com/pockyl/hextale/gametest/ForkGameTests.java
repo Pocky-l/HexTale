@@ -17,6 +17,28 @@ public final class ForkGameTests {
     private ForkGameTests() {
     }
 
+    /** Insight: listening again and again keeps one glow over the block heard, never a pile of markers. */
+    @HexTest(padding = 4)
+    public static void forkInsightKeepsOneGlowPerBlock(GameTestHelper helper) {
+        BlockPos ear = helper.absolutePos(new BlockPos(1, 1, 1));
+        BlockPos near = helper.absolutePos(new BlockPos(2, 1, 1));
+        helper.getLevel().setBlockAndUpdate(near, ModBlocks.DORMANT_HEXTECH.get().defaultBlockState());
+        ItemStack fork = new ItemStack(ModItems.TUNING_FORK.get());
+        com.pockyl.hextale.runework.RuneHolder.FORK.set(fork,
+                com.pockyl.hextale.runework.PickaxeRunes.EMPTY.with(com.pockyl.hextale.runework.ForkRune.INSIGHT.rune(), 1));
+        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.moveTo(ear.getX() + 0.5, ear.getY() - 1.0, ear.getZ() + 0.5, 0, 0);
+        for (int i = 0; i < 3; i++) {
+            TuningForkItem.listen(helper.getLevel(), player, fork);
+        }
+        List<net.minecraft.world.entity.Entity> markers = helper.getLevel().getEntities((net.minecraft.world.entity.Entity) null,
+                new net.minecraft.world.phys.AABB(near).inflate(0.5), com.pockyl.hextale.runework.PickaxeEffects::isGlowMarker);
+        helper.assertTrue(markers.size() == 1, "one glow over the heard block, got " + markers.size());
+        markers.forEach(net.minecraft.world.entity.Entity::discard);
+        helper.getLevel().setBlockAndUpdate(near, Blocks.AIR.defaultBlockState());
+        helper.succeed();
+    }
+
     @HexTest(padding = 4)
     public static void theForkHearsTheNearestHextech(GameTestHelper helper) {
         BlockPos ear = helper.absolutePos(new BlockPos(1, 2, 1));

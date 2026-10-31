@@ -22,16 +22,20 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
+import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerXpEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import com.pockyl.hextale.Hextale;
+import com.pockyl.hextale.network.WeaponFxPayload;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.registry.ModSounds;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.WeakHashMap;
 
 /**
@@ -55,7 +59,11 @@ public final class ClothesEffects {
     public static final double PULL_SPEED = 0.45;
     private static final int POLLEN_RADIUS = 3;
     private static final int DARK = 7;
+    /** Blocks round the wearer in which Mirage makes the creatures hunting them lose the trail. */
+    public static final int MIRAGE_REACH = 16;
     private static final Map<Player, Vec3> LAST_STEP = new WeakHashMap<>();
+    /** Server: the game tick each Mirage-cloaked player stays out of the creatures' minds until (or until they strike). */
+    private static final Map<UUID, Long> CLOAKED = new java.util.HashMap<>();
 
     private ClothesEffects() {
     }
@@ -172,11 +180,16 @@ public final class ClothesEffects {
         return mended;
     }
 
-    /** Bone meal on one crop or sapling near the path. */
-    private static void grow(ServerLevel level, BlockPos around, RandomSource random) {
-        for (int i = 0; i < 8; i++) {
-            BlockPos pos = around.offset(random.nextInt(POLLEN_RADIUS * 2 + 1) - POLLEN_RADIUS, random.nextInt(3) - 1,
-                    random.nextInt(POLLEN_RADIUS * 2 + 1) - POLLEN_RADIUS);
+    /** Bone meal on the nearest crop or sapling by the path that can still grow. */
+    static void grow(ServerLevel level, BlockPos around, RandomSource random) {
+        java.util.List<BlockPos> near = new java.util.ArrayList<>();
+        for (BlockPos pos : BlockPos.betweenClosed(around.offset(-POLLEN_RADIUS, -1, -POLLEN_RADIUS), around.offset(POLLEN_RADIUS, 1, POLLEN_RADIUS))) {
+            near.add(pos.immutable());
+        }
+        // Nearest first; among equally near ones a random pick, so a field ripens all over and not row by row.
+        java.util.Collections.shuffle(near, new java.util.Random(random.nextLong()));
+        near.sort(java.util.Comparator.comparingDouble(pos -> pos.distSqr(around)));
+        for (BlockPos pos : near) {
             BlockState state = level.getBlockState(pos);
             if ((state.is(BlockTags.CROPS) || state.is(BlockTags.SAPLINGS)) && state.getBlock() instanceof BonemealableBlock plant
                     && plant.isValidBonemealTarget(level, pos, state)) {
@@ -228,8 +241,26 @@ public final class ClothesEffects {
     @SubscribeEvent
     public static void onDamaged(LivingDamageEvent.Post event) {
         LivingEntity entity = event.getEntity();
+        if (event.getSource().getEntity() instanceof Player striker && !striker.level().isClientSide()) {
+            // A Mirage holds only until the hidden one strikes.
+            CLOAKED.remove(striker.getUUID());
+        }
         if (!(entity.level() instanceof ServerLevel level) || !entity.isAlive()) {
             return;
+        }
+        int spark = strength(entity, ClothesRune.ROBE_STATIC);
+        if (spark > 0 && !ToolEffects.quiet() && event.getSource().getEntity() instanceof LivingEntity attacker && attacker != entity
+                && event.getSource().getDirectEntity() == attacker && attacker.isAlive() && attacker.distanceToSqr(entity) < 36
+                && level.getRandom().nextFloat() < HolderRune.at(ClothesRune.STATIC_CHANCE, spark)) {
+            spark(level, entity, attacker, spark);
+        }
+        int mirage = strength(entity, ClothesRune.HOOD_MIRAGE);
+        if (mirage > 0 && entity instanceof Player player && event.getSource().getEntity() != null
+                && player.getHealth() < player.getMaxHealth() * ClothesRune.MIRAGE_HEALTH) {
+            ItemStack hood = player.getItemBySlot(EquipmentSlot.HEAD);
+            if (!player.getCooldowns().isOnCooldown(hood.getItem())) {
+                mirage(level, player, hood, mirage);
+            }
         }
         int healing = strength(entity, ClothesRune.ROBE_HEALING);
         if (healing > 0 && level.getRandom().nextFloat() < HolderRune.at(ClothesRune.REGEN_CHANCE, healing)) {
@@ -254,6 +285,68 @@ public final class ClothesEffects {
         }
     }
 
+    /**
+     * Static: a spark jumps from the robe into whoever struck in close combat - it hurts and numbs them (Slowness IV for a
+     * moment), drawn as a twitching bolt from the robe to them with a soft crackle.
+     */
+    public static void spark(ServerLevel level, LivingEntity wearer, LivingEntity attacker, int stars) {
+        Vec3 from = wearer.position().add(0, wearer.getBbHeight() * 0.55, 0);
+        Vec3 to = attacker.position().add(0, attacker.getBbHeight() * 0.55, 0);
+        ToolEffects.quietly(() -> attacker.hurt(level.damageSources().thorns(wearer), HolderRune.at(ClothesRune.STATIC_DAMAGE, stars)));
+        attacker.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, HolderRune.at(ClothesRune.STATIC_STUN, stars), 3, false, true, true));
+        int color = ClothesRune.ROBE_STATIC.rune().color();
+        WeaponFxPayload.send(level, WeaponFxPayload.Kind.ZAP, from, to, color, 1);
+        ToolEffects.puff(level, to, ClothesRune.ROBE_STATIC.rune(), 8, 0.3);
+        level.playSound(null, to.x, to.y, to.z, ModSounds.RUNE_CRACKLE.get(), net.minecraft.sounds.SoundSource.PLAYERS, 0.3F,
+                1.2F + level.getRandom().nextFloat() * 0.2F);
+    }
+
+    /**
+     * Mirage: the wearer fades (Invisibility), the creatures hunting them within {@link #MIRAGE_REACH} lose the trail and go
+     * to look where they stood, and for the time unseen no creature can take them for a target again - until they strike.
+     * A shimmering figure of light stays on the spot. The hood then rests for its cooldown.
+     */
+    public static void mirage(ServerLevel level, Player player, ItemStack hood, int stars) {
+        int ticks = HolderRune.at(ClothesRune.MIRAGE_TICKS, stars);
+        player.getCooldowns().addCooldown(hood.getItem(), HolderRune.at(ClothesRune.MIRAGE_COOLDOWN, stars));
+        player.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, ticks, 0, false, false, true));
+        CLOAKED.put(player.getUUID(), level.getGameTime() + ticks);
+        Vec3 spot = player.position();
+        for (net.minecraft.world.entity.Mob mob : level.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, player.getBoundingBox().inflate(MIRAGE_REACH),
+                mob -> mob.getTarget() == player || mob.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.ATTACK_TARGET)
+                        .filter(target -> target == player).isPresent())) {
+            mob.setTarget(null);
+            mob.getBrain().eraseMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.ATTACK_TARGET);
+            mob.getNavigation().moveTo(spot.x, spot.y, spot.z, 1.0);
+        }
+        int color = ClothesRune.HOOD_MIRAGE.rune().color();
+        WeaponFxPayload.send(level, WeaponFxPayload.Kind.MIRAGE, spot, spot, color, player.getBbHeight());
+        ToolEffects.puff(level, spot.add(0, player.getBbHeight() * 0.6, 0), ClothesRune.HOOD_MIRAGE.rune(), 10, 0.4);
+        level.playSound(null, spot.x, spot.y, spot.z, SoundEvents.ILLUSIONER_MIRROR_MOVE, net.minecraft.sounds.SoundSource.PLAYERS, 0.3F,
+                1.15F + level.getRandom().nextFloat() * 0.15F);
+    }
+
+    /** Whether a Mirage keeps the player out of the creatures' minds now. */
+    public static boolean cloaked(Player player) {
+        Long until = CLOAKED.get(player.getUUID());
+        if (until == null) {
+            return false;
+        }
+        if (player.level().getGameTime() >= until || !player.isAlive()) {
+            CLOAKED.remove(player.getUUID());
+            return false;
+        }
+        return true;
+    }
+
+    /** No creature takes a Mirage-cloaked player for its target. */
+    @SubscribeEvent
+    public static void onChangeTarget(LivingChangeTargetEvent event) {
+        if (event.getNewAboutToBeSetTarget() instanceof Player player && !player.level().isClientSide() && cloaked(player)) {
+            event.setCanceled(true);
+        }
+    }
+
     /** Trousers and boots: steady bonuses while worn. */
     @SubscribeEvent
     public static void onAttributes(ItemAttributeModifierEvent event) {
@@ -269,7 +362,7 @@ public final class ClothesEffects {
             add(event, runes, ClothesRune.TROUSERS_SHIFT, Attributes.STEP_HEIGHT, ClothesRune.STEP,
                     AttributeModifier.Operation.ADD_VALUE, EquipmentSlotGroup.LEGS);
         } else if (stack.is(ModItems.RESEARCHER_BOOTS.get())) {
-            add(event, RuneHolder.BOOTS.runes(stack), ClothesRune.BOOTS_PUMP, Attributes.WATER_MOVEMENT_EFFICIENCY, ClothesRune.SWIM,
+            add(event, RuneHolder.BOOTS.runes(stack), ClothesRune.BOOTS_WAVEWALK, Attributes.WATER_MOVEMENT_EFFICIENCY, ClothesRune.SWIM,
                     AttributeModifier.Operation.ADD_VALUE, EquipmentSlotGroup.FEET);
         }
     }
