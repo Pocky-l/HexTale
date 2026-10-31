@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - The Void is a place now. A breach held by six anchors no longer throws a researcher back: walk into it and it pulls
-  you through, down its throat, to the other side. There is no ground there - colossal chitin ribs arch over a
-  bottomless magenta glow, skin is stretched between them, hollow husks drift, and islands of our world float in the
-  haze, half eaten. Everything curls toward the vortices at its heart.
+  you through, down its throat, to the other side. Its ground is a field of huge curved plates of shell lying in
+  terraces over a bottomless magenta glow - soil and flesh on top, glowing seams beneath, lips curled at the edges, the
+  abyss open in the gaps between them. Colossal chitin ribs arch out of knots of flesh and from plate to plate, skin is
+  stretched between them, hollow husks lie sunk into the plates and digested masses hang in the gaps. Nothing of our
+  world is in it. Everything curls toward the vortices at its heart.
 - The way out is always open: the breach stands on the other side as a gate, warm with our daylight, on a ledge of
   chitin. It cannot be closed or broken; it follows its breach when a Breach Heart carries it elsewhere and still leads
   to where it stood if it is gone. One step in the Void is eight in our world, so held breaches are joined by a short
@@ -18,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   veins nearly gone - hold a moment under your weight and then tear.
 - Its zones: the Threshold, the Ribcage Reach, the Swallowed Shoals, the Husk Drift and the Vortex.
 - New blocks: Husk Chitin and its lit ridge, Void Membrane (plain, veined, worn), Gnawed Stone, Rift Ore and Hollow
-  Crystal clusters. The swallowed islands keep the ores of our world.
+  Crystal clusters.
 - Raw Riftmetal, broken out of the husks' walls deep in the Void (it wants a radiant pickaxe), and Hollow Crystals -
   hextech the Void drank empty.
 - `/hextale void enter` and `/hextale void exit [player]` for operators.

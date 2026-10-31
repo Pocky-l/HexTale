@@ -6,9 +6,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * The shapes the Void is built of, as plain numbers (no Minecraft here): region by region, a few knots of flesh with fans
- * of colossal chitin ribs arching out of them, skin stretched between neighbouring ribs, hollow husks and islands of our
- * world being digested. Everything bends round the nearest vortex ({@link VoidZones}).
+ * The shapes the Void is built of, as plain numbers (no Minecraft here): region by region, huge curved plates of shell
+ * lying in terraces over the abyss (the ground one walks on: soil and flesh on top, chitin with glowing seams beneath,
+ * a curled lip at the edge), knots of flesh on them with fans of colossal chitin ribs arching out, bows of chitin from
+ * plate to plate, skin stretched between neighbouring ribs, hollow husks sunk into the plates and digested masses hanging
+ * in the gaps. Nothing of our world is in it. Everything bends round the nearest vortex ({@link VoidZones}).
  * <p>
  * A region is {@link #REGION} blocks square; its shapes are made once from the world seed and kept in a small cache,
  * and they may reach {@link #REACH} regions out. {@link #fill} writes the kind of every block of one chunk column into
@@ -31,10 +33,8 @@ public final class VoidShapes {
     public static final byte WORN = 5;
     public static final byte VEINED = 6;
     public static final byte RIFT_ORE = 7;
-    public static final byte MOSS = 8;
-    public static final byte DIRT = 9;
-    public static final byte STONE = 10;
-    public static final byte DEEP = 11;
+    /** The Void's own soil on top of a plate. */
+    public static final byte SOIL = 8;
     public static final byte GNAWED = 12;
     public static final byte CRYSTAL = 13;
 
@@ -69,8 +69,19 @@ public final class VoidShapes {
         }
     }
 
-    /** An island of our world turned upside down: its flat bottom at y, a cone of stone rising out of it. */
+    /** A mass the Void is digesting, hanging in a gap: its flat bottom at y, a gnawed cone rising out of it. */
     record Shoal(double x, double y, double z, double radius, double height, int salt) {
+    }
+
+    /**
+     * A plate of shell: an ellipse (radii rx, rz, turned by yaw) round (x, z) at height y, sloping with the ground round
+     * it, domed, thick in the middle and thin at the edge where its lip curls up.
+     */
+    record Plate(double x, double y, double z, double rx, double rz, double yaw, double slopeX, double slopeZ, double dome,
+            double thick, double lip, int salt) {
+        double reach() {
+            return Math.max(rx, rz) * 1.12 + 1;
+        }
     }
 
     /** Everything one region holds, and its membranes rastered into the chunks they cross. */
@@ -79,6 +90,7 @@ public final class VoidShapes {
         final List<Knot> knots = new ArrayList<>();
         final List<Husk> husks = new ArrayList<>();
         final List<Shoal> shoals = new ArrayList<>();
+        final List<Plate> plates = new ArrayList<>();
         /** Packed membrane blocks by chunk ({@link #chunkKey}): {@code lx | lz << 4 | y << 8 | kind << 20}. */
         final Map<Long, int[]> raster = new java.util.HashMap<>();
     }
@@ -109,6 +121,32 @@ public final class VoidShapes {
         double depth = VoidZones.depth(x0 + REGION / 2.0, z0 + REGION / 2.0);
         VoidZones.Zone zone = VoidZones.zone(x0 + REGION / 2.0, z0 + REGION / 2.0);
 
+        // The ground: plates of shell, many and wide far out, few and small toward the vortex.
+        int plates = switch (zone) {
+            case THRESHOLD -> 7;
+            case REACH -> 6;
+            case SHOALS -> 5;
+            case DRIFT -> 6;
+            case VORTEX -> 4;
+        };
+        double size = switch (zone) {
+            case THRESHOLD -> 1.15;
+            case REACH -> 1.0;
+            case SHOALS -> 0.85;
+            case DRIFT -> 0.9;
+            case VORTEX -> 0.65;
+        };
+        for (int i = 0; i < plates; i++) {
+            double px = x0 + random.nextDouble() * REGION;
+            double pz = z0 + random.nextDouble() * REGION;
+            double r = (26 + random.nextDouble() * 32) * size;
+            double gx = (ground(px + 4, pz) - ground(px - 4, pz)) / 8;
+            double gz = (ground(px, pz + 4) - ground(px, pz - 4)) / 8;
+            region.plates.add(new Plate(px, ground(px, pz) + (random.nextDouble() - 0.5) * 6, pz, r, r * (0.6 + random.nextDouble() * 0.5),
+                    random.nextDouble() * Math.PI, gx * 0.85, gz * 0.85, 1.5 + random.nextDouble() * 4, 5 + random.nextDouble() * 7,
+                    2 + random.nextDouble() * 2.5, random.nextInt()));
+        }
+
         for (Knot knot : knots(rx, rz)) {
             region.knots.add(knot);
             fan(region, knot, random, depth, zone);
@@ -135,19 +173,25 @@ public final class VoidShapes {
         for (double left = huskChance; left > 0; left--) {
             if (random.nextDouble() < left) {
                 double a = 9 + random.nextDouble() * 12 * (1 + depth * 0.4);
-                region.husks.add(new Husk(x0 + random.nextDouble() * REGION, 90 + random.nextDouble() * 110,
-                        z0 + random.nextDouble() * REGION, a, a * (0.7 + random.nextDouble() * 0.5), a * (0.75 + random.nextDouble() * 0.6),
+                double hx = x0 + random.nextDouble() * REGION;
+                double hz = z0 + random.nextDouble() * REGION;
+                double b = a * (0.7 + random.nextDouble() * 0.5);
+                // Half sunk into the ground, its openings at the level one walks on.
+                region.husks.add(new Husk(hx, ground(hx, hz) + b * (0.15 + random.nextDouble() * 0.3), hz, a, b, a * (0.75 + random.nextDouble() * 0.6),
                         random.nextDouble() * Math.PI * 2, (random.nextDouble() - 0.5) * 0.9, random.nextInt(),
                         zone == VoidZones.Zone.VORTEX ? 0.05 : zone == VoidZones.Zone.DRIFT ? 0.035 : 0.012));
             }
         }
 
-        double shoalChance = zone == VoidZones.Zone.SHOALS ? 1.6 : 0.18;
+        double shoalChance = zone == VoidZones.Zone.SHOALS ? 1.6 : 0.3;
         for (double left = shoalChance; left > 0; left--) {
             if (random.nextDouble() < left) {
-                double radius = 10 + random.nextDouble() * 16;
-                region.shoals.add(new Shoal(x0 + 20 + random.nextDouble() * (REGION - 40), 60 + random.nextDouble() * 120,
-                        z0 + 20 + random.nextDouble() * (REGION - 40), radius, radius * (0.8 + random.nextDouble() * 0.6), random.nextInt()));
+                double radius = 8 + random.nextDouble() * 12;
+                double sx = x0 + 20 + random.nextDouble() * (REGION - 40);
+                double sz = z0 + 20 + random.nextDouble() * (REGION - 40);
+                // Hanging below the plates, in the gaps between them.
+                region.shoals.add(new Shoal(sx, ground(sx, sz) - 18 - random.nextDouble() * 30, sz, radius,
+                        radius * (0.8 + random.nextDouble() * 0.6), random.nextInt()));
             }
         }
         return region;
@@ -159,15 +203,25 @@ public final class VoidShapes {
         double x0 = rx * (double) REGION;
         double z0 = rz * (double) REGION;
         double depth = VoidZones.depth(x0 + REGION / 2.0, z0 + REGION / 2.0);
-        int count = 1 + (random.nextDouble() < 0.45 + 0.35 * depth ? 1 : 0);
+        int count = 1 + (random.nextDouble() < 0.2 + 0.3 * depth ? 1 : 0);
         List<Knot> knots = new ArrayList<>();
         for (int k = 0; k < count; k++) {
             double kx = x0 + 16 + random.nextDouble() * (REGION - 32);
             double kz = z0 + 16 + random.nextDouble() * (REGION - 32);
-            double ky = 45 + random.nextDouble() * 160 + depth * 20;
+            // On the ground: the fans and the bows between plates spring from the plates themselves.
+            double ky = ground(kx, kz) + 1;
             knots.add(new Knot(kx, ky, kz, 5 + random.nextDouble() * 5 + depth * 3));
         }
         return knots;
+    }
+
+    /**
+     * The height of the ground at (x, z): a slow swell with a smaller one over it, so neighbouring plates lie close in
+     * height and the plates form terraces one can climb and drop along.
+     */
+    public double ground(double x, double z) {
+        int salt = (int) (seed ^ (seed >>> 32));
+        return 118 + 38 * (2 * noise(x / 420, 0, z / 420, salt + 71) - 1) + 12 * (2 * noise(x / 140, 0, z / 140, salt + 73) - 1);
     }
 
     /** A bow from one knot to another: it rises off both and sags or arches between, thick enough to walk. */
@@ -187,7 +241,7 @@ public final class VoidShapes {
 
     /** A fan of ribs out of a knot, curling round the vortex, with skin stretched between neighbours. */
     private void fan(Region region, Knot knot, Random random, double depth, VoidZones.Zone zone) {
-        int count = 3 + random.nextInt(zone == VoidZones.Zone.VORTEX ? 3 : 2);
+        int count = 2 + random.nextInt(zone == VoidZones.Zone.VORTEX ? 3 : 2);
         double[] tangent = VoidZones.tangent(knot.x(), knot.z());
         double base = Math.atan2(tangent[1], tangent[0]) + (random.nextDouble() - 0.5) * 1.6;
         if (random.nextBoolean()) {
@@ -199,7 +253,7 @@ public final class VoidShapes {
         List<Rib> fan = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             double angle = base + (i - (count - 1) / 2.0) * spread + (random.nextDouble() - 0.5) * 0.15;
-            double length = (55 + random.nextDouble() * 55) * scale;
+            double length = (40 + random.nextDouble() * 50) * scale;
             double height = (25 + random.nextDouble() * 40) * (1 + depth * 0.6);
             double drop = -45 + random.nextDouble() * 55;
             double root = (4 + random.nextDouble() * 4) * (1 + depth * 0.4);
@@ -210,11 +264,11 @@ public final class VoidShapes {
             region.ribs.add(rib);
         }
         double skin = switch (zone) {
-            case THRESHOLD -> 0.45;
-            case REACH -> 0.9;
-            case SHOALS -> 0.4;
-            case DRIFT -> 0.55;
-            case VORTEX -> 0.75;
+            case THRESHOLD -> 0.35;
+            case REACH -> 0.75;
+            case SHOALS -> 0.3;
+            case DRIFT -> 0.45;
+            case VORTEX -> 0.65;
         };
         double geodes = zone == VoidZones.Zone.REACH ? 0.75 : zone == VoidZones.Zone.THRESHOLD ? 0.15 : 0.35;
         for (int i = 0; i + 1 < fan.size(); i++) {
@@ -427,6 +481,9 @@ public final class VoidShapes {
             for (Shoal shoal : region.shoals) {
                 shoal(shoal, x0, z0, kinds, best);
             }
+            for (Plate plate : region.plates) {
+                plate(plate, x0, z0, kinds, best);
+            }
         }
     }
 
@@ -553,6 +610,55 @@ public final class VoidShapes {
         }
     }
 
+    private void plate(Plate plate, int x0, int z0, byte[] kinds, float[] best) {
+        double reach = plate.reach();
+        int minX = Math.max(x0, floor(plate.x() - reach));
+        int maxX = Math.min(x0 + 15, floor(plate.x() + reach));
+        int minZ = Math.max(z0, floor(plate.z() - reach));
+        int maxZ = Math.min(z0 + 15, floor(plate.z() + reach));
+        if (minX > maxX || minZ > maxZ) {
+            return;
+        }
+        double c = Math.cos(plate.yaw()), sn = Math.sin(plate.yaw());
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                double dx = x + 0.5 - plate.x(), dz = z + 0.5 - plate.z();
+                double qx = dx * c + dz * sn, qz = -dx * sn + dz * c;
+                // A ragged edge, as if bitten.
+                double e2 = (sq(qx / plate.rx()) + sq(qz / plate.rz())) * (1 + 0.22 * (noise(x / 9.0, 0, z / 9.0, plate.salt()) - 0.5));
+                if (e2 >= 1) {
+                    continue;
+                }
+                double e = Math.sqrt(e2);
+                double base = plate.y() + plate.slopeX() * dx + plate.slopeZ() * dz + plate.dome() * (1 - e2)
+                        + (noise(x / 13.0, 1, z / 13.0, plate.salt()) - 0.5) * 3;
+                double lip = e > 0.84 ? (e - 0.84) / 0.16 * plate.lip() : 0;
+                int top = floor(base + lip);
+                int bottom = floor(base - plate.thick() * Math.sqrt(1 - e2) - 1.5);
+                for (int y = Math.max(MIN_Y, bottom); y <= Math.min(MIN_Y + HEIGHT - 1, top); y++) {
+                    float s = (float) -(Math.min(top - y, y - bottom) + 0.5);
+                    int idx = index(x - x0, y - MIN_Y, z - z0);
+                    if (s >= best[idx]) {
+                        continue;
+                    }
+                    best[idx] = s;
+                    byte kind;
+                    if (y == top) {
+                        kind = lip > 1.2 ? CHITIN : noise(x / 6.0, 2, z / 6.0, plate.salt()) > 0.64 ? FLESH : SOIL;
+                    } else if (top - y <= 2 && lip <= 1.2) {
+                        kind = FLESH;
+                    } else if (y == bottom && hash(x, y, z, plate.salt()) < 0.14) {
+                        // Seams of light on the underside, seen from below over the abyss.
+                        kind = RIDGE;
+                    } else {
+                        kind = CHITIN;
+                    }
+                    kinds[idx] = kind;
+                }
+            }
+        }
+    }
+
     private void shoal(Shoal shoal, int x0, int z0, byte[] kinds, float[] best) {
         double reach = shoal.radius() * 1.35 + 2;
         int minX = Math.max(x0, floor(shoal.x() - reach));
@@ -585,19 +691,9 @@ public final class VoidShapes {
                         continue;
                     }
                     best[idx] = (float) s;
-                    double fromBottom = y + 0.5 - bottom;
-                    byte kind;
-                    if (fromBottom < 1) {
-                        kind = MOSS;
-                    } else if (fromBottom < 3.5 + noise(x / 4.0, 0, z / 4.0, shoal.salt() + 7) * 2) {
-                        kind = DIRT;
-                    } else if (s > -1.4) {
-                        double bite = hash(x, y, z, shoal.salt());
-                        kind = bite < 0.62 ? GNAWED : bite < 0.75 ? FLESH : h > 0.55 ? DEEP : STONE;
-                    } else {
-                        kind = h > 0.55 ? DEEP : STONE;
-                    }
-                    kinds[idx] = kind;
+                    // Gnawed stone through and through, flesh grown into it where the Void has eaten deepest.
+                    double bite = noise(x / 4.0, y / 4.0, z / 4.0, shoal.salt() + 9);
+                    kinds[idx] = s > -1.4 && bite > 0.58 ? FLESH : GNAWED;
                 }
             }
         }

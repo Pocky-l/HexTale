@@ -190,7 +190,7 @@ A datapack dimension with its own generator (`hextale:the_void`) and biome sourc
 `hextale:threshold`, `ribcage_reach`, `swallowed_shoals`, `husk_drift`, `vortex`). Coordinate scale 8 like the Nether.
 Players enter only through a breach held by six Void Anchors; the way back is a gate on the other side, which is never
 closed. Its materials: Raw Riftmetal (`hextale:rift_ore`, needs a netherite-level pickaxe), Hollow Crystals, Void
-Crystals, Void Membranes, Husk Chitin. Operators: `/hextale void enter`, `/hextale void exit [player]`. A pack that
+Crystals, Void Membranes, Husk Chitin; it generates no vanilla blocks or ores. Operators: `/hextale void enter`, `/hextale void exit [player]`. A pack that
 removes the dimension leaves breaches as they always were: they throw players back.
 
 ## Chest loot

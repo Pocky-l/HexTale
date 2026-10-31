@@ -72,6 +72,7 @@ public final class VoidRealmGameTests {
             }
         }
         helper.assertTrue(counts[VoidShapes.CHITIN] > 1000, "ribs of chitin");
+        helper.assertTrue(counts[VoidShapes.SOIL] > 5000, "plates with soil to walk on");
         helper.assertTrue(counts[VoidShapes.RIDGE] > 50, "with lit crests");
         helper.assertTrue(counts[VoidShapes.FLESH] > 100, "knots of flesh");
         helper.assertTrue(counts[VoidShapes.MEMBRANE] > 500, "skin between the ribs");
@@ -123,8 +124,7 @@ public final class VoidRealmGameTests {
             ServerLevel realm = (ServerLevel) player.level();
             helper.assertTrue(!realm.getEntitiesOfClass(TheVoid.class, new net.minecraft.world.phys.AABB(gate.at(), gate.at()).inflate(3),
                     TheVoid::gate).isEmpty(), "the gate stands in the Void");
-            helper.assertTrue(realm.getBlockState(BlockPos.containing(player.getX(), VoidPassage.LEDGE_Y - 1, player.getZ())).isSolid(),
-                    "on a ledge");
+            helper.assertTrue(realm.getBlockState(player.blockPosition().below()).isSolid(), "on a ledge");
             if (!stage[1]) {
                 stage[1] = true;
                 player.setPortalCooldown(0);

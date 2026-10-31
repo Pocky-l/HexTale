@@ -30,9 +30,10 @@ import org.jspecify.annotations.Nullable;
 import com.pockyl.hextale.registry.ModBlocks;
 
 /**
- * Builds the Void out of {@link VoidShapes}: no ground, no layers, no heightmap - ribs, skin, husks and swallowed
- * islands over a bottomless glow. Ores of our world sit in the swallowed stone, rift ore in the husks' walls, Void
- * crystals on the geodes the skin sags round, hollow crystals and the Void's own plants on whatever lies open.
+ * Builds the Void out of {@link VoidShapes}: no layers, no heightmap - plates of shell, ribs, skin, husks and digested
+ * masses over a bottomless glow, made of nothing but the Void's own matter. Rift ore sits in the husks' walls, Void
+ * crystals on the geodes the skin sags round, hollow crystals on the digested masses, the Void's own plants on its soil
+ * and flesh.
  */
 public class VoidChunkGenerator extends ChunkGenerator {
     public static final MapCodec<VoidChunkGenerator> CODEC = BiomeSource.CODEC.fieldOf("biome_source")
@@ -70,7 +71,6 @@ public class VoidChunkGenerator extends ChunkGenerator {
         int chunkZ = chunk.getPos().z();
         shapes(random).fill(chunkX, chunkZ, kinds, BEST.get());
         decorate(kinds, chunkX << 4, chunkZ << 4);
-        BlockState[] palette = palette();
         int minY = chunk.getMinY();
         for (int y = 0; y < VoidShapes.HEIGHT; y++) {
             int worldY = VoidShapes.MIN_Y + y;
@@ -87,7 +87,7 @@ public class VoidChunkGenerator extends ChunkGenerator {
                     if (section == null) {
                         section = chunk.getSection(chunk.getSectionIndex(worldY));
                     }
-                    section.setBlockState(x, worldY & 15, z, state(kind, palette, (chunkX << 4) + x, worldY, (chunkZ << 4) + z), false);
+                    section.setBlockState(x, worldY & 15, z, state(kind, (chunkX << 4) + x, worldY, (chunkZ << 4) + z), false);
                 }
             }
         }
@@ -120,9 +120,9 @@ public class VoidChunkGenerator extends ChunkGenerator {
                         continue;
                     }
                     double roll = VoidShapes.hash(x0 + x, y, z0 + z, 0xF10A);
-                    if (kind == VoidShapes.FLESH && roll < 0.09) {
+                    if (kind == VoidShapes.FLESH && roll < 0.09 || kind == VoidShapes.SOIL && roll < 0.06) {
                         kinds[above] = FLORA;
-                    } else if ((kind == VoidShapes.GNAWED || kind == VoidShapes.STONE || kind == VoidShapes.DEEP) && roll < 0.025) {
+                    } else if (kind == VoidShapes.GNAWED && roll < 0.03) {
                         kinds[above] = HOLLOW;
                     }
                 }
@@ -134,65 +134,25 @@ public class VoidChunkGenerator extends ChunkGenerator {
         return kind != VoidShapes.AIR && kind != VoidShapes.CRYSTAL && kind < FLORA;
     }
 
-    private static BlockState[] palette() {
-        return new BlockState[]{
-                Blocks.AIR.defaultBlockState(),
-                ModBlocks.HUSK_CHITIN.get().defaultBlockState(),
-                ModBlocks.HUSK_CHITIN_RIDGE.get().defaultBlockState(),
-                ModBlocks.VOID_ROCK.get().defaultBlockState(),
-                ModBlocks.VOID_MEMBRANE.get().defaultBlockState(),
-                ModBlocks.WORN_VOID_MEMBRANE.get().defaultBlockState(),
-                ModBlocks.VEINED_VOID_MEMBRANE.get().defaultBlockState(),
-                ModBlocks.RIFT_ORE.get().defaultBlockState(),
-                Blocks.MOSS_BLOCK.defaultBlockState(),
-                Blocks.DIRT.defaultBlockState(),
-                Blocks.STONE.defaultBlockState(),
-                Blocks.DEEPSLATE.defaultBlockState(),
-                ModBlocks.GNAWED_STONE.get().defaultBlockState(),
-        };
-    }
-
-    private static BlockState state(byte kind, BlockState[] palette, int x, int y, int z) {
-        if (kind == FLORA) {
-            double pick = VoidShapes.hash(x, y, z, 0xF20B);
-            return (pick < 0.45 ? ModBlocks.VOID_ROOTS : pick < 0.8 ? ModBlocks.VOID_CORAL : ModBlocks.VOID_BULB).get().defaultBlockState();
-        }
-        if (kind == HOLLOW) {
-            return ModBlocks.HOLLOW_CRYSTAL_CLUSTER.get().defaultBlockState().setValue(AmethystClusterBlock.FACING, Direction.UP);
-        }
-        if (kind == CRYSTAL_UP) {
-            return ModBlocks.VOID_CRYSTAL_CLUSTER.get().defaultBlockState().setValue(AmethystClusterBlock.FACING, Direction.UP);
-        }
-        if (kind == VoidShapes.STONE || kind == VoidShapes.DEEP) {
-            BlockState ore = ore(kind == VoidShapes.DEEP, x, y, z);
-            if (ore != null) {
-                return ore;
+    private static BlockState state(byte kind, int x, int y, int z) {
+        return switch (kind) {
+            case VoidShapes.CHITIN -> ModBlocks.HUSK_CHITIN.get().defaultBlockState();
+            case VoidShapes.RIDGE -> ModBlocks.HUSK_CHITIN_RIDGE.get().defaultBlockState();
+            case VoidShapes.FLESH -> ModBlocks.VOID_ROCK.get().defaultBlockState();
+            case VoidShapes.SOIL -> ModBlocks.VOID_SOIL.get().defaultBlockState();
+            case VoidShapes.MEMBRANE -> ModBlocks.VOID_MEMBRANE.get().defaultBlockState();
+            case VoidShapes.WORN -> ModBlocks.WORN_VOID_MEMBRANE.get().defaultBlockState();
+            case VoidShapes.VEINED -> ModBlocks.VEINED_VOID_MEMBRANE.get().defaultBlockState();
+            case VoidShapes.RIFT_ORE -> ModBlocks.RIFT_ORE.get().defaultBlockState();
+            case VoidShapes.GNAWED -> ModBlocks.GNAWED_STONE.get().defaultBlockState();
+            case FLORA -> {
+                double pick = VoidShapes.hash(x, y, z, 0xF20B);
+                yield (pick < 0.45 ? ModBlocks.VOID_ROOTS : pick < 0.8 ? ModBlocks.VOID_CORAL : ModBlocks.VOID_BULB).get().defaultBlockState();
             }
-        }
-        return palette[kind];
-    }
-
-    /** Ores of our world, as they were in the stone the Void swallowed - in small clumps, by a hash of the block. */
-    private static @Nullable BlockState ore(boolean deep, int x, int y, int z) {
-        double vein = VoidShapes.noise(x / 2.2, y / 2.2, z / 2.2, 0x0AE5);
-        if (vein < 0.78) {
-            return null;
-        }
-        double pick = VoidShapes.hash(x >> 2, y >> 2, z >> 2, 0x0AE6);
-        if (pick < 0.3) {
-            return (deep ? Blocks.DEEPSLATE_COAL_ORE : Blocks.COAL_ORE).defaultBlockState();
-        } else if (pick < 0.52) {
-            return (deep ? Blocks.DEEPSLATE_IRON_ORE : Blocks.IRON_ORE).defaultBlockState();
-        } else if (pick < 0.7) {
-            return (deep ? Blocks.DEEPSLATE_COPPER_ORE : Blocks.COPPER_ORE).defaultBlockState();
-        } else if (pick < 0.8) {
-            return (deep ? Blocks.DEEPSLATE_REDSTONE_ORE : Blocks.REDSTONE_ORE).defaultBlockState();
-        } else if (pick < 0.88) {
-            return (deep ? Blocks.DEEPSLATE_LAPIS_ORE : Blocks.LAPIS_ORE).defaultBlockState();
-        } else if (pick < 0.985) {
-            return (deep ? Blocks.DEEPSLATE_GOLD_ORE : Blocks.GOLD_ORE).defaultBlockState();
-        }
-        return (deep ? Blocks.DEEPSLATE_DIAMOND_ORE : Blocks.DIAMOND_ORE).defaultBlockState();
+            case HOLLOW -> ModBlocks.HOLLOW_CRYSTAL_CLUSTER.get().defaultBlockState().setValue(AmethystClusterBlock.FACING, Direction.UP);
+            case CRYSTAL_UP -> ModBlocks.VOID_CRYSTAL_CLUSTER.get().defaultBlockState().setValue(AmethystClusterBlock.FACING, Direction.UP);
+            default -> Blocks.AIR.defaultBlockState();
+        };
     }
 
     @Override
@@ -215,11 +175,10 @@ public class VoidChunkGenerator extends ChunkGenerator {
     private BlockState[] column(int x, int z, RandomState random) {
         byte[] kinds = new byte[VOLUME];
         shapes(random).fill(x >> 4, z >> 4, kinds, new float[VOLUME]);
-        BlockState[] palette = palette();
+        decorate(kinds, x & ~15, z & ~15);
         BlockState[] column = new BlockState[VoidShapes.HEIGHT];
         for (int y = 0; y < VoidShapes.HEIGHT; y++) {
-            byte kind = kinds[VoidShapes.index(x & 15, y, z & 15)];
-            column[y] = kind < palette.length ? palette[kind] : Blocks.AIR.defaultBlockState();
+            column[y] = state(kinds[VoidShapes.index(x & 15, y, z & 15)], x, VoidShapes.MIN_Y + y, z);
         }
         return column;
     }

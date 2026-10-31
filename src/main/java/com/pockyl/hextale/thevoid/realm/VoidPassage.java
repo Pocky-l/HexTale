@@ -52,7 +52,7 @@ public final class VoidPassage {
     public static final ResourceKey<Level> LEVEL = ResourceKey.create(Registries.DIMENSION, Hextale.id("the_void"));
     /** Our world's blocks per block of the Void. */
     public static final int SCALE = 8;
-    /** The height a gate's ledge stands at. */
+    /** The height a gate's ledge stands at when there is no ground under it to stand on. */
     public static final int LEDGE_Y = 120;
     /** How much a player stepping through wears the anchors' crystals. */
     public static final float ENTER_STRAIN = 400;
@@ -205,7 +205,28 @@ public final class VoidPassage {
     /** Where one arrives at a gate: on its ledge, a few steps out of its front. */
     private static Vec3 arrival(Gate gate) {
         Vector3f front = TheVoid.orientation(gate.yaw(), gate.voidShape()).transform(new Vector3f(0, 0, 1));
-        return new Vec3(gate.at().x + front.x * 2.6, LEDGE_Y, gate.at().z + front.z * 2.6);
+        return new Vec3(gate.at().x + front.x * 2.6, ledgeY(gate), gate.at().z + front.z * 2.6);
+    }
+
+    /** The height one stands at in front of a gate (the gate's lowest cells hang a little above it). */
+    private static int ledgeY(Gate gate) {
+        VoidLayout layout = VoidLayout.of(gate.voidShape(), gate.size(), gate.seed());
+        return Mth.floor(gate.at().y - 0.6 + layout.bottom() + 0.01);
+    }
+
+    /**
+     * The ground a gate stands on: the top of the plate under (x, z), looked for from high above down to low, skipping
+     * the ribs' crests; {@link #LEDGE_Y} when the column falls straight into the abyss.
+     */
+    private static int ground(ServerLevel realm, int x, int z) {
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, 230, z);
+        for (; pos.getY() > 30; pos.move(net.minecraft.core.Direction.DOWN)) {
+            BlockState state = realm.getBlockState(pos);
+            if ((state.is(ModBlocks.VOID_SOIL.get()) || state.is(ModBlocks.VOID_ROCK.get())) && realm.getBlockState(pos.above()).isAir()) {
+                return pos.getY() + 1;
+            }
+        }
+        return LEDGE_Y;
     }
 
     /**
@@ -213,12 +234,15 @@ public final class VoidPassage {
      * every time, the gate itself is put back if it is not there.
      */
     static Gate raise(ServerLevel realm, Gate gate) {
-        BlockPos centre = BlockPos.containing(gate.at().x, LEDGE_Y, gate.at().z);
-        realm.getChunk(centre);
+        BlockPos column = BlockPos.containing(gate.at().x, LEDGE_Y, gate.at().z);
+        realm.getChunk(column);
         VoidLayout layout = VoidLayout.of(gate.voidShape(), gate.size(), gate.seed());
         if (!gate.built()) {
-            ledge(realm, centre, layout);
-            gate = gate.built(true);
+            // Stand it on the plate below, if there is one: one arrives on the ground of the Void, not on a perch.
+            int y = ground(realm, column.getX(), column.getZ());
+            gate = new Gate(gate.seed(), new Vec3(gate.at().x, y + 0.6 - layout.bottom(), gate.at().z), gate.yaw(), gate.shape(),
+                    gate.size(), gate.home(), gate.homeAt(), gate.homeYaw(), true);
+            ledge(realm, new BlockPos(column.getX(), y, column.getZ()), layout);
         }
         if (find(realm, gate) == null) {
             TheVoid entity = TheVoid.gate(realm, gate.at(), gate.yaw(), gate.voidShape(), gate.size(), gate.seed());
@@ -239,6 +263,7 @@ public final class VoidPassage {
 
     /** A disc of chitin with a gold-lit lip and dark flesh beneath, and room cleared above it. */
     private static void ledge(ServerLevel realm, BlockPos centre, VoidLayout layout) {
+        int ledgeY = centre.getY();
         int radius = Math.max(5, Mth.ceil(layout.reach()) + 3);
         int height = Mth.ceil(layout.height * layout.cell) + 4;
         BlockState chitin = ModBlocks.HUSK_CHITIN.get().defaultBlockState();
@@ -251,7 +276,7 @@ public final class VoidPassage {
                 double d = Math.sqrt(dx * dx + dz * dz);
                 for (int dy = 0; dy <= height; dy++) {
                     if (d <= radius + 1 - dy * 0.15) {
-                        pos.set(centre.getX() + dx, LEDGE_Y + dy, centre.getZ() + dz);
+                        pos.set(centre.getX() + dx, ledgeY + dy, centre.getZ() + dz);
                         if (!realm.getBlockState(pos).isAir()) {
                             realm.setBlock(pos, air, Block.UPDATE_CLIENTS);
                         }
@@ -261,11 +286,11 @@ public final class VoidPassage {
                     continue;
                 }
                 // The ledge: a shallow bowl, thickest in the middle, its rim lit.
-                pos.set(centre.getX() + dx, LEDGE_Y - 1, centre.getZ() + dz);
+                pos.set(centre.getX() + dx, ledgeY - 1, centre.getZ() + dz);
                 realm.setBlock(pos, d > radius - 0.8 ? ridge : chitin, Block.UPDATE_CLIENTS);
                 int under = (int) Math.round((radius - d) * 0.6) + 1;
                 for (int dy = 2; dy <= under + 1; dy++) {
-                    pos.set(centre.getX() + dx, LEDGE_Y - dy, centre.getZ() + dz);
+                    pos.set(centre.getX() + dx, ledgeY - dy, centre.getZ() + dz);
                     realm.setBlock(pos, dy > under ? chitin : flesh, Block.UPDATE_CLIENTS);
                 }
             }
