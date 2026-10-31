@@ -1,12 +1,13 @@
 {
   "type": "hextale:hex_crafting",
   "pattern": [
-    "BSB",
+    "BSX",
     "PUP"
   ],
   "key": {
     "B": "#c:ingots/brass",
     "S": "#c:slime_balls",
+    "X": "minecraft:piston",
     "P": "minecraft:smooth_stone_slab",
     "U": "hextale:unstable_hextech"
   },

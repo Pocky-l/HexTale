@@ -1,0 +1,28 @@
+{
+  "region": "workshop",
+  "icon": "hextale:bulwark_chestplate",
+  "parents": [
+    "hextech_sword"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:bulwark_helmet",
+    "then": {
+      "kind": "hex_crafting",
+      "result": "hextale:bulwark_chestplate",
+      "then": {
+        "kind": "hex_crafting",
+        "result": "hextale:bulwark_leggings",
+        "then": {
+          "kind": "hex_crafting",
+          "result": "hextale:bulwark_boots"
+        }
+      }
+    }
+  },
+  "research": "bulwark",
+  "pos": [
+    200,
+    -390
+  ]
+}

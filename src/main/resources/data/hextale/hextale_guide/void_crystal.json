@@ -1,0 +1,23 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:void_crystal",
+  "parents": [
+    "subdued_breach"
+  ],
+  "goal": {
+    "type": "studied",
+    "item": "hextale:void_crystal"
+  },
+  "display": {
+    "kind": "scheme",
+    "ingredients": [
+      "hextale:void_anchor"
+    ],
+    "result": "hextale:void_crystal"
+  },
+  "pos": [
+    560,
+    960
+  ]
+}

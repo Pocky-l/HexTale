@@ -83,9 +83,9 @@ public final class RecipeGameTests {
         helper.assertTrue(brass != null, "the brass alloy is loaded");
         helper.assertTrue(brass.inputs().stream().anyMatch(input -> input.test(new ItemStack(ModItems.ZINC_INGOT.get()))),
                 "our zinc goes into brass");
-        HexCraftingRecipe alembic = HexCraftingRecipe.ALL.named(Hextale.id("alembic"), false);
-        helper.assertTrue(alembic.grid().stream().flatMap(java.util.Optional::stream)
-                .anyMatch(ingredient -> ingredient.test(new ItemStack(ModItems.BRASS_INGOT.get()))), "the alembic takes our brass");
+        HexCraftingRecipe separator = HexCraftingRecipe.ALL.named(Hextale.id("separator"), false);
+        helper.assertTrue(separator.grid().stream().flatMap(java.util.Optional::stream)
+                .anyMatch(ingredient -> ingredient.test(new ItemStack(ModItems.BRASS_INGOT.get()))), "the separator takes our brass");
         helper.assertTrue(new ItemStack(ModItems.BRASS_INGOT.get()).is(net.minecraft.tags.TagKey.create(Registries.ITEM,
                 net.minecraft.resources.Identifier.fromNamespaceAndPath("c", "ingots/brass"))), "brass is in c:ingots/brass");
         helper.assertTrue(new ItemStack(Items.PAPER).is(ModTags.RESEARCH_PAPER), "paper is research paper");

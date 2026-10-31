@@ -1,0 +1,46 @@
+{
+  "model": {
+    "type": "hextale:animated",
+    "model": {
+      "type": "minecraft:composite",
+      "models": [
+        {
+          "type": "minecraft:model",
+          "model": "hextale:item/riftforged_axe",
+          "tints": [
+            {
+              "type": "hextale:pickaxe_runes"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:special",
+          "base": "hextale:item/riftforged_axe",
+          "model": {
+            "type": "hextale:tool_aura",
+            "kind": "void",
+            "from": [
+              8,
+              -10,
+              8
+            ],
+            "to": [
+              5,
+              28,
+              8
+            ],
+            "profile": [
+              1.75,
+              1.4,
+              1.4,
+              5.6,
+              8.4,
+              8.4,
+              3.5
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

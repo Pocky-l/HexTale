@@ -155,7 +155,7 @@ public final class Ritual {
         List<RuneUse> uses = new ArrayList<>();
         RuneHolder holder = RuneHolder.of(center);
         if (holder != null) {
-            for (ComplexRune rune : holder.takes()) {
+            for (ComplexRune rune : holder.takes(center)) {
                 List<InfusionRecipe> recipes = asking.remove(rune);
                 uses.add(use(rune, holder, recipes == null ? List.of() : recipes, center));
             }
@@ -176,7 +176,7 @@ public final class Ritual {
         }
         carried.addAll(holder.runes(center).complexRunes());
         for (ComplexRune rune : onOtherSteles) {
-            if (holder.takes(rune)) {
+            if (holder.takes(center, rune)) {
                 carried.add(rune);
             }
         }
@@ -208,7 +208,7 @@ public final class Ritual {
             return Component.translatable("gui.hextale.stele.refuse.one_scroll");
         }
         RuneHolder holder = RuneHolder.of(center);
-        if (holder == null || !holder.takes(rune)) {
+        if (holder == null || !holder.takes(center, rune)) {
             return null;
         }
         Set<ComplexRune> carried = carried(center, onOtherSteles);
@@ -218,8 +218,8 @@ public final class Ritual {
                         Component.translatable(other.translationKey()));
             }
         }
-        if (!carried.contains(rune) && carried.size() >= holder.slots()) {
-            return Component.translatable("gui.hextale.stele.refuse.full", holder.slots());
+        if (!carried.contains(rune) && carried.size() >= holder.slots(center)) {
+            return Component.translatable("gui.hextale.stele.refuse.full", holder.slots(center));
         }
         return null;
     }
@@ -229,7 +229,9 @@ public final class Ritual {
     }
 
     /** What the altar's surroundings hold: pedestals, rune steles (clockwise from north) and essence tanks. */
-    public record Circle(List<PedestalBlockEntity> pedestals, List<RuneSteleBlockEntity> steles, List<EssenceTankBlockEntity> tanks) {
+    /** What stands round a centre; {@code hexcore} when the centre is a Hexcore (it alone performs the late rituals). */
+    public record Circle(List<PedestalBlockEntity> pedestals, List<RuneSteleBlockEntity> steles, List<EssenceTankBlockEntity> tanks,
+                         boolean hexcore) {
         public static Circle scan(Level level, BlockPos altar) {
             List<PedestalBlockEntity> pedestals = new ArrayList<>();
             List<RuneSteleBlockEntity> steles = new ArrayList<>();
@@ -265,18 +267,20 @@ public final class Ritual {
             }
             steles.sort(Comparator.comparingDouble(stele -> clockwise(altar, stele.getBlockPos())));
             pedestals.sort(Comparator.comparingDouble(pedestal -> clockwise(altar, pedestal.getBlockPos())));
-            return new Circle(pedestals, steles, tanks);
+            return new Circle(pedestals, steles, tanks,
+                    level.getBlockEntity(altar) instanceof com.pockyl.hextale.block.HexcoreBlockEntity);
         }
 
         /** The runes chosen on the steles, in stele order, each once (with the best stars it is chosen with). */
         public List<Chosen> chosenRunes() {
-            Map<ComplexRune, Integer> stars = new java.util.LinkedHashMap<>();
+            Map<ComplexRune, Chosen> chosen = new java.util.LinkedHashMap<>();
             for (RuneSteleBlockEntity stele : steles) {
                 if (stele.rune() != null) {
-                    stars.merge(stele.rune(), stele.stars(), Math::max);
+                    chosen.merge(stele.rune(), new Chosen(stele.rune(), stele.stars(), stele.exact()),
+                            (a, b) -> b.stars() > a.stars() ? b : a);
                 }
             }
-            return stars.entrySet().stream().map(e -> new Chosen(e.getKey(), e.getValue())).toList();
+            return List.copyOf(chosen.values());
         }
 
         /** The stars a rune is chosen with on the steles, 0 when no stele shows it. */
@@ -315,8 +319,14 @@ public final class Ritual {
         return angle < 0 ? angle + Math.PI * 2 : angle;
     }
 
-    /** A rune chosen on a stele and the researcher's stars on it. */
-    public record Chosen(ComplexRune rune, int stars) {
+    /**
+     * A rune chosen on a stele and the stars it goes in with: the researcher's best unless they were picked by hand
+     * ({@code exact}), which may also make a rune already burned in weaker.
+     */
+    public record Chosen(ComplexRune rune, int stars, boolean exact) {
+        public Chosen(ComplexRune rune, int stars) {
+            this(rune, stars, false);
+        }
     }
 
     /**
@@ -344,7 +354,9 @@ public final class Ritual {
     /**
      * Burns every rune chosen on the steles into the pickaxe or the pylon ({@link RuneHolder}) like an enchantment: a
      * new rune takes a free place (up to the holder's slots), a rune it already carries with fewer stars is raised to the
-     * stele's stars. Only runes the holder takes go in, and never two that clash. Runes need no items, only their essence.
+     * stele's stars - or set to exactly them, weaker too, when the researcher picked the stars by hand (a 5 x 5 Drill
+     * may be wanted as a 3 x 3 one). Only runes the holder takes go in, and never two that clash. Runes need no items,
+     * only their essence.
      */
     public static Engraving engraving(ItemStack item, Circle circle) {
         RuneHolder holder = RuneHolder.of(item);
@@ -357,11 +369,11 @@ public final class Ritual {
         boolean changed = false;
         for (Chosen chosen : circle.chosenRunes()) {
             ComplexRune rune = chosen.rune();
-            if (!holder.takes(rune)) {
+            if (!holder.takes(item, rune)) {
                 return Engraving.refuse(holder.notTakenRefusal(), rune);
             }
             int have = runes.stars(rune);
-            if (chosen.stars() <= have) {
+            if (chosen.exact() ? chosen.stars() == have : chosen.stars() <= have) {
                 continue;
             }
             for (ComplexRune other : runes.complexRunes()) {
@@ -369,7 +381,7 @@ public final class Ritual {
                     return Engraving.refuse("clash" + suffix, rune, other);
                 }
             }
-            if (have == 0 && runes.count() >= holder.slots()) {
+            if (have == 0 && runes.count() >= holder.slots(item)) {
                 return Engraving.refuse("full" + suffix, rune);
             }
             runes = runes.with(rune, chosen.stars());
@@ -402,6 +414,15 @@ public final class Ritual {
     }
 
     /** The recipes, those that need the most runes first (a circle set up for a rich recipe never makes a poorer one). */
+    /**
+     * Whether the recipe can work on this centre in this circle: its centre item, a Hexcore for the late rituals, and
+     * a result that differs from what lies there (a recipe that only adds components is not repeated).
+     */
+    private static boolean fits(InfusionRecipe recipe, ItemStack center, Circle circle) {
+        return recipe.center().test(center) && (!recipe.hexcore() || circle.hexcore())
+                && !(recipe.keepComponents() && ItemStack.isSameItemSameComponents(recipe.resultFor(center), center));
+    }
+
     private static List<Map.Entry<Identifier, InfusionRecipe>> recipes(boolean clientSide) {
         List<Map.Entry<Identifier, InfusionRecipe>> list = new ArrayList<>(InfusionRecipes.get(clientSide).entrySet());
         list.sort(Comparator.comparingInt((Map.Entry<Identifier, InfusionRecipe> e) -> -e.getValue().runes().size()));
@@ -441,7 +462,7 @@ public final class Ritual {
         }
         for (Map.Entry<Identifier, InfusionRecipe> entry : recipes(clientSide)) {
             InfusionRecipe recipe = entry.getValue();
-            if (!recipe.center().test(center) || !recipe.runes().stream().allMatch(rune -> circle.stars(rune) > 0)) {
+            if (!fits(recipe, center, circle) || !recipe.runes().stream().allMatch(rune -> circle.stars(rune) > 0)) {
                 continue;
             }
             List<Input> inputs = match(recipe.pedestals(), filled);
@@ -477,7 +498,7 @@ public final class Ritual {
         int bestScore = Integer.MAX_VALUE;
         for (Map.Entry<Identifier, InfusionRecipe> entry : recipes(clientSide)) {
             InfusionRecipe recipe = entry.getValue();
-            if (!recipe.center().test(center)) {
+            if (!fits(recipe, center, circle)) {
                 continue;
             }
             List<Ingredient> needed = recipe.pedestals();

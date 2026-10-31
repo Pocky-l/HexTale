@@ -38,7 +38,8 @@ import org.jspecify.annotations.Nullable;
  * sign on the left), one column per target; runes the researcher knows shine in their colour and can be chosen,
  * unknown ones are dim hexagons. With an item on the altar of the stele's circle: a tidy list of only the runes that do
  * something for that item ({@link Ritual#usesFor}), in the order the book shows them, each with its name, stars, what
- * it does on that item and its number at the researcher's stars; the wheel scrolls it. Click a rune to set it.
+ * it does on that item and its number at the chosen stars; the wheel scrolls it. Click a rune to set it. Its stars can
+ * be clicked: a rune may go in weaker than the researcher knows it (a 3 x 3 Drill instead of a 5 x 5 one).
  */
 public class SteleScreen extends Screen {
     private static final int TILE = 20;
@@ -52,11 +53,17 @@ public class SteleScreen extends Screen {
     private static final int BUTTON_H = 14;
     private static final int GOLD = 0xF0C24A;
     private static final int REFUSED = 0xFFE07A6A;
+    /** Stars the researcher knows but has not picked; stars not known yet; stars under the mouse. */
+    private static final int STAR_SPARE = 0x8A6A2E;
+    private static final int STAR_UNKNOWN = 0x3A3460;
+    private static final int STAR_HOVER = 0xFFF0B0;
 
     private final BlockPos pos;
     private int top;
     /** First list row shown. */
     private int scroll;
+    /** Stars picked by hand on this screen, per rune. */
+    private final java.util.Map<ComplexRune, Integer> picked = new java.util.HashMap<>();
 
     public SteleScreen(BlockPos pos) {
         super(Component.translatable("block.hextale.rune_stele"));
@@ -101,9 +108,51 @@ public class SteleScreen extends Screen {
         return ClientKnowledge.get().knows(rune);
     }
 
-    /** The stars the researcher would set the rune with. */
+    /** The stars the researcher knows the rune with: the most it can go in with. */
     private int stars(ComplexRune rune) {
         return ClientKnowledge.get().stars(rune);
+    }
+
+    @Nullable
+    private RuneSteleBlockEntity stele() {
+        return minecraft != null && minecraft.level != null && minecraft.level.getBlockEntity(pos) instanceof RuneSteleBlockEntity stele
+                ? stele : null;
+    }
+
+    /** The stars the rune would go in with: picked here, or as the stele shows it, or the researcher's best. */
+    private int chosenStars(ComplexRune rune) {
+        int known = Math.max(1, stars(rune));
+        Integer hand = picked.get(rune);
+        if (hand != null) {
+            return Math.min(hand, known);
+        }
+        RuneSteleBlockEntity stele = stele();
+        return stele != null && stele.rune() == rune ? Math.min(stele.stars(), known) : known;
+    }
+
+    /** The stars to send for the rune: picked by hand (here, or before on the stele), or 0 for the researcher's best. */
+    private int sentStars(ComplexRune rune) {
+        if (picked.containsKey(rune)) {
+            return chosenStars(rune);
+        }
+        RuneSteleBlockEntity stele = stele();
+        return stele != null && stele.rune() == rune && stele.exact() ? chosenStars(rune) : 0;
+    }
+
+    /** Where the first of a row's three stars starts: right after the rune's name. */
+    private int starsX(ComplexRune rune, int textX) {
+        return textX + font.width(Component.translatable(rune.translationKey()).append("  "));
+    }
+
+    /** The star (1-3) under the mouse in a list row whose text starts at {@code textX}, or 0. */
+    private int starAt(ComplexRune rune, int textX, int rowY, double mouseX, double mouseY) {
+        if (mouseY < rowY + 2 || mouseY >= rowY + 12) {
+            return 0;
+        }
+        int x0 = starsX(rune, textX);
+        int w = font.width("★");
+        int star = Mth.floor((mouseX - x0) / w) + 1;
+        return star >= 1 && star <= 3 && mouseX >= x0 ? star : 0;
     }
 
     private static int panelWidth(@Nullable List<Ritual.RuneUse> uses) {
@@ -137,7 +186,7 @@ public class SteleScreen extends Screen {
                 all.add(current());
             }
             subtitle = Component.translatable("gui.hextale.stele.for_slots", altarItem.getHoverName(),
-                    Ritual.carried(altarItem, all).size(), holder.slots());
+                    Ritual.carried(altarItem, all).size(), holder.slots(altarItem));
         }
         HexPlate.centered(graphics, font, subtitle, left + w / 2, top + 20, textWidth, HexPlate.MUTED);
 
@@ -272,8 +321,11 @@ public class SteleScreen extends Screen {
             PixelArt.flush(graphics);
             int tx = x0 + TILE + 6;
             int tw = rowW - TILE - 8;
-            int costW = cost(graphics, use.cost(stars(rune)), x0 + rowW - 3, y + 3);
-            HexPlate.line(graphics, font, firstLine(use, known), tx, y + 3, tw - costW - 4, HexPlate.TEXT, true);
+            // A star under the mouse previews that strength: its number and its price.
+            int overStar = known && use.holder() != null ? starAt(rune, tx, y, mouseX, mouseY) : 0;
+            int shown = overStar > 0 && overStar <= stars(rune) ? overStar : chosenStars(rune);
+            int costW = cost(graphics, use.cost(shown), x0 + rowW - 3, y + 3);
+            HexPlate.line(graphics, font, firstLine(use, known, shown, overStar), tx, y + 3, tw - costW - 4, HexPlate.TEXT, true);
             HexPlate.line(graphics, font, refusal != null ? refusal : secondLine(use), tx, y + 13, tw,
                     refusal != null ? REFUSED : HexPlate.MUTED, false);
             if (refusal != null) {
@@ -282,7 +334,7 @@ public class SteleScreen extends Screen {
                 PixelArt.flush(graphics);
             }
             if (hover) {
-                tooltip = explain(use, known);
+                tooltip = explain(use, known, shown);
                 if (refusal != null) {
                     tooltip.set(tooltip.size() - 1, refusal.copy().withColor(REFUSED & 0xFFFFFF));
                 }
@@ -348,11 +400,20 @@ public class SteleScreen extends Screen {
         return uses.stream().filter(use -> ClientKnowledge.get().knows(use.rune())).toList();
     }
 
-    /** Name and stars, and on a holder the rune's number at those stars. */
-    private Component firstLine(Ritual.RuneUse use, boolean known) {
+    /**
+     * Name and stars, and on a holder the rune's number at the stars it goes in with ({@code shown}): those stars lit,
+     * the rest the researcher knows dimmer, unknown ones dark; {@code overStar} lights the stars up to the one under the
+     * mouse.
+     */
+    private Component firstLine(Ritual.RuneUse use, boolean known, int shown, int overStar) {
         ComplexRune rune = use.rune();
-        int stars = stars(rune);
-        MutableComponent line = nameWithStars(rune, stars);
+        int best = stars(rune);
+        MutableComponent line = Component.translatable(rune.translationKey()).withColor(rune.color()).append(Component.literal("  "));
+        for (int star = 1; star <= 3; star++) {
+            int color = star > best ? STAR_UNKNOWN : overStar > 0 && star <= overStar ? STAR_HOVER : star <= shown ? GOLD : STAR_SPARE;
+            line.append(Component.literal("★").withColor(color));
+        }
+        int stars = shown;
         if (!known) {
             line = Component.translatable(rune.translationKey()).withColor(0x8A7A66)
                     .append(Component.literal("  ").append(Component.translatable("gui.hextale.stele.not_learned")).withColor(0x8A7A66));
@@ -388,7 +449,7 @@ public class SteleScreen extends Screen {
         return Component.translatable(holder.valueKey(rune), holder.amount(rune, stars)).getString();
     }
 
-    private List<Component> explain(Ritual.RuneUse use, boolean known) {
+    private List<Component> explain(Ritual.RuneUse use, boolean known, int shown) {
         ComplexRune rune = use.rune();
         List<Component> lines = new ArrayList<>();
         lines.add(known ? nameWithStars(rune, stars(rune)) : Component.translatable(rune.translationKey()).withColor(rune.color()));
@@ -396,8 +457,10 @@ public class SteleScreen extends Screen {
         if (holder != null) {
             lines.add(Component.translatable(holder.descriptionKey(rune)).withStyle(ChatFormatting.GRAY));
             for (int stars = 1; stars <= 3; stars++) {
-                lines.add(Component.literal("★".repeat(stars) + "  ").withColor(GOLD)
-                        .append(Component.literal(amount(holder, rune, stars)).withStyle(ChatFormatting.WHITE))
+                boolean on = known && stars == shown;
+                lines.add(Component.literal((on ? "▸ " : "  ") + "★".repeat(stars) + "  ")
+                        .withColor(stars > stars(rune) ? STAR_UNKNOWN : GOLD)
+                        .append(Component.literal(amount(holder, rune, stars)).withStyle(on ? ChatFormatting.WHITE : ChatFormatting.GRAY))
                         .append(Component.literal("  ·  ").withStyle(ChatFormatting.DARK_GRAY))
                         .append(amounts(use.cost(stars))));
             }
@@ -425,6 +488,9 @@ public class SteleScreen extends Screen {
                 lines.add(Component.translatable("gui.hextale.stele.ritual_cost", use.makes().get(i).getHoverName(),
                         amounts(use.recipes().get(i).totalEssences())).withStyle(ChatFormatting.GRAY));
             }
+        }
+        if (known && holder != null && stars(rune) > 1) {
+            lines.add(Component.translatable("gui.hextale.stele.pick_stars").withStyle(ChatFormatting.DARK_AQUA));
         }
         lines.add(known ? Component.translatable("gui.hextale.stele.choose").withStyle(ChatFormatting.DARK_AQUA)
                 : Component.translatable("gui.hextale.stele.unknown").withStyle(ChatFormatting.DARK_GRAY));
@@ -457,15 +523,32 @@ public class SteleScreen extends Screen {
         int bx = left + (w - BUTTON_W) / 2;
         int by = buttonY();
         if (mx >= bx && mx < bx + BUTTON_W && my >= by && my < by + BUTTON_H && current() != null) {
-            send(-1);
+            send(-1, 0);
             return true;
         }
         ComplexRune rune = uses == null ? gridRuneAt(left, mx, my) : listRuneAt(left, uses, mx, my);
         if (rune != null) {
             ItemStack center = altarItem();
             boolean refused = uses != null && rune != current() && Ritual.steleRefusal(center, onOtherSteles(), rune) != null;
+            int row = Mth.floor((my - listTop()) / ROW_H);
+            int star = uses == null || !knows(rune) || refused || uses.get(scroll + row).holder() == null ? 0
+                    : starAt(rune, left + HexPlate.BORDER + 4 + TILE + 6, listTop() + row * ROW_H, mx, my);
+            if (star > 0 && minecraft != null) {
+                // A star picks the strength; on the rune the stele already shows it takes effect at once.
+                if (star > stars(rune)) {
+                    minecraft.getSoundManager().play(SimpleSoundInstance.forUI(ModSounds.DEVICE_REFUSE.get(), 1.0F, 0.6F));
+                } else {
+                    picked.put(rune, star);
+                    if (rune == current()) {
+                        send(rune.index(), star);
+                    } else {
+                        minecraft.getSoundManager().play(SimpleSoundInstance.forUI(ModSounds.UI_SELECT.get(), 0.8F + 0.15F * star, 0.5F));
+                    }
+                }
+                return true;
+            }
             if (knows(rune) && !refused) {
-                send(rune.index());
+                send(rune.index(), uses == null ? 0 : sentStars(rune));
                 onClose();
             } else if (refused && minecraft != null) {
                 minecraft.getSoundManager().play(SimpleSoundInstance.forUI(ModSounds.DEVICE_REFUSE.get(), 1.0F, 0.6F));
@@ -496,8 +579,8 @@ public class SteleScreen extends Screen {
         return row < visibleRows() && index < uses.size() ? uses.get(index).rune() : null;
     }
 
-    private void send(int rune) {
-        ClientPacketDistributor.sendToServer(new SteleRunePayload(pos, rune));
+    private void send(int rune, int stars) {
+        ClientPacketDistributor.sendToServer(new SteleRunePayload(pos, rune, stars));
         if (minecraft != null) {
             minecraft.getSoundManager().play(SimpleSoundInstance.forUI(ModSounds.UI_SELECT.get(), 1.0F, 0.7F));
         }

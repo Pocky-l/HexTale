@@ -1,13 +1,15 @@
 {
   "type": "hextale:hex_crafting",
   "pattern": [
-    "BGB",
-    "G G",
-    "BBB"
+    "GGG",
+    "BHB",
+    "III"
   ],
   "key": {
+    "G": "#c:glass_blocks/colorless",
     "B": "#c:ingots/brass",
-    "G": "#c:glass_blocks/colorless"
+    "H": "minecraft:hopper",
+    "I": "#c:ingots/iron"
   },
   "result": {
     "id": "hextale:separator"

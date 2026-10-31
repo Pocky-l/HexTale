@@ -4,6 +4,203 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2026-10-31
+### Added
+- Radiant tools are wrapped in quiet lightning from pommel to tip - short arcs snapping here and there, a few sparks
+  winding round, and now and then a discharge running the whole length. The abyss seeps out of riftforged tools:
+  small clouds of the Void well up along them, sink and thin out, violet tendrils creep out and twist away, and now
+  and then a short tear into the abyss flares.
+- Building blocks of the new metals: blocks of charged hexsteel, radiant alloy and riftmetal (nine ingots, beacon
+  bases), hexsteel plating and radiant trim cut from them on a stonecutter, and void carapace tiles.
+- Radiant and riftforged Bulwark armour carries the same lightning and abyss, thinner, along the head, body, arms
+  and legs it covers - on the wearer, on armour stands and on the icons.
+- Two blade runes for the sword, the Tendril Dagger and the Strike Gauntlet: Backstab (a blow from behind lands
+  25/40/60% harder) and Bleeding (a cut may keep bleeding for 3/4/5 seconds). Their codex runes were Eclipse and
+  Blight and had no use until now.
+- Strike Gauntlet, made on the Hexcore: hold Use to charge it in three beats, release to punch. At a block within
+  reach it breaks it - a 3 x 3 face from the second beat, two deep at the third; into the air it sends a shockwave
+  that hurts and throws back the creatures in front. Held too long, it vents its steam and starts over, never hurting
+  its wearer. It takes the sword's runes, three of them. It is worn rather than held: it closes round the fist and
+  forearm in first person and on the player alike (a right and a left glove), the bare arm punches with it, and while
+  it charges the arm comes up aiming the fist and the fist draws back, trembling harder with every beat.
+- Tendril Dagger in four levels, researched and refined with the tools of its level: a quick blade that takes the
+  sword's runes. In the off hand beside another weapon it now and then finds a gap and strikes along with the blow
+  (30-45% by level). Held and released after a
+  short swing it is thrown, bites the first creature it meets and always comes back along a tendril of light.
+- Bulwark armour in four levels (Bulwark, Refined, Radiant, Riftforged), each set opened by one research and made
+  from its level's materials like the tools. Every piece takes the runes of the clothes piece of its slot - one at
+  the first level, up to four. The cuirass carries a crystal heart: raw hextech clicked onto it charges it, and while
+  charged it soaks 30-60% of every blow armour can stop (a Crystal Battery nearby keeps it fed too). Every level has its own look - brass over blued steel, gunmetal with lit crystal slits, white gold with violet
+  wings, riftmetal with chitin horns - and the heart glows as bright as it is charged. Run dry, it cracks open in a flash of tumbling crystal shards that throws the
+  creatures round you back, and soaks nothing until it is charged full again.
+- Radiant Alloy: the Hex Foundry at full heat melts two gold, a Charged Hexsteel and Gemstone Dust (the bright
+  cuttings every gemstone finish now leaves on the Lapidary) into two ingots of white gold; Refined Shimmer does
+  instead of the dust, quicker, but it thins the land. Ore melts beside an alloy as before.
+- Radiant tools are made on the Hexcore only, from two Radiant Alloy, a gemstone and a vial of Acid that etches the
+  light into the metal.
+- Charged Hexsteel: a hexsteel ingot laid into a Crucible that holds lightning and metal comes out charged - the
+  metal of the refined tools. Coolant splashed on hexsteel lying on a lit Chem Burner charges it at once, but the
+  fumes thin the land.
+- Engraved Diamond: the Lapidary with a master cutting disc cuts a diamond to a brilliant and engraves it (a cracked
+  diamond comes back whole). Refined tools are now made of two Charged Hexsteel and an Engraved Diamond instead of
+  gemstones and diamonds.
+- Refined and Radiant Axe, Shovel and Sword: refined at the altar like the pickaxe (the same research opens all four
+  of a tier), with every rune carried over. Refined tools hold two runes, radiant ones three.
+- Riftforged Pickaxe, Axe, Shovel and Sword: a radiant tool forged on the Hexcore with two Riftmetal, a Sealed Void
+  Crystal and a raw Void Crystal holds a fourth rune and keeps every rune it had.
+- Riftmetal: Radiant Alloy thrown into a held breach is kept a while and given back black, with violet sparks inside.
+- Void Crystals grow on Void Rock round a held breach; set in nullstone at the workbench they become Sealed Void
+  Crystals. Void Chitin softened in a crucible that holds decay becomes Void Carapace.
+- Runes can be burned in weaker than you know them: click a star in the stele's list to pick the strength (the number
+  and the price follow). A 3-star Drill no longer forces a 5×5 hole - pick one star for 3×3. A rune already on the item
+  is set to exactly the picked strength, weaker too; without a pick a rune is only ever raised, as before.
+- Five new weapon runes from runes of the codex that no tool took before (their scrolls now turn up in chests):
+  - **Shockwave** (sword, axe): a charged swing at the ground sends a wave rolling ahead through it. The ground heaves
+    block by block and spits crumbs of itself, a glowing crack runs along it, and the creatures in its way are hurt and
+    tossed into the air. The weapon rests a moment afterwards.
+  - **Blink** (sword): right click at a creature to step through the shadow to its back and strike it harder.
+  - **Detonator** (sword): a creature the sword kills bursts and hurts the ones around it.
+  - **Whirlpool** (sword): a blow may open a whirlpool that drags the creatures around into it.
+  - **Whirlwind** (sword): every third blow in a row sweeps all around you in a circle of light.
+  A weapon takes one rune worked by hand (Shockwave or Blink). Two runes of the codex got names that suit them:
+  Grounding is now Shockwave, Updraft is now Whirlwind.
+- Six new runes for the researcher's clothes, the Skypack, the Crystal Battery and the Arc Spire (four of them from runes
+  of the codex nothing took before, so their scrolls now turn up in chests):
+  - **Wavewalk** (boots): walk on water as on ground and 15/25/35% faster there; sneak to sink. Caught just under the
+    surface, you are lifted back onto it. Every stride spreads rings of light over the water with a splash of
+    droplets. It replaces Pump - the boots still swim as easily under the water as Pump made them.
+  - **Static** (robe): a creature that strikes you in close combat gets a spark back 25/40/55% of the time - 3/4/5
+    damage and a moment numbed (Slowness IV), drawn as a twitching bolt from the robe. The rune of the codex Conductor
+    is now called Static.
+  - **Mirage** (hood): when a blow leaves you under 40% health you fade for 3/4/5 s. The creatures hunting you lose you
+    and go to look where you stood, where a shimmering figure of light stays behind; until you strike, none of them can
+    take you for a target. The hood then rests 60/45/30 s.
+  - **Flamethrower** (Skypack): while the jets thrust, a tongue of fire licks 3/4/5 blocks behind and below you. The
+    creatures in it catch fire for 3/4/5 s and are burned a little; blocks never catch fire.
+  - **Sunlight Cell** (Crystal Battery): under the open sky by day, in dry weather, the battery charges itself by
+    6/10/15 a minute, drinking a soft shaft of sunlight.
+  - **Beam** (Arc Spire): its strikes come as a hot beam of light that sets the creature on fire for 3/5/7 s, so the
+    animals it fells drop their meat cooked.
+
+### Changed
+- In JEI, R on a HexTale item shows how it is made first: the researcher's notes moved from JEI's Information tab,
+  which always came first, to a Notes tab of their own after the recipe tabs.
+- The later gear asks for more at the altar: every refined, radiant and riftforged tool, Tendril Dagger and Bulwark
+  piece now takes six to eight pedestal items instead of two to five, with vanilla finds that fit the tool - obsidian,
+  redstone and TNT for the refined pickaxe, a brush and moss for the shovel, a lightning rod and a bottle o' enchanting
+  for the radiant sword, echo shards, ender eyes, dragon's breath and shulker shells for the riftforged gear. The
+  Recall Charm also wants a compass and a chorus fruit, and the Soul Flask a lead and a soul lantern.
+- Each pedestal item unsettles the Hexcore a little less, so the bigger late rituals are no angrier than before.
+- Recipes were gone over at every bench so that each thing reads as what it is, with less brass everywhere:
+  - the Alembic is a copper still now, and the Separator takes a hopper and iron instead of looking like the Alembic;
+    the Pump is half iron;
+  - the Rune Stele wants a glow ink sac for its letters, and the Rune Circle a stick of Rune Chalk to draw it;
+  - the Tendril Dagger is no longer the cheapest thing on the bench: two iron, two brass, a raw orb and a lead for
+    its tendril;
+  - the first Bulwark is built over a real iron piece (helmet, chestplate, leggings or boots) with brass plates,
+    leather or chains;
+  - hexsteel tools and armour need one diamond each for the edge or the plate, so they no longer replace diamond
+    gear for a handful of iron and dust;
+  - the Sealed Void Crystal is set in tinted glass and sealed with honeycomb besides the nullstone, and the Warding
+    Lamppost costs 3 charge instead of 6;
+  - each piece of the researcher's clothes has a thing of its own: a feather in the hood, a notebook in the robe, a
+    compass in the trousers, rabbit hide on the boots;
+  - the Impulse Plate takes a piston and the Levitation Plate a feather; the Sawmill a stonecutter, the Whirl Reaper
+    a composter, the Experience Condenser a book, the Spawner Cage and the Void Anchor chains;
+  - every Lab Bench experiment for a device is sealed with a sample of its own (tropical fish for the Axolotl Tank,
+    gunpowder for the Chem Boiler, magma cream for the Chem Burner, sugar for the Chem Still, rotten flesh for the
+    Disintegrator, redstone for the Pink Brazier, an amethyst shard for Synthetic Crystals).
+- Every level of tools and Bulwark armour mends with its own metal at an anvil: brass, Charged Hexsteel, Radiant
+  Alloy, Riftmetal.
+- The refined research shows up once the level's materials and the Runed Pickaxe are known - no need to make the
+  axe, shovel and sword first. The first Bulwark set comes beside the runed tools instead of after hexsteel.
+- The chemtech shortcuts of the Arsenal cost what they save: quenched hexsteel thins the land three times as much as
+  before and a violet plume rises from the burner, and Radiant Alloy from Refined Shimmer thins it three times as much
+  too.
+- The Separator heats over magma or lava too - slowly, with no blaze powder at all.
+- The Bulwark heart takes at most 4/6/8/10 points of a single blow by level, so a crushing blow is still felt.
+- The Whirlwind sweep is a softer crescent in the rune's colour, without the flat white sweep of a vanilla sword over it.
+- A few finds of the Void - Void Chitin, Void Crystals and the Void's plants - now have to be studied under the loupe
+  before the diary knows what to make of them.
+- New ideas in the margins of the diary: where the level materials, the clouded crystal, the Void's flowers,
+  the shimmer moss and the magic wood could lead. A few old ideas that came true got new directions.
+- Runes now grow with the tool: a first Runed Pickaxe, Axe, Shovel or Sword holds one rune, a Refined Pickaxe two and
+  a Radiant Pickaxe three, a Riftforged one four. Runes already burned into your tools stay and keep working; only new runes past the
+  limit are refused.
+- Chain Lightning on the sword is felt now: it fires more often (20/30/40%), its spark always bites the struck creature
+  for extra damage with a visible arc, and then leaps on - to hostile creatures, or from an animal to others of its
+  kind. It never touches players, pets or villagers. Before, it did nothing at all unless another hostile creature
+  stood near.
+- The Engraved Diamond shows its engraving: a glowing golden sign is cut into the middle of its table face, easy to
+  tell from a plain diamond in the inventory.
+- The purple crystals no longer look like amethyst and each other: Void Crystals (the item and the sealed one) are
+  black inside with a sharp violet edge, Synthetic Crystals are shimmer pink, a Clouded Crystal is a cut hextech crystal
+  gone smoky grey, and the Void Carapace is a ridged armour plate instead of a darker lump of chitin.
+- Radiant gear looks like white gold now instead of bone and lilac: the Radiant tools, the Radiant Tendril Dagger, the
+  Radiant Bulwark, the Radiant Alloy Ingot and its block and trim are pale gold with gold trim and walnut grips, with
+  violet left only as a thin seam, so they no longer look like the Riftforged level.
+- Calmer blocks that sit better in a build: brass (Block of Brass, alembic, sorting matrix and other brass parts) is
+  smooth aged metal instead of a striped cartoon gold, Dormant Hextech is a softer blue with frosted glints, Chem
+  Tubes are dark green glass held by iron bands instead of neon stripes, the Block of Hexsteel is a plain brushed
+  plate, the steel of the World Anchor, Rift Gates and Grapple is blued, and Magic Leaves grow in white clumps with
+  only a few golden glints.
+- The Rune Circle stands out on a pale floor: its outer ring of stones is darker, and light-blue light glows in its
+  grooves instead of a dark navy line.
+- Riftforged Bulwark reads as armour now, not a violet lump: black riftmetal plates with lit rims and blackened brass
+  rivets, violet carapace on the shoulders, chest, back and knees, and a sealed Void crystal heart - black core,
+  violet rim, a pale nullstone band - held by the claws on the chest.
+- The Runed Sword and the Refined Sword have real blades now: the Runed Sword a tapered steel blade with a bright
+  edge and a glowing rune fuller, the Refined Sword a broad blade with a long point and its crystal core set in a
+  dark spine, held by steel bands.
+- The Chem Boiler looks like a working boiler now: an olive riveted drum of plates with a bright copper band, a round
+  pressure gauge whose scale runs from green to red, and a stepped dome with a copper neck under the safety valve. It
+  no longer flickers from afar.
+
+### Fixed
+- The Researcher's Diary shows runes being burned in the way it is done now: the rune pages of every tool and device
+  show the thing floating over the Rune Circle with the rune flowing in from a stele outside it, and the Rune Stele's
+  step shows steles round a Rune Circle burning two runes into a pickaxe. The altar's ritual scene no longer has
+  steles beside it.
+- JEI shows where the Engraved Diamond comes from: a diamond cut with the Master Cutting Disc on the Lapidary.
+- The Researcher's Diary no longer drags the frame rate down while it is open: its star map ran at about half the
+  frame rate of the game behind it and now costs about as much as an inventory screen. The links between the steps are
+  traced once instead of every frame, the hazes behind the steps are drawn as one picture each, and nothing outside the
+  view is drawn.
+- Opening a rune stele no longer freezes the game for a moment: the runes on screens are now painted in the
+  background, several times faster, and once per size instead of once per colour, so hovering them costs nothing.
+- The wisps an Eternal Flame pickaxe leaves in the dark are no longer put out by the next swing: a tool passes through
+  them, only an empty hand puts one out. Each one is now a small magic flame of blue fire: a white core, tongues
+  that flicker and sway, embers rising off it; under a ceiling it hangs a little higher.
+- Items can be put on a Rune Circle from a few steps away again: the click used to be thrown away by the server unless
+  you stood close (the same for every device that spreads past its block, such as the altar and the furnace).
+- Relay and Siphon pylons no longer take runes that do nothing on them: a relay takes Reach only, a siphon the runes
+  that move essence (Reach, Pulse, Levity). Runes already burned into them stay but still do nothing.
+- Grapple Gauntlet: the Pulse (reel speed) and Reach runes work again - the wearer's own game never learnt them.
+- Ore glow of the pickaxe's and the Tuning Fork's Insight no longer stays forever after the chunk unloads or the world
+  is closed, and a held Tuning Fork keeps one glow per block instead of piling up new ones.
+- Pickaxe Drill and shovel Erosion dig the face that was struck, also through a one-block wall.
+- Pickaxe Eternal Flame no longer leaves wisps in daylight: the light around the broken block counts.
+- Pickaxe Breath feeds clearly more often and more; Radiance gives a point or two of experience on ores that give none
+  (iron, copper, gold).
+- Trousers Haste is a felt speed-up now (+10/15/20%).
+- Boots Pollen grows the nearest crop or sapling on the path instead of a random spot that was often empty.
+- Slumber on the Levitation Plate and the Soul Flask puts creatures really to sleep: even skeletons stop shooting. They
+  always wake again, also after the chunk was unloaded or the world closed.
+- Rune texts: Impulse Plate Breath, Skypack Fireproofing, Grapple Gravity (now shows the yank speed), units on Null
+  Lantern Banishing, Recall Charm Reach and Mending, Tuning Fork Insight, Levitation Plate Breath and Slumber, Soul
+  Flask Slumber.
+- Warding Lamppost Healing at high stars really heals (Regeneration was restarted before its first heal).
+- Sawmill Growth makes the replanted sapling shoot up into a tree, as its text says.
+- Chem Boiler Steam draws mixture from jars as fast as it cracks it; Thrift and Purification count fully at every star.
+- Crystal Purifier and World Anchor Reach grow with every star.
+- Greedy Funnel Engraving drops heads more often (3/5/8%) and shows when it does.
+- Sword Engraving takes heads far more often (5/10/15% instead of 1-3%).
+- Hood Mirage works around zombies, skeletons and other creatures that hunt by plain goals: it used to break off at
+  them and leave the wearer seen.
+- Disintegrator Thrift adds essence also to things worth a single point; Crystal Battery Thrift rounds its bonus up;
+  Axolotl Tank Healing keeps working while the slime output is full; Crystal Purifier Thrift gives free draws also
+  without light at hand.
+
 ## [1.6.1+26.1.2] - 2026-10-30
 ### Fixed
 - A player who knew very much - the Scroll of Omniscience in a big modpack, or simply thousands of studied items - was

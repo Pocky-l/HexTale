@@ -1,0 +1,13 @@
+{
+  "kind": "wip",
+  "region": "void",
+  "stage": "late",
+  "icon": "minecraft:tinted_glass",
+  "parents": [
+    "void_carapace"
+  ],
+  "pos": [
+    495,
+    860
+  ]
+}

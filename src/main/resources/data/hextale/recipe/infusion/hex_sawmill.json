@@ -6,7 +6,7 @@
     "minecraft:dark_oak_log",
     "minecraft:dark_oak_log",
     "minecraft:oak_sapling",
-    "#c:ingots/brass",
+    "minecraft:stonecutter",
     "#c:ingots/brass"
   ],
   "essences": {

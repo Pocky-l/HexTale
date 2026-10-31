@@ -2,12 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "pattern": [
-    "XXX",
+    "XDX",
     " # ",
     " # "
   ],
   "key": {
     "X": "#c:ingots/hexsteel",
+    "D": "#c:gems/diamond",
     "#": "#c:rods/wooden"
   },
   "result": {

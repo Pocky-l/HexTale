@@ -275,8 +275,10 @@ public class HextechLamppostBlockEntity extends BlockEntity {
         AABB light = new AABB(worldPosition).inflate(reach());
         for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, light)) {
             if (healing > 0 && entity instanceof Player player) {
-                player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, HolderRune.at(LamppostRune.HEALING_TICKS, healing), 0,
-                        true, false, true));
+                // Kept, not re-added every round: a fresh Regeneration every round would never reach its first heal.
+                if (ToolEffects.keep(player, MobEffects.REGENERATION, HolderRune.at(LamppostRune.HEALING_TICKS, healing), 0)) {
+                    ToolEffects.puff(level, player.position().add(0, 1, 0), LamppostRune.HEALING.rune(), 3, 0.3);
+                }
             } else if (insight > 0 && entity instanceof Enemy) {
                 entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, HolderRune.at(LamppostRune.GLOW_TICKS, insight), 0, true, false));
             }

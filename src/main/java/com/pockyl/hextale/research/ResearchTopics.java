@@ -77,7 +77,8 @@ public final class ResearchTopics {
     public static final ResearchTopic RAW_SHIMMER = brew("raw_shimmer", 3, Brew.RAW_SHIMMER, Essence.LIGHT, Essence.LIFE);
     /** The four basic hextech tools are worked out together, right after the first researches at the table. */
     public static final ResearchTopic HEXTECH_TOOLS = register(new ResearchTopic("hextech_tools",
-            List.<Supplier<? extends ItemLike>>of(ModItems.pickaxe(HextechPickaxe.HEXTECH), ModItems.HEXTECH_AXE, ModItems.HEXTECH_SHOVEL, ModItems.HEXTECH_SWORD),
+            List.<Supplier<? extends ItemLike>>of(ModItems.pickaxe(HextechPickaxe.HEXTECH), ModItems.HEXTECH_AXE, ModItems.HEXTECH_SHOVEL, ModItems.HEXTECH_SWORD,
+                    ModItems.TENDRIL_DAGGER),
             Essence.METAL, Essence.EARTH, 1, ResearchTopic.Bench.TABLE, null, "research.hextale.topic.hextech_tools"));
     // Gadgets: the first ones (tier 1) right after the first researches, the strong ones deeper.
     public static final ResearchTopic LEVITATION_PLATE = add("levitation_plate", 1, Essence.AIR, Essence.EARTH, ModItems.LEVITATION_PLATE);
@@ -109,10 +110,36 @@ public final class ResearchTopics {
     public static final ResearchTopic SORTING_MATRIX = add("sorting_matrix", 3, Essence.LIGHT, Essence.METAL, ModItems.SORTING_MATRIX);
     public static final ResearchTopic HEXCORE = add("hexcore", 3, Essence.SPARK, Essence.LIGHT, ModItems.HEXCORE);
     public static final ResearchTopic HEXTECH_SKYPACK = add("hextech_skypack", 3, Essence.AIR, Essence.SPARK, ModItems.HEXTECH_SKYPACK);
+    /** Level 2 metal (Thaumcraft order: the metal is researched before the tools made of it). */
+    public static final ResearchTopic CHARGED_HEXSTEEL = add("charged_hexsteel", 2, Essence.SPARK, Essence.METAL,
+            ModItems.CHARGED_HEXSTEEL_INGOT);
+    /** Level 3 metal. */
+    public static final ResearchTopic RADIANT_ALLOY = add("radiant_alloy", 3, Essence.LIGHT, Essence.METAL, ModItems.RADIANT_ALLOY_INGOT);
+    /** Level 4: the metal a held breach gives back, and the Void Crystal set in nullstone. */
+    public static final ResearchTopic RIFTMETAL = add("riftmetal", 3, Essence.SHADOW, Essence.METAL, ModItems.RIFTMETAL_INGOT);
+    public static final ResearchTopic SEALED_VOID_CRYSTAL = add("sealed_void_crystal", 3, Essence.SHADOW, Essence.EARTH,
+            ModItems.SEALED_VOID_CRYSTAL);
+    // One armour research opens the whole set of its level (owner, 2026-10-30).
+    public static final ResearchTopic BULWARK = add("bulwark", 2, Essence.METAL, Essence.EARTH,
+            ModItems.BULWARK_HELMET, ModItems.BULWARK_CHESTPLATE, ModItems.BULWARK_LEGGINGS, ModItems.BULWARK_BOOTS);
+    public static final ResearchTopic REFINED_BULWARK = add("refined_bulwark", 3, Essence.METAL, Essence.SPARK,
+            ModItems.REFINED_BULWARK_HELMET, ModItems.REFINED_BULWARK_CHESTPLATE, ModItems.REFINED_BULWARK_LEGGINGS, ModItems.REFINED_BULWARK_BOOTS);
+    public static final ResearchTopic RADIANT_BULWARK = add("radiant_bulwark", 3, Essence.LIGHT, Essence.EARTH,
+            ModItems.RADIANT_BULWARK_HELMET, ModItems.RADIANT_BULWARK_CHESTPLATE, ModItems.RADIANT_BULWARK_LEGGINGS, ModItems.RADIANT_BULWARK_BOOTS);
+    public static final ResearchTopic RIFTFORGED_BULWARK = add("riftforged_bulwark", 3, Essence.SHADOW, Essence.EARTH,
+            ModItems.RIFTFORGED_BULWARK_HELMET, ModItems.RIFTFORGED_BULWARK_CHESTPLATE, ModItems.RIFTFORGED_BULWARK_LEGGINGS,
+            ModItems.RIFTFORGED_BULWARK_BOOTS);
+    public static final ResearchTopic STRIKE_GAUNTLET = add("strike_gauntlet", 3, Essence.SPARK, Essence.EARTH, ModItems.STRIKE_GAUNTLET);
+    // One research refines every tool of a tier (the topic ids are the pickaxe's, released before the other tools).
     public static final ResearchTopic REFINED_PICKAXE = add("refined_hextech_pickaxe", 3, Essence.METAL, Essence.SPARK,
-            ModItems.pickaxe(HextechPickaxe.REFINED));
+            ModItems.pickaxe(HextechPickaxe.REFINED), ModItems.REFINED_AXE, ModItems.REFINED_SHOVEL, ModItems.REFINED_SWORD,
+            ModItems.REFINED_TENDRIL_DAGGER);
     public static final ResearchTopic RADIANT_PICKAXE = add("radiant_hextech_pickaxe", 3, Essence.LIGHT, Essence.METAL,
-            ModItems.pickaxe(HextechPickaxe.RADIANT));
+            ModItems.pickaxe(HextechPickaxe.RADIANT), ModItems.RADIANT_AXE, ModItems.RADIANT_SHOVEL, ModItems.RADIANT_SWORD,
+            ModItems.RADIANT_TENDRIL_DAGGER);
+    public static final ResearchTopic RIFTFORGED_TOOLS = add("riftforged_tools", 3, Essence.SHADOW, Essence.SPARK,
+            ModItems.pickaxe(HextechPickaxe.RIFTFORGED), ModItems.RIFTFORGED_AXE, ModItems.RIFTFORGED_SHOVEL, ModItems.RIFTFORGED_SWORD,
+            ModItems.RIFTFORGED_TENDRIL_DAGGER);
 
     private ResearchTopics() {
     }

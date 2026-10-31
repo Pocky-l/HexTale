@@ -1,0 +1,27 @@
+{
+  "type": "hextale:infusion",
+  "center": "hextale:refined_hextech_axe",
+  "pedestals": [
+    "hextale:radiant_alloy_ingot",
+    "hextale:radiant_alloy_ingot",
+    "hextale:hextech_gemstone",
+    {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "hextale:chem_vial",
+      "components": {
+        "hextale:brew": "acid"
+      }
+    },
+    "minecraft:glowstone",
+    "minecraft:ghast_tear",
+    "minecraft:golden_apple",
+    "minecraft:honey_block"
+  ],
+  "essences": {
+    "magic": 72,
+    "crystal": 24
+  },
+  "result": "hextale:radiant_hextech_axe",
+  "keep_components": true,
+  "hexcore": true
+}

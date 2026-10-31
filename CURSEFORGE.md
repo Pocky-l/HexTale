@@ -60,4 +60,4 @@
 </p>
 <!-- more-mods:end -->
 
-<p style="text-align:center"><sub>Made by <strong>Pocky</strong>. Inspired by the hextech of <strong>Arcane</strong> and by <a href="https://www.curseforge.com/minecraft/mc-mods/thaumcraft">Thaumcraft</a>. Some particle sprites are built on the <a href="https://kenney.nl/assets/particle-pack">Particle Pack</a> by Kenney (CC0). Source on <a href="https://github.com/Pocky-l/HexTale">GitHub</a> (MIT).</sub></p>
+<p style="text-align:center"><span style="font-size:12px">Made by <strong>Pocky</strong>. Inspired by the hextech of <strong>Arcane</strong> and by <a href="https://www.curseforge.com/minecraft/mc-mods/thaumcraft">Thaumcraft</a>. Some particle sprites are built on the <a href="https://kenney.nl/assets/particle-pack">Particle Pack</a> by Kenney (CC0). Source on <a href="https://github.com/Pocky-l/HexTale">GitHub</a> (MIT).</span></p>

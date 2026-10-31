@@ -216,7 +216,13 @@ public class DisintegratorBlock extends BaseEntityBlock implements EssenceMachin
             ItemEssences essences = ResearchItems.of(stack);
             int base = essences == null ? 1 : Math.max(1, EssenceMix.boiled(essences, 1).total());
             int dam = strength(DisintegratorRune.DAM);
-            return dam <= 0 ? base : Math.round(base * (1 + HolderRune.at(DisintegratorRune.YIELD, dam)));
+            if (dam <= 0) {
+                return base;
+            }
+            // Rounded at random by the fraction, so even a 1-point thing gains its share on average.
+            float more = base * (1 + HolderRune.at(DisintegratorRune.YIELD, dam));
+            int whole = (int) more;
+            return whole + (level != null && level.getRandom().nextFloat() < more - whole ? 1 : 0);
         }
 
         static void serverTick(Level level, BlockPos pos, BlockState state, Bowl bowl) {

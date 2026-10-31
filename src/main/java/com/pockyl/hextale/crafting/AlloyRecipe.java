@@ -19,16 +19,21 @@ import org.jspecify.annotations.Nullable;
 /**
  * A Hex Furnace alloy, recipe type {@code hextale:alloying}: one to three {@code inputs}
  * (ingredient + count, each in its own input slot, any order) melt together in {@code time} ticks of burning fuel into
- * {@code result}, paying {@code experience} when the result is taken out.
+ * {@code result}, paying {@code experience} when the result is taken out. A {@code foundry} alloy needs the Hex
+ * Foundry's full heat instead (the furnace never makes it); {@code thinning} is what making one adds to the land's
+ * Thinning (the chemtech shortcuts pay there).
  */
-public record AlloyRecipe(List<SizedIngredient> inputs, ItemStackTemplate result, int time, float experience) {
+public record AlloyRecipe(List<SizedIngredient> inputs, ItemStackTemplate result, int time, float experience, boolean foundry,
+                          float thinning) {
     public static final int SLOTS = 3;
 
     public static final MapCodec<AlloyRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             SizedIngredient.NESTED_CODEC.listOf(1, SLOTS).fieldOf("inputs").forGetter(AlloyRecipe::inputs),
             ItemStackTemplate.CODEC.fieldOf("result").forGetter(AlloyRecipe::result),
             Codec.intRange(1, 6000).optionalFieldOf("time", 200).forGetter(AlloyRecipe::time),
-            Codec.FLOAT.optionalFieldOf("experience", 0.0F).forGetter(AlloyRecipe::experience)
+            Codec.FLOAT.optionalFieldOf("experience", 0.0F).forGetter(AlloyRecipe::experience),
+            Codec.BOOL.optionalFieldOf("foundry", false).forGetter(AlloyRecipe::foundry),
+            Codec.FLOAT.optionalFieldOf("thinning", 0.0F).forGetter(AlloyRecipe::thinning)
     ).apply(instance, AlloyRecipe::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, AlloyRecipe> STREAM_CODEC = StreamCodec.composite(
@@ -36,6 +41,8 @@ public record AlloyRecipe(List<SizedIngredient> inputs, ItemStackTemplate result
             ItemStackTemplate.STREAM_CODEC, AlloyRecipe::result,
             ByteBufCodecs.VAR_INT, AlloyRecipe::time,
             ByteBufCodecs.FLOAT, AlloyRecipe::experience,
+            ByteBufCodecs.BOOL, AlloyRecipe::foundry,
+            ByteBufCodecs.FLOAT, AlloyRecipe::thinning,
             AlloyRecipe::new);
 
     /** Every alloy, server and client. */
@@ -80,13 +87,32 @@ public record AlloyRecipe(List<SizedIngredient> inputs, ItemStackTemplate result
         return true;
     }
 
-    /** The first alloy the slots hold, in id order. */
+    /** The first furnace alloy the slots hold, in id order. */
     public static Map.@Nullable Entry<Identifier, AlloyRecipe> find(List<ItemStack> slots, boolean clientSide) {
         for (Map.Entry<Identifier, AlloyRecipe> entry : ALL.get(clientSide).entrySet()) {
-            if (entry.getValue().assign(slots) != null) {
+            if (!entry.getValue().foundry() && entry.getValue().assign(slots) != null) {
                 return entry;
             }
         }
         return null;
+    }
+
+    /**
+     * The first foundry alloy whose inputs lie somewhere among the foundry's slots (others may hold ore melting beside
+     * it), with the slot feeding each input; null when none.
+     */
+    public static @Nullable Found findInFoundry(List<ItemStack> slots, boolean clientSide) {
+        for (Map.Entry<Identifier, AlloyRecipe> entry : ALL.get(clientSide).entrySet()) {
+            AlloyRecipe recipe = entry.getValue();
+            int[] chosen = new int[recipe.inputs().size()];
+            if (recipe.foundry() && recipe.assign(slots, 0, new boolean[slots.size()], chosen)) {
+                return new Found(entry.getKey(), recipe, chosen);
+            }
+        }
+        return null;
+    }
+
+    /** A foundry alloy and the slot that feeds each of its inputs. */
+    public record Found(Identifier id, AlloyRecipe recipe, int[] slots) {
     }
 }

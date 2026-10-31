@@ -1,0 +1,16 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "BXB",
+    "L L"
+  ],
+  "key": {
+    "B": "#c:ingots/brass",
+    "X": "minecraft:iron_helmet",
+    "L": "#c:leathers"
+  },
+  "result": {
+    "id": "hextale:bulwark_helmet"
+  },
+  "charge": 3
+}

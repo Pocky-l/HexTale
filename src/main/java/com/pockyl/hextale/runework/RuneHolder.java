@@ -187,13 +187,16 @@ public enum RuneHolder {
         if (item == ModItems.VOID_ANCHOR.get()) {
             return ANCHOR;
         }
-        if (item == ModItems.HEXTECH_AXE.get()) {
+        if (item == ModItems.HEXTECH_AXE.get() || item == ModItems.REFINED_AXE.get() || item == ModItems.RADIANT_AXE.get()
+                || item == ModItems.RIFTFORGED_AXE.get()) {
             return AXE;
         }
-        if (item == ModItems.HEXTECH_SHOVEL.get()) {
+        if (item == ModItems.HEXTECH_SHOVEL.get() || item == ModItems.REFINED_SHOVEL.get() || item == ModItems.RADIANT_SHOVEL.get()
+                || item == ModItems.RIFTFORGED_SHOVEL.get()) {
             return SHOVEL;
         }
-        if (item == ModItems.HEXTECH_SWORD.get()) {
+        if (item == ModItems.HEXTECH_SWORD.get() || item == ModItems.REFINED_SWORD.get() || item == ModItems.RADIANT_SWORD.get()
+                || item == ModItems.RIFTFORGED_SWORD.get()) {
             return SWORD;
         }
         if (item == ModItems.RESEARCHER_HOOD.get()) {
@@ -207,6 +210,19 @@ public enum RuneHolder {
         }
         if (item == ModItems.RESEARCHER_BOOTS.get()) {
             return BOOTS;
+        }
+        if (item instanceof TendrilDaggerItem || item instanceof StrikeGauntletItem) {
+            // A dagger is a short sword: it takes the sword's runes.
+            return SWORD;
+        }
+        if (item instanceof BulwarkArmorItem bulwark) {
+            // Bulwark takes the runes of the clothes piece worn in the same slot.
+            return switch (bulwark.type()) {
+                case HELMET -> HOOD;
+                case CHESTPLATE -> ROBE;
+                case LEGGINGS -> TROUSERS;
+                default -> BOOTS;
+            };
         }
         return ModItems.isPylon(stack) ? PYLON : null;
     }
@@ -232,8 +248,22 @@ public enum RuneHolder {
         }
     }
 
+    /** The most runes an item of this holder can hold (a tool or worn piece only at its best, riftforged level). */
     public int slots() {
-        return slots;
+        return laddered() ? RuneTier.MAX : slots;
+    }
+
+    /** The rune places of this very item: tools and worn pieces get more with their tier ({@link RuneTier}). */
+    public int slots(ItemStack item) {
+        return laddered() ? RuneTier.slots(item) : slots;
+    }
+
+    /** Whether the holder's items climb the rune ladder: tools, weapons and clothes. */
+    public boolean laddered() {
+        return switch (this) {
+            case PICKAXE, AXE, SHOVEL, SWORD, HOOD, ROBE, TROUSERS, BOOTS -> true;
+            default -> false;
+        };
     }
 
     /** Every rune it takes, in the order the book and JEI show them. */
@@ -270,12 +300,29 @@ public enum RuneHolder {
         return find(rune) != null;
     }
 
+    /** Whether this very item takes the rune: a relay or siphon pylon refuses the runes that would do nothing on it. */
+    public boolean takes(ItemStack item, ComplexRune rune) {
+        HolderRune found = find(rune);
+        return found != null && (!(found instanceof PylonRune pylon) || PylonRune.worksOn(item, pylon));
+    }
+
+    /** Every rune this very item takes, in book order. */
+    public List<ComplexRune> takes(ItemStack item) {
+        return takes().stream().filter(rune -> takes(item, rune)).toList();
+    }
+
     private HolderRune get(ComplexRune rune) {
         return Objects.requireNonNull(find(rune), () -> rune.key() + " on " + this);
     }
 
-    /** Whether the two runes cannot share one holder (only pickaxe runes clash). */
+    /** Whether the two runes cannot share one holder (pickaxe groups; one power on a weapon). */
     public boolean clashes(ComplexRune a, ComplexRune b) {
+        ToolRune.Tool tool = ToolEffects.tool(this);
+        if (tool != null) {
+            ToolRune x = ToolRune.of(tool, a);
+            ToolRune y = ToolRune.of(tool, b);
+            return x != null && y != null && x.clashes(y);
+        }
         if (this != PICKAXE) {
             return false;
         }

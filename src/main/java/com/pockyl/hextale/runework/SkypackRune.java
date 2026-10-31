@@ -24,7 +24,9 @@ public enum SkypackRune implements HolderRune {
     /** Walls and the ground hit softer while I fly and right after. */
     BREATH("air_life"),
     /** Fire Resistance while the jets burn. */
-    FIREPROOFING("life_fire");
+    FIREPROOFING("life_fire"),
+    /** The jets burn hot enough to scorch the creatures in their wake (never the ground). */
+    FLAMETHROWER("fire_air");
 
     public static final int SLOTS = 3;
     /** Speed (blocks a tick) the jets drive towards, by strength; a firework rocket drives towards 1.5. */
@@ -36,6 +38,9 @@ public enum SkypackRune implements HolderRune {
     public static final float[] CUSHION = {0.25F, 0.5F, 0.75F, 1.0F};
     /** Ticks of Fire Resistance kept up while flying (what is left after landing). */
     public static final int[] FIRE_TICKS = {100, 140, 180, 220};
+    /** Flamethrower: blocks the flame reaches behind the jets, and the ticks a creature it touches burns. */
+    public static final int[] FLAME_REACH = {3, 4, 5, 6};
+    public static final int[] BURN_TICKS = {60, 80, 100, 120};
 
     private final ComplexRune rune;
 
@@ -75,6 +80,7 @@ public enum SkypackRune implements HolderRune {
             case DAM -> HolderRune.percent(HolderRune.at(THRIFT, i));
             case BREATH -> HolderRune.percent(HolderRune.at(CUSHION, i));
             case FIREPROOFING -> HolderRune.seconds(HolderRune.at(FIRE_TICKS, i));
+            case FLAMETHROWER -> Integer.toString(HolderRune.at(FLAME_REACH, i));
         };
     }
 }

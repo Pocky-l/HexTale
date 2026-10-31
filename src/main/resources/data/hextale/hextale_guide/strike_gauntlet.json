@@ -1,0 +1,19 @@
+{
+  "region": "forge",
+  "stage": "late",
+  "icon": "hextale:strike_gauntlet",
+  "parents": [
+    "radiant_pickaxe",
+    "radiant_alloy",
+    "hexcore"
+  ],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:strike_gauntlet"
+  },
+  "research": "strike_gauntlet",
+  "pos": [
+    1620,
+    60
+  ]
+}

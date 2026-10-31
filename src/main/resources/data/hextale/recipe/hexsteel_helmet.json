@@ -2,11 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "pattern": [
-    "XXX",
+    "XDX",
     "X X"
   ],
   "key": {
-    "X": "#c:ingots/hexsteel"
+    "X": "#c:ingots/hexsteel",
+    "D": "#c:gems/diamond"
   },
   "result": {
     "id": "hextale:hexsteel_helmet"

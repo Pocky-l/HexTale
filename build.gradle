@@ -102,6 +102,9 @@ neoForge {
             type = 'gameTestServer'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
             systemProperty 'hextale.releasedIds', project.file('docs/released-ids.txt').absolutePath
+            if (project.hasProperty('tests')) {
+                systemProperty 'hextale.tests', project.property('tests').toString()
+            }
         }
 
         // Opens the mod's screens by a script and saves screenshots (scripts in tools/guishots/, pictures in
@@ -112,6 +115,9 @@ neoForge {
             gameDirectory = project.file('run-guishots')
             programArguments.addAll '--width', '1920', '--height', '1080'
             systemProperty 'hextale.guishots', project.file('tools/guishots').absolutePath
+            if (project.hasProperty('guishots.jfr')) {
+                jvmArguments.add "-XX:StartFlightRecording=filename=${project.property('guishots.jfr')},settings=profile"
+            }
         }
 
         data {

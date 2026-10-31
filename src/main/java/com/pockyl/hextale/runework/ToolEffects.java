@@ -77,6 +77,8 @@ import org.jspecify.annotations.Nullable;
 public final class ToolEffects {
     /** Set while a lightning arc strikes, so the arc's own hits start no new arcs or heals. */
     private static final ThreadLocal<Boolean> ARCING = ThreadLocal.withInitial(() -> false);
+    /** Creatures a Chain Lightning spark bit in this blow, with the rune's strength: the spark leaps on once the blow lands. */
+    private static final Map<LivingEntity, Integer> SPARKED = new WeakHashMap<>();
     /** Natural leaves a tree must touch before an axe takes it all (a log wall has none). */
     private static final int MIN_LEAVES = 4;
     private static final int MAX_LEAVES = 600;
@@ -562,11 +564,18 @@ public final class ToolEffects {
     // ---- Sword and axe in battle ------------------------------------------------------------------------------------------
 
     /** The weapon of a melee blow by a player (the item in their main hand), or empty. */
-    private static ItemStack weapon(DamageSource source) {
+    static ItemStack weapon(DamageSource source) {
         if (!(source.getEntity() instanceof Player player) || source.getDirectEntity() != player) {
             return ItemStack.EMPTY;
         }
         return player.getMainHandItem();
+    }
+
+    /** Whether the striker stands behind the target (in the half-space at its back, a little to the sides). */
+    static boolean behind(LivingEntity striker, LivingEntity target) {
+        Vec3 facing = Vec3.directionFromRotation(0, target.getYHeadRot());
+        Vec3 toStriker = striker.position().subtract(target.position()).multiply(1, 0, 1);
+        return toStriker.lengthSqr() > 1.0E-4 && facing.dot(toStriker.normalize()) < -0.3;
     }
 
     private static void onIncomingDamage(LivingIncomingDamageEvent event) {
@@ -587,6 +596,31 @@ public final class ToolEffects {
                         List.of(BlockPos.containing(target.position().add(0, target.getBbHeight() * 0.6, 0))), 0xFFF6C8, 1);
             }
             level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), target.getX(), target.getY() + target.getBbHeight() * 0.6, target.getZ(), 6, 0.2, 0.2, 0.2, 0.08);
+        }
+        int backstab = strength(weapon, ToolRune.Tool.SWORD, ToolRune.BACKSTAB);
+        if (backstab > 0 && event.getSource().getEntity() instanceof LivingEntity striker && behind(striker, target)) {
+            event.setAmount(event.getAmount() * (1 + HolderRune.at(ToolRune.BACK_BONUS, backstab)));
+            puff(level, target.position().add(0, target.getBbHeight() * 0.6, 0), ToolRune.BACKSTAB.rune(), 8, 0.3);
+        }
+        int bleeding = strength(weapon, ToolRune.Tool.SWORD, ToolRune.BLEEDING);
+        if (bleeding > 0 && event.getSource().getEntity() instanceof Player striker && mayStrike(target, striker)
+                && level.getRandom().nextFloat() < HolderRune.at(ToolRune.BLEED_CHANCE, bleeding)) {
+            target.addEffect(new MobEffectInstance(MobEffects.WITHER, HolderRune.at(ToolRune.BLEED_TICKS, bleeding), 0), striker);
+            puff(level, target.position().add(0, target.getBbHeight() * 0.5, 0), ToolRune.BLEEDING.rune(), 8, 0.3);
+            level.sendParticles(ModParticles.drop(0x8A1C1C), target.getX(), target.getY() + target.getBbHeight() * 0.5, target.getZ(), 8, 0.2, 0.2, 0.2, 0.05);
+        }
+        int chain = strength(weapon, ToolRune.Tool.SWORD, ToolRune.CHAIN_LIGHTNING);
+        if (chain > 0 && event.getSource().getEntity() instanceof Player striker
+                && level.getRandom().nextFloat() < HolderRune.at(ToolRune.ARC_CHANCE, chain)) {
+            // The spark always bites the struck creature, so the rune shows even on a lone one.
+            event.setAmount(event.getAmount() + HolderRune.at(ToolRune.ARC_DAMAGE, chain));
+            SPARKED.put(target, chain);
+            Vec3 hit = target.position().add(0, target.getBbHeight() * 0.5, 0);
+            RuneEffectPayload.show(level, RuneEffectPayload.Family.ARCS, striker.getEyePosition().add(0, -0.4, 0),
+                    List.of(BlockPos.containing(hit)), ToolRune.CHAIN_LIGHTNING.rune().color(), 1);
+            puff(level, hit, ToolRune.CHAIN_LIGHTNING.rune(), 8, 0.25);
+            level.sendParticles(ParticleTypes.ELECTRIC_SPARK, hit.x, hit.y, hit.z, 10, 0.25, 0.3, 0.25, 0.15);
+            sound(level, hit, ModSounds.ARC_STRIKE.get(), 0.3F, 1.25F);
         }
         int corrosion = strength(weapon, ToolRune.Tool.AXE, ToolRune.CORROSION);
         if (corrosion > 0 && level.getRandom().nextFloat() < HolderRune.at(ToolRune.CORRODE, corrosion)) {
@@ -623,13 +657,17 @@ public final class ToolEffects {
                     player.position().add(0, 1.1, 0), ToolRune.WITHERING.rune().color(), 10);
             sound(level, player.position(), SoundEvents.SOUL_ESCAPE.value(), 0.8F, 0.8F);
         }
-        int chain = strength(weapon, ToolRune.Tool.SWORD, ToolRune.CHAIN_LIGHTNING);
-        if (chain > 0 && random.nextFloat() < HolderRune.at(ToolRune.ARC_CHANCE, chain)) {
+        Integer chain = SPARKED.remove(target);
+        if (chain != null) {
             arc(level, player, target, HolderRune.at(ToolRune.ARC_TARGETS, chain), HolderRune.at(ToolRune.ARC_DAMAGE, chain));
         }
     }
 
-    /** Chain Lightning: the blow jumps on to the nearest hostile creatures around, one after another. */
+    /**
+     * Chain Lightning: the spark leaps from the struck creature to the nearest one around, and on, one after another - to
+     * hostile creatures, or, when the struck one is not hostile, to others of its kind (a herd); never to players, tamed
+     * animals or villagers.
+     */
     private static void arc(ServerLevel level, Player player, LivingEntity first, int jumps, float damage) {
         List<LivingEntity> struck = new ArrayList<>();
         struck.add(first);
@@ -639,12 +677,13 @@ public final class ToolEffects {
             for (int i = 0; i < jumps; i++) {
                 LivingEntity source = from;
                 LivingEntity next = level.getEntitiesOfClass(LivingEntity.class, source.getBoundingBox().inflate(ARC_REACH),
-                                e -> e.isAlive() && e != player && !struck.contains(e) && hostile(e, player)).stream()
+                                e -> e.isAlive() && e != player && !struck.contains(e) && arcable(e, first, player)).stream()
                         .min((a, b) -> Double.compare(a.distanceToSqr(source), b.distanceToSqr(source))).orElse(null);
                 if (next == null) {
                     break;
                 }
                 line(level, source.position().add(0, source.getBbHeight() * 0.5, 0), next.position().add(0, next.getBbHeight() * 0.5, 0));
+                next.invulnerableTime = 0;
                 next.hurtServer(level, level.damageSources().playerAttack(player), damage);
                 struck.add(next);
                 from = next;
@@ -653,12 +692,44 @@ public final class ToolEffects {
             ARCING.set(false);
         }
         if (struck.size() > 1) {
-            sound(level, first.position(), ModSounds.ARC_STRIKE.get(), 0.7F, 1.1F);
+            sound(level, first.position(), ModSounds.ARC_STRIKE.get(), 0.3F, 1.1F);
         }
     }
 
     private static boolean hostile(LivingEntity entity, Player player) {
         return entity instanceof Enemy || entity instanceof Mob mob && mob.getTarget() == player;
+    }
+
+    /** Whether a Chain Lightning spark leaps on to this creature (see {@link #arc}). */
+    private static boolean arcable(LivingEntity entity, LivingEntity first, Player player) {
+        return mayStrike(entity, player) && (hostile(entity, player) || !hostile(first, player) && entity.getType() == first.getType());
+    }
+
+    /**
+     * Whether a weapon rune that strikes round about (a wave, a blast, a sweep) may hurt this creature: never players,
+     * villagers, tamed animals, named peaceful creatures or armour stands.
+     */
+    static boolean mayStrike(LivingEntity entity, Player player) {
+        return entity != player && entity.isAlive() && !(entity instanceof Player) && !entity.isSpectator()
+                && !(entity instanceof net.minecraft.world.entity.decoration.ArmorStand)
+                && !(entity instanceof net.minecraft.world.entity.npc.villager.AbstractVillager)
+                && !(entity instanceof net.minecraft.world.entity.OwnableEntity owned && owned.getOwnerReference() != null)
+                && !(entity.hasCustomName() && !(entity instanceof Enemy));
+    }
+
+    /** Runs hits that start no rune procs of their own (an arc's, a wave's, a blast's), so runes never feed each other. */
+    static void quietly(Runnable hits) {
+        boolean before = ARCING.get();
+        ARCING.set(true);
+        try {
+            hits.run();
+        } finally {
+            ARCING.set(before);
+        }
+    }
+
+    static boolean quiet() {
+        return ARCING.get();
     }
 
     /** Sparks along the arc between two points. */

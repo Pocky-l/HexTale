@@ -70,6 +70,8 @@ public final class HextaleClient {
                 com.pockyl.hextale.client.render.EssenceJarItemRenderer.ID, com.pockyl.hextale.client.render.EssenceJarItemRenderer.Unbaked.MAP_CODEC));
         modBus.addListener((net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent event) -> event.register(
                 com.pockyl.hextale.client.render.HexcoreItemRenderer.ID, com.pockyl.hextale.client.render.HexcoreItemRenderer.Unbaked.MAP_CODEC));
+        modBus.addListener((net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent event) -> event.register(
+                com.pockyl.hextale.client.render.ToolAuraRenderer.ID, com.pockyl.hextale.client.render.ToolAuraRenderer.Unbaked.MAP_CODEC));
         modBus.addListener((net.neoforged.neoforge.client.event.RegisterItemModelsEvent event) -> event.register(
                 com.pockyl.hextale.client.render.AnimatedItemModel.ID, com.pockyl.hextale.client.render.AnimatedItemModel.Unbaked.MAP_CODEC));
         modBus.addListener(ClientPayloads::register);
@@ -99,6 +101,7 @@ public final class HextaleClient {
             event.registerSpriteSet(ModParticles.HEX_FLAME.get(), HexFlameParticle.Provider::new);
             event.registerSpriteSet(ModParticles.MAGIC_LEAF.get(), MagicLeafParticle.Provider::new);
             event.registerSpriteSet(ModParticles.SHIMMER_MOTE.get(), ShimmerMoteParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.HEART_SHARD.get(), com.pockyl.hextale.client.particle.HeartShardParticle.Provider::new);
         });
         modBus.addListener(GogglesView::registerLayer);
         com.pockyl.hextale.compat.curios.CuriosClientCompat.register(modBus);
@@ -115,12 +118,22 @@ public final class HextaleClient {
         modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::registerLayers);
         modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::bake);
         modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::registerExtensions);
+        modBus.addListener(com.pockyl.hextale.client.render.BulwarkClient::registerLayers);
+        modBus.addListener(com.pockyl.hextale.client.render.BulwarkClient::bake);
+        modBus.addListener(com.pockyl.hextale.client.render.BulwarkClient::registerExtensions);
+        modBus.addListener(com.pockyl.hextale.client.render.StrikeGauntletClient::registerExtensions);
+        com.pockyl.hextale.client.render.StrikeGauntletClient.register();
+        modBus.addListener(com.pockyl.hextale.client.render.BulwarkHeartLayer::addLayers);
+        modBus.addListener((net.neoforged.neoforge.client.event.EntityRenderersEvent.AddLayers event) -> com.pockyl.hextale.client.render.BulwarkAuraLayer.addLayers(event));
+        modBus.addListener(com.pockyl.hextale.client.render.BulwarkHeartLayer::registerModifier);
+        modBus.addListener((net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent event) -> event.register(
+                com.pockyl.hextale.client.render.BulwarkItemRenderer.ID, com.pockyl.hextale.client.render.BulwarkItemRenderer.Unbaked.MAP_CODEC));
         modBus.addListener(ShapeParticles::register);
         modBus.addListener((net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent event) -> event.register(
                 com.pockyl.hextale.client.render.ResearcherClothesItemRenderer.ID,
                 com.pockyl.hextale.client.render.ResearcherClothesItemRenderer.Unbaked.MAP_CODEC));
         SkypackClient.register();
-        modBus.addListener(com.pockyl.hextale.client.screen.book.AltarDiorama::register);
+        modBus.addListener(com.pockyl.hextale.client.screen.book.RuneCircleDiorama::register);
         modBus.addListener(com.pockyl.hextale.client.screen.book.CircleDiorama::register);
         modBus.addListener(com.pockyl.hextale.client.screen.MultiblockDiorama::register);
         modBus.addListener(com.pockyl.hextale.client.render.HexGlow::registerPipelines);
@@ -138,6 +151,9 @@ public final class HextaleClient {
         MachineLoops.register();
         WardRipple.register();
         com.pockyl.hextale.client.render.RuneEffects.register();
+        com.pockyl.hextale.client.render.WeaponFx.register();
+        WeaponInput.register();
+        ShapeHits.register();
         ThinningAtmosphere.register(modBus);
         modBus.addListener(ThinningTint::register);
         modBus.addListener(ThinningTint::fadeWater);
@@ -248,6 +264,8 @@ public final class HextaleClient {
                 net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.DUST_CHARGE.get(),
                 com.pockyl.hextale.client.render.DustChargeRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.THROWN_DAGGER.get(),
+                com.pockyl.hextale.client.render.ThrownDaggerRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.THROWN_CHEM_VIAL.get(),
                 net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.THE_VOID.get(),
@@ -287,6 +305,7 @@ public final class HextaleClient {
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_PYLON.get(), com.pockyl.hextale.client.render.HexPylonRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.PEDESTAL.get(), PedestalRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.DISINTEGRATOR.get(), com.pockyl.hextale.client.render.DisintegratorRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.HEX_WISP.get(), com.pockyl.hextale.client.render.HexWispRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEXCORE.get(), com.pockyl.hextale.client.render.HexcoreRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.RUNE_STELE.get(), RuneSteleRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.IMPULSE_PLATE.get(), com.pockyl.hextale.client.render.ImpulsePlateRenderer::new);

@@ -3,6 +3,7 @@ package com.pockyl.hextale.client.screen.book;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.Mth;
 
+import com.pockyl.hextale.client.render.DiscStack;
 import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.quest.Quest;
 import com.pockyl.hextale.quest.Region;
@@ -192,11 +193,20 @@ final class Blight {
 
     /** The sky around the branch's steps darkens into plum, with a breath of magenta in it, instead of a coloured haze. */
     static void haze(GuiGraphicsExtractor graphics, Quest quest) {
+        DiscStack.draw(graphics, quest.x(), quest.y(), HAZE_WIDTHS, HAZE_COLOURS);
+    }
+
+    /** The haze's discs, widest first: six rings of aura and smoke, then a faint glow. */
+    private static final int[] HAZE_WIDTHS = new int[7];
+    private static final int[] HAZE_COLOURS = new int[7];
+
+    static {
         for (int ring = 0; ring < 6; ring++) {
-            int width = 210 - ring * 28;
-            PixelArt.disc(graphics, quest.x(), quest.y(), width, PixelArt.argb(ring < 2 ? AURA : SMOKE, 0.08F), 0);
+            HAZE_WIDTHS[ring] = 210 - ring * 28;
+            HAZE_COLOURS[ring] = PixelArt.argb(ring < 2 ? AURA : SMOKE, 0.08F);
         }
-        PixelArt.disc(graphics, quest.x(), quest.y(), 130, PixelArt.argb(GLOW, 0.022F), 0);
+        HAZE_WIDTHS[6] = 130;
+        HAZE_COLOURS[6] = PixelArt.argb(GLOW, 0.022F);
     }
 
     private static long hash(long value) {

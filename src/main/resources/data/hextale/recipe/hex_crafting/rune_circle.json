@@ -1,10 +1,11 @@
 {
   "type": "hextale:hex_crafting",
   "pattern": [
-    "BAB",
-    "CCC"
+    "BKB",
+    "CAC"
   ],
   "key": {
+    "K": "hextale:rune_chalk",
     "A": "#c:gems/amethyst",
     "C": "hextale:chiseled_magic_bricks",
     "B": "hextale:magic_bricks"

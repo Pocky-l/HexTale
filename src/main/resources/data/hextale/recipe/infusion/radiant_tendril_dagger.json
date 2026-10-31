@@ -1,0 +1,25 @@
+{
+  "type": "hextale:infusion",
+  "center": "hextale:refined_tendril_dagger",
+  "pedestals": [
+    "hextale:radiant_alloy_ingot",
+    "hextale:hextech_gemstone",
+    {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "hextale:chem_vial",
+      "components": {
+        "hextale:brew": "acid"
+      }
+    },
+    "minecraft:glowstone",
+    "minecraft:ghast_tear",
+    "minecraft:phantom_membrane"
+  ],
+  "essences": {
+    "magic": 40,
+    "crystal": 12
+  },
+  "result": "hextale:radiant_tendril_dagger",
+  "keep_components": true,
+  "hexcore": true
+}

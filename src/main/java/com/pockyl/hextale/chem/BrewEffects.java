@@ -148,11 +148,38 @@ public final class BrewEffects {
                 entity.clearFire();
                 hissed = true;
             }
+            if (entity instanceof net.minecraft.world.entity.item.ItemEntity item && quench(level, item, actor)) {
+                hissed = true;
+            }
         }
         level.sendParticles(ParticleTypes.SNOWFLAKE, center.getX() + 0.5, center.getY() + 0.5, center.getZ() + 0.5, 30, 1.2, 0.6, 1.2, 0.02);
         if (hissed) {
             level.playSound(null, center, ModSounds.CRUCIBLE_EVAPORATE.get(), SoundSource.BLOCKS, 0.9F, 1.0F);
         }
+    }
+
+    /**
+     * The chemtech road to level 2: hexsteel ingots lying hot on a lit Chem Burner, hit by coolant, set charged at once -
+     * no essence, but the fumes thin the land ({@link com.pockyl.hextale.thevoid.Thinning#QUENCHED} an ingot). Only for a
+     * thrower who has researched charged hexsteel.
+     */
+    static boolean quench(ServerLevel level, net.minecraft.world.entity.item.ItemEntity item, @org.jspecify.annotations.Nullable Player actor) {
+        ItemStack stack = item.getItem();
+        BlockPos under = BlockPos.containing(item.getX(), item.getY() - 0.2, item.getZ());
+        if (!stack.is(com.pockyl.hextale.registry.ModItems.HEXSTEEL_INGOT.get()) || !com.pockyl.hextale.block.ChemBurnerBlock.isLit(level.getBlockState(under))
+                || actor == null || !com.pockyl.hextale.knowledge.Research.of(actor).researched(com.pockyl.hextale.research.ResearchTopics.CHARGED_HEXSTEEL)) {
+            return false;
+        }
+        item.setItem(stack.transmuteCopy(com.pockyl.hextale.registry.ModItems.CHARGED_HEXSTEEL_INGOT.get(), stack.getCount()));
+        com.pockyl.hextale.thevoid.Thinning.add(level, under, stack.getCount() * com.pockyl.hextale.thevoid.Thinning.QUENCHED,
+                com.pockyl.hextale.thevoid.Thinning.Source.FUMES);
+        level.sendParticles(ModParticles.vapour(ModParticles.SOOT), item.getX(), item.getY() + 0.2, item.getZ(), 10, 0.15, 0.2, 0.15, 0.03);
+        level.sendParticles(ModParticles.glint(0x7EF0FF), item.getX(), item.getY() + 0.15, item.getZ(), 8, 0.12, 0.1, 0.12, 0.02);
+        // The price shows at the act: a violet plume rises from the burner, more of it for a bigger stack.
+        level.sendParticles(ModParticles.vapour(ModParticles.INK), item.getX(), item.getY() + 0.6, item.getZ(),
+                Math.min(40, 8 + stack.getCount() / 2), 0.25, 0.6, 0.25, 0.02);
+        level.playSound(null, under, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.3F, 0.6F);
+        return true;
     }
 
     private static void glow(ServerLevel level, BlockPos center, Player actor) {

@@ -253,11 +253,18 @@ public final class Felling {
         return planted;
     }
 
-    /** A planted sapling grows a stage at once (a second stage would be the grown tree). */
+    /**
+     * A planted sapling shoots up at once: both of its stages, so it stands as a grown tree (if there is room for one;
+     * a sapling that has no room keeps its second stage).
+     */
     public static void grow(ServerLevel level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
         if (state.getBlock() instanceof SaplingBlock sapling) {
             sapling.advanceTree(level, pos, state, level.getRandom());
+            BlockState grown = level.getBlockState(pos);
+            if (grown.getBlock() instanceof SaplingBlock again) {
+                again.advanceTree(level, pos, grown, level.getRandom());
+            }
         } else if (state.getBlock() instanceof BonemealableBlock meal && meal.isValidBonemealTarget(level, pos, state)) {
             meal.performBonemeal(level, level.getRandom(), pos, state);
         }

@@ -1,0 +1,21 @@
+{
+  "type": "hextale:infusion",
+  "center": "hextale:hextech_shovel",
+  "pedestals": [
+    "hextale:charged_hexsteel_ingot",
+    "hextale:charged_hexsteel_ingot",
+    "hextale:engraved_diamond",
+    "minecraft:brush",
+    "minecraft:clay",
+    "minecraft:moss_block",
+    "minecraft:gravel"
+  ],
+  "essences": {
+    "metal": 32,
+    "ore": 24,
+    "crystal": 16,
+    "magic": 16
+  },
+  "result": "hextale:refined_hextech_shovel",
+  "keep_components": true
+}

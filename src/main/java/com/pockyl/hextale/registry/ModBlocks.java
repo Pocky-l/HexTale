@@ -157,6 +157,11 @@ public final class ModBlocks {
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).instrument(NoteBlockInstrument.BASEDRUM)
                     .requiresCorrectToolForDrops().strength(1.0F, 3.0F).sound(SoundType.POINTED_DRIPSTONE).noOcclusion()
                     .dynamicShape().offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.DESTROY));
+    /** Void Crystals: grow on Void Rock round a held breach (level 4 gem; sealed in nullstone before any craft). */
+    public static final DeferredBlock<net.minecraft.world.level.block.AmethystClusterBlock> VOID_CRYSTAL_CLUSTER = BLOCKS.registerBlock(
+            "void_crystal_cluster", properties -> new net.minecraft.world.level.block.AmethystClusterBlock(7.0F, 3.0F, properties),
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).forceSolidOn().noOcclusion().strength(1.5F)
+                    .requiresCorrectToolForDrops().lightLevel(state -> 5).sound(SoundType.AMETHYST_CLUSTER).pushReaction(PushReaction.DESTROY));
     // Hextech crystals: amethyst the strike woke all the way, in the four amethyst sizes (sizes and sounds as vanilla).
     public static final DeferredBlock<com.pockyl.hextale.block.HextechClusterBlock> HEXTECH_CLUSTER = BLOCKS.registerBlock("hextech_cluster",
             properties -> new com.pockyl.hextale.block.HextechClusterBlock(7.0F, 3.0F, properties),
@@ -213,7 +218,7 @@ public final class ModBlocks {
                     .noOcclusion().requiresCorrectToolForDrops().lightLevel(state -> 4));
     /** A mote of hextech light a pickaxe with the Eternal Flame rune leaves in the dark: no body, no drops, goes out at a touch. */
     public static final DeferredBlock<HexWispBlock> HEX_WISP = BLOCKS.registerBlock("hex_wisp", HexWispBlock::new,
-            () -> BlockBehaviour.Properties.of().replaceable().noCollision().instabreak().noLootTable().lightLevel(state -> 13)
+            () -> BlockBehaviour.Properties.of().replaceable().noCollision().instabreak().noLootTable().randomTicks().lightLevel(state -> 13)
                     .sound(SoundType.AMETHYST_CLUSTER).pushReaction(PushReaction.DESTROY));
     /** A refined gemstone in a brass cage: stands or hangs like a lantern, full light. */
     public static final DeferredBlock<HextechLampBlock> HEXTECH_LAMP = BLOCKS.registerBlock("hextech_lamp", HextechLampBlock::new,
@@ -273,6 +278,26 @@ public final class ModBlocks {
     /** Nine hexsteel ingots: dark blue steel with a faint hextech shimmer. */
     public static final DeferredBlock<Block> HEXSTEEL_BLOCK = BLOCKS.registerBlock("hexsteel_block", Block::new,
             () -> BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).mapColor(MapColor.COLOR_BLUE));
+    // Decor of the Arsenal's level metals (one set per metal).
+    /** Nine charged hexsteel ingots: blued steel with a lit cyan seam. */
+    public static final DeferredBlock<Block> CHARGED_HEXSTEEL_BLOCK = BLOCKS.registerBlock("charged_hexsteel_block", Block::new,
+            () -> BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).mapColor(MapColor.COLOR_CYAN));
+    /** Charged hexsteel cut into riveted plates with lit joints. */
+    public static final DeferredBlock<Block> HEXSTEEL_PLATING = BLOCKS.registerBlock("hexsteel_plating", Block::new,
+            () -> BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).mapColor(MapColor.COLOR_CYAN));
+    /** Nine radiant alloy ingots: white gold with a faint violet seam. */
+    public static final DeferredBlock<Block> RADIANT_ALLOY_BLOCK = BLOCKS.registerBlock("radiant_alloy_block", Block::new,
+            () -> BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).mapColor(MapColor.QUARTZ).strength(6.0F, 8.0F));
+    /** Radiant alloy worked into filigree with a violet inlay. */
+    public static final DeferredBlock<Block> RADIANT_TRIM = BLOCKS.registerBlock("radiant_trim", Block::new,
+            () -> BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).mapColor(MapColor.QUARTZ).strength(6.0F, 8.0F));
+    /** Nine riftmetal ingots: black metal with violet specks drifting through it. */
+    public static final DeferredBlock<Block> RIFTMETAL_BLOCK = BLOCKS.registerBlock("riftmetal_block", Block::new,
+            () -> BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.NETHERITE_BLOCK).mapColor(MapColor.COLOR_PURPLE));
+    /** Void carapace pressed into tiles with a starry sheen. */
+    public static final DeferredBlock<Block> VOID_CARAPACE_TILES = BLOCKS.registerBlock("void_carapace_tiles", Block::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(4.0F, 9.0F).sound(SoundType.DEEPSLATE_TILES)
+                    .requiresCorrectToolForDrops());
     /** Nine brass ingots: a building block with the soft sheen of the machines. */
     public static final DeferredBlock<Block> BRASS_BLOCK = BLOCKS.registerBlock("brass_block", Block::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(4.0F, 6.0F).sound(SoundType.COPPER)

@@ -169,6 +169,8 @@ public final class QuestGameTests {
             "sphalerite", List.of("hextale:raw_zinc", "hextale:raw_zinc_block", "hextale:deepslate_sphalerite_ore"),
             "zinc", List.of("hextale:zinc_nugget", "hextale:zinc_block"),
             "hexsteel", List.of("hextale:hexsteel_block"),
+            // One research opens the four runed tools and the dagger together.
+            "hextech_pickaxe", List.of("hextale:hextech_axe", "hextale:hextech_shovel", "hextale:hextech_sword", "hextale:tendril_dagger"),
             "fire_bricks", List.of("hextale:fire_brick", "hextale:fire_bricks", "hextale:fire_brick_stairs", "hextale:fire_brick_slab",
                     "hextale:fire_brick_wall"),
             "magic_stone", List.of("hextale:polished_magic_stone", "hextale:magic_bricks", "hextale:magic_brick_slab",
@@ -513,6 +515,19 @@ public final class QuestGameTests {
     }
 
     /** A step of the guide the server loaded, by id. */
+    /** A strange find opens its step once it is studied under the loupe - holding it is not enough. */
+    @HexTest
+    @SuppressWarnings("removal")
+    public static void aStrangeFindWantsTheLoupe(GameTestHelper helper) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        Quest chitin = step("void_chitin");
+        player.getInventory().add(new ItemStack(ModItems.VOID_CHITIN.get()));
+        helper.assertFalse(chitin.isMet(player, Guide.server()), "holding the chitin is not enough");
+        Research.of(player).study(BuiltInRegistries.ITEM.getKey(ModItems.VOID_CHITIN.get()));
+        helper.assertTrue(chitin.isMet(player, Guide.server()), "studying it is");
+        helper.succeed();
+    }
+
     private static Quest step(String id) {
         Quest quest = Guide.server().byId(id);
         if (quest == null) {

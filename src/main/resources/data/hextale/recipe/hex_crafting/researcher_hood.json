@@ -2,11 +2,12 @@
   "type": "hextale:hex_crafting",
   "pattern": [
     "CBC",
-    "C C"
+    "CFC"
   ],
   "key": {
     "C": "hextale:arcane_cloth",
-    "B": "#c:ingots/brass"
+    "B": "#c:ingots/brass",
+    "F": "#c:feathers"
   },
   "result": {
     "id": "hextale:researcher_hood"

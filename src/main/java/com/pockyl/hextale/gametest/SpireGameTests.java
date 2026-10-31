@@ -85,6 +85,34 @@ public final class SpireGameTests {
     }
 
     /**
+     * Beam: a spire with the rune sets what it strikes alight before the blow, so a hoglin it fells dies burning and
+     * drops its meat cooked.
+     */
+    @HexTest(maxTicks = 200)
+    public static void aBeamSpireCooksWhatItFells(GameTestHelper helper) {
+        clear(helper);
+        helper.setBlock(BASE, ModBlocks.ARC_SPIRE.get());
+        ItemStack runed = new ItemStack(ModItems.ARC_SPIRE.get());
+        com.pockyl.hextale.runework.RuneHolder.SPIRE.set(runed,
+                com.pockyl.hextale.runework.PickaxeRunes.EMPTY.with(com.pockyl.hextale.runework.SpireRune.BEAM.rune(), 2));
+        ArcSpireBlockEntity spire = helper.getBlockEntity(BASE, ArcSpireBlockEntity.class);
+        spire.applyComponentsFromItemStack(runed);
+        jar(helper, BASE.offset(-2, 0, -2), Essence.SPARK, 8);
+        net.minecraft.world.entity.monster.hoglin.Hoglin hoglin = helper.spawnWithNoFreeWill(EntityType.HOGLIN, BASE.offset(2, 0, 2));
+        hoglin.setImmuneToZombification(true);
+        // One beam fells it.
+        hoglin.setHealth(ArcSpireBlockEntity.DAMAGE - 2);
+        spire.wake();
+        helper.succeedWhen(() -> {
+            helper.assertTrue(!hoglin.isAlive(), "the beam felled the hoglin");
+            AABB area = new AABB(helper.absolutePos(BASE)).inflate(6, 4, 6);
+            boolean cooked = !helper.getLevel().getEntitiesOfClass(ItemEntity.class, area, item -> item.getItem().is(Items.COOKED_PORKCHOP)).isEmpty();
+            boolean raw = !helper.getLevel().getEntitiesOfClass(ItemEntity.class, area, item -> item.getItem().is(Items.PORKCHOP)).isEmpty();
+            helper.assertTrue(cooked && !raw, "its meat dropped cooked (cooked " + cooked + ", raw " + raw + ")");
+        });
+    }
+
+    /**
      * A spire set down as one block (as old worlds hold them) grows its upper half; a player breaking that upper half
      * takes the whole spire down and gets one spire back, with its runes kept on it.
      */

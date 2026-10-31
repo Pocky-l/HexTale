@@ -47,7 +47,8 @@ A shaped (`pattern` + `key`) or shapeless (`ingredients`, 1-9) grid like the van
 
 The altar's centre item, up to any number of pedestal items (each pedestal holds one, matched exactly), essences drawn
 from the jars around the circle (mB by essence id), optional runes set on the steles, and the result.
-`keep_components: true` lets the result keep the centre item's enchantments, damage and name.
+`keep_components: true` lets the result keep the centre item's enchantments, damage and name (and runes).
+`hexcore: true` makes it a ritual only a Hexcore performs (the radiant and riftforged tools).
 
 ```json
 {
@@ -66,7 +67,8 @@ compounds `steam`, `magma`, `ash`, `plant`, `crystal`, `ore`, `cold`, `sap`, `be
 ### `hextale:alloying`
 
 One to three inputs (each in its own furnace slot, any order), the result, burning time in ticks (default 200) and
-experience.
+experience. `foundry: true` makes it an alloy only the Hex Foundry melts, at full heat (750 and above; the inputs may lie
+in any of its nine slots, ore melts beside them); `thinning` is what making one adds to the chunk's Thinning.
 
 ```json
 {
@@ -142,6 +144,11 @@ Not recipes: the multiblocks' shapes, what the lightning wave turns into hextech
 `hextale:carries_lightning`), the lapidary's cutting, rune burning in the Rune Circle and the essences of items (data map
 `hextale:essences`, `data/hextale/data_maps/item/essences.json`).
 
+Gear levels and the Nether: Radiant tools and Radiant Bulwark armour reach netherite strength without netherite (their
+Radiant Alloy is gold, Charged Hexsteel and gemstone dust from the Foundry). A pack that gates its progression on the
+Nether can add a netherite scrap to the alloy recipes `hextale:alloying/radiant_alloy_ingot` and
+`hextale:alloying/radiant_alloy_ingot_from_shimmer` (KubeJS: remove them by id and add a copy with one more input).
+
 ## Tags
 
 Items:
@@ -157,7 +164,9 @@ Items:
 | `hextale:fuel_catalysts` | catalysts of the combustible mix (coals) |
 | `hextale:magic_tree_catalysts` | saplings the crucible turns into a magic tree sprout |
 | `hextale:soaks_essence` | blocks a crucible or drain valve soaks into magic stone |
-| `hextale:repairs_hexsteel`, `hextale:repairs_arcane_cloth` | repair materials |
+| `hextale:hextech_tool_materials`, `hextale:repairs_charged_hexsteel`, `hextale:repairs_radiant_alloy`, `hextale:repairs_riftmetal` | repair materials of the four tool and Bulwark levels (brass, charged hexsteel, radiant alloy, riftmetal) |
+| `hextale:repairs_hexsteel`, `hextale:repairs_arcane_cloth` | repair materials of hexsteel gear and the Researcher's clothes |
+| `hextale:rune_tier/refined`, `hextale:rune_tier/radiant`, `hextale:rune_tier/riftforged` | how many runes a tool or worn piece holds: 2, 3, 4 (anything else that takes runes: 1) |
 
 Blocks: `hextale:carries_lightning` (what a lightning wave runs through and wakes), `hextale:resonant` (what the
 Tuning Fork hears), `hextale:blastable` (what a Dust Charge breaks), `hextale:acid_dissolves`,

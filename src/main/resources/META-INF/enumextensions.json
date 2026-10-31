@@ -1,0 +1,13 @@
+{
+  "entries": [
+    {
+      "enum": "net/minecraft/client/model/HumanoidModel$ArmPose",
+      "name": "HEXTALE_STRIKE_GAUNTLET_CHARGE",
+      "constructor": "(ZZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
+      "parameters": {
+        "class": "com/pockyl/hextale/client/render/StrikeGauntletPose",
+        "field": "CHARGE"
+      }
+    }
+  ]
+}

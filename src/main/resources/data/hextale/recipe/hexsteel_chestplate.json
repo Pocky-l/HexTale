@@ -3,11 +3,12 @@
   "category": "equipment",
   "pattern": [
     "X X",
-    "XXX",
+    "XDX",
     "XXX"
   ],
   "key": {
-    "X": "#c:ingots/hexsteel"
+    "X": "#c:ingots/hexsteel",
+    "D": "#c:gems/diamond"
   },
   "result": {
     "id": "hextale:hexsteel_chestplate"

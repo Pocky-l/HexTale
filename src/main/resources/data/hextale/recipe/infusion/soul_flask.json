@@ -5,7 +5,9 @@
     "hextale:unstable_hextech",
     "minecraft:soul_sand",
     "#c:ender_pearls",
-    "#c:nuggets/brass"
+    "#c:nuggets/brass",
+    "minecraft:lead",
+    "minecraft:soul_lantern"
   ],
   "essences": {
     "life": 16,

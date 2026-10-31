@@ -1,0 +1,19 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:void_carapace",
+  "parents": [
+    "void_chitin"
+  ],
+  "display": {
+    "kind": "scheme",
+    "ingredients": [
+      "hextale:void_chitin"
+    ],
+    "result": "hextale:void_carapace"
+  },
+  "pos": [
+    440,
+    860
+  ]
+}

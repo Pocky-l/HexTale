@@ -51,7 +51,11 @@ public final class RuneWorkGameTests {
     }
 
     private static ItemStack pickaxe(PickaxeRune... runes) {
-        ItemStack tool = new ItemStack(ModItems.pickaxe(HextechPickaxe.HEXTECH).get());
+        return pickaxe(HextechPickaxe.HEXTECH, runes);
+    }
+
+    private static ItemStack pickaxe(HextechPickaxe tier, PickaxeRune... runes) {
+        ItemStack tool = new ItemStack(ModItems.pickaxe(tier).get());
         PickaxeRunes on = PickaxeRunes.EMPTY;
         for (PickaxeRune rune : runes) {
             on = on.with(rune, 1);
@@ -262,6 +266,44 @@ public final class RuneWorkGameTests {
         helper.succeed();
     }
 
+    /**
+     * Drill through a one-block wall: the area lies on the face the player struck (the wall), not on whatever a look
+     * through the hole finds once the block is gone. Broken the real way: a left click on the face, then the break.
+     */
+    @HexTest(padding = 2)
+    public static void drillFollowsTheStruckFaceThroughAWall(GameTestHelper helper) {
+        for (int y = 1; y <= 3; y++) {
+            for (int z = 0; z <= 2; z++) {
+                helper.setBlock(new BlockPos(1, y, z), Blocks.STONE);
+            }
+        }
+        // Behind the wall, on the struck block's level: a flat 3x3 layer would take these.
+        helper.setBlock(new BlockPos(2, 2, 0), Blocks.STONE);
+        helper.setBlock(new BlockPos(2, 2, 2), Blocks.STONE);
+        BlockPos struck = helper.absolutePos(new BlockPos(1, 2, 1));
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        // A survival player: a creative break drops nothing, so no rune would work.
+        player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        // West of the wall, looking east and a little down at it: once the block is gone, a look through the hole lands
+        // on the floor behind the wall.
+        BlockPos stand = helper.absolutePos(new BlockPos(0, 1, 1));
+        player.snapTo(stand.getX() + 0.5, stand.getY(), stand.getZ() + 0.5, -90, 30);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, pickaxe(PickaxeRune.DRILL));
+        player.gameMode.handleBlockBreakAction(struck, net.minecraft.network.protocol.game.ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK,
+                net.minecraft.core.Direction.WEST, helper.getLevel().getMaxY(), 0);
+        player.gameMode.destroyBlock(struck);
+        for (int y = 1; y <= 3; y++) {
+            for (int z = 0; z <= 2; z++) {
+                helper.assertBlockPresent(Blocks.AIR, new BlockPos(1, y, z));
+            }
+        }
+        helper.assertBlockPresent(Blocks.STONE, new BlockPos(2, 2, 0));
+        helper.assertBlockPresent(Blocks.STONE, new BlockPos(2, 2, 2));
+        helper.setBlock(new BlockPos(2, 2, 0), Blocks.AIR);
+        helper.setBlock(new BlockPos(2, 2, 2), Blocks.AIR);
+        helper.succeed();
+    }
+
     /** Erosion takes the ore touching the broken one, not the stone around. */
     @HexTest
     public static void erosionTakesTheWholeVein(GameTestHelper helper) {
@@ -399,6 +441,53 @@ public final class RuneWorkGameTests {
         helper.succeed();
     }
 
+    /**
+     * Rune places grow with the tier (owner 2026-10-30): a first pickaxe holds one rune, a refined one two, a radiant one
+     * three and a riftforged one four; a sword starts at one too. Runes burned above the limit before stay.
+     */
+    @HexTest
+    public static void runeSlotsGrowWithTheTier(GameTestHelper helper) {
+        runeCircle(helper, pickaxe(), EssenceMix.EMPTY);
+        stele(helper, PickaxeRune.MAGNET, 1);
+        helper.assertTrue(Ritual.engraving(pickaxe(), scan(helper)).possible(), "a first pickaxe takes its first rune");
+        helper.assertTrue("full".equals(Ritual.engraving(pickaxe(PickaxeRune.SMELTING), scan(helper)).refusal()), "but no second");
+        helper.assertTrue(Ritual.engraving(pickaxe(HextechPickaxe.REFINED, PickaxeRune.SMELTING), scan(helper)).possible(),
+                "a refined pickaxe takes a second");
+        ItemStack radiant = pickaxe(HextechPickaxe.RADIANT, PickaxeRune.SMELTING, PickaxeRune.TEMPERING, PickaxeRune.FORGE);
+        helper.assertTrue("full".equals(Ritual.engraving(radiant, scan(helper)).refusal()), "a radiant pickaxe holds three");
+        ItemStack riftforged = pickaxe(HextechPickaxe.RIFTFORGED, PickaxeRune.SMELTING, PickaxeRune.TEMPERING, PickaxeRune.FORGE);
+        helper.assertTrue(Ritual.engraving(riftforged, scan(helper)).possible(), "a riftforged one takes a fourth");
+        ItemStack sword = new ItemStack(ModItems.HEXTECH_SWORD.get());
+        helper.assertTrue(RuneHolder.SWORD.slots(sword) == 1 && RuneHolder.SWORD.slots() == 4, "a first sword holds one, the best four");
+        helper.assertTrue(RuneHolder.REAPER.slots(new ItemStack(ModItems.WHIRL_REAPER.get())) == com.pockyl.hextale.runework.ReaperRune.SLOTS, "devices keep their places");
+        helper.succeed();
+    }
+
+    /** Only a Hexcore forges a radiant tool with the Void into a riftforged one (four rune places, runes kept). */
+    @HexTest
+    public static void onlyAHexcoreForgesWithTheVoid(GameTestHelper helper) {
+        ItemStack radiant = pickaxe(HextechPickaxe.RADIANT, PickaxeRune.SMELTING);
+        List<ItemStack> items = InfusionRecipes.ALL.named(Hextale.id("riftforged_pickaxe"), false).pedestals().stream()
+                .map(part -> new ItemStack(part.items().findFirst().orElseThrow())).toList();
+        circle(helper, radiant, items.subList(0, PEDESTALS.size()), EssenceMix.EMPTY);
+        // The late rituals want more pedestals than the four of the small circle.
+        List<BlockPos> more = List.of(new BlockPos(5, 2, 1), new BlockPos(5, 2, 5), new BlockPos(1, 2, 5), new BlockPos(0, 2, 3),
+                new BlockPos(6, 2, 3), new BlockPos(3, 2, 0));
+        for (int i = PEDESTALS.size(); i < items.size(); i++) {
+            BlockPos at = more.get(i - PEDESTALS.size());
+            helper.setBlock(at, ModBlocks.PEDESTAL.get());
+            helper.getBlockEntity(at, PedestalBlockEntity.class).place(items.get(i));
+        }
+        Ritual.Circle altar = scan(helper);
+        helper.assertTrue(Ritual.plan(radiant, altar, false) == null, "a plain altar cannot forge with the Void");
+        Ritual.Circle hexcore = new Ritual.Circle(altar.pedestals(), altar.steles(), altar.tanks(), true);
+        Ritual.Plan plan = Ritual.plan(radiant, hexcore, false);
+        helper.assertTrue(plan != null && plan.result().is(ModItems.pickaxe(HextechPickaxe.RIFTFORGED).get())
+                && com.pockyl.hextale.runework.RuneTier.slots(plan.result()) == 4
+                && PickaxeRunes.of(plan.result()).stars(PickaxeRune.SMELTING) == 1, "the Hexcore forges it, runes kept");
+        helper.succeed();
+    }
+
     /** More stars raise a rune the pickaxe has; clashing runes, a fifth rune, or non-pickaxe runes are refused. */
     @HexTest
     public static void runeBurningFollowsItsRules(GameTestHelper helper) {
@@ -416,6 +505,15 @@ public final class RuneWorkGameTests {
         helper.assertTrue(raise.cost().total() == PickaxeRune.SMELTING.cost(3).total(), "paid for the stars it gets");
         stele(helper, PickaxeRune.SMELTING, 1);
         helper.assertTrue("nothing_new".equals(Ritual.engraving(full, scan(helper)).refusal()), "fewer stars change nothing");
+        // Stars picked by hand on the stele set the rune to exactly them: a strong rune can be made weaker on purpose.
+        ItemStack strong = full.copy();
+        PickaxeRunes.set(strong, raise.after());
+        helper.getBlockEntity(STELE, RuneSteleBlockEntity.class).choose(PickaxeRune.SMELTING.rune(), 1, true);
+        Ritual.Engraving lower = Ritual.engraving(strong, scan(helper));
+        helper.assertTrue(lower.possible() && lower.after().stars(PickaxeRune.SMELTING) == 1, "picked stars make a rune weaker");
+        helper.assertTrue(lower.after().count() == 4, "a weaker rune keeps its place");
+        helper.getBlockEntity(STELE, RuneSteleBlockEntity.class).choose(PickaxeRune.SMELTING.rune(), 3, true);
+        helper.assertTrue("nothing_new".equals(Ritual.engraving(strong, scan(helper)).refusal()), "the same stars picked change nothing");
         helper.getBlockEntity(STELE, RuneSteleBlockEntity.class).choose(ComplexRunes.byKey("fire_water"), 1);
         helper.assertTrue("not_pickaxe".equals(Ritual.engraving(pickaxe(), scan(helper)).refusal()), "steam does not take to a pickaxe");
         helper.succeed();

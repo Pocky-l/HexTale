@@ -12,7 +12,9 @@
     "hextale:hexsteel_shovel",
     "hextale:hexsteel_hoe"
   ],
-  "parents": ["hexsteel"],
+  "parents": [
+    "hexsteel"
+  ],
   "goal": {
     "type": "any_of",
     "goals": [
@@ -59,7 +61,7 @@
       "kind": "shaped",
       "ingredients": [
         "hextale:hexsteel_ingot",
-        "hextale:hexsteel_ingot",
+        "minecraft:diamond",
         "hextale:hexsteel_ingot",
         "hextale:hexsteel_ingot",
         "",
@@ -77,7 +79,7 @@
         "",
         "hextale:hexsteel_ingot",
         "hextale:hexsteel_ingot",
-        "hextale:hexsteel_ingot",
+        "minecraft:diamond",
         "hextale:hexsteel_ingot",
         "hextale:hexsteel_ingot",
         "hextale:hexsteel_ingot",
@@ -89,7 +91,7 @@
       "kind": "shaped",
       "ingredients": [
         "hextale:hexsteel_ingot",
-        "hextale:hexsteel_ingot",
+        "minecraft:diamond",
         "hextale:hexsteel_ingot",
         "hextale:hexsteel_ingot",
         "",
@@ -107,7 +109,7 @@
         "",
         "hextale:hexsteel_ingot",
         "hextale:hexsteel_ingot",
-        "",
+        "minecraft:diamond",
         "hextale:hexsteel_ingot",
         "",
         "",
@@ -117,14 +119,24 @@
     },
     {
       "kind": "shaped",
-      "ingredients": ["hextale:hexsteel_ingot", "", "", "hextale:hexsteel_ingot", "", "", "minecraft:stick", "", ""],
+      "ingredients": [
+        "hextale:hexsteel_ingot",
+        "",
+        "",
+        "minecraft:diamond",
+        "",
+        "",
+        "minecraft:stick",
+        "",
+        ""
+      ],
       "result": "hextale:hexsteel_sword"
     },
     {
       "kind": "shaped",
       "ingredients": [
         "hextale:hexsteel_ingot",
-        "hextale:hexsteel_ingot",
+        "minecraft:diamond",
         "hextale:hexsteel_ingot",
         "",
         "minecraft:stick",
@@ -139,7 +151,7 @@
       "kind": "shaped",
       "ingredients": [
         "hextale:hexsteel_ingot",
-        "hextale:hexsteel_ingot",
+        "minecraft:diamond",
         "",
         "hextale:hexsteel_ingot",
         "minecraft:stick",
@@ -152,14 +164,24 @@
     },
     {
       "kind": "shaped",
-      "ingredients": ["hextale:hexsteel_ingot", "", "", "minecraft:stick", "", "", "minecraft:stick", "", ""],
+      "ingredients": [
+        "minecraft:diamond",
+        "",
+        "",
+        "hextale:hexsteel_ingot",
+        "",
+        "",
+        "minecraft:stick",
+        "",
+        ""
+      ],
       "result": "hextale:hexsteel_shovel"
     },
     {
       "kind": "shaped",
       "ingredients": [
         "hextale:hexsteel_ingot",
-        "hextale:hexsteel_ingot",
+        "minecraft:diamond",
         "",
         "",
         "minecraft:stick",
