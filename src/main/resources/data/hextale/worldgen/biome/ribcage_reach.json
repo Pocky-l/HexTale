@@ -57,6 +57,24 @@
                 "max_inclusive": 3
               },
               "weight": 40
+            },
+            {
+              "type": "hextale:rib_crawler",
+              "count": {
+                "type": "minecraft:uniform",
+                "min_inclusive": 1,
+                "max_inclusive": 1
+              },
+              "weight": 20
+            },
+            {
+              "type": "hextale:seer",
+              "count": {
+                "type": "minecraft:uniform",
+                "min_inclusive": 1,
+                "max_inclusive": 1
+              },
+              "weight": 10
             }
           ]
         }

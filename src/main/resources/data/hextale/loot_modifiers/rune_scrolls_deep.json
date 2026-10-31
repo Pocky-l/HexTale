@@ -7,7 +7,8 @@
     "minecraft:chests/nether_bridge",
     "minecraft:chests/bastion_other",
     "minecraft:chests/bastion_bridge",
-    "minecraft:chests/trial_chambers/reward"
+    "minecraft:chests/trial_chambers/reward",
+    "hextale:chests/swallowed_ruin"
   ],
   "chance": 0.4,
   "chapters": [

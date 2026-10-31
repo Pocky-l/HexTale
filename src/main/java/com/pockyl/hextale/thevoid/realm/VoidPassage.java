@@ -329,14 +329,19 @@ public final class VoidPassage {
                 }
             }
         }
-        // No worn skin round a gate: the Void's traps wait further out, never at the door.
+        // No worn skin, crust or maw round a gate: the Void's traps wait further out, never at the door.
         BlockState skin = ModBlocks.VOID_MEMBRANE.get().defaultBlockState();
+        BlockState shell = ModBlocks.HUSK_CHITIN.get().defaultBlockState();
         java.util.List<BlockPos> worn = new java.util.ArrayList<>();
         com.pockyl.hextale.farm.SectionScan.forEach(realm, centre.offset(-SAFE_FROM_TRAPS, -24, -SAFE_FROM_TRAPS),
-                centre.offset(SAFE_FROM_TRAPS, 24, SAFE_FROM_TRAPS), state -> state.is(ModBlocks.WORN_VOID_MEMBRANE.get()),
+                centre.offset(SAFE_FROM_TRAPS, 24, SAFE_FROM_TRAPS),
+                state -> state.is(ModBlocks.WORN_VOID_MEMBRANE.get()) || state.is(ModBlocks.HUSK_CRUST.get()),
                 (at, state) -> worn.add(at.immutable()));
         for (BlockPos at : worn) {
-            realm.setBlock(at, skin, Block.UPDATE_CLIENTS);
+            realm.setBlock(at, realm.getBlockState(at).is(ModBlocks.HUSK_CRUST.get()) ? shell : skin, Block.UPDATE_CLIENTS);
+        }
+        for (PitMaw maw : realm.getEntitiesOfClass(PitMaw.class, new net.minecraft.world.phys.AABB(centre).inflate(SAFE_FROM_TRAPS, 24, SAFE_FROM_TRAPS))) {
+            maw.discard();
         }
     }
 
