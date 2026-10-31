@@ -10,6 +10,8 @@ import com.mojang.renderpearl.api.buffers.GpuBuffer;
 import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
 import com.mojang.renderpearl.api.commands.RenderPass;
 import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.CompareOp;
+import com.mojang.renderpearl.api.pipeline.DepthStencilState;
 import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
 import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import java.util.Optional;
@@ -32,7 +34,9 @@ import com.pockyl.hextale.Hextale;
 /**
  * The sky of the Void (the dimension's {@code neoforge:custom_skybox} is {@code hextale:void}): a box round the camera
  * painted by {@code shaders/core/void_sky.fsh} - the turning vortex overhead, the haze and far silhouettes at the
- * horizon, the abyss glowing below. With a shader pack on, the pack's own sky is left alone.
+ * horizon, the abyss glowing below. With a shader pack on, the pack draws the world with its own programs and would
+ * give the Void an overworld sky; so the pack's sky is left to it and ours is drawn over the finished picture
+ * afterwards ({@link #OVER_PACK}), only where the world left the sky open.
  */
 public final class VoidSky implements CustomSkyboxRenderer {
     public static final RenderPipeline PIPELINE = RenderPipeline.builder(RenderPipelines.MATRICES_FOG_SNIPPET)
@@ -44,13 +48,28 @@ public final class VoidSky implements CustomSkyboxRenderer {
             .withColorTargetState(ColorTargetState.DEFAULT)
             .withCull(false)
             .build();
+    /** The same sky on the far plane, drawn after a shader pack has finished the picture, only where nothing stands. */
+    public static final RenderPipeline OVER_PACK = RenderPipeline.builder(RenderPipelines.MATRICES_FOG_SNIPPET)
+            .withLocation(Hextale.id("pipeline/void_sky_over_pack"))
+            .withVertexShader(Hextale.id("core/void_sky_far"))
+            .withFragmentShader(Hextale.id("core/void_sky"))
+            .withVertexBinding(0, DefaultVertexFormat.POSITION)
+            .withPrimitiveTopology(PrimitiveTopology.QUADS)
+            .withColorTargetState(ColorTargetState.DEFAULT)
+            .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false))
+            .withCull(false)
+            .build();
     /** Half the box's side: small enough that its corners never pass the far plane at short render distances. */
     private static final float SIZE = 8;
     /** Set when drawing failed once: the plain sky is left for the rest of the session. */
     private static boolean broken;
 
     public static void register(IEventBus modBus) {
-        modBus.addListener((RegisterRenderPipelinesEvent event) -> event.registerPipeline(PIPELINE));
+        modBus.addListener((RegisterRenderPipelinesEvent event) -> {
+            event.registerPipeline(PIPELINE);
+            event.registerPipeline(OVER_PACK);
+        });
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(VoidSky::overPack);
         modBus.addListener((RegisterCustomEnvironmentEffectRendererEvent event) -> event.registerSkyboxRenderer(Hextale.id("void"), new VoidSky()));
     }
 
@@ -60,7 +79,8 @@ public final class VoidSky implements CustomSkyboxRenderer {
             return false;
         }
         try {
-            draw(modelView, skyFog);
+            RenderSystem.setShaderFog(skyFog);
+            draw(PIPELINE, modelView);
             return true;
         } catch (RuntimeException e) {
             broken = true;
@@ -69,8 +89,22 @@ public final class VoidSky implements CustomSkyboxRenderer {
         }
     }
 
-    private static void draw(Matrix4fc modelView, GpuBufferSlice skyFog) {
-        RenderSystem.setShaderFog(skyFog);
+    /** With a shader pack on, in the Void: our sky over the pack's, where the world left it open. */
+    private static void overPack(net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterLevel event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (broken || minecraft.level == null || !minecraft.level.dimension().equals(com.pockyl.hextale.thevoid.realm.VoidPassage.LEVEL)
+                || !com.pockyl.hextale.client.IrisCompat.shadersOn()) {
+            return;
+        }
+        try {
+            draw(OVER_PACK, event.getModelViewMatrix());
+        } catch (RuntimeException e) {
+            broken = true;
+            Hextale.LOGGER.warn("Could not draw the Void's sky over the shader pack; the pack's sky stays from now on", e);
+        }
+    }
+
+    private static void draw(RenderPipeline pipeline, Matrix4fc modelView) {
         RenderTarget target = Minecraft.getInstance().gameRenderer.mainRenderTarget();
         GpuBufferSlice transforms = RenderSystem.getDynamicUniforms().writeTransform(new Matrix4f(modelView), new Vector4f(1, 1, 1, 1),
                 new Vector3f(), new Matrix4f());
@@ -87,7 +121,7 @@ public final class VoidSky implements CustomSkyboxRenderer {
                 GpuBuffer indices = sequence.getBuffer(indexCount);
                 try (RenderPass pass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(() -> "hextale void sky",
                         target.getColorTextureView(), Optional.empty(), target.getDepthTextureView(), OptionalDouble.empty())) {
-                    pass.setPipeline(RenderSystem.getCompiledPipeline(PIPELINE));
+                    pass.setPipeline(RenderSystem.getCompiledPipeline(pipeline));
                     RenderSystem.bindDefaultUniforms(pass);
                     pass.setUniform("DynamicTransforms", transforms);
                     pass.setVertexBuffer(0, vertices.slice());
