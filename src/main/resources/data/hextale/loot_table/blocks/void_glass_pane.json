@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:void_glass_pane",
+          "condition": "minecraft:tool/can_silk_touch"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "hextale:blocks/void_glass_pane"
+}

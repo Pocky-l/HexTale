@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/fence_side",
+  "textures": {
+    "texture": "hextale:block/sinew_willow_planks"
+  }
+}

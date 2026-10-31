@@ -16,6 +16,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.block.AmethystClusterBlock;
+import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -268,8 +269,13 @@ public class VoidChunkGenerator extends ChunkGenerator {
             case VoidShapes.WORN -> ModBlocks.WORN_VOID_MEMBRANE.get().defaultBlockState();
             case VoidShapes.VEINED -> ModBlocks.VEINED_VOID_MEMBRANE.get().defaultBlockState();
             case VoidShapes.RIFT_ORE -> ModBlocks.RIFT_ORE.get().defaultBlockState();
-            case VoidShapes.GNAWED -> ModBlocks.GNAWED_STONE.get().defaultBlockState();
+            case VoidShapes.GNAWED -> gnawed(x, y, z);
             case VoidShapes.ICHOR, SPRING -> ModBlocks.VOID_ICHOR.get().defaultBlockState();
+            case VoidShapes.LOG_X -> ModBlocks.SINEW_WILLOW_WOOD.get().defaultBlockState().setValue(RotatedPillarBlock.AXIS, Direction.Axis.X);
+            case VoidShapes.LOG_Y -> ModBlocks.SINEW_WILLOW_LOG.get().defaultBlockState();
+            case VoidShapes.LOG_Z -> ModBlocks.SINEW_WILLOW_WOOD.get().defaultBlockState().setValue(RotatedPillarBlock.AXIS, Direction.Axis.Z);
+            case VoidShapes.FRONDS -> SinewWillow.wildFronds();
+            case VoidShapes.POD -> SinewWillow.wildPod(VoidShapes.hash(x, y, z, 0x90D));
             case FALL -> com.pockyl.hextale.registry.ModFluids.FLOWING_VOID_ICHOR.get().getFlowing(8, true).createLegacyBlock();
             case CILIA -> ModBlocks.VOID_CILIA.get().defaultBlockState();
             case TALL_LOW -> ModBlocks.TALL_VOID_CILIA.get().defaultBlockState()
@@ -289,6 +295,20 @@ public class VoidChunkGenerator extends ChunkGenerator {
             case CRYSTAL_UP -> ModBlocks.VOID_CRYSTAL_CLUSTER.get().defaultBlockState().setValue(AmethystClusterBlock.FACING, Direction.UP);
             default -> Blocks.AIR.defaultBlockState();
         };
+    }
+
+    /**
+     * Gnawed stone, with the metal of our world the Void swallowed with it: small clots of iron through the shoals, rarer
+     * gold, each in its own lumps.
+     */
+    private static BlockState gnawed(int x, int y, int z) {
+        if (VoidShapes.noise(x / 2.6, y / 2.6, z / 2.6, 0x1205) > 0.8) {
+            return ModBlocks.GNAWED_IRON_ORE.get().defaultBlockState();
+        }
+        if (VoidShapes.noise(x / 2.2, y / 2.2, z / 2.2, 0x601D) > 0.84) {
+            return ModBlocks.GNAWED_GOLD_ORE.get().defaultBlockState();
+        }
+        return ModBlocks.GNAWED_STONE.get().defaultBlockState();
     }
 
     @Override

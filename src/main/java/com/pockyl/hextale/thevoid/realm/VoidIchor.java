@@ -28,7 +28,7 @@ public final class VoidIchor {
     public static FluidType type() {
         return new Type(FluidType.Properties.create()
                 .descriptionId("block.hextale.void_ichor")
-                .density(3000).viscosity(8000).temperature(320).lightLevel(10)
+                .density(3000).viscosity(8000).temperature(320).lightLevel(13)
                 .motionScale(0.0022).canSwim(true).canDrown(false).canExtinguish(false).canHydrate(false)
                 .canConvertToSource(false).supportsBoating(false).fallDistanceModifier(0.2F)
                 .pathType(PathType.DAMAGE_CAUTIOUS).adjacentPathType(null)

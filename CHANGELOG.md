@@ -23,8 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   bladders of skin with crystals in their bottoms, pores through to the abyss ringed with light, outcrops of Void
   crystal, banded edges of chitin and flesh, tendrils hanging from their undersides with glowing tips, bladders
   drifting in the gaps. The great ribs glow at their joints. Voidlings and Void Mites come out of its dark.
-- New blocks: Husk Chitin and its lit ridge, Void Membrane (plain, veined, worn), Gnawed Stone, Rift Ore and Hollow
-  Crystal clusters.
+- New blocks: Husk Chitin and its lit ridge, Void Membrane (plain, veined, worn), Gnawed Stone, Riftmetal Ore and
+  Hollow Crystal clusters.
 - Raw Riftmetal, broken out of the husks' walls deep in the Void (it wants a radiant pickaxe), and Hollow Crystals -
   hextech the Void drank empty.
 - Each zone has something of its own to find: membrane lakes sagging between rims of chitin in the Ribcage Reach, their
@@ -42,6 +42,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   string from sinews, craftable spring blisters and lit ridges, a bucket of ichor burns as long as lava, Hollow Crystals
   hold four times as long in anchors and purifiers, Husk Chitin sometimes breaks off Void Chitin, worn skin can be
   taken with Silk Touch for traps. The Void's matter carries its own essences (rift first of all).
+- Sinew Willows grow on the Void's plates: trunks braided of two or three sinews, roots gripping the plate, boughs that
+  arch out and droop, lilac fronds with glowing buds and long curtains of fronds hanging from them. Groves stand at the
+  Threshold, fewer and younger trees deeper in, none round the vortex. Their wood is a full set (logs, stripped,
+  planks, stairs, slab, fence, gate, door, trapdoor, button, pressure plate) that never burns and works wherever wood
+  does - a crafting table and tools can be made in the Void at last. Fronds drop sprouts that grow on the Void's soil.
+- Ichor Pods hang under the willows' fronds and glow brighter as they ripen. Pick a ripe one by hand; eaten, it lets
+  you see in the dark - and a few blocks into ichor. Pods and tendrils light a Husk Chitin ridge as glowstone does,
+  and a pod gives magenta dye.
+- Gnawed Iron Ore and Gnawed Gold Ore: the metal our world lost to the Void, in clots through the gnawed stone of the
+  Shoals.
+- Void Glass and its pane: a Hollow Crystal and membrane fused into glass, lilac with the skin's net in it.
+- The Void Lens, a spyglass with a Hollow Crystal for its lens: looking through it, the haze draws back, and riftmetal
+  ore, hollow crystals and worn skin glint far off.
 - `/hextale void enter` and `/hextale void exit [player]` for operators.
 - A breach opened with a Void Shard is held by a ring of anchors and lets a player through like any other (it still
   does not feed on the land or send voidlings out).
@@ -51,6 +64,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   six sides the ring holds.
 
 ### Changed
+- Rift Ore is called Riftmetal Ore and looks like it: dark shards of the metal grown into the husk's chitin, sparks of
+  violet light running through them now and then.
+- Void Ichor looks like a glowing magenta lava, and with your head in it you see as little as in lava.
+- The Void Chitin item has its earlier, darker look back.
 - A closed ring of anchors no longer wears its crystals just by holding: they cloud only while the ring is still open,
   with what the breach eats and with every passage through it. A breach once held stays held.
 - A breach on clean land no longer starves away while a ring of anchors is being built round it: one tied anchor is

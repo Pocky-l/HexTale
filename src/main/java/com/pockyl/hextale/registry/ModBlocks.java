@@ -633,7 +633,7 @@ public final class ModBlocks {
     public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.VoidIchor.Block> VOID_ICHOR = BLOCKS.registerBlock("void_ichor",
             properties -> new com.pockyl.hextale.thevoid.realm.VoidIchor.Block(ModFluids.VOID_ICHOR.get(), properties),
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).replaceable().noCollision().strength(100.0F)
-                    .lightLevel(state -> 10).pushReaction(PushReaction.POPPED).noLootTable().liquid()
+                    .lightLevel(state -> 13).pushReaction(PushReaction.POPPED).noLootTable().liquid()
                     .sound(SoundType.EMPTY));
 
     public static final DeferredBlock<StairBlock> HUSK_CHITIN_STAIRS = BLOCKS.registerBlock("husk_chitin_stairs",
@@ -646,6 +646,80 @@ public final class ModBlocks {
     public static final DeferredBlock<SlabBlock> GNAWED_STONE_SLAB = BLOCKS.registerBlock("gnawed_stone_slab", SlabBlock::new, () -> gnawedStoneProperties());
     public static final DeferredBlock<WallBlock> GNAWED_STONE_WALL = BLOCKS.registerBlock("gnawed_stone_wall", WallBlock::new,
             () -> gnawedStoneProperties().forceSolidOn());
+
+    // The Sinew Willow, the Void's one tree (thevoid/realm/VoidTrees): braided wood that never burns, lilac fronds,
+    // ichor pods hanging under them. Sounds and set type borrowed from the nether's fungus wood.
+    public static final DeferredBlock<RotatedPillarBlock> SINEW_WILLOW_LOG = BLOCKS.registerBlock("sinew_willow_log",
+            RotatedPillarBlock::new, ModBlocks::sinewWillowLogProperties);
+    public static final DeferredBlock<RotatedPillarBlock> SINEW_WILLOW_WOOD = BLOCKS.registerBlock("sinew_willow_wood",
+            RotatedPillarBlock::new, ModBlocks::sinewWillowLogProperties);
+    public static final DeferredBlock<RotatedPillarBlock> STRIPPED_SINEW_WILLOW_LOG = BLOCKS.registerBlock("stripped_sinew_willow_log",
+            RotatedPillarBlock::new, ModBlocks::sinewWillowLogProperties);
+    public static final DeferredBlock<RotatedPillarBlock> STRIPPED_SINEW_WILLOW_WOOD = BLOCKS.registerBlock("stripped_sinew_willow_wood",
+            RotatedPillarBlock::new, ModBlocks::sinewWillowLogProperties);
+    public static final DeferredBlock<Block> SINEW_WILLOW_PLANKS = BLOCKS.registerBlock("sinew_willow_planks", Block::new,
+            ModBlocks::sinewWillowPlankProperties);
+    public static final DeferredBlock<StairBlock> SINEW_WILLOW_STAIRS = BLOCKS.registerBlock("sinew_willow_stairs",
+            properties -> new StairBlock(SINEW_WILLOW_PLANKS.get().defaultBlockState(), properties), ModBlocks::sinewWillowPlankProperties);
+    public static final DeferredBlock<SlabBlock> SINEW_WILLOW_SLAB = BLOCKS.registerBlock("sinew_willow_slab", SlabBlock::new,
+            ModBlocks::sinewWillowPlankProperties);
+    public static final DeferredBlock<FenceBlock> SINEW_WILLOW_FENCE = BLOCKS.registerBlock("sinew_willow_fence", FenceBlock::new,
+            ModBlocks::sinewWillowPlankProperties);
+    public static final DeferredBlock<FenceGateBlock> SINEW_WILLOW_FENCE_GATE = BLOCKS.registerBlock("sinew_willow_fence_gate",
+            properties -> new FenceGateBlock(WoodType.CRIMSON, properties), () -> sinewWillowPlankProperties().forceSolidOn());
+    public static final DeferredBlock<DoorBlock> SINEW_WILLOW_DOOR = BLOCKS.registerBlock("sinew_willow_door",
+            properties -> new DoorBlock(BlockSetType.CRIMSON, properties),
+            () -> sinewWillowPlankProperties().strength(3.0F).noOcclusion().pushReaction(PushReaction.POPPED));
+    public static final DeferredBlock<TrapDoorBlock> SINEW_WILLOW_TRAPDOOR = BLOCKS.registerBlock("sinew_willow_trapdoor",
+            properties -> new TrapDoorBlock(BlockSetType.CRIMSON, properties),
+            () -> sinewWillowPlankProperties().strength(3.0F).noOcclusion().isValidSpawn((state, level, pos, type) -> false));
+    public static final DeferredBlock<ButtonBlock> SINEW_WILLOW_BUTTON = BLOCKS.registerBlock("sinew_willow_button",
+            properties -> new ButtonBlock(BlockSetType.CRIMSON, 30, properties),
+            () -> BlockBehaviour.Properties.of().noCollision().strength(0.5F).pushReaction(PushReaction.POPPED));
+    public static final DeferredBlock<PressurePlateBlock> SINEW_WILLOW_PRESSURE_PLATE = BLOCKS.registerBlock("sinew_willow_pressure_plate",
+            properties -> new PressurePlateBlock(BlockSetType.CRIMSON, properties),
+            () -> sinewWillowPlankProperties().forceSolidOn().noCollision().strength(0.5F).pushReaction(PushReaction.POPPED));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.SinewWillow.Fronds> SINEW_WILLOW_FRONDS = BLOCKS.registerBlock(
+            "sinew_willow_fronds", com.pockyl.hextale.thevoid.realm.SinewWillow.Fronds::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.2F).randomTicks().sound(SoundType.AZALEA_LEAVES)
+                    .noOcclusion().isValidSpawn((state, level, pos, type) -> false).isSuffocating((state, level, pos) -> false)
+                    .pushReaction(PushReaction.POPPED)
+                    .isRedstoneConductor((state, level, pos) -> false));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.SinewWillow.Sprout> SINEW_WILLOW_SPROUT = BLOCKS.registerBlock(
+            "sinew_willow_sprout", com.pockyl.hextale.thevoid.realm.SinewWillow.Sprout::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).noCollision().randomTicks().instabreak()
+                    .sound(SoundType.ROOTS).lightLevel(state -> 3).pushReaction(PushReaction.POPPED));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.SinewWillow.Pod> ICHOR_POD = BLOCKS.registerBlock("ichor_pod",
+            com.pockyl.hextale.thevoid.realm.SinewWillow.Pod::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).noCollision().randomTicks().strength(0.2F)
+                    .sound(SoundType.CAVE_VINES).pushReaction(PushReaction.POPPED)
+                    .lightLevel(state -> com.pockyl.hextale.thevoid.realm.SinewWillow.Pod.LIGHT[state.getValue(
+                            com.pockyl.hextale.thevoid.realm.SinewWillow.Pod.AGE)]));
+
+    /** Glass with a Hollow Crystal ground into it: lilac, a faint net of the membrane in it. */
+    public static final DeferredBlock<TransparentBlock> VOID_GLASS = BLOCKS.registerBlock("void_glass", TransparentBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.6F).sound(SoundType.GLASS).noOcclusion()
+                    .isValidSpawn((state, level, pos, type) -> false).isRedstoneConductor((state, level, pos) -> false)
+                    .isSuffocating((state, level, pos) -> false).isViewBlocking((state, level, pos, box) -> false));
+    public static final DeferredBlock<IronBarsBlock> VOID_GLASS_PANE = BLOCKS.registerBlock("void_glass_pane", IronBarsBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.3F).sound(SoundType.GLASS).noOcclusion());
+    // Metal our world lost to the Void, half digested in the gnawed stone of its shoals.
+    public static final DeferredBlock<net.minecraft.world.level.block.DropExperienceBlock> GNAWED_IRON_ORE = BLOCKS.registerBlock(
+            "gnawed_iron_ore", properties -> new net.minecraft.world.level.block.DropExperienceBlock(
+                    net.minecraft.util.valueproviders.ConstantInt.of(0), properties), () -> gnawedStoneProperties().strength(2.6F, 4.0F));
+    public static final DeferredBlock<net.minecraft.world.level.block.DropExperienceBlock> GNAWED_GOLD_ORE = BLOCKS.registerBlock(
+            "gnawed_gold_ore", properties -> new net.minecraft.world.level.block.DropExperienceBlock(
+                    net.minecraft.util.valueproviders.ConstantInt.of(0), properties), () -> gnawedStoneProperties().strength(2.6F, 4.0F));
+
+    private static BlockBehaviour.Properties sinewWillowLogProperties() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_PURPLE).instrument(NoteBlockInstrument.BASS).strength(2.0F)
+                .sound(SoundType.STEM);
+    }
+
+    private static BlockBehaviour.Properties sinewWillowPlankProperties() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_MAGENTA).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F)
+                .sound(SoundType.NETHER_WOOD);
+    }
 
     private static BlockBehaviour.Properties gnawedStoneProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_PURPLE).instrument(NoteBlockInstrument.BASEDRUM)

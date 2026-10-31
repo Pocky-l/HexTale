@@ -39,6 +39,14 @@ public final class VoidShapes {
     public static final byte CRYSTAL = 13;
     /** Void Ichor, pooled in the hollows of the plates. */
     public static final byte ICHOR = 14;
+    /** Sinew Willow wood, by the way its grain runs ({@link VoidTrees}): upright logs, lying boughs and roots in bark. */
+    public static final byte LOG_X = 15;
+    public static final byte LOG_Y = 16;
+    public static final byte LOG_Z = 17;
+    /** Sinew Willow fronds. */
+    public static final byte FRONDS = 18;
+    /** An ichor pod hanging under the fronds. */
+    public static final byte POD = 19;
 
     private static final int CACHE_LIMIT = 512;
 
@@ -118,6 +126,7 @@ public final class VoidShapes {
         final List<Lake> lakes = new ArrayList<>();
         final List<Plate> plates = new ArrayList<>();
         final List<Bladder> bladders = new ArrayList<>();
+        final List<VoidTrees.Tree> trees = new ArrayList<>();
         final Map<Plate, List<Pool>> pools = new java.util.HashMap<>();
         /** Packed membrane blocks by chunk ({@link #chunkKey}): {@code lx | lz << 4 | y << 8 | kind << 20}. */
         final Map<Long, int[]> raster = new java.util.HashMap<>();
@@ -205,6 +214,38 @@ public final class VoidShapes {
                     double r = 3 + random.nextDouble() * 3;
                     region.bladders.add(new Bladder(at[0], at[1] + r * 0.25, at[2], r, random.nextDouble() < 0.6, random.nextInt()));
                 }
+            }
+        }
+        // Sinew willows: groves on the plates of the Threshold, fewer and smaller deeper in, none round the vortex.
+        double groves = switch (zone) {
+            case THRESHOLD -> 0.8;
+            case REACH -> 0.5;
+            case SHOALS -> 0.35;
+            case DRIFT -> 0.2;
+            case VORTEX -> 0;
+        };
+        for (Plate plate : region.plates) {
+            if (random.nextDouble() >= groves) {
+                continue;
+            }
+            double[] centre = onPlate(plate, random, 0.55);
+            if (Double.isNaN(centre[1])) {
+                continue;
+            }
+            int count = 1 + random.nextInt(zone == VoidZones.Zone.THRESHOLD ? 4 : 2);
+            for (int t = 0; t < count; t++) {
+                double tx = centre[0] + (t == 0 ? 0 : (random.nextDouble() - 0.5) * 20);
+                double tz = centre[2] + (t == 0 ? 0 : (random.nextDouble() - 0.5) * 20);
+                double top = plateTop(plate, tx, tz);
+                boolean wet = false;
+                for (Pool pool : region.pools.getOrDefault(plate, List.of())) {
+                    wet |= sq(tx - pool.x()) + sq(tz - pool.z()) < sq(pool.radius() * 1.3 + 2);
+                }
+                if (Double.isNaN(top) || wet) {
+                    continue;
+                }
+                boolean large = t == 0 && random.nextDouble() < (zone == VoidZones.Zone.THRESHOLD ? 0.6 : 0.35);
+                region.trees.add(VoidTrees.plan(new Random(random.nextLong()), floor(tx) + 0.5, floor(top) + 1, floor(tz) + 0.5, large));
             }
         }
         // Bladders drifting in the gaps, glowing over the abyss.
@@ -675,6 +716,36 @@ public final class VoidShapes {
         for (Region region : near) {
             for (Lake lake : region.lakes) {
                 lake(lake, x0, z0, kinds, best);
+            }
+        }
+        // Trees last: their fronds only fill air the rest left.
+        VoidTrees.Grid grid = new VoidTrees.Grid() {
+            @Override
+            public int get(int x, int y, int z) {
+                int lx = x - x0, lz = z - z0, ly = y - MIN_Y;
+                return lx < 0 || lx > 15 || lz < 0 || lz > 15 || ly < 0 || ly >= HEIGHT ? -1 : kinds[index(lx, ly, lz)];
+            }
+
+            @Override
+            public void set(int x, int y, int z, byte kind) {
+                kinds[index(x - x0, y - MIN_Y, z - z0)] = kind;
+            }
+
+            @Override
+            public float best(int x, int y, int z) {
+                return best[index(x - x0, y - MIN_Y, z - z0)];
+            }
+
+            @Override
+            public void best(int x, int y, int z, float value) {
+                best[index(x - x0, y - MIN_Y, z - z0)] = value;
+            }
+        };
+        for (Region region : near) {
+            for (VoidTrees.Tree tree : region.trees) {
+                if (tree.touches(x0, z0)) {
+                    VoidTrees.raster(tree, x0, z0, x0 + 15, z0 + 15, grid);
+                }
             }
         }
     }

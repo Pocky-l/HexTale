@@ -106,6 +106,8 @@
     "hextale:husk_chitin_stairs",
     "hextale:gnawed_stone_stairs",
     "hextale:husk_chitin_wall",
-    "hextale:gnawed_stone_wall"
+    "hextale:gnawed_stone_wall",
+    "hextale:gnawed_iron_ore",
+    "hextale:gnawed_gold_ore"
   ]
 }

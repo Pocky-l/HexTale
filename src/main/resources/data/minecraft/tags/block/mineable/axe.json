@@ -13,6 +13,16 @@
     "hextale:magic_trapdoor",
     "hextale:magic_button",
     "hextale:magic_pressure_plate",
-    "hextale:hex_sawmill"
+    "hextale:hex_sawmill",
+    "#hextale:sinew_willow_logs",
+    "hextale:sinew_willow_planks",
+    "hextale:sinew_willow_stairs",
+    "hextale:sinew_willow_slab",
+    "hextale:sinew_willow_fence",
+    "hextale:sinew_willow_fence_gate",
+    "hextale:sinew_willow_door",
+    "hextale:sinew_willow_trapdoor",
+    "hextale:sinew_willow_button",
+    "hextale:sinew_willow_pressure_plate"
   ]
 }

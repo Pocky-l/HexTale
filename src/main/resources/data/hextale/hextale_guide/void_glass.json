@@ -1,0 +1,16 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:void_glass",
+  "parents": [
+    "hollow_crystal"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:void_glass"
+  },
+  "pos": [
+    640,
+    1170
+  ]
+}

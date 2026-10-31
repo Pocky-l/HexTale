@@ -123,6 +123,8 @@ public final class HextaleClient {
         modBus.addListener(com.pockyl.hextale.client.render.BulwarkClient::bake);
         modBus.addListener(com.pockyl.hextale.client.render.BulwarkClient::registerExtensions);
         modBus.addListener(com.pockyl.hextale.client.render.StrikeGauntletClient::registerExtensions);
+        modBus.addListener(IchorView::register);
+        VoidLensView.register();
         com.pockyl.hextale.client.render.StrikeGauntletClient.register();
         modBus.addListener(com.pockyl.hextale.client.render.BulwarkHeartLayer::addLayers);
         modBus.addListener((net.neoforged.neoforge.client.event.EntityRenderersEvent.AddLayers event) -> com.pockyl.hextale.client.render.BulwarkAuraLayer.addLayers(event));

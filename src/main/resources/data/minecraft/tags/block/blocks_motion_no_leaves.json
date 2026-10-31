@@ -116,6 +116,8 @@
     "hextale:husk_chitin_stairs",
     "hextale:gnawed_stone_stairs",
     "hextale:husk_chitin_wall",
-    "hextale:gnawed_stone_wall"
+    "hextale:gnawed_stone_wall",
+    "hextale:void_glass",
+    "hextale:void_glass_pane"
   ]
 }

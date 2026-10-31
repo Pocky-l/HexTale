@@ -520,6 +520,37 @@ public final class ModItems {
             properties -> new com.pockyl.hextale.item.NotedBlockItem(ModBlocks.SINEW_CURTAIN.get(), properties.useBlockDescriptionPrefix()));
     public static final DeferredItem<com.pockyl.hextale.item.NotedBlockItem> SPRING_BLISTER = ITEMS.registerItem("spring_blister",
             properties -> new com.pockyl.hextale.item.NotedBlockItem(ModBlocks.SPRING_BLISTER.get(), properties.useBlockDescriptionPrefix()));
+    // The Sinew Willow's wood set, its sprout and its pods (eaten, they let one see a little way into ichor).
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_SPROUT = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_SPROUT);
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_FRONDS = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_FRONDS);
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_LOG = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_LOG);
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_WOOD = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_WOOD);
+    public static final DeferredItem<BlockItem> STRIPPED_SINEW_WILLOW_LOG = ITEMS.registerSimpleBlockItem(ModBlocks.STRIPPED_SINEW_WILLOW_LOG);
+    public static final DeferredItem<BlockItem> STRIPPED_SINEW_WILLOW_WOOD = ITEMS.registerSimpleBlockItem(ModBlocks.STRIPPED_SINEW_WILLOW_WOOD);
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_PLANKS = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_PLANKS);
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_STAIRS);
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_SLAB);
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_FENCE = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_FENCE);
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_FENCE_GATE = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_FENCE_GATE);
+    public static final DeferredItem<net.minecraft.world.item.DoubleHighBlockItem> SINEW_WILLOW_DOOR = ITEMS.registerItem("sinew_willow_door",
+            properties -> new net.minecraft.world.item.DoubleHighBlockItem(ModBlocks.SINEW_WILLOW_DOOR.get(), properties.useBlockDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_TRAPDOOR = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_TRAPDOOR);
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_BUTTON = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_BUTTON);
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_PRESSURE_PLATE = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_PRESSURE_PLATE);
+    public static final DeferredItem<BlockItem> ICHOR_POD = ITEMS.registerItem("ichor_pod",
+            properties -> new BlockItem(ModBlocks.ICHOR_POD.get(), properties.food(
+                    new net.minecraft.world.food.FoodProperties.Builder().nutrition(3).saturationModifier(0.3F).build(),
+                    net.minecraft.world.item.component.Consumables.defaultFood().onConsume(
+                            new net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect(
+                                    new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.NIGHT_VISION, 400, 0)))
+                            .build())));
+    public static final DeferredItem<BlockItem> VOID_GLASS = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_GLASS);
+    public static final DeferredItem<BlockItem> VOID_GLASS_PANE = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_GLASS_PANE);
+    public static final DeferredItem<BlockItem> GNAWED_IRON_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_IRON_ORE);
+    public static final DeferredItem<BlockItem> GNAWED_GOLD_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_GOLD_ORE);
+    /** A spyglass with a Hollow Crystal for a lens: it drinks the Void's haze, and what the Void hides shows through. */
+    public static final DeferredItem<com.pockyl.hextale.thevoid.realm.VoidLensItem> VOID_LENS = ITEMS.registerItem("void_lens",
+            properties -> new com.pockyl.hextale.thevoid.realm.VoidLensItem(properties.stacksTo(1)));
     public static final DeferredItem<net.minecraft.world.item.BucketItem> VOID_ICHOR_BUCKET = ITEMS.registerItem("void_ichor_bucket",
             properties -> new net.minecraft.world.item.BucketItem(ModFluids.VOID_ICHOR.get(), properties.craftRemainder(net.minecraft.world.item.Items.BUCKET).stacksTo(1)
                     // Burns in a furnace as long as lava.

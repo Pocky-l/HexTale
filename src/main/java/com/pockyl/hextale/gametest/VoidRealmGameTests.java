@@ -21,6 +21,7 @@ import com.pockyl.hextale.thevoid.TheVoid;
 import com.pockyl.hextale.thevoid.VoidShape;
 import com.pockyl.hextale.thevoid.realm.VoidChunkGenerator;
 import com.pockyl.hextale.thevoid.realm.VoidPassage;
+import com.pockyl.hextale.thevoid.realm.SinewWillow;
 import com.pockyl.hextale.thevoid.realm.VoidShapes;
 import com.pockyl.hextale.thevoid.realm.WornMembraneBlock;
 
@@ -58,7 +59,7 @@ public final class VoidRealmGameTests {
         int volume = 16 * 16 * VoidShapes.HEIGHT;
         byte[] kinds = new byte[volume];
         float[] best = new float[volume];
-        int[] counts = new int[16];
+        int[] counts = new int[32];
         int lowest = Integer.MAX_VALUE;
         for (int cx = -12; cx < 12; cx++) {
             for (int cz = -12; cz < 12; cz++) {
@@ -79,6 +80,8 @@ public final class VoidRealmGameTests {
         helper.assertTrue(counts[VoidShapes.VEINED] > 0 && counts[VoidShapes.WORN] > 0, "veined and worn skin");
         helper.assertTrue(counts[VoidShapes.CRYSTAL] > 0, "geodes with Void crystals");
         helper.assertTrue(counts[VoidShapes.RIFT_ORE] > 0, "rift ore in the husks");
+        helper.assertTrue(counts[VoidShapes.LOG_Y] > 100 && counts[VoidShapes.FRONDS] > 300, "sinew willows on the plates");
+        helper.assertTrue(counts[VoidShapes.POD] > 0, "with ichor pods under their fronds");
         helper.assertTrue(lowest > 8, "nothing down by the abyss: lowest " + lowest);
         // The same seed builds the same Void.
         byte[] again = new byte[volume];
@@ -263,6 +266,51 @@ public final class VoidRealmGameTests {
         var recipes = helper.getLevel().getServer().getRecipeManager().recipeMap();
         helper.assertTrue(recipes.byKey(ResourceKey.create(Registries.RECIPE, Hextale.id("alloying/riftmetal_ingot"))) != null,
                 "the alloy");
+        helper.succeed();
+    }
+
+    /** A Sinew Willow sprout on the Void's soil shoots up into a willow: a trunk, boughs, fronds. */
+    @HexTest(maxTicks = 40, padding = 14)
+    public static void aSinewWillowGrowsFromItsSprout(GameTestHelper helper) {
+        BlockPos at = new BlockPos(1, 2, 1);
+        for (int dx = -6; dx <= 6; dx++) {
+            for (int dz = -6; dz <= 6; dz++) {
+                helper.setBlock(at.offset(dx, -1, dz), ModBlocks.VOID_SOIL.get());
+            }
+        }
+        helper.setBlock(at, ModBlocks.SINEW_WILLOW_SPROUT.get());
+        BlockPos sprout = helper.absolutePos(at);
+        helper.assertTrue(SinewWillow.grow(helper.getLevel(), sprout, net.minecraft.util.RandomSource.create(5), false), "the sprout had room to grow");
+        int wood = 0, fronds = 0;
+        for (BlockPos pos : BlockPos.betweenClosed(sprout.offset(-14, -3, -14), sprout.offset(14, 24, 14))) {
+            var state = helper.getLevel().getBlockState(pos);
+            wood += state.is(ModBlocks.SINEW_WILLOW_LOG.get()) || state.is(ModBlocks.SINEW_WILLOW_WOOD.get()) ? 1 : 0;
+            fronds += state.is(ModBlocks.SINEW_WILLOW_FRONDS.get()) ? 1 : 0;
+        }
+        helper.assertTrue(wood >= 20, "a trunk and boughs (" + wood + " wood)");
+        helper.assertTrue(fronds >= 30, "a crown of fronds (" + fronds + ")");
+        helper.assertFalse(helper.getLevel().getBlockState(sprout).is(ModBlocks.SINEW_WILLOW_SPROUT.get()), "the sprout became the tree");
+        helper.succeed();
+    }
+
+    /** A ripe ichor pod is picked by hand and swells again; a pod falls when what it hangs from is gone. */
+    @HexTest
+    public static void aRipeIchorPodIsPicked(GameTestHelper helper) {
+        BlockPos fronds = new BlockPos(1, 4, 1);
+        BlockPos pod = fronds.below();
+        helper.setBlock(fronds, SinewWillow.wildFronds());
+        helper.setBlock(pod, ModBlocks.ICHOR_POD.get().defaultBlockState().setValue(SinewWillow.Pod.AGE, SinewWillow.Pod.RIPE));
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        BlockPos absolute = helper.absolutePos(pod);
+        var hit = new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(absolute), net.minecraft.core.Direction.DOWN, absolute, false);
+        helper.getLevel().getBlockState(absolute).useWithoutItem(helper.getLevel(), player, hit);
+        helper.assertTrue(helper.getBlockState(pod).getValue(SinewWillow.Pod.AGE) == 0, "picked, the pod starts over");
+        var dropped = helper.getLevel().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+                new net.minecraft.world.phys.AABB(absolute).inflate(3), item -> item.getItem().is(ModItems.ICHOR_POD.get()));
+        helper.assertFalse(dropped.isEmpty(), "the pod drops into the hand");
+        dropped.forEach(net.minecraft.world.entity.Entity::discard);
+        helper.setBlock(fronds, Blocks.AIR);
+        helper.assertBlockNotPresent(ModBlocks.ICHOR_POD.get(), pod);
         helper.succeed();
     }
 }

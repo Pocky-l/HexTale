@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    " G ",
+    "GCG",
+    " G "
+  ],
+  "key": {
+    "G": "#hextale:void_glow",
+    "C": "hextale:husk_chitin"
+  },
+  "result": {
+    "id": "hextale:husk_chitin_ridge",
+    "count": 1
+  }
+}

@@ -123,6 +123,9 @@ public class HextaleJeiPlugin implements IModPlugin {
             }
         }
         registration.addRecipes(BoilingCategory.TYPE, List.of(new BoilingCategory.Recipe(boilable)));
+        // A Hollow Crystal does its work set in devices, not only in recipes: say so where players look for its uses.
+        registration.addIngredientInfo(com.pockyl.hextale.registry.ModItems.HOLLOW_CRYSTAL.get(),
+                net.minecraft.network.chat.Component.translatable("jei.hextale.hollow_crystal"));
         List<SeparationCategory.Recipe> separations = new ArrayList<>();
         for (Essence essence : Essence.values()) {
             separations.add(new SeparationCategory.Recipe(essence, com.pockyl.hextale.registry.ModTags.stacks(com.pockyl.hextale.registry.ModTags.SEPARATOR_FUELS)));
