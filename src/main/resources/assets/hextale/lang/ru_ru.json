@@ -1729,6 +1729,8 @@
   "subtitles.hextale.void_current.loop": "Течение шумит",
   "subtitles.hextale.void_current.break": "Течение слабеет",
   "subtitles.hextale.void_fog.bank": "Наползает туман",
+  "subtitles.hextale.void_passage.pull": "Разлом затягивает",
+  "subtitles.hextale.void_passage.arrive": "Горло отпускает",
   "subtitles.hextale.void_mite.shake": "Клещи Пустоты стряхнуты",
   "subtitles.hextale.forge.melt": "Оседает расплав",
   "subtitles.hextale.forge.catch": "Разгорается огонь",

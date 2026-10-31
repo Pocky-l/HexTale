@@ -61,6 +61,14 @@ public final class VoidPassage {
     private static final int CHECK_TICKS = 40;
     /** Players who came out by a breach and have not stepped clear of it yet, by the breach's seed. */
     private static final Map<java.util.UUID, Integer> STILL_IN = new java.util.concurrent.ConcurrentHashMap<>();
+    /** Ticks a breach or a gate draws a player in before they are through (the client shows the pull meanwhile). */
+    public static final int PULL_TICKS = 34;
+    /** Players being drawn through now. */
+    private static final Map<java.util.UUID, Pull> PULLS = new java.util.concurrent.ConcurrentHashMap<>();
+
+    /** A pull under way: into the Void through {@code breach} (touched at {@code local}), or out through gate {@code seed}. */
+    private record Pull(boolean into, long start, @Nullable TheVoid breach, @Nullable Vector3f local, int seed) {
+    }
 
     private VoidPassage() {
     }
@@ -164,9 +172,21 @@ public final class VoidPassage {
             return false;
         }
         Integer stillIn = STILL_IN.get(player.getUUID());
-        if (player.isOnPortalCooldown() || stillIn != null && stillIn == breach.seed()) {
-            // Just came out of it, and not yet stepped off: the breach lets them be.
+        if (player.isOnPortalCooldown() || stillIn != null && stillIn == breach.seed() || PULLS.containsKey(player.getUUID())) {
+            // Just came out of it, and not yet stepped off (or already being drawn in): the breach lets them be.
             return true;
+        }
+        PULLS.put(player.getUUID(), new Pull(true, level.getGameTime(), breach, new Vector3f(local), breach.seed()));
+        pullFx(player, breach.position(), true, false);
+        level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.VOID_PASSAGE_PULL.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+        return true;
+    }
+
+    /** The pull is over: through the breach to its gate on the other side. */
+    private static void through(ServerLevel level, TheVoid breach, ServerPlayer player, Vector3f local) {
+        ServerLevel realm = level.getServer().getLevel(LEVEL);
+        if (realm == null) {
+            return;
         }
         Gates gates = gates(level.getServer());
         Gate gate = gates.get(breach.seed());
@@ -190,7 +210,37 @@ public final class VoidPassage {
         player.resetFallDistance();
         realm.playSound(null, arrival.x, arrival.y, arrival.z, ModSounds.THE_VOID_OPEN.get(), SoundSource.PLAYERS, 0.8F, 0.7F);
         com.pockyl.hextale.quest.Quests.fire(player, com.pockyl.hextale.quest.Quests.VOID_ENTERED);
-        return true;
+    }
+
+    private static void pullFx(ServerPlayer player, Vec3 centre, boolean into, boolean cancel) {
+        com.pockyl.hextale.network.ModNetwork.sendToPlayer(player, new com.pockyl.hextale.network.VoidPullPayload(centre.x, centre.y, centre.z,
+                PULL_TICKS, into, cancel));
+    }
+
+    /** Players being drawn through: no fall damage on the way; once the pull is over, through (or let go, if the way shut). */
+    private static void pulling(ServerPlayer player) {
+        Pull pull = PULLS.get(player.getUUID());
+        if (pull == null) {
+            return;
+        }
+        player.resetFallDistance();
+        if (!player.isAlive() || !(player.level() instanceof ServerLevel level) || level.getGameTime() - pull.start() < PULL_TICKS) {
+            if (!player.isAlive()) {
+                PULLS.remove(player.getUUID());
+            }
+            return;
+        }
+        PULLS.remove(player.getUUID());
+        if (pull.into()) {
+            TheVoid breach = pull.breach();
+            if (breach != null && breach.isAlive() && breach.subdued() && breach.level() == level) {
+                through(level, breach, player, pull.local());
+            } else {
+                pullFx(player, player.position(), true, true);
+            }
+        } else if (level.dimension().equals(LEVEL)) {
+            leave(player, pull.seed());
+        }
     }
 
     private static Gate newGate(TheVoid breach, ServerLevel level) {
@@ -394,7 +444,11 @@ public final class VoidPassage {
             if (Math.abs(local.z) > halfW + layout.halfThickness() || !layout.touches(local.x, local.y, halfW, player.getBbHeight() * 0.5F, reveal)) {
                 continue;
             }
-            leave(player, gate.seed());
+            if (!player.isOnPortalCooldown() && !PULLS.containsKey(player.getUUID())) {
+                PULLS.put(player.getUUID(), new Pull(false, realm.getGameTime(), null, null, gate.seed()));
+                pullFx(player, gate.position(), false, false);
+                realm.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.VOID_PASSAGE_PULL.get(), SoundSource.PLAYERS, 1.0F, 1.25F);
+            }
         }
     }
 
@@ -519,6 +573,9 @@ public final class VoidPassage {
     /** Every player in the Void always has a gate to leave by. */
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
+        if (event.getEntity() instanceof ServerPlayer pulled) {
+            pulling(pulled);
+        }
         if (!(event.getEntity() instanceof ServerPlayer player) || !player.level().dimension().equals(LEVEL)
                 || player.tickCount % CHECK_TICKS != 0) {
             return;

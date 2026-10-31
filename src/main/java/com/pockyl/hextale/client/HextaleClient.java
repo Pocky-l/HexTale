@@ -128,6 +128,7 @@ public final class HextaleClient {
         modBus.addListener(IchorView::register);
         VoidLensView.register();
         VoidCurrentsClient.register();
+        VoidPassageFx.register();
         VoidFogBanks.register();
         com.pockyl.hextale.client.render.StrikeGauntletClient.register();
         modBus.addListener(com.pockyl.hextale.client.render.BulwarkHeartLayer::addLayers);

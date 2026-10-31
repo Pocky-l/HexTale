@@ -1729,6 +1729,8 @@
   "subtitles.hextale.void_current.loop": "Current rushes",
   "subtitles.hextale.void_current.break": "Current fades",
   "subtitles.hextale.void_fog.bank": "Fog rolls in",
+  "subtitles.hextale.void_passage.pull": "The breach draws you in",
+  "subtitles.hextale.void_passage.arrive": "The throat lets go",
   "subtitles.hextale.void_mite.shake": "Void mites shaken off",
   "subtitles.hextale.forge.melt": "Melt settles",
   "subtitles.hextale.forge.catch": "Fire takes hold",
