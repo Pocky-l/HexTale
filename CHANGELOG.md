@@ -157,6 +157,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   no longer flickers from afar.
 
 ### Fixed
+- The Researcher's Diary shows runes being burned in the way it is done now: the rune pages of every tool and device
+  show the thing floating over the Rune Circle with the rune flowing in from a stele outside it, and the Rune Stele's
+  step shows steles round a Rune Circle burning two runes into a pickaxe. The altar's ritual scene no longer has
+  steles beside it.
 - JEI shows where the Engraved Diamond comes from: a diamond cut with the Master Cutting Disc on the Lapidary.
 - The Researcher's Diary no longer drags the frame rate down while it is open: its star map ran at about half the
   frame rate of the game behind it and now costs about as much as an inventory screen. The links between the steps are

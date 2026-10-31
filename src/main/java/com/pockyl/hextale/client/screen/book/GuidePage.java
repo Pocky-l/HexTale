@@ -1944,8 +1944,8 @@ final class GuidePage {
     }
 
     /**
-     * The runes a holder takes: a turning 3D altar with the chosen rune flowing from its stele into the pickaxe or the
-     * smelter, a grid of rune signs to choose from (greyed while not studied) and the chosen rune's card - what it does,
+     * The runes a holder takes: a turning 3D rune circle with the chosen rune flowing from its stele into the thing over
+     * it, a grid of rune signs to choose from (greyed while not studied) and the chosen rune's card - what it does,
      * how much at one, two and three stars, its essence cost and the runes it is incompatible with.
      */
     @Nullable
@@ -1966,7 +1966,7 @@ final class GuidePage {
         PixelArt.flush(graphics);
         ItemStack item = holder.items().getFirst();
         holder.set(item, PickaxeRunes.EMPTY.with(chosen, 3));
-        AltarDiorama.draw(graphics, item, chosen, now / 50F, x + 1, y + 1, x + w - 1, y + DIORAMA_HEIGHT - 1, 26);
+        RuneCircleDiorama.draw(graphics, item, chosen, now / 50F, x + 1, y + 1, x + w - 1, y + DIORAMA_HEIGHT - 1, 20);
         y += DIORAMA_HEIGHT + 4;
 
         graphics.text(font, Component.translatable("book.hextale.quest.pickaxe_rune.pick"), x, y, MUTED, false);

@@ -133,7 +133,7 @@ public final class HextaleClient {
                 com.pockyl.hextale.client.render.ResearcherClothesItemRenderer.ID,
                 com.pockyl.hextale.client.render.ResearcherClothesItemRenderer.Unbaked.MAP_CODEC));
         SkypackClient.register();
-        modBus.addListener(com.pockyl.hextale.client.screen.book.AltarDiorama::register);
+        modBus.addListener(com.pockyl.hextale.client.screen.book.RuneCircleDiorama::register);
         modBus.addListener(com.pockyl.hextale.client.screen.book.CircleDiorama::register);
         modBus.addListener(com.pockyl.hextale.client.screen.MultiblockDiorama::register);
         modBus.addListener(com.pockyl.hextale.client.render.HexGlow::registerPipelines);
