@@ -88,6 +88,42 @@ public final class VoidRealmGameTests {
         helper.succeed();
     }
 
+    /** Wherever a gate lands, ground to stand on lies within the reach of its search (40 blocks). */
+    @HexTest(maxTicks = 400)
+    public static void everyGateFindsGroundNearby(GameTestHelper helper) {
+        VoidShapes shapes = new VoidShapes(77L);
+        int volume = 16 * 16 * VoidShapes.HEIGHT;
+        byte[] kinds = new byte[volume];
+        float[] best = new float[volume];
+        java.util.Random random = new java.util.Random(5);
+        for (int gate = 0; gate < 16; gate++) {
+            int x = random.nextInt(8000) - 4000;
+            int z = random.nextInt(8000) - 4000;
+            boolean found = false;
+            for (int cx = (x - 40) >> 4; cx <= (x + 40) >> 4 && !found; cx++) {
+                for (int cz = (z - 40) >> 4; cz <= (z + 40) >> 4 && !found; cz++) {
+                    shapes.fill(cx, cz, kinds, best);
+                    for (int i = 0; i < 256 && !found; i++) {
+                        int lx = i & 15;
+                        int lz = i >> 4;
+                        for (int y = VoidShapes.HEIGHT - 3; y > 30; y--) {
+                            byte kind = kinds[VoidShapes.index(lx, y, lz)];
+                            if (kind == VoidShapes.AIR) {
+                                continue;
+                            }
+                            found = (kind == VoidShapes.SOIL || kind == VoidShapes.FLESH || kind == VoidShapes.CHITIN)
+                                    && kinds[VoidShapes.index(lx, y + 1, lz)] == VoidShapes.AIR
+                                    && kinds[VoidShapes.index(lx, y + 2, lz)] == VoidShapes.AIR;
+                            break;
+                        }
+                    }
+                }
+            }
+            helper.assertTrue(found, "ground near a gate at " + x + ", " + z);
+        }
+        helper.succeed();
+    }
+
     /** A held breach takes a player through to its gate in the Void; the gate lets them back out beside the breach. */
     @HexTest(maxTicks = 600, padding = 8)
     @SuppressWarnings("removal")

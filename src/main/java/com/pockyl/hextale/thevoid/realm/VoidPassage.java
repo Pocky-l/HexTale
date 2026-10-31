@@ -215,18 +215,52 @@ public final class VoidPassage {
     }
 
     /**
-     * The ground a gate stands on: the top of the plate under (x, z), looked for from high above down to low, skipping
-     * the ribs' crests; {@link #LEDGE_Y} when the column falls straight into the abyss.
+     * The ground a gate stands on: the top of a plate near (x, z) - looked for in a widening spiral up to
+     * {@link #GROUND_SEARCH} blocks out, plants counting as air, chitin as ground - the one nearest {@link #LEDGE_Y}.
+     * {x, y, z} of the spot, or the column itself at {@link #LEDGE_Y} when the Void there is all air.
      */
-    private static int ground(ServerLevel realm, int x, int z) {
-        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, 230, z);
-        for (; pos.getY() > 30; pos.move(net.minecraft.core.Direction.DOWN)) {
-            BlockState state = realm.getBlockState(pos);
-            if ((state.is(ModBlocks.VOID_SOIL.get()) || state.is(ModBlocks.VOID_ROCK.get())) && realm.getBlockState(pos.above()).isAir()) {
-                return pos.getY() + 1;
+    private static int[] ground(ServerLevel realm, int x, int z) {
+        int[] best = null;
+        double bestScore = Double.MAX_VALUE;
+        for (int r = 0; r <= GROUND_SEARCH; r += 4) {
+            int steps = r == 0 ? 1 : Math.max(8, r * 2);
+            for (int i = 0; i < steps; i++) {
+                double a = Math.PI * 2 * i / steps;
+                int cx = x + (int) Math.round(Math.cos(a) * r);
+                int cz = z + (int) Math.round(Math.sin(a) * r);
+                realm.getChunk(cx >> 4, cz >> 4);
+                BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(cx, 230, cz);
+                for (; pos.getY() > 30; pos.move(net.minecraft.core.Direction.DOWN)) {
+                    if (!standsOn(realm.getBlockState(pos)) || !open(realm, pos.above()) || !open(realm, pos.above(2))) {
+                        continue;
+                    }
+                    double score = Math.abs(pos.getY() + 1 - LEDGE_Y) + r * 0.8;
+                    if (score < bestScore) {
+                        bestScore = score;
+                        best = new int[]{cx, pos.getY() + 1, cz};
+                    }
+                    break;
+                }
+            }
+            if (best != null && r >= 12) {
+                break;
             }
         }
-        return LEDGE_Y;
+        return best != null ? best : new int[]{x, LEDGE_Y, z};
+    }
+
+    /** How far round a gate's column the ground is looked for. */
+    private static final int GROUND_SEARCH = 40;
+
+    private static boolean standsOn(BlockState state) {
+        return state.is(ModBlocks.VOID_SOIL.get()) || state.is(ModBlocks.VOID_ROCK.get()) || state.is(ModBlocks.HUSK_CHITIN.get())
+                || state.is(ModBlocks.HUSK_CHITIN_RIDGE.get());
+    }
+
+    /** Room to stand in: air or something one walks through (the Void's plants). */
+    private static boolean open(ServerLevel realm, BlockPos pos) {
+        BlockState state = realm.getBlockState(pos);
+        return state.isAir() || state.getCollisionShape(realm, pos).isEmpty() && state.getFluidState().isEmpty();
     }
 
     /**
@@ -239,10 +273,10 @@ public final class VoidPassage {
         VoidLayout layout = VoidLayout.of(gate.voidShape(), gate.size(), gate.seed());
         if (!gate.built()) {
             // Stand it on the plate below, if there is one: one arrives on the ground of the Void, not on a perch.
-            int y = ground(realm, column.getX(), column.getZ());
-            gate = new Gate(gate.seed(), new Vec3(gate.at().x, y + 0.6 - layout.bottom(), gate.at().z), gate.yaw(), gate.shape(),
+            int[] spot = ground(realm, column.getX(), column.getZ());
+            gate = new Gate(gate.seed(), new Vec3(spot[0] + 0.5, spot[1] + 0.6 - layout.bottom(), spot[2] + 0.5), gate.yaw(), gate.shape(),
                     gate.size(), gate.home(), gate.homeAt(), gate.homeYaw(), true);
-            ledge(realm, new BlockPos(column.getX(), y, column.getZ()), layout);
+            ledge(realm, new BlockPos(spot[0], spot[1], spot[2]), layout);
         }
         if (find(realm, gate) == null) {
             TheVoid entity = TheVoid.gate(realm, gate.at(), gate.yaw(), gate.voidShape(), gate.size(), gate.seed());

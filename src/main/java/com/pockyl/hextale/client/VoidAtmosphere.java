@@ -51,7 +51,8 @@ public final class VoidAtmosphere {
         }
         float target = 0;
         AABB around = player.getBoundingBox().inflate(48);
-        for (TheVoid breach : minecraft.level.getEntitiesOfClass(TheVoid.class, around)) {
+        // A gate is the way home: it casts no gloom (only the breaches of our world do).
+        for (TheVoid breach : minecraft.level.getEntitiesOfClass(TheVoid.class, around, breach -> !breach.gate())) {
             float reach = breach.layout().reach();
             float felt = FELT + breach.size() * 3;
             float distance = (float) breach.position().distanceTo(player.getEyePosition()) - reach;
