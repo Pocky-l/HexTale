@@ -1,0 +1,56 @@
+{
+  "variants": {
+    "facing=down,burst=false": {
+      "model": "hextale:block/void_sac",
+      "x": 180
+    },
+    "facing=down,burst=true": {
+      "model": "hextale:block/void_sac_burst",
+      "x": 180
+    },
+    "facing=east,burst=false": {
+      "model": "hextale:block/void_sac",
+      "x": 90,
+      "y": 90
+    },
+    "facing=east,burst=true": {
+      "model": "hextale:block/void_sac_burst",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north,burst=false": {
+      "model": "hextale:block/void_sac",
+      "x": 90
+    },
+    "facing=north,burst=true": {
+      "model": "hextale:block/void_sac_burst",
+      "x": 90
+    },
+    "facing=south,burst=false": {
+      "model": "hextale:block/void_sac",
+      "x": 90,
+      "y": 180
+    },
+    "facing=south,burst=true": {
+      "model": "hextale:block/void_sac_burst",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,burst=false": {
+      "model": "hextale:block/void_sac"
+    },
+    "facing=up,burst=true": {
+      "model": "hextale:block/void_sac_burst"
+    },
+    "facing=west,burst=false": {
+      "model": "hextale:block/void_sac",
+      "x": 90,
+      "y": 270
+    },
+    "facing=west,burst=true": {
+      "model": "hextale:block/void_sac_burst",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

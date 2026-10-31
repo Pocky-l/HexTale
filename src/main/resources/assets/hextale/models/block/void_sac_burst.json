@@ -1,0 +1,322 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/void_sac_burst",
+    "stalk": "hextale:block/void_sac_stalk",
+    "skin": "hextale:block/void_sac_burst",
+    "lining": "hextale:block/void_sac_lining"
+  },
+  "elements": [
+    {
+      "name": "stalk_base",
+      "from": [
+        6,
+        0,
+        6
+      ],
+      "to": [
+        10,
+        1,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            15,
+            10,
+            16
+          ],
+          "texture": "#stalk"
+        },
+        "east": {
+          "uv": [
+            6,
+            15,
+            10,
+            16
+          ],
+          "texture": "#stalk"
+        },
+        "south": {
+          "uv": [
+            6,
+            15,
+            10,
+            16
+          ],
+          "texture": "#stalk"
+        },
+        "west": {
+          "uv": [
+            6,
+            15,
+            10,
+            16
+          ],
+          "texture": "#stalk"
+        },
+        "up": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#stalk"
+        },
+        "down": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#stalk",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "stalk",
+      "from": [
+        7,
+        1,
+        7
+      ],
+      "to": [
+        9,
+        3,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            13,
+            9,
+            15
+          ],
+          "texture": "#stalk"
+        },
+        "east": {
+          "uv": [
+            7,
+            13,
+            9,
+            15
+          ],
+          "texture": "#stalk"
+        },
+        "south": {
+          "uv": [
+            7,
+            13,
+            9,
+            15
+          ],
+          "texture": "#stalk"
+        },
+        "west": {
+          "uv": [
+            7,
+            13,
+            9,
+            15
+          ],
+          "texture": "#stalk"
+        },
+        "up": {
+          "uv": [
+            7,
+            7,
+            9,
+            9
+          ],
+          "texture": "#stalk"
+        }
+      }
+    },
+    {
+      "name": "skin",
+      "from": [
+        3,
+        3,
+        3
+      ],
+      "to": [
+        13,
+        13,
+        13
+      ],
+      "light_emission": 2,
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#skin"
+        },
+        "east": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#skin"
+        },
+        "south": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#skin"
+        },
+        "west": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#skin"
+        },
+        "down": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#skin"
+        }
+      }
+    },
+    {
+      "name": "lining_n",
+      "from": [
+        4,
+        3,
+        4
+      ],
+      "to": [
+        12,
+        8,
+        4
+      ],
+      "faces": {
+        "south": {
+          "uv": [
+            4,
+            8,
+            12,
+            13
+          ],
+          "texture": "#lining"
+        }
+      }
+    },
+    {
+      "name": "lining_s",
+      "from": [
+        4,
+        3,
+        12
+      ],
+      "to": [
+        12,
+        8,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            8,
+            12,
+            13
+          ],
+          "texture": "#lining"
+        }
+      }
+    },
+    {
+      "name": "lining_w",
+      "from": [
+        4,
+        3,
+        4
+      ],
+      "to": [
+        4,
+        8,
+        12
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            4,
+            8,
+            12,
+            13
+          ],
+          "texture": "#lining"
+        }
+      }
+    },
+    {
+      "name": "lining_e",
+      "from": [
+        12,
+        3,
+        4
+      ],
+      "to": [
+        12,
+        8,
+        12
+      ],
+      "faces": {
+        "west": {
+          "uv": [
+            4,
+            8,
+            12,
+            13
+          ],
+          "texture": "#lining"
+        }
+      }
+    },
+    {
+      "name": "lining_floor",
+      "from": [
+        4,
+        4,
+        4
+      ],
+      "to": [
+        12,
+        4,
+        12
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ],
+          "texture": "#lining"
+        }
+      }
+    }
+  ]
+}
