@@ -1,0 +1,23 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "B B",
+    "BOB",
+    "IBI"
+  ],
+  "key": {
+    "B": {
+      "tag": "c:ingots/brass"
+    },
+    "I": {
+      "tag": "c:ingots/iron"
+    },
+    "O": {
+      "item": "hextale:unstable_hextech"
+    }
+  },
+  "result": {
+    "id": "hextale:bulwark_chestplate"
+  },
+  "charge": 3
+}

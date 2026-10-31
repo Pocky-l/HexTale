@@ -1,0 +1,21 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "item": "hextale:tendril_dagger"
+  },
+  "pedestals": [
+    {
+      "item": "hextale:charged_hexsteel_ingot"
+    },
+    {
+      "item": "hextale:engraved_diamond"
+    }
+  ],
+  "essences": {
+    "metal": 16,
+    "ore": 12,
+    "crystal": 8
+  },
+  "result": "hextale:refined_tendril_dagger",
+  "keep_components": true
+}

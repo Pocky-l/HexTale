@@ -1,0 +1,18 @@
+{
+  "region": "forge",
+  "stage": "late",
+  "icon": "hextale:radiant_alloy_ingot",
+  "parents": [
+    "refined_pickaxe",
+    "hextech_gemstone"
+  ],
+  "display": {
+    "kind": "alloy",
+    "result": "hextale:radiant_alloy_ingot"
+  },
+  "research": "radiant_alloy",
+  "pos": [
+    1150,
+    95
+  ]
+}

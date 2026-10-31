@@ -1,0 +1,16 @@
+{
+  "loader": "neoforge:item_layers",
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "hextale:item/charged_hexsteel_ingot",
+    "layer1": "hextale:item/charged_hexsteel_ingot_glow"
+  },
+  "neoforge_data": {
+    "layers": {
+      "1": {
+        "block_light": 15,
+        "sky_light": 15
+      }
+    }
+  }
+}

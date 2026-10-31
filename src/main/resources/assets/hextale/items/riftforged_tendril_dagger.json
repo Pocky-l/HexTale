@@ -1,0 +1,41 @@
+{
+  "model": {
+    "type": "hextale:animated",
+    "model": {
+      "type": "minecraft:composite",
+      "models": [
+        {
+          "type": "minecraft:model",
+          "model": "hextale:item/riftforged_tendril_dagger"
+        },
+        {
+          "type": "minecraft:special",
+          "base": "hextale:item/riftforged_tendril_dagger",
+          "model": {
+            "type": "hextale:tool_aura",
+            "kind": "void",
+            "from": [
+              8,
+              -9,
+              8
+            ],
+            "to": [
+              8,
+              22,
+              8
+            ],
+            "profile": [
+              1.4,
+              1.4,
+              1.05,
+              3.5,
+              2.1,
+              2.1,
+              1.05
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

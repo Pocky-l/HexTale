@@ -48,7 +48,8 @@ A shaped (`pattern` + `key`) or shapeless (`ingredients`, 1-9) grid like the van
 
 The altar's centre item, up to any number of pedestal items (each pedestal holds one, matched exactly), essences drawn
 from the jars around the circle (mB by essence id), optional runes set on the steles, and the result.
-`keep_components: true` lets the result keep the centre item's enchantments, damage and name.
+`keep_components: true` lets the result keep the centre item's enchantments, damage and name (and runes).
+`hexcore: true` makes it a ritual only a Hexcore performs (the radiant and riftforged tools).
 
 ```json
 {
@@ -67,7 +68,8 @@ compounds `steam`, `magma`, `ash`, `plant`, `crystal`, `ore`, `cold`, `sap`, `be
 ### `hextale:alloying`
 
 One to three inputs (each in its own furnace slot, any order), the result, burning time in ticks (default 200) and
-experience.
+experience. `foundry: true` makes it an alloy only the Hex Foundry melts, at full heat (750 and above; the inputs may lie
+in any of its nine slots, ore melts beside them); `thinning` is what making one adds to the chunk's Thinning.
 
 ```json
 {
@@ -159,6 +161,7 @@ Items:
 | `hextale:magic_tree_catalysts` | saplings the crucible turns into a magic tree sprout |
 | `hextale:soaks_essence` | blocks a crucible or drain valve soaks into magic stone |
 | `hextale:repairs_hexsteel`, `hextale:repairs_arcane_cloth` | repair materials |
+| `hextale:rune_tier/refined`, `hextale:rune_tier/radiant`, `hextale:rune_tier/riftforged` | how many runes a tool or worn piece holds: 2, 3, 4 (anything else that takes runes: 1) |
 
 Blocks: `hextale:carries_lightning` (what a lightning wave runs through and wakes), `hextale:resonant` (what the
 Tuning Fork hears), `hextale:blastable` (what a Dust Charge breaks), `hextale:acid_dissolves`,

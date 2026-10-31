@@ -1,0 +1,30 @@
+{
+  "type": "hextale:alloying",
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:ingots/gold"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "hextale:charged_hexsteel_ingot"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "hextale:gemstone_dust"
+      },
+      "count": 2
+    }
+  ],
+  "result": {
+    "id": "hextale:radiant_alloy_ingot",
+    "count": 2
+  },
+  "time": 400,
+  "experience": 3.0,
+  "foundry": true
+}

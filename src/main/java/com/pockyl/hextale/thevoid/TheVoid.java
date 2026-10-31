@@ -90,6 +90,12 @@ public class TheVoid extends Entity {
     public static final int BIRTH_MB = 500;
     /** mB of essence a thrown item is worth per essence point it carries. */
     public static final int ITEM_MEAL = 4;
+    /** Ticks a held breach keeps Radiant Alloy before it gives it back as Riftmetal. */
+    public static final int RIFT_TICKS = 400;
+    /** Chance per feeding round that a held breach grows a Void Crystal cluster on Void Rock near it. */
+    public static final float CRYSTAL_CHANCE = 0.25F;
+    /** How far from a held breach its Void Crystals grow. */
+    public static final int CRYSTAL_REACH = 6;
     /** Ticks a held breach takes to fold into its heart. */
     public static final int FOLD_TICKS = 100;
     /** Magic damage of a touch. */
@@ -133,6 +139,9 @@ public class TheVoid extends Entity {
     private long nextPush = -1;
     /** Server: what it has eaten since its last birth (mB). */
     private float fed;
+    /** Radiant Alloy ingots it holds to give back as Riftmetal, and when. */
+    private int riftForging;
+    private long riftReadyAt;
     /** Server: the next birth is a grown voidling (a big meal). */
     private boolean bigMeal;
     /** Server: the push under way is a birth from being fed. */
@@ -447,10 +456,16 @@ public class TheVoid extends Entity {
         if (subdued() && now % 10 == 5) {
             eatThrown(level);
         }
+        if (riftForging > 0 && now >= riftReadyAt) {
+            giveRiftmetal(level);
+        }
         if (now % FEED_TICKS == 0) {
             if (subdued()) {
                 // Held, it neither starves nor feeds on the land.
                 entityData.set(DATA_STARVED, 0);
+                if (level.getRandom().nextFloat() < CRYSTAL_CHANCE) {
+                    growCrystal(level);
+                }
                 if (Thinning.get(level, blockPosition()) < FADES_BELOW) {
                     Quests.fireNear(level, position(), Breaches.WATCH_RADIUS, Quests.BREACH_KEPT);
                 }
@@ -589,6 +604,16 @@ public class TheVoid extends Entity {
                 continue;
             }
             net.minecraft.world.item.ItemStack stack = item.getItem();
+            if (stack.is(com.pockyl.hextale.registry.ModItems.RADIANT_ALLOY_INGOT.get()) && item.getOwner() instanceof net.minecraft.world.entity.player.Player smith
+                    && com.pockyl.hextale.knowledge.Research.of(smith).researched(com.pockyl.hextale.research.ResearchTopics.RIFTMETAL)) {
+                // Radiant Alloy is not food: the held breach keeps it a while and gives it back changed.
+                riftForging += stack.getCount();
+                riftReadyAt = level.getGameTime() + RIFT_TICKS;
+                item.discard();
+                level.sendParticles(ModParticles.glint(0xF2EADB), centre.x, centre.y, centre.z, 10, 0.2, 0.2, 0.2, 0.03);
+                level.sendParticles(ModParticles.ring(COLD), centre.x, centre.y, centre.z, 1, 0, 0, 0, 0);
+                continue;
+            }
             int points = 0;
             for (int amount : com.pockyl.hextale.research.ItemEssenceTable.get(stack.getItem()).essences().values()) {
                 points += amount;
@@ -598,6 +623,49 @@ public class TheVoid extends Entity {
             level.sendParticles(ModParticles.vapour(SMOKE), centre.x, centre.y, centre.z, 6, 0.2, 0.2, 0.2, 0.02);
             level.sendParticles(ModParticles.glint(PINK), centre.x, centre.y, centre.z, 4, 0.2, 0.2, 0.2, 0.02);
             eat(level, meal, 0);
+        }
+    }
+
+    /** The Radiant Alloy it kept comes back out of its face as Riftmetal, flung a little way out. */
+    private void giveRiftmetal(ServerLevel level) {
+        Vector3f out = orientation().transform(new Vector3f(0, 0, level.getRandom().nextBoolean() ? 1 : -1));
+        Vec3 at = position().add(out.x * (layout().halfThickness() + 0.6), out.y * (layout().halfThickness() + 0.6),
+                out.z * (layout().halfThickness() + 0.6));
+        net.minecraft.world.entity.item.ItemEntity metal = new net.minecraft.world.entity.item.ItemEntity(level, at.x, at.y, at.z,
+                new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.RIFTMETAL_INGOT.get(), riftForging));
+        metal.setDeltaMovement(out.x * 0.25, 0.15, out.z * 0.25);
+        level.addFreshEntity(metal);
+        riftForging = 0;
+        level.sendParticles(ModParticles.glint(COLD), at.x, at.y, at.z, 16, 0.25, 0.25, 0.25, 0.04);
+        level.sendParticles(ModParticles.vapour(SMOKE), at.x, at.y, at.z, 8, 0.2, 0.2, 0.2, 0.02);
+        level.playSound(null, at.x, at.y, at.z, ModSounds.THE_VOID_OPEN.get(), SoundSource.AMBIENT, 0.35F, 1.6F);
+    }
+
+    /**
+     * A held breach grows a Void Crystal cluster on a face of Void Rock near it (a few random tries, no area scan); the
+     * cluster points away from the rock like amethyst.
+     */
+    private void growCrystal(ServerLevel level) {
+        BlockPos centre = blockPosition();
+        for (int attempt = 0; attempt < 6; attempt++) {
+            BlockPos rock = centre.offset(level.getRandom().nextInt(CRYSTAL_REACH * 2 + 1) - CRYSTAL_REACH,
+                    level.getRandom().nextInt(CRYSTAL_REACH * 2 + 1) - CRYSTAL_REACH,
+                    level.getRandom().nextInt(CRYSTAL_REACH * 2 + 1) - CRYSTAL_REACH);
+            if (!level.isLoaded(rock) || !level.getBlockState(rock).is(com.pockyl.hextale.registry.ModBlocks.VOID_ROCK.get())) {
+                continue;
+            }
+            net.minecraft.core.Direction face = net.minecraft.core.Direction.getRandom(level.getRandom());
+            BlockPos at = rock.relative(face);
+            if (!level.getBlockState(at).isAir()) {
+                continue;
+            }
+            net.minecraft.world.level.block.state.BlockState cluster = com.pockyl.hextale.registry.ModBlocks.VOID_CRYSTAL_CLUSTER.get()
+                    .defaultBlockState().setValue(net.minecraft.world.level.block.AmethystClusterBlock.FACING, face);
+            if (com.pockyl.hextale.world.WorldEdits.change(level, at, cluster, net.minecraft.world.level.block.Block.UPDATE_ALL,
+                    com.pockyl.hextale.world.WorldEdits.actor(level, null, null))) {
+                level.sendParticles(ModParticles.glint(COLD), at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5, 6, 0.2, 0.2, 0.2, 0.01);
+                return;
+            }
         }
     }
 
@@ -939,6 +1007,8 @@ public class TheVoid extends Entity {
         entityData.set(DATA_HELD, input.getIntOr("held", 0));
         entityData.set(DATA_CALM, input.getFloatOr("calm", 0));
         fed = input.getFloatOr("fed", 0);
+        riftForging = input.getIntOr("rift_forging", 0);
+        riftReadyAt = input.getLongOr("rift_ready_at", 0);
         entityData.set(DATA_FOLD_AT, input.getLongOr("fold_at", -1));
     }
 
@@ -958,6 +1028,8 @@ public class TheVoid extends Entity {
         output.putInt("held", heldSides());
         output.putFloat("calm", calm());
         output.putFloat("fed", fed);
+        output.putInt("rift_forging", riftForging);
+        output.putLong("rift_ready_at", riftReadyAt);
         output.putLong("fold_at", entityData.get(DATA_FOLD_AT));
     }
 

@@ -2,15 +2,41 @@
   "region": "forge",
   "stage": "mid",
   "icon": "hextale:refined_hextech_pickaxe",
-  "parents": ["hextech_gemstone", "hextech_pickaxe"],
+  "parents": [
+    "engraved_diamond",
+    "charged_hexsteel",
+    "hextech_pickaxe",
+    "hextech_axe",
+    "hextech_shovel",
+    "hextech_sword"
+  ],
   "goal": {
     "tier": 2,
     "type": "pickaxe"
   },
   "display": {
     "kind": "infusion",
-    "result": "hextale:refined_hextech_pickaxe"
+    "result": "hextale:refined_hextech_pickaxe",
+    "then": {
+      "kind": "infusion",
+      "result": "hextale:refined_hextech_axe",
+      "then": {
+        "kind": "infusion",
+        "result": "hextale:refined_hextech_shovel",
+        "then": {
+          "kind": "infusion",
+          "result": "hextale:refined_hextech_sword",
+          "then": {
+            "kind": "infusion",
+            "result": "hextale:refined_tendril_dagger"
+          }
+        }
+      }
+    }
   },
   "research": "refined_hextech_pickaxe",
-  "pos": [910, 170]
+  "pos": [
+    910,
+    170
+  ]
 }

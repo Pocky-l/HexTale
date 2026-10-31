@@ -1,0 +1,20 @@
+{
+  "region": "forge",
+  "stage": "late",
+  "icon": "hextale:riftmetal_ingot",
+  "parents": [
+    "radiant_alloy"
+  ],
+  "display": {
+    "kind": "scheme",
+    "ingredients": [
+      "hextale:radiant_alloy_ingot"
+    ],
+    "result": "hextale:riftmetal_ingot"
+  },
+  "research": "riftmetal",
+  "pos": [
+    1010,
+    560
+  ]
+}

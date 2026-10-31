@@ -1,0 +1,28 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "item": "hextale:radiant_hextech_pickaxe"
+  },
+  "pedestals": [
+    {
+      "item": "hextale:riftmetal_ingot"
+    },
+    {
+      "item": "hextale:riftmetal_ingot"
+    },
+    {
+      "item": "hextale:sealed_void_crystal"
+    },
+    {
+      "item": "hextale:void_shard"
+    }
+  ],
+  "essences": {
+    "rift": 64,
+    "shadow": 32,
+    "magic": 32
+  },
+  "result": "hextale:riftforged_pickaxe",
+  "keep_components": true,
+  "hexcore": true
+}

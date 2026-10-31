@@ -1,0 +1,20 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    " N ",
+    "NVN",
+    " N "
+  ],
+  "key": {
+    "N": {
+      "item": "hextale:nullstone"
+    },
+    "V": {
+      "item": "hextale:void_crystal"
+    }
+  },
+  "result": {
+    "id": "hextale:sealed_void_crystal"
+  },
+  "charge": 6
+}

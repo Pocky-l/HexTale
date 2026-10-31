@@ -1,5 +1,6 @@
 package com.pockyl.hextale.port.client;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -42,13 +43,16 @@ import java.util.Map;
  * Special item models on 1.21.1. The 26.x item definitions ({@code assets/hextale/items/*.json}) put a code-drawn
  * model ({@code minecraft:special}) alone or next to plain models ({@code minecraft:composite}); such items get a block
  * entity without level renderer that draws the plain models, then the special one. Their 1.21.1 item models are
- * {@code builtin/entity} with the display of the definition's base (made by the asset port script).
+ * {@code builtin/entity} with the display of the definition's base (made by the asset port script). A composite may
+ * hold several specials (drawn in order), a plain part that is the item's own model file (its geometry is kept in
+ * {@code item/port/<id>}) and a {@code minecraft:range_dispatch} on {@code minecraft:use_duration} (the charge stages
+ * of an item held in use).
  */
 @EventBusSubscriber(modid = Hextale.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public final class SpecialItemModels {
     private static final Map<ResourceLocation, MapCodec<? extends SpecialModelRenderer.Unbaked<?>>> TYPES = new HashMap<>();
     private static final Map<Item, Entry> ENTRIES = new HashMap<>();
-    private static final Map<Item, SpecialModelRenderer<?>> BAKED = new HashMap<>();
+    private static final Map<Item, List<SpecialModelRenderer<?>>> BAKED = new HashMap<>();
     private static @Nullable BlockEntityWithoutLevelRenderer renderer;
     /** Items whose own client extensions hand out {@link #customRenderer()} (one registration per item). */
     private static final java.util.Set<Item> CLAIMED = new java.util.HashSet<>();
@@ -61,7 +65,28 @@ public final class SpecialItemModels {
         TYPES.put(id, codec);
     }
 
-    private record Entry(List<ModelResourceLocation> plain, JsonObject special) {
+    /** A plain part: one model, or models picked by how long the item has been in use (thresholds rising). */
+    private record Plain(ModelResourceLocation fallback, float[] thresholds, List<ModelResourceLocation> stages) {
+        static Plain of(ModelResourceLocation model) {
+            return new Plain(model, new float[0], List.of());
+        }
+
+        ModelResourceLocation pick(float used) {
+            ModelResourceLocation picked = fallback;
+            for (int i = 0; i < thresholds.length; i++) {
+                if (used >= thresholds[i]) {
+                    picked = stages.get(i);
+                }
+            }
+            return picked;
+        }
+
+        java.util.stream.Stream<ModelResourceLocation> all() {
+            return java.util.stream.Stream.concat(java.util.stream.Stream.of(fallback), stages.stream());
+        }
+    }
+
+    private record Entry(List<Plain> plain, List<JsonObject> specials) {
     }
 
     private static Map<Item, Entry> entries() {
@@ -102,22 +127,42 @@ public final class SpecialItemModels {
         } else {
             parts.add(model);
         }
-        List<ModelResourceLocation> plain = new ArrayList<>();
-        JsonObject special = null;
+        List<Plain> plain = new ArrayList<>();
+        List<JsonObject> specials = new ArrayList<>();
         for (JsonObject part : parts) {
             String type = part.get("type").getAsString();
             if (type.equals("minecraft:special")) {
-                special = part.getAsJsonObject("model");
+                specials.add(part.getAsJsonObject("model"));
             } else if (type.equals("minecraft:model")) {
-                plain.add(ModelResourceLocation.standalone(ResourceLocation.parse(part.get("model").getAsString())));
+                plain.add(Plain.of(location(id, part)));
+            } else if (type.equals("minecraft:range_dispatch") && "minecraft:use_duration".equals(part.get("property").getAsString())) {
+                float scale = part.has("scale") ? part.get("scale").getAsFloat() : 1;
+                JsonArray entries = part.getAsJsonArray("entries");
+                float[] thresholds = new float[entries.size()];
+                List<ModelResourceLocation> stages = new ArrayList<>();
+                for (int i = 0; i < thresholds.length; i++) {
+                    JsonObject entry = entries.get(i).getAsJsonObject();
+                    thresholds[i] = entry.get("threshold").getAsFloat() / scale;
+                    stages.add(location(id, entry.getAsJsonObject("model")));
+                }
+                plain.add(new Plain(location(id, part.getAsJsonObject("fallback")), thresholds, stages));
             }
         }
-        return special == null ? null : new Entry(plain, special);
+        return specials.isEmpty() ? null : new Entry(plain, specials);
+    }
+
+    /** A plain model part; the item's own model file is the builtin one on 1.21.1, its geometry sits in item/port. */
+    private static ModelResourceLocation location(ResourceLocation item, JsonObject part) {
+        ResourceLocation model = ResourceLocation.parse(part.get("model").getAsString());
+        if (model.equals(item.withPrefix("item/"))) {
+            model = item.withPrefix("item/port/");
+        }
+        return ModelResourceLocation.standalone(model);
     }
 
     @SubscribeEvent
     static void registerModels(ModelEvent.RegisterAdditional event) {
-        entries().values().forEach(entry -> entry.plain().forEach(event::register));
+        entries().values().forEach(entry -> entry.plain().forEach(part -> part.all().forEach(event::register)));
     }
 
     @SubscribeEvent
@@ -172,23 +217,41 @@ public final class SpecialItemModels {
             return;
         }
         Minecraft minecraft = Minecraft.getInstance();
-        for (ModelResourceLocation location : entry.plain()) {
-            BakedModel model = minecraft.getModelManager().getModel(location);
+        float used = used(stack);
+        for (Plain part : entry.plain()) {
+            BakedModel model = minecraft.getModelManager().getModel(part.pick(used));
             minecraft.getItemRenderer().renderModelLists(model, stack, light, overlay, poseStack,
                     ItemRenderer.getFoilBufferDirect(buffers, Sheets.translucentCullBlockSheet(), true, stack.hasFoil()));
         }
-        SpecialModelRenderer<Object> special = (SpecialModelRenderer<Object>) BAKED.computeIfAbsent(stack.getItem(), item -> bake(entry));
-        if (special != null) {
+        for (SpecialModelRenderer<?> baked : BAKED.computeIfAbsent(stack.getItem(), item -> bake(entry))) {
+            SpecialModelRenderer<Object> special = (SpecialModelRenderer<Object>) baked;
             special.submit(special.extractArgument(stack), poseStack, new SubmitNodeCollector(buffers), light, overlay, stack.hasFoil(), 0);
         }
     }
 
-    private static @Nullable SpecialModelRenderer<?> bake(Entry entry) {
-        MapCodec<? extends SpecialModelRenderer.Unbaked<?>> codec = TYPES.get(ResourceLocation.parse(entry.special().get("type").getAsString()));
+    /** Ticks the local player has held this very stack in use (26.x: the holder's use duration), else 0. */
+    private static float used(ItemStack stack) {
+        net.minecraft.client.player.LocalPlayer player = Minecraft.getInstance().player;
+        return player != null && player.isUsingItem() && player.getUseItem() == stack ? player.getTicksUsingItem() : 0;
+    }
+
+    private static List<SpecialModelRenderer<?>> bake(Entry entry) {
+        List<SpecialModelRenderer<?>> baked = new ArrayList<>();
+        for (JsonObject special : entry.specials()) {
+            SpecialModelRenderer<?> renderer = bake(special);
+            if (renderer != null) {
+                baked.add(renderer);
+            }
+        }
+        return baked;
+    }
+
+    private static @Nullable SpecialModelRenderer<?> bake(JsonObject special) {
+        MapCodec<? extends SpecialModelRenderer.Unbaked<?>> codec = TYPES.get(ResourceLocation.parse(special.get("type").getAsString()));
         if (codec == null) {
             return null;
         }
-        return codec.codec().parse(JsonOps.INSTANCE, entry.special()).result()
+        return codec.codec().parse(JsonOps.INSTANCE, special).result()
                 .map(unbaked -> unbaked.bake(new SpecialModelRenderer.BakingContext(Minecraft.getInstance().getEntityModels())))
                 .orElse(null);
     }

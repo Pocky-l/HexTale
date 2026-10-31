@@ -12,4 +12,6 @@ public class EntityRenderState {
     public float ageInTicks;
     public float partialTick;
     public int lightCoords;
+    /** Outline colour of a glowing entity (1.21.1 draws outlines itself: always 0 here). */
+    public int outlineColor;
 }

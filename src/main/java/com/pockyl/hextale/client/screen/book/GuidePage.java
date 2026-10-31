@@ -1845,6 +1845,11 @@ final class GuidePage {
                 Component.translatable("book.hextale.quest.infusion.center").withColor(StarBook.GOLD)));
         int ax = ringCentreX + INFUSION_RING + SLOT / 2 + 6;
         arrow(graphics, ax, ringCentreY);
+        if (recipe.hexcore()) {
+            // A late ritual: only the Hexcore performs it - its icon over the arrow says so.
+            tooltip = orTooltip(tooltip, slot(graphics, new ItemStack(com.pockyl.hextale.registry.ModItems.HEXCORE.get()), ax + 2,
+                    ringCentreY - SLOT - 6, mouseX, mouseY, Component.translatable("book.hextale.quest.infusion.hexcore").withColor(0xC070F0)));
+        }
         tooltip = orTooltip(tooltip, slot(graphics, recipe.resultFor(center), ax + 22, ringCentreY - SLOT / 2, mouseX, mouseY, null));
         int rowY = y + INFUSION_RING * 2 + SLOT + 4;
         var essences = recipe.totalEssences().asMap();

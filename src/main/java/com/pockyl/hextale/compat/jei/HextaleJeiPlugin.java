@@ -268,6 +268,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         // Without a hex recipe the workbench crafts like a table and the furnace smelts like a furnace.
         registration.addRecipeCatalysts(mezz.jei.api.constants.RecipeTypes.CRAFTING, ModItems.HEX_WORKBENCH.get());
         registration.addRecipeCatalysts(AlloyingCategory.TYPE, ModItems.HEX_FURNACE.get());
+        registration.addRecipeCatalysts(AlloyingCategory.TYPE, ModItems.HEX_FOUNDRY.get());
         registration.addRecipeCatalysts(mezz.jei.api.constants.RecipeTypes.SMELTING, ModItems.HEX_FURNACE.get());
         registration.addRecipeCatalysts(mezz.jei.api.constants.RecipeTypes.SMELTING, ModItems.HEX_FOUNDRY.get());
         registration.addRecipeCatalysts(HextechWorkingCategory.TYPE, ModItems.HEX_LAPIDARY.get());

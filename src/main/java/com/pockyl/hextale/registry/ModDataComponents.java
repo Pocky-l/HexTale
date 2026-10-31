@@ -211,6 +211,12 @@ public final class ModDataComponents {
                     .persistent(com.pockyl.hextale.thevoid.BreachHeart.CODEC)
                     .networkSynchronized(com.pockyl.hextale.thevoid.BreachHeart.STREAM_CODEC));
 
+    /** The crystal heart of a Bulwark chestplate: its charge, and whether it cracked. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.runework.BulwarkHeart.Charge>> HEART_CHARGE =
+            COMPONENTS.registerComponentType("heart_charge", builder -> builder
+                    .persistent(com.pockyl.hextale.runework.BulwarkHeart.Charge.CODEC)
+                    .networkSynchronized(com.pockyl.hextale.runework.BulwarkHeart.Charge.STREAM_CODEC));
+
     /** The essence in a flask or a tank item. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<EssenceMix>> ESSENCE =
             COMPONENTS.registerComponentType("essence", builder -> builder

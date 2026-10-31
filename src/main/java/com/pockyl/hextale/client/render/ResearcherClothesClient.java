@@ -72,7 +72,7 @@ public final class ResearcherClothesClient {
     }
 
     /** 1.21.1's humanoid model wants the hat beside the head (26.x keeps it under the head): an empty one is added. */
-    private static net.minecraft.client.model.geom.ModelPart withRootHat(net.minecraft.client.model.geom.ModelPart root) {
+    static net.minecraft.client.model.geom.ModelPart withRootHat(net.minecraft.client.model.geom.ModelPart root) {
         if (root.hasChild("hat")) {
             return root;
         }

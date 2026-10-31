@@ -1,0 +1,29 @@
+{
+  "region": "workshop",
+  "stage": "mid",
+  "icon": "hextale:bulwark_chestplate",
+  "parents": [
+    "hexsteel"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:bulwark_helmet",
+    "then": {
+      "kind": "hex_crafting",
+      "result": "hextale:bulwark_chestplate",
+      "then": {
+        "kind": "hex_crafting",
+        "result": "hextale:bulwark_leggings",
+        "then": {
+          "kind": "hex_crafting",
+          "result": "hextale:bulwark_boots"
+        }
+      }
+    }
+  },
+  "research": "bulwark",
+  "pos": [
+    690,
+    250
+  ]
+}

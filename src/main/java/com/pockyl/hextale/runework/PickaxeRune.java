@@ -8,8 +8,8 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes a hextech pickaxe takes - like enchantments, burned in at the Hextech Altar from rune steles, up to
- * {@link PickaxeRunes#SLOTS} on any pickaxe. A rune's strength is its stars (1-3). Runes of one
+ * The runes a hextech pickaxe takes - like enchantments, burned in at the Rune Circle from rune steles, as many as
+ * its tier holds ({@link RuneTier}). A rune's strength is its stars (1-3). Runes of one
  * {@link Clash} group cannot share a pickaxe (one shape of digging, one right-click power). The effects live in
  * {@link PickaxeEffects}; the book and JEI describe them in one short line ({@link #descriptionKey()}) with the amount
  * per star ({@link #valueKey()}, {@link PickaxeEffects#amount}).

@@ -17,12 +17,15 @@ import java.util.Map;
 /**
  * The armour material of Minecraft 26.x (same arguments) on 1.21.1: registers the vanilla material (worn textures
  * {@code textures/models/armor/<asset>_layer_1/2.png}) and keeps the durability factor for the item properties.
+ * Materials sharing an asset (26.x allows it) are registered as {@code <asset>}, {@code <asset>_2}, ... in creation order.
  *
  * <p>port-of: net.minecraft.world.item.equipment.ArmorMaterial
  */
 public final class ArmorMaterial {
     public static final DeferredRegister<net.minecraft.world.item.ArmorMaterial> MATERIALS =
             DeferredRegister.create(Registries.ARMOR_MATERIAL, com.pockyl.hextale.Hextale.MOD_ID);
+
+    private static final java.util.Set<String> NAMES = new java.util.HashSet<>();
 
     private final int durability;
     private final Holder<net.minecraft.world.item.ArmorMaterial> holder;
@@ -32,7 +35,11 @@ public final class ArmorMaterial {
         this.durability = durability;
         Map<ArmorItem.Type, Integer> byType = new EnumMap<>(ArmorItem.Type.class);
         defense.forEach((type, value) -> byType.put(type.vanilla(), value));
-        this.holder = MATERIALS.register(asset.getPath(), () -> new net.minecraft.world.item.ArmorMaterial(byType, enchantmentValue,
+        String name = asset.getPath();
+        for (int i = 2; !NAMES.add(name); i++) {
+            name = asset.getPath() + "_" + i;
+        }
+        this.holder = MATERIALS.register(name, () -> new net.minecraft.world.item.ArmorMaterial(byType, enchantmentValue,
                 equipSound, () -> Ingredient.of(repairItems), List.of(new net.minecraft.world.item.ArmorMaterial.Layer(asset)),
                 toughness, knockbackResistance));
     }

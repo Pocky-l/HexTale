@@ -51,7 +51,11 @@ public final class RuneWorkGameTests {
     }
 
     private static ItemStack pickaxe(PickaxeRune... runes) {
-        ItemStack tool = new ItemStack(ModItems.pickaxe(HextechPickaxe.HEXTECH).get());
+        return pickaxe(HextechPickaxe.HEXTECH, runes);
+    }
+
+    private static ItemStack pickaxe(HextechPickaxe tier, PickaxeRune... runes) {
+        ItemStack tool = new ItemStack(ModItems.pickaxe(tier).get());
         PickaxeRunes on = PickaxeRunes.EMPTY;
         for (PickaxeRune rune : runes) {
             on = on.with(rune, 1);
@@ -434,6 +438,45 @@ public final class RuneWorkGameTests {
         helper.assertTrue(Ritual.altarOf(helper.getLevel(), helper.absolutePos(STELE)) == null, "steles serve rune circles only");
         HextechAltarBlockEntity circle = runeCircle(helper, new ItemStack(ModItems.RUNE_CHALK.get()), EssenceMix.EMPTY);
         helper.assertFalse(circle.performs(Ritual.Kind.INFUSE), "and the circle makes nothing");
+        helper.succeed();
+    }
+
+    /**
+     * Rune places grow with the tier (owner 2026-10-30): a first pickaxe holds one rune, a refined one two, a radiant one
+     * three and a riftforged one four; a sword starts at one too. Runes burned above the limit before stay.
+     */
+    @HexTest
+    public static void runeSlotsGrowWithTheTier(GameTestHelper helper) {
+        runeCircle(helper, pickaxe(), EssenceMix.EMPTY);
+        stele(helper, PickaxeRune.MAGNET, 1);
+        helper.assertTrue(Ritual.engraving(pickaxe(), scan(helper)).possible(), "a first pickaxe takes its first rune");
+        helper.assertTrue("full".equals(Ritual.engraving(pickaxe(PickaxeRune.SMELTING), scan(helper)).refusal()), "but no second");
+        helper.assertTrue(Ritual.engraving(pickaxe(HextechPickaxe.REFINED, PickaxeRune.SMELTING), scan(helper)).possible(),
+                "a refined pickaxe takes a second");
+        ItemStack radiant = pickaxe(HextechPickaxe.RADIANT, PickaxeRune.SMELTING, PickaxeRune.TEMPERING, PickaxeRune.FORGE);
+        helper.assertTrue("full".equals(Ritual.engraving(radiant, scan(helper)).refusal()), "a radiant pickaxe holds three");
+        ItemStack riftforged = pickaxe(HextechPickaxe.RIFTFORGED, PickaxeRune.SMELTING, PickaxeRune.TEMPERING, PickaxeRune.FORGE);
+        helper.assertTrue(Ritual.engraving(riftforged, scan(helper)).possible(), "a riftforged one takes a fourth");
+        ItemStack sword = new ItemStack(ModItems.HEXTECH_SWORD.get());
+        helper.assertTrue(RuneHolder.SWORD.slots(sword) == 1 && RuneHolder.SWORD.slots() == 4, "a first sword holds one, the best four");
+        helper.assertTrue(RuneHolder.REAPER.slots(new ItemStack(ModItems.WHIRL_REAPER.get())) == com.pockyl.hextale.runework.ReaperRune.SLOTS, "devices keep their places");
+        helper.succeed();
+    }
+
+    /** Only a Hexcore forges a radiant tool with the Void into a riftforged one (four rune places, runes kept). */
+    @HexTest
+    public static void onlyAHexcoreForgesWithTheVoid(GameTestHelper helper) {
+        ItemStack radiant = pickaxe(HextechPickaxe.RADIANT, PickaxeRune.SMELTING);
+        List<ItemStack> items = List.of(new ItemStack(ModItems.RIFTMETAL_INGOT.get()), new ItemStack(ModItems.RIFTMETAL_INGOT.get()),
+                new ItemStack(ModItems.SEALED_VOID_CRYSTAL.get()), new ItemStack(ModItems.VOID_SHARD.get()));
+        circle(helper, radiant, items, EssenceMix.EMPTY);
+        Ritual.Circle altar = scan(helper);
+        helper.assertTrue(Ritual.plan(radiant, altar, false) == null, "a plain altar cannot forge with the Void");
+        Ritual.Circle hexcore = new Ritual.Circle(altar.pedestals(), altar.steles(), altar.tanks(), true);
+        Ritual.Plan plan = Ritual.plan(radiant, hexcore, false);
+        helper.assertTrue(plan != null && plan.result().is(ModItems.pickaxe(HextechPickaxe.RIFTFORGED).get())
+                && com.pockyl.hextale.runework.RuneTier.slots(plan.result()) == 4
+                && PickaxeRunes.of(plan.result()).stars(PickaxeRune.SMELTING) == 1, "the Hexcore forges it, runes kept");
         helper.succeed();
     }
 

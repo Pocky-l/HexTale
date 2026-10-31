@@ -1,0 +1,35 @@
+{
+  "type": "hextale:alloying",
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:ingots/gold"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "hextale:charged_hexsteel_ingot"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "items": "hextale:chem_vial",
+        "components": {
+          "hextale:brew": "refined_shimmer"
+        },
+        "type": "neoforge:components"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "hextale:radiant_alloy_ingot",
+    "count": 2
+  },
+  "time": 200,
+  "experience": 3.0,
+  "foundry": true,
+  "thinning": 12.0
+}

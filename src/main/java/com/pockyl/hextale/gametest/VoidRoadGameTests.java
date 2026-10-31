@@ -88,6 +88,38 @@ public final class VoidRoadGameTests {
         });
     }
 
+    /** A held breach keeps Radiant Alloy thrown in by a researcher and gives it back as Riftmetal (level 4). */
+    @HexTest(maxTicks = 1000, padding = 8)
+    @SuppressWarnings("removal")
+    public static void aHeldBreachGivesBackRiftmetal(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        BlockPos centre = helper.absolutePos(new BlockPos(1, 4, 1));
+        List<VoidAnchorBlockEntity> anchors = ring(helper);
+        anchors.forEach(anchor -> anchor.insert(new ItemStack(ModItems.HEXTECH_CRYSTAL.get())));
+        TheVoid breach = TheVoid.rooted(level, Vec3.atCenterOf(centre), 0, VoidShape.EYE, 3.5F, 883);
+        level.addFreshEntity(breach);
+        net.minecraft.server.level.ServerPlayer smith = helper.makeMockServerPlayerInLevel();
+        com.pockyl.hextale.knowledge.Research.research(smith, com.pockyl.hextale.research.ResearchTopics.RIFTMETAL);
+        ItemEntity[] thrown = {null};
+        helper.succeedWhen(() -> {
+            helper.assertTrue(breach.subdued(), "the ring holds it");
+            if (thrown[0] == null) {
+                thrown[0] = new ItemEntity(level, breach.getX(), breach.getY() - 0.125, breach.getZ(), new ItemStack(ModItems.RADIANT_ALLOY_INGOT.get(), 2));
+                thrown[0].setNoGravity(true);
+                thrown[0].setDeltaMovement(Vec3.ZERO);
+                thrown[0].setThrower(smith);
+                level.addFreshEntity(thrown[0]);
+            }
+            helper.assertTrue(thrown[0].isRemoved(), "the breach takes the alloy in");
+            List<ItemEntity> back = level.getEntitiesOfClass(ItemEntity.class, breach.getBoundingBox().inflate(4),
+                    item -> item.getItem().is(ModItems.RIFTMETAL_INGOT.get()));
+            helper.assertTrue(!back.isEmpty() && back.get(0).getItem().getCount() == 2, "and gives it back as Riftmetal");
+            back.forEach(net.minecraft.world.entity.Entity::discard);
+            breach.discard();
+            clearRing(helper);
+        });
+    }
+
     @HexTest(maxTicks = 500, padding = 8)
     public static void aHeldBreachEatsTheSicknessOfTheLand(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();

@@ -32,7 +32,7 @@ public final class GameTests {
             RuneGiftGameTests.class, ChemGameTests.class, ShimmerGameTests.class, DualityGameTests.class, LabGameTests.class,
             SkypackGameTests.class, VoidGameTests.class, GateGameTests.class, FunnelGameTests.class, SpireGameTests.class, ShackleGameTests.class, CondenserGameTests.class, FoundryGameTests.class, VentGameTests.class, CreativeJarGameTests.class, ThinningGameTests.class, HollowbloomGameTests.class, HealingGameTests.class, VoidRoadGameTests.class, StruckGeodeGameTests.class, ForkGameTests.class, GadgetGameTests.class,
             RecipeGameTests.class, ProtectionGameTests.class, AutomationGameTests.class, QuestHookGameTests.class,
-            EssenceFluidGameTests.class, WeaponRuneGameTests.class);
+            EssenceFluidGameTests.class, WeaponRuneGameTests.class, ArsenalGameTests.class);
 
     private record Test(String name, Method method, HexTest settings) {
     }

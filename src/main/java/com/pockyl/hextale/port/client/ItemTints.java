@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * Item tints on 1.21.1: the 26.x item definitions ({@code assets/hextale/items/*.json}) name a tint per tint index;
  * here each item with tints gets an item colour that asks those sources. A select model uses the tints of its first
- * case (all cases of the mod's selects share them).
+ * case (all cases of the mod's selects share them), a composite those of its first part with tints.
  */
 @EventBusSubscriber(modid = Hextale.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public final class ItemTints {
@@ -79,8 +79,19 @@ public final class ItemTints {
             Hextale.LOGGER.warn("Item definition of {} not readable", id, e);
             return null;
         }
-        while (model != null && !model.has("tints") && model.has("cases")) {
-            model = model.getAsJsonArray("cases").get(0).getAsJsonObject().getAsJsonObject("model");
+        while (model != null && !model.has("tints") && (model.has("cases") || model.has("models"))) {
+            if (model.has("cases")) {
+                model = model.getAsJsonArray("cases").get(0).getAsJsonObject().getAsJsonObject("model");
+            } else {
+                JsonObject tinted = null;
+                for (JsonElement part : model.getAsJsonArray("models")) {
+                    if (part.getAsJsonObject().has("tints")) {
+                        tinted = part.getAsJsonObject();
+                        break;
+                    }
+                }
+                model = tinted;
+            }
         }
         if (model == null || !model.has("tints")) {
             return null;

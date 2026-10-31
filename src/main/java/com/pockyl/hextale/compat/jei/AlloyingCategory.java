@@ -44,7 +44,11 @@ public class AlloyingCategory extends AbstractRecipeCategory<AlloyingCategory.Re
     public void createRecipeExtras(IRecipeExtrasBuilder builder, Recipe recipe, IFocusGroup focuses) {
         builder.addAnimatedRecipeArrow(recipe.recipe().time()).setPosition(StepCategory.ARROW_X, StepCategory.ROW_Y);
         builder.addAnimatedRecipeFlame(300).setPosition(1, StepCategory.ROW_Y + 22);
-        if (ResearchTopics.of(recipe.recipe().result().item().value()) != null) {
+        if (recipe.recipe().foundry()) {
+            // Only the Foundry's full heat melts it: the furnace in this category's title never will.
+            builder.addText(Component.translatable("jei.hextale.alloying.foundry"), StepCategory.WIDTH - 20, 20)
+                    .setPosition(20, StepCategory.ROW_Y + 22).setColor(0xFF8A4A1C);
+        } else if (ResearchTopics.of(recipe.recipe().result().item().value()) != null) {
             builder.addText(Component.translatable("gui.hextale.hex_furnace.locked"), StepCategory.WIDTH - 20, 20)
                     .setPosition(20, StepCategory.ROW_Y + 22).setColor(0xFF8A4A1C);
         }

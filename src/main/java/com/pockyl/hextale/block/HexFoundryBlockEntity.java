@@ -41,6 +41,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.Tags;
 
+import com.pockyl.hextale.crafting.AlloyRecipe;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.EssenceNetwork;
 import com.pockyl.hextale.essence.JarReach;
@@ -82,6 +83,8 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
     public static final int MAX_HEAT = 1000;
     /** Below this nothing melts yet: the kiln is still waking. */
     public static final int MELT_HEAT = 250;
+    /** Heat a foundry alloy (Radiant Alloy) needs: the kiln near its top. */
+    public static final int ALLOY_HEAT = 750;
     /** Heat gained per tick of burning (Bellows multiplies it) and lost per tick of standing cold. */
     private static final int HEAT_RISE = 2;
     private static final int COOLING = 1;
@@ -105,6 +108,8 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
     private final int[] progress = new int[INPUTS];
     /** Cooking ticks each input needs (0 = nothing melting there). */
     private final int[] total = new int[INPUTS];
+    /** Ticks done on the alloy in progress, in hundredths. */
+    private int alloyProgress;
     private int heat;
     private int fire;
     /** The largest fire since it last ran out: the gauge's full mark. */
@@ -274,8 +279,28 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
         @SuppressWarnings("unchecked")
         RecipeHolder<SmeltingRecipe>[] recipes = new RecipeHolder[INPUTS];
         boolean full = false;
+        // An alloy takes its slots for itself; the rest melt beside it.
+        AlloyRecipe.Found alloy = AlloyRecipe.findInFoundry(items.subList(0, INPUTS), false);
+        boolean[] alloying = new boolean[INPUTS];
+        if (alloy != null && !fits(alloy.recipe().result().create())) {
+            full = true;
+            alloy = null;
+        }
+        if (alloy == null) {
+            alloyProgress = 0;
+        } else {
+            for (int slot : alloy.slots()) {
+                alloying[slot] = true;
+            }
+            active++;
+        }
         for (int slot = 0; slot < INPUTS; slot++) {
             ItemStack stack = items.get(slot);
+            if (alloying[slot]) {
+                progress[slot] = 0;
+                total[slot] = 0;
+                continue;
+            }
             RecipeHolder<SmeltingRecipe> recipe = recipe(level, stack);
             if (recipe == null) {
                 progress[slot] = 0;
@@ -312,6 +337,13 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
         int bellows = strength(FoundryRune.BELLOWS);
         int rise = bellows == 0 ? HEAT_RISE : Math.round(HEAT_RISE * HolderRune.at(FoundryRune.HEATING, bellows));
         heat = Math.min(MAX_HEAT, heat + rise);
+        if (alloy != null && heat >= ALLOY_HEAT) {
+            alloyProgress += Math.round(speed() * 100);
+            if (alloyProgress >= alloy.recipe().time() * 100) {
+                alloyProgress = 0;
+                alloy(level, alloy);
+            }
+        }
         if (heat >= MELT_HEAT) {
             int step = Math.round(speed() * 100);
             for (int slot = 0; slot < INPUTS; slot++) {
@@ -379,6 +411,23 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
             level.playSound(null, grate.x, grate.y, grate.z, ModSounds.FORGE_MELT.get(), SoundSource.BLOCKS, 0.6F, 0.8F + level.getRandom().nextFloat() * 0.2F);
             level.sendParticles(ModParticles.spark(ModParticles.FIRE), grate.x, grate.y + 0.5, grate.z, 3, 0.2, 0.05, 0.2, 0.15);
         }
+    }
+
+    /** A foundry alloy came out: its inputs are used up, the result goes to the outputs, any Thinning is paid. */
+    private void alloy(ServerLevel level, AlloyRecipe.Found found) {
+        AlloyRecipe recipe = found.recipe();
+        for (int i = 0; i < found.slots().length; i++) {
+            items.get(found.slots()[i]).shrink(recipe.inputs().get(i).count());
+        }
+        insert(recipe.result().create());
+        experience += recipe.experience();
+        if (recipe.thinning() > 0) {
+            com.pockyl.hextale.thevoid.Thinning.add(level, worldPosition, recipe.thinning(), com.pockyl.hextale.thevoid.Thinning.Source.FUMES);
+        }
+        Vec3 grate = grate();
+        level.playSound(null, grate.x, grate.y, grate.z, ModSounds.FORGE_MELT.get(), SoundSource.BLOCKS, 0.7F, 0.6F);
+        level.sendParticles(ModParticles.glint(0xF2EADB), grate.x, grate.y + 0.6, grate.z, 12, 0.3, 0.2, 0.3, 0.03);
+        level.sendParticles(ModParticles.spark(ModParticles.FIRE), grate.x, grate.y + 0.5, grate.z, 6, 0.2, 0.05, 0.2, 0.15);
     }
 
     /** The metal grains a stone melt leaves: mostly iron, then copper, rarely gold. */
@@ -645,6 +694,7 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
             progress[i] = i < saved.length ? saved[i] : 0;
         }
         heat = input.getIntOr("heat", 0);
+        alloyProgress = input.getIntOr("alloy_progress", 0);
         fire = input.getIntOr("fire", 0);
         fireTop = input.getIntOr("fire_top", 0);
         experience = input.getFloatOr("experience", 0);
@@ -683,6 +733,7 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
         ContainerHelper.saveAllItems(output.tag(), items, output.registries());
         output.putIntArray("progress", progress.clone());
         output.putInt("heat", heat);
+        output.putInt("alloy_progress", alloyProgress);
         output.putInt("fire", fire);
         output.putInt("fire_top", fireTop);
         output.putFloat("experience", experience);

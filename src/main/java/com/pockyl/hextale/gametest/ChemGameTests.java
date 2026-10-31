@@ -99,6 +99,28 @@ public final class ChemGameTests {
         });
     }
 
+    /** Coolant on hexsteel lying on a lit Chem Burner charges it at once - for a thrower who researched charged hexsteel. */
+    @HexTest
+    @SuppressWarnings("removal")
+    public static void coolantQuenchesHexsteelOnABurner(GameTestHelper helper) {
+        BlockPos burner = new BlockPos(3, 2, 3);
+        helper.setBlock(burner, ModBlocks.CHEM_BURNER.get().defaultBlockState().setValue(ChemBurnerBlock.LIT, true));
+        Vec3 top = helper.absoluteVec(new Vec3(3.5, 3.05, 3.5));
+        net.minecraft.world.entity.item.ItemEntity ingot = new net.minecraft.world.entity.item.ItemEntity(helper.getLevel(), top.x, top.y, top.z,
+                new ItemStack(com.pockyl.hextale.registry.ModItems.HEXSTEEL_INGOT.get(), 3));
+        ingot.setDeltaMovement(Vec3.ZERO);
+        helper.getLevel().addFreshEntity(ingot);
+        ServerPlayer novice = helper.makeMockServerPlayerInLevel();
+        BrewEffects.splash(helper.getLevel(), top, Brew.COOLANT, novice, novice);
+        helper.assertTrue(ingot.getItem().is(com.pockyl.hextale.registry.ModItems.HEXSTEEL_INGOT.get()), "only a researcher knows the trick");
+        ServerPlayer smith = helper.makeMockServerPlayerInLevel();
+        Research.research(smith, ResearchTopics.CHARGED_HEXSTEEL);
+        BrewEffects.splash(helper.getLevel(), top, Brew.COOLANT, smith, smith);
+        helper.assertTrue(ingot.getItem().is(com.pockyl.hextale.registry.ModItems.CHARGED_HEXSTEEL_INGOT.get()) && ingot.getItem().getCount() == 3,
+                "the hot ingots are quenched charged");
+        helper.succeed();
+    }
+
     @HexTest
     public static void splashesChangeTheWorld(GameTestHelper helper) {
         // Acid: stone hisses away, iron rusts, the ore stays.

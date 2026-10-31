@@ -1,0 +1,31 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "item": "hextale:radiant_bulwark_helmet"
+  },
+  "pedestals": [
+    {
+      "item": "hextale:riftmetal_ingot"
+    },
+    {
+      "item": "hextale:riftmetal_ingot"
+    },
+    {
+      "item": "hextale:sealed_void_crystal"
+    },
+    {
+      "item": "hextale:void_carapace"
+    },
+    {
+      "item": "hextale:void_carapace"
+    }
+  ],
+  "essences": {
+    "rift": 64,
+    "shadow": 32,
+    "magic": 32
+  },
+  "result": "hextale:riftforged_bulwark_helmet",
+  "keep_components": true,
+  "hexcore": true
+}

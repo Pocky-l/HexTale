@@ -108,6 +108,31 @@ public final class FoundryGameTests {
         });
     }
 
+    /** At full heat the foundry melts gold, charged hexsteel and gemstone dust into Radiant Alloy; ore melts beside it. */
+    @HexTest(maxTicks = 400)
+    public static void theFoundryMeltsRadiantAlloy(GameTestHelper helper) {
+        build(helper);
+        light(helper);
+        HexFoundryBlockEntity foundry = helper.<HexFoundryBlockEntity>getBlockEntity(HATCH);
+        foundry.setItem(0, new ItemStack(Items.GOLD_INGOT, 2));
+        foundry.setItem(3, new ItemStack(ModItems.CHARGED_HEXSTEEL_INGOT.get()));
+        foundry.setItem(5, new ItemStack(ModItems.GEMSTONE_DUST.get(), 2));
+        foundry.setItem(8, new ItemStack(Items.RAW_IRON));
+        foundry.setItem(HexFoundryBlockEntity.FUEL, new ItemStack(Items.COAL, 4));
+        foundry.setHeat(HexFoundryBlockEntity.MAX_HEAT);
+        helper.succeedWhen(() -> {
+            int alloy = 0;
+            int iron = 0;
+            for (int slot = HexFoundryBlockEntity.OUTPUT_START; slot < HexFoundryBlockEntity.FUEL; slot++) {
+                ItemStack out = foundry.getItem(slot);
+                alloy += out.is(ModItems.RADIANT_ALLOY_INGOT.get()) ? out.getCount() : 0;
+                iron += out.is(Items.IRON_INGOT) ? out.getCount() : 0;
+            }
+            helper.assertTrue(alloy == 2 && iron == 1, "two ingots of Radiant Alloy and the iron beside them, got " + alloy + " / " + iron);
+            helper.assertTrue(foundry.getItem(0).isEmpty() && foundry.getItem(3).isEmpty() && foundry.getItem(5).isEmpty(), "the inputs are used up");
+        });
+    }
+
     @HexTest(maxTicks = 100)
     public static void theFoundryBurnsFireFromAJar(GameTestHelper helper) {
         build(helper);

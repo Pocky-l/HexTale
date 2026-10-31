@@ -81,6 +81,6 @@ public class HextechPickaxeItem extends PickaxeItem {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> tooltipLines, TooltipFlag flag) {
         Consumer<Component> tooltip = tooltipLines::add;
-        HextechToolItem.listRunes(PickaxeRunes.of(stack), tooltip);
+        HextechToolItem.listRunes(stack, PickaxeRunes.of(stack), tooltip);
     }
 }

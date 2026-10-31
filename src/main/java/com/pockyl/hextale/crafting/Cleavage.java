@@ -20,10 +20,15 @@ public final class Cleavage {
     /** Misaligned grinding cracks the crystal once per this many ticks. */
     public static final int CRACK_TICKS = 8;
 
-    /** What is being cut: the first cut (unstable to crystal) or the finish (crystal to stabilised gemstone). */
+    /**
+     * What is being cut: the first cut (unstable to crystal), the finish (crystal to stabilised gemstone) or the
+     * engraving (a diamond cut to a brilliant with a groove for hextech: the level 2 gem; forgiving - a cracked diamond
+     * comes back whole).
+     */
     public enum Grade {
         FIRST(3, 10, 3, 24, 9),
-        FINISH(5, 5, 2, 30, 6);
+        FINISH(5, 5, 2, 30, 6),
+        ENGRAVE(4, 8, 3, 26, 8);
 
         public final int facets;
         /** Degrees a plane may be off the disc line and still cut. */

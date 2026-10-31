@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "void",
-  "stage": "mid",
-  "icon": "minecraft:iron_chestplate",
-  "parents": ["void_chitin"],
-  "pos": [440, 860]
-}

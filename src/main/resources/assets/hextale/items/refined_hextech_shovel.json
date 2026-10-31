@@ -1,0 +1,11 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "hextale:item/refined_hextech_shovel",
+    "tints": [
+      {
+        "type": "hextale:pickaxe_runes"
+      }
+    ]
+  }
+}

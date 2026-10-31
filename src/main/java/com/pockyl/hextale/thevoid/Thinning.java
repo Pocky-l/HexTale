@@ -95,6 +95,8 @@ public final class Thinning {
     public static final float BREWED = 0.2F;
     /** Every catalyst a crucible brew or transmutation takes. */
     public static final float BREW = 1.5F;
+    /** One hexsteel ingot quenched into charged hexsteel with coolant: the chemtech shortcut to level 2 pays here. */
+    public static final float QUENCHED = 4F;
     /** Essence spent: drawn by an altar ritual, or a device's running cost from the jars, per mB. */
     public static final float SPENT = 0.07F;
     /** Matter a Disintegrator unmakes, per mB of unknown essence: the deliberate way to thin the land. */

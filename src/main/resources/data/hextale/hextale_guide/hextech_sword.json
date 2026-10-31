@@ -8,8 +8,12 @@
     "kind": "hex_crafting",
     "result": "hextale:hextech_sword",
     "then": {
-      "kind": "runes",
-      "result": "sword"
+      "kind": "hex_crafting",
+      "result": "hextale:tendril_dagger",
+      "then": {
+        "kind": "runes",
+        "result": "sword"
+      }
     }
   },
   "pos": [

@@ -91,6 +91,10 @@ public final class ModParticles {
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> MAGIC_LEAF = PARTICLES.register("magic_leaf",
             () -> new SimpleParticleType(false));
 
+    /** A crystal shard of a cracked Bulwark heart, tumbling as it falls (spawned with its velocity, count 0). */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> HEART_SHARD = PARTICLES.register("heart_shard",
+            () -> new SimpleParticleType(false));
+
     /** A soft violet-pink mote breathed out by shimmerbloom and anything burning or holding shimmer. */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SHIMMER_MOTE = PARTICLES.register("shimmer_mote",
             () -> new SimpleParticleType(false));

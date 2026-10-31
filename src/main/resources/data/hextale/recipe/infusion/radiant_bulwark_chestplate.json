@@ -1,0 +1,31 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "item": "hextale:refined_bulwark_chestplate"
+  },
+  "pedestals": [
+    {
+      "item": "hextale:radiant_alloy_ingot"
+    },
+    {
+      "item": "hextale:radiant_alloy_ingot"
+    },
+    {
+      "item": "hextale:hextech_gemstone"
+    },
+    {
+      "items": "hextale:chem_vial",
+      "components": {
+        "hextale:brew": "acid"
+      },
+      "type": "neoforge:components"
+    }
+  ],
+  "essences": {
+    "magic": 72,
+    "crystal": 24
+  },
+  "result": "hextale:radiant_bulwark_chestplate",
+  "keep_components": true,
+  "hexcore": true
+}

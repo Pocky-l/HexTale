@@ -313,7 +313,9 @@ public final class ClothesEffects {
         CLOAKED.put(player.getUUID(), level.getGameTime() + ticks);
         Vec3 spot = player.position();
         for (net.minecraft.world.entity.Mob mob : level.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, player.getBoundingBox().inflate(MIRAGE_REACH),
-                mob -> mob.getTarget() == player || mob.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.ATTACK_TARGET)
+                mob -> mob.getTarget() == player || mob.getBrain().checkMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.ATTACK_TARGET,
+                        net.minecraft.world.entity.ai.memory.MemoryStatus.REGISTERED)
+                        && mob.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.ATTACK_TARGET)
                         .filter(target -> target == player).isPresent())) {
             mob.setTarget(null);
             mob.getBrain().eraseMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.ATTACK_TARGET);
@@ -351,7 +353,8 @@ public final class ClothesEffects {
     @SubscribeEvent
     public static void onAttributes(ItemAttributeModifierEvent event) {
         ItemStack stack = event.getItemStack();
-        if (stack.is(ModItems.RESEARCHER_TROUSERS.get())) {
+        RuneHolder holder = RuneHolder.of(stack);
+        if (holder == RuneHolder.TROUSERS) {
             PickaxeRunes runes = RuneHolder.TROUSERS.runes(stack);
             add(event, runes, ClothesRune.TROUSERS_HASTE, Attributes.MOVEMENT_SPEED, ClothesRune.SPEED,
                     AttributeModifier.Operation.ADD_MULTIPLIED_BASE, EquipmentSlotGroup.LEGS);
@@ -361,7 +364,7 @@ public final class ClothesEffects {
                     AttributeModifier.Operation.ADD_VALUE, EquipmentSlotGroup.LEGS);
             add(event, runes, ClothesRune.TROUSERS_SHIFT, Attributes.STEP_HEIGHT, ClothesRune.STEP,
                     AttributeModifier.Operation.ADD_VALUE, EquipmentSlotGroup.LEGS);
-        } else if (stack.is(ModItems.RESEARCHER_BOOTS.get())) {
+        } else if (holder == RuneHolder.BOOTS) {
             add(event, RuneHolder.BOOTS.runes(stack), ClothesRune.BOOTS_WAVEWALK, Attributes.WATER_MOVEMENT_EFFICIENCY, ClothesRune.SWIM,
                     AttributeModifier.Operation.ADD_VALUE, EquipmentSlotGroup.FEET);
         }

@@ -2,14 +2,19 @@ package com.pockyl.hextale.runework;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 
 import java.util.function.Consumer;
 
@@ -17,11 +22,32 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The hextech axe, shovel and sword: tools of their kind carrying up to four runes like the pickaxe, listed in the
- * tooltip like enchantments. Their effects live in {@link ToolEffects}. On 1.21.1 each kind extends its vanilla tool
- * class (stripping, paths, sweeping) and shares the rune behaviour below.
+ * tooltip like enchantments. Their effects live in {@link ToolEffects}.
+ *
+ * <p>1.21.1: tools are {@link Tier} based, so each kind extends its vanilla tool class (stripping, paths, sweeping) as
+ * the nested {@link Axe}, {@link Shovel} and {@link Sword}; this class itself is the plain rune-carrying item the Strike
+ * Gauntlet builds on. All of them share the rune behaviour below.
  */
-public final class HextechToolItem {
-    private HextechToolItem() {
+public class HextechToolItem extends Item {
+    public HextechToolItem(Properties properties) {
+        super(properties);
+    }
+
+    /** Right click with the Blink rune: a step through the shadow to the back of the creature in sight, and a blow. */
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        InteractionResultHolder<ItemStack> blink = blink(level, player, hand);
+        return blink != null ? blink : super.use(level, player, hand);
+    }
+
+    @Override
+    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<Item> onBroken) {
+        return wear(stack, amount, entity);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> tooltipLines, TooltipFlag flag) {
+        listRunes(stack, PickaxeRunes.of(stack), tooltipLines::add);
     }
 
     public static class Axe extends AxeItem {
@@ -30,20 +56,19 @@ public final class HextechToolItem {
         }
 
         @Override
+        public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+            InteractionResultHolder<ItemStack> blink = blink(level, player, hand);
+            return blink != null ? blink : super.use(level, player, hand);
+        }
+
+        @Override
         public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<Item> onBroken) {
             return wear(stack, amount, entity);
         }
 
         @Override
-        public net.minecraft.world.InteractionResultHolder<ItemStack> use(net.minecraft.world.level.Level level,
-                net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand) {
-            net.minecraft.world.InteractionResultHolder<ItemStack> blink = blink(level, player, hand);
-            return blink != null ? blink : super.use(level, player, hand);
-        }
-
-        @Override
         public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> tooltipLines, TooltipFlag flag) {
-            listRunes(PickaxeRunes.of(stack), tooltipLines::add);
+            listRunes(stack, PickaxeRunes.of(stack), tooltipLines::add);
         }
     }
 
@@ -53,20 +78,19 @@ public final class HextechToolItem {
         }
 
         @Override
+        public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+            InteractionResultHolder<ItemStack> blink = blink(level, player, hand);
+            return blink != null ? blink : super.use(level, player, hand);
+        }
+
+        @Override
         public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<Item> onBroken) {
             return wear(stack, amount, entity);
         }
 
         @Override
-        public net.minecraft.world.InteractionResultHolder<ItemStack> use(net.minecraft.world.level.Level level,
-                net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand) {
-            net.minecraft.world.InteractionResultHolder<ItemStack> blink = blink(level, player, hand);
-            return blink != null ? blink : super.use(level, player, hand);
-        }
-
-        @Override
         public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> tooltipLines, TooltipFlag flag) {
-            listRunes(PickaxeRunes.of(stack), tooltipLines::add);
+            listRunes(stack, PickaxeRunes.of(stack), tooltipLines::add);
         }
     }
 
@@ -76,20 +100,19 @@ public final class HextechToolItem {
         }
 
         @Override
+        public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+            InteractionResultHolder<ItemStack> blink = blink(level, player, hand);
+            return blink != null ? blink : super.use(level, player, hand);
+        }
+
+        @Override
         public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<Item> onBroken) {
             return wear(stack, amount, entity);
         }
 
         @Override
-        public net.minecraft.world.InteractionResultHolder<ItemStack> use(net.minecraft.world.level.Level level,
-                net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand) {
-            net.minecraft.world.InteractionResultHolder<ItemStack> blink = blink(level, player, hand);
-            return blink != null ? blink : super.use(level, player, hand);
-        }
-
-        @Override
         public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> tooltipLines, TooltipFlag flag) {
-            listRunes(PickaxeRunes.of(stack), tooltipLines::add);
+            listRunes(stack, PickaxeRunes.of(stack), tooltipLines::add);
         }
     }
 
@@ -97,24 +120,22 @@ public final class HextechToolItem {
      * Right click with the Blink rune: a step through the shadow to the back of the creature in sight, and a blow.
      * Null when the tool has no Blink (the vanilla use goes on).
      */
-    static net.minecraft.world.@Nullable InteractionResultHolder<ItemStack> blink(net.minecraft.world.level.Level level,
-            net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand) {
+    static @Nullable InteractionResultHolder<ItemStack> blink(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (hand != net.minecraft.world.InteractionHand.MAIN_HAND || WeaponRunes.strength(stack, ToolRune.BLINK) <= 0) {
+        if (hand != InteractionHand.MAIN_HAND || WeaponRunes.strength(stack, ToolRune.BLINK) <= 0) {
             return null;
         }
         if (player.getCooldowns().isOnCooldown(stack.getItem())) {
-            return net.minecraft.world.InteractionResultHolder.fail(stack);
+            return InteractionResultHolder.fail(stack);
         }
-        if (level instanceof net.minecraft.server.level.ServerLevel server) {
-            return WeaponRunes.blink(server, player, stack) ? net.minecraft.world.InteractionResultHolder.success(stack)
-                    : net.minecraft.world.InteractionResultHolder.fail(stack);
+        if (level instanceof ServerLevel server) {
+            return WeaponRunes.blink(server, player, stack) ? InteractionResultHolder.success(stack) : InteractionResultHolder.fail(stack);
         }
-        return net.minecraft.world.InteractionResultHolder.success(stack);
+        return InteractionResultHolder.success(stack);
     }
 
     /** Mending: points of wear are often shrugged off and mended. */
-    private static int wear(ItemStack stack, int amount, @Nullable LivingEntity entity) {
+    static int wear(ItemStack stack, int amount, @Nullable LivingEntity entity) {
         RuneHolder holder = RuneHolder.of(stack);
         if (holder == null || entity == null) {
             return amount;
@@ -125,13 +146,13 @@ public final class HextechToolItem {
     }
 
     /** The runes like enchantments: name in the rune's colour and stars, then how many places are taken. */
-    static void listRunes(PickaxeRunes runes, Consumer<Component> tooltip) {
+    static void listRunes(ItemStack stack, PickaxeRunes runes, Consumer<Component> tooltip) {
         for (PickaxeRunes.Entry entry : runes.entries()) {
             tooltip.accept(Component.translatable(entry.rune().translationKey()).withColor(entry.rune().color())
                     .append(Component.literal(" " + "★".repeat(entry.stars())).withStyle(ChatFormatting.GOLD))
                     .append(Component.literal("★".repeat(3 - entry.stars())).withStyle(ChatFormatting.DARK_GRAY)));
         }
-        tooltip.accept(Component.translatable("item.hextale.hextech_pickaxe.slots", runes.count(), PickaxeRunes.SLOTS)
+        tooltip.accept(Component.translatable("item.hextale.hextech_pickaxe.slots", runes.count(), RuneTier.slots(stack))
                 .withStyle(ChatFormatting.DARK_GRAY));
     }
 }

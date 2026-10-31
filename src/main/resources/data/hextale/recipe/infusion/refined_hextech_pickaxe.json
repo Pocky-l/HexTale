@@ -5,22 +5,13 @@
   },
   "pedestals": [
     {
-      "item": "hextale:hextech_gemstone"
+      "item": "hextale:charged_hexsteel_ingot"
     },
     {
-      "item": "hextale:hextech_gemstone"
+      "item": "hextale:charged_hexsteel_ingot"
     },
     {
-      "tag": "c:gems/diamond"
-    },
-    {
-      "tag": "c:gems/diamond"
-    },
-    {
-      "tag": "c:ingots/hexsteel"
-    },
-    {
-      "tag": "c:ingots/hexsteel"
+      "item": "hextale:engraved_diamond"
     }
   ],
   "essences": {

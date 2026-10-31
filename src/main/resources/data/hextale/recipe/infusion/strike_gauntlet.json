@@ -1,0 +1,33 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "item": "minecraft:piston"
+  },
+  "pedestals": [
+    {
+      "item": "hextale:radiant_alloy_ingot"
+    },
+    {
+      "item": "hextale:radiant_alloy_ingot"
+    },
+    {
+      "item": "hextale:charged_hexsteel_ingot"
+    },
+    {
+      "item": "hextale:charged_hexsteel_ingot"
+    },
+    {
+      "item": "hextale:hextech_gemstone"
+    },
+    {
+      "tag": "c:storage_blocks/brass"
+    }
+  ],
+  "essences": {
+    "circuit": 48,
+    "earth": 32,
+    "magic": 24
+  },
+  "result": "hextale:strike_gauntlet",
+  "hexcore": true
+}

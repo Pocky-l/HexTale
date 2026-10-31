@@ -1,0 +1,24 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "item": "hextale:bulwark_boots"
+  },
+  "pedestals": [
+    {
+      "item": "hextale:charged_hexsteel_ingot"
+    },
+    {
+      "item": "hextale:charged_hexsteel_ingot"
+    },
+    {
+      "item": "hextale:engraved_diamond"
+    }
+  ],
+  "essences": {
+    "metal": 32,
+    "ore": 24,
+    "crystal": 16
+  },
+  "result": "hextale:refined_bulwark_boots",
+  "keep_components": true
+}
