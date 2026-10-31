@@ -81,6 +81,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     animals it fells drop their meat cooked.
 
 ### Changed
+- In JEI, R on a HexTale item shows how it is made first: the researcher's notes moved from JEI's Information tab,
+  which always came first, to a Notes tab of their own after the recipe tabs.
 - The later gear asks for more at the altar: every refined, radiant and riftforged tool, Tendril Dagger and Bulwark
   piece now takes six to eight pedestal items instead of two to five, with vanilla finds that fit the tool - obsidian,
   redstone and TNT for the refined pickaxe, a brush and moss for the shovel, a lightning rod and a bottle o' enchanting

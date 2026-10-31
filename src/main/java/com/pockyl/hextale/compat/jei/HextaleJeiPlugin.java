@@ -107,6 +107,8 @@ public class HextaleJeiPlugin implements IModPlugin {
         for (StepCategory category : DeviceSteps.categories(registration.getJeiHelpers().getGuiHelper())) {
             registration.addRecipeCategories(category);
         }
+        // Last, so the notes tab comes after every tab that shows how a thing is made.
+        registration.addRecipeCategories(new NotesCategory(registration.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
@@ -222,11 +224,12 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.BLANK_SCROLL.get(), "blank_scroll");
         info(registration, ModItems.RUNE_SCROLL.get(), "rune_scroll");
         info(registration, ModItems.RESEARCH_NOTES.get(), "research_notes");
-        registration.addItemStackInfo(new ItemStack(ModItems.ESSENCE_FLASK.get()), Component.translatable("jei.hextale.info.essence_flask"));
+        registration.addRecipes(NotesCategory.TYPE, NotesCategory.pages(List.of(new ItemStack(ModItems.ESSENCE_FLASK.get())),
+                Component.translatable("jei.hextale.info.essence_flask")));
     }
 
     private static void info(IRecipeRegistration registration, ItemLike item, String key) {
-        registration.addIngredientInfo(item, Component.translatable("jei.hextale.info." + key));
+        registration.addRecipes(NotesCategory.TYPE, NotesCategory.pages(List.of(new ItemStack(item)), Component.translatable("jei.hextale.info." + key)));
     }
 
     /** A click on the arrow of the workbench or the furnace opens their recipes. */
