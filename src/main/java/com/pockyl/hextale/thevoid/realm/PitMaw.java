@@ -142,10 +142,10 @@ public class PitMaw extends Monster {
             double strength = 0.035 + 0.05 * (1 - flat / PULL_REACH);
             if (flat > 0.05) {
                 player.push(to.x / flat * strength, Math.min(0, to.y) * 0.02, to.z / flat * strength);
-                player.hurtMarked = true;
+                player.needsSync = true;
             }
             if (flat < BITE_REACH && timer % 20 == 10) {
-                swing(net.minecraft.world.InteractionHand.MAIN_HAND);
+                swing(net.minecraft.world.InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, true);
                 doHurtTarget(level, player);
             }
         }

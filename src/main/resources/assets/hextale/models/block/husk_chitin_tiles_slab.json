@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "hextale:block/husk_chitin_tiles",
+    "top": "hextale:block/husk_chitin_tiles",
+    "side": "hextale:block/husk_chitin_tiles"
+  }
+}

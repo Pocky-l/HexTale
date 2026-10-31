@@ -108,6 +108,17 @@
     "hextale:husk_chitin_wall",
     "hextale:gnawed_stone_wall",
     "hextale:gnawed_iron_ore",
-    "hextale:gnawed_gold_ore"
+    "hextale:gnawed_gold_ore",
+    "hextale:husk_crust",
+    "hextale:polished_husk_chitin",
+    "hextale:polished_husk_chitin_stairs",
+    "hextale:polished_husk_chitin_slab",
+    "hextale:husk_chitin_tiles",
+    "hextale:husk_chitin_tiles_stairs",
+    "hextale:husk_chitin_tiles_slab",
+    "hextale:husk_chitin_pillar",
+    "hextale:gnawed_cobblestone",
+    "hextale:gnawed_stone_bricks",
+    "hextale:gnawed_bricks"
   ]
 }
