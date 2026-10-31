@@ -241,6 +241,9 @@ public final class VoidRoadGameTests {
         helper.assertTrue(voidling.stage() == Voidling.GROWN, "fed enough, it molts into a grown one");
         helper.assertTrue(voidling.getAttributeValue(Attributes.SCALE) > scale && voidling.getMaxHealth() > health,
                 "bigger and tougher");
+        helper.assertTrue(voidling.moltProgress(0) >= 0 && voidling.molting(0.5F) > 0, "the molt is under way");
+        voidling.tickCount += Voidling.MOLT_TICKS;
+        helper.assertTrue(voidling.moltProgress(0) < 0 && voidling.molting(0) == 0, "and over after its ticks");
         voidling.feed(level, Voidling.ELDER_AT);
         helper.assertTrue(voidling.stage() == Voidling.ELDER, "and at last an elder");
         voidling.feed(level, Voidling.ELDER_AT);

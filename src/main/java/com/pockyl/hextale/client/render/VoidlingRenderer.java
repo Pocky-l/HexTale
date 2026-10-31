@@ -27,6 +27,8 @@ public class VoidlingRenderer extends MobRenderer<Voidling, VoidlingRenderer.Sta
         public int idleVariant;
         /** 0..1..0 while it molts. */
         public float molt;
+        /** 0 -> 1 through a molt, -1 when it does not molt. */
+        public float moltTime = -1;
     }
 
     public VoidlingRenderer(EntityRendererProvider.Context context) {
@@ -46,6 +48,7 @@ public class VoidlingRenderer extends MobRenderer<Voidling, VoidlingRenderer.Sta
         state.emerge = voidling.emerging(partialTick);
         state.idleVariant = voidling.getId();
         state.molt = voidling.molting(partialTick);
+        state.moltTime = voidling.moltProgress(partialTick);
     }
 
     @Override
