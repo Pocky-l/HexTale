@@ -34,6 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   with what the breach eats and with every passage through it. A breach once held stays held.
 - A breach on clean land no longer starves away while a ring of anchors is being built round it: one tied anchor is
   enough to keep it.
+- A breach opened with a Void Shard counts as a breach for the land around it: sick land near it no longer tears open
+  a second one. Breaches already open side by side stay open and work as before.
 - Riftmetal is no longer forged by throwing Radiant Alloy into a held breach: Raw Riftmetal from the Void is alloyed
   with Radiant Alloy in the furnace. Void Crystals no longer grow round a held breach; they grow on the geodes where the
   Void's skin sags lowest.

@@ -1072,8 +1072,12 @@ public class TheVoid extends Entity {
 
     @Override
     public void remove(Entity.RemovalReason reason) {
-        if (reason.shouldDestroy() && level() instanceof ServerLevel level && rooted()) {
-            Breaches.forget(level, this);
+        if (reason.shouldDestroy() && level() instanceof ServerLevel level && !gate()) {
+            if (rooted()) {
+                Breaches.forget(level, this);
+            } else {
+                Breaches.forgetQuietly(level, this);
+            }
         }
         super.remove(reason);
     }

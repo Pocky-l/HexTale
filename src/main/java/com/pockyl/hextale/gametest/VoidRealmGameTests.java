@@ -156,6 +156,22 @@ public final class VoidRealmGameTests {
         });
     }
 
+    /** A breach opened by hand keeps the land near it from tearing open another; once it is gone, the land may. */
+    @HexTest
+    public static void aShardBreachKeepsAnotherFromOpeningNear(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        BlockPos centre = helper.absolutePos(new BlockPos(1, 4, 1));
+        TheVoid breach = TheVoid.open(level, Vec3.atCenterOf(centre), 0, VoidShape.EYE, 3, 893);
+        level.addFreshEntity(breach);
+        com.pockyl.hextale.thevoid.Breaches.note(level, breach);
+        helper.assertFalse(com.pockyl.hextale.thevoid.Breaches.mayOpenAt(level, centre.offset(200, 0, 0)), "no second breach near it");
+        BlockPos site = breach.blockPosition();
+        breach.discard();
+        // Other tests' breaches may stand within reach, so only this one's place is checked.
+        helper.assertFalse(com.pockyl.hextale.thevoid.Breaches.sites(level).sites().contains(site), "its place is free once it is gone");
+        helper.succeed();
+    }
+
     /** On clean land a breach starves - but not while a ring is being built round it. */
     @HexTest(maxTicks = 400, padding = 8)
     public static void aRingBeingBuiltKeepsABreachFromStarving(GameTestHelper helper) {
