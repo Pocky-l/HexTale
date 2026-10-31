@@ -193,6 +193,14 @@ closed. Its materials: Raw Riftmetal (`hextale:rift_ore`, needs a netherite-leve
 Crystals, Void Membranes, Husk Chitin; it generates no vanilla blocks or ores. Operators: `/hextale void enter`, `/hextale void exit [player]`. A pack that
 removes the dimension leaves breaches as they always were: they throw players back.
 
+Its creatures: `hextale:voidling`, `hextale:void_mite`, `hextale:rib_crawler`, `hextale:seer` spawn by the biomes'
+`natural_mob_spawns` (override the biome files to change them); `hextale:pit_maw` is placed by the generator in open
+ground, and a nursery's brood of voidlings with it. The Seer's mark is the effect `hextale:void_marked`. Swallowed
+ruins hold chests with the loot table `hextale:chests/swallowed_ruin` (also listed in `rune_scrolls_deep.json`).
+Currents and fog banks come from the seed and the time alone; nothing of them is saved. Guide events for quest packs:
+`void_current`, `void_floor_gave`, `crawler_dropped`, `maw_opened`, `void_marked`, `nursery_hatched`,
+`swallowed_ruin` (besides `void_entered`).
+
 ## Chest loot
 
 Rune scrolls and hextech finds are added to vanilla chest loot by global loot modifiers
