@@ -677,10 +677,17 @@ public class TheVoid extends Entity {
             float halfH = living.getBbHeight() * 0.5F;
             float depth = halfW + layout.halfThickness();
             if (Math.abs(local.z) > depth || !layout.touches(local.x, local.y, halfW, halfH, reveal)) {
+                if (living instanceof net.minecraft.server.level.ServerPlayer player) {
+                    com.pockyl.hextale.thevoid.realm.VoidPassage.clearOf(player, seed());
+                }
                 continue;
             }
             if (living instanceof net.minecraft.server.level.ServerPlayer player && subdued() && !folding()
                     && com.pockyl.hextale.thevoid.realm.VoidPassage.enter(level, this, player, local)) {
+                continue;
+            }
+            if (living instanceof Player player && player.isCreative()) {
+                // A builder in creative walks through a wild breach unharmed; only a held one takes them in.
                 continue;
             }
             repel(level, living, local);
@@ -697,8 +704,7 @@ public class TheVoid extends Entity {
     }
 
     private static boolean touchable(LivingEntity living) {
-        return living.isAlive() && !(living instanceof Voidling) && !(living instanceof VoidMite) && !living.isSpectator()
-                && !(living instanceof Player player && player.isCreative());
+        return living.isAlive() && !(living instanceof Voidling) && !(living instanceof VoidMite) && !living.isSpectator();
     }
 
     private void repel(ServerLevel level, LivingEntity living, Vector3f local) {

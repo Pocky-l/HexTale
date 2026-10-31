@@ -59,6 +59,8 @@ public final class VoidPassage {
     /** Ticks after a passage before the same player passes again. */
     public static final int REST_TICKS = 60;
     private static final int CHECK_TICKS = 40;
+    /** Players who came out by a breach and have not stepped clear of it yet, by the breach's seed. */
+    private static final Map<java.util.UUID, Integer> STILL_IN = new java.util.concurrent.ConcurrentHashMap<>();
 
     private VoidPassage() {
     }
@@ -161,8 +163,9 @@ public final class VoidPassage {
         if (realm == null) {
             return false;
         }
-        if (player.isOnPortalCooldown()) {
-            // Just came out of it: the breach lets them be.
+        Integer stillIn = STILL_IN.get(player.getUUID());
+        if (player.isOnPortalCooldown() || stillIn != null && stillIn == breach.seed()) {
+            // Just came out of it, and not yet stepped off: the breach lets them be.
             return true;
         }
         Gates gates = gates(level.getServer());
@@ -175,13 +178,14 @@ public final class VoidPassage {
         gates.put(gate);
         // They will come back out on the side they went in from, a step off the breach.
         Vector3f side = breach.orientation().transform(new Vector3f(0, 0, local.z >= 0 ? 1 : -1));
-        float off = breach.layout().halfThickness() + 1.3F;
+        float off = breach.layout().halfThickness() + 2.2F;
         Vec3 back = new Vec3(player.getX() + side.x * off, player.getY(), player.getZ() + side.z * off);
         player.setData(ModAttachments.VOID_RETURN, new Return(gate.seed(), level.dimension(), back, Mth.wrapDegrees(player.getYRot() + 180)));
         breach.strainAnchors(level, ENTER_STRAIN);
         level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.THE_VOID_EAT.get(), SoundSource.PLAYERS, 0.9F, 0.6F);
+        // They arrive with the gate at their back, looking out into the Void.
         Vec3 arrival = arrival(gate);
-        player.teleport(new TeleportTransition(realm, arrival, Vec3.ZERO, gate.yaw() + 180, 0, TeleportTransition.DO_NOTHING));
+        player.teleport(new TeleportTransition(realm, arrival, Vec3.ZERO, gate.yaw(), 0, TeleportTransition.DO_NOTHING));
         player.setPortalCooldown(REST_TICKS);
         player.resetFallDistance();
         realm.playSound(null, arrival.x, arrival.y, arrival.z, ModSounds.THE_VOID_OPEN.get(), SoundSource.PLAYERS, 0.8F, 0.7F);
@@ -291,7 +295,7 @@ public final class VoidPassage {
         gates(server).put(gate);
         player.setData(ModAttachments.VOID_RETURN, new Return(seed, player.level().dimension(), player.position(), player.getYRot()));
         Vec3 arrival = arrival(gate);
-        player.teleport(new TeleportTransition(realm, arrival, Vec3.ZERO, gate.yaw() + 180, 0, TeleportTransition.DO_NOTHING));
+        player.teleport(new TeleportTransition(realm, arrival, Vec3.ZERO, gate.yaw(), 0, TeleportTransition.DO_NOTHING));
         player.setPortalCooldown(REST_TICKS);
     }
 
@@ -348,6 +352,10 @@ public final class VoidPassage {
     }
 
     private static void out(ServerPlayer player, ServerLevel home, Vec3 to, float yaw) {
+        Return back = returnOf(player);
+        if (!back.none()) {
+            STILL_IN.put(player.getUUID(), back.seed());
+        }
         player.setData(ModAttachments.VOID_RETURN, Return.NONE);
         player.teleport(new TeleportTransition(home, to, Vec3.ZERO, yaw, player.getXRot(), TeleportTransition.DO_NOTHING));
         player.setPortalCooldown(REST_TICKS);
@@ -417,6 +425,11 @@ public final class VoidPassage {
     }
 
     // ------------------------------------------------------------------ keeping it so
+
+    /** A breach saw a player near it but not touching it: they have stepped clear and may go in again. */
+    public static void clearOf(ServerPlayer player, int seed) {
+        STILL_IN.remove(player.getUUID(), seed);
+    }
 
     /** A held breach tells its gate where it stands now (a Breach Heart may have carried it elsewhere). */
     public static void noteBreach(ServerLevel level, TheVoid breach) {
