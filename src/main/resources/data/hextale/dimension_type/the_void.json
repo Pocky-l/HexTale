@@ -20,7 +20,9 @@
     "minecraft:visual/fog_start_distance": 24.0,
     "minecraft:visual/fog_end_distance": 170.0,
     "minecraft:visual/sky_color": "#2c0a26",
-    "minecraft:visual/fog_color": "#4a3a5e"
+    "minecraft:visual/fog_color": "#4a3a5e",
+    "neoforge:custom_skybox": "hextale:void",
+    "minecraft:visual/cloud_height": 4000.0
   },
   "cardinal_light": "default",
   "coordinate_scale": 8.0,
@@ -34,5 +36,5 @@
   "min_y": 0,
   "monster_spawn_block_light_limit": 0,
   "monster_spawn_light_level": 0,
-  "skybox": "none"
+  "skybox": "overworld"
 }

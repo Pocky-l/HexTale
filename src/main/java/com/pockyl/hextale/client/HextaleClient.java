@@ -147,6 +147,7 @@ public final class HextaleClient {
         BreachCinematic.register(modBus);
         VoidTransitionScreen.register(modBus);
         RingGuide.register();
+        com.pockyl.hextale.client.render.VoidSky.register(modBus);
         SilenceHush.register();
         ClientGrapple.register();
         LevitationHum.register();

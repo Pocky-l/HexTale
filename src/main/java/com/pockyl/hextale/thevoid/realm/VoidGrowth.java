@@ -133,7 +133,7 @@ public final class VoidGrowth {
 
     /** Sinews stretched across a gap: one pushes through them, slowly. */
     public static class SinewCurtain extends Block {
-        private static final Vec3 SLOWS = new Vec3(0.45, 0.55, 0.45);
+        private static final Vec3 SLOWS = new Vec3(0.72, 0.8, 0.72);
 
         public SinewCurtain(Properties properties) {
             super(properties);

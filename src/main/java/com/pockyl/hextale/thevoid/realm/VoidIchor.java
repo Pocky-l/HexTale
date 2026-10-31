@@ -26,14 +26,41 @@ public final class VoidIchor {
     }
 
     public static FluidType type() {
-        return new FluidType(FluidType.Properties.create()
+        return new Type(FluidType.Properties.create()
                 .descriptionId("block.hextale.void_ichor")
                 .density(3000).viscosity(8000).temperature(320).lightLevel(10)
-                .motionScale(0.0022).canSwim(false).canDrown(false).canExtinguish(false).canHydrate(false)
+                .motionScale(0.0022).canSwim(true).canDrown(false).canExtinguish(false).canHydrate(false)
                 .canConvertToSource(false).supportsBoating(false).fallDistanceModifier(0.2F)
                 .pathType(PathType.DAMAGE_CAUTIOUS).adjacentPathType(null)
                 .sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL_LAVA)
                 .sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY_LAVA));
+    }
+
+    /**
+     * How one moves in the ichor: like wading through honey - slow, but one walks, swims up and climbs out (a fluid of a
+     * mod moves nothing by itself: without this an entity in it stood stock still).
+     */
+    static final class Type extends FluidType {
+        Type(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public boolean move(net.minecraft.world.entity.LivingEntity entity, net.minecraft.world.phys.Vec3 input, double gravity) {
+            double oldY = entity.getY();
+            entity.moveRelative(0.03F, input);
+            entity.move(net.minecraft.world.entity.MoverType.SELF, entity.getDeltaMovement());
+            entity.setDeltaMovement(entity.getDeltaMovement().multiply(0.62, 0.72, 0.62));
+            if (gravity != 0) {
+                entity.setDeltaMovement(entity.getDeltaMovement().add(0, -gravity / 4.0, 0));
+            }
+            // Against the rim with room above: one heaves oneself out, as out of water.
+            var motion = entity.getDeltaMovement();
+            if (entity.horizontalCollision && entity.isFree(motion.x, motion.y + 0.6 - entity.getY() + oldY, motion.z)) {
+                entity.setDeltaMovement(motion.x, 0.3, motion.z);
+            }
+            return true;
+        }
     }
 
     public static BaseFlowingFluid.Properties properties() {
