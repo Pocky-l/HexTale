@@ -225,6 +225,19 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> VOID_MITE_STEP = register("void_mite.step");
     public static final DeferredHolder<SoundEvent, SoundEvent> VOID_MITE_LATCH = register("void_mite.latch");
     public static final DeferredHolder<SoundEvent, SoundEvent> VOID_MITE_SHAKE = register("void_mite.shake");
+    /** Husk crust cracking under a weight (dry ticks, one per crack) and falling in. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> HUSK_CRUST_CRACK = register("husk_crust.crack");
+    public static final DeferredHolder<SoundEvent, SoundEvent> HUSK_CRUST_COLLAPSE = register("husk_crust.collapse");
+    /** Worn skin of the Void: the wet stretch under a weight, then the tear. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> WORN_MEMBRANE_STRETCH = register("worn_membrane.stretch");
+    public static final DeferredHolder<SoundEvent, SoundEvent> WORN_MEMBRANE_TEAR = register("worn_membrane.tear");
+    /** The Void's sacs: one bursting, a mimic twitching. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOID_SAC_BURST = register("void_sac.burst");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOID_SAC_TWITCH = register("void_sac.twitch");
+    /** A current of the Void: the whoosh of riding one (loop), its falling whine before it breaks; a fog bank rolling in. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOID_CURRENT = register("void_current.loop");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOID_CURRENT_BREAK = register("void_current.break");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOID_FOG_BANK = register("void_fog.bank");
     /** The Void's Rib Crawler: voice, steps, the dry clicking before it lets go, the drop, the landing, the bite. */
     public static final DeferredHolder<SoundEvent, SoundEvent> RIB_CRAWLER_AMBIENT = register("rib_crawler.ambient");
     public static final DeferredHolder<SoundEvent, SoundEvent> RIB_CRAWLER_HURT = register("rib_crawler.hurt");

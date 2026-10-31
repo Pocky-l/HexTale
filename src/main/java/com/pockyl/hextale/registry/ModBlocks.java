@@ -646,6 +646,40 @@ public final class ModBlocks {
     public static final DeferredBlock<WallBlock> GNAWED_STONE_WALL = BLOCKS.registerBlock("gnawed_stone_wall", WallBlock::new,
             () -> gnawedStoneProperties().forceSolidOn());
 
+    /** Thin chitin over a hollow: it cracks under a weight and falls in. */
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.HuskCrustBlock> HUSK_CRUST = BLOCKS.registerBlock("husk_crust",
+            com.pockyl.hextale.thevoid.realm.HuskCrustBlock::new,
+            () -> huskChitinProperties().strength(0.8F, 1.0F).randomTicks().dynamicShape().noOcclusion());
+    // Chitin worked for building: polished, laid in scales, cut into ringed pillars.
+    public static final DeferredBlock<Block> POLISHED_HUSK_CHITIN = BLOCKS.registerBlock("polished_husk_chitin", Block::new,
+            ModBlocks::huskChitinProperties);
+    public static final DeferredBlock<StairBlock> POLISHED_HUSK_CHITIN_STAIRS = BLOCKS.registerBlock("polished_husk_chitin_stairs",
+            properties -> new StairBlock(POLISHED_HUSK_CHITIN.get().defaultBlockState(), properties), () -> huskChitinProperties());
+    public static final DeferredBlock<SlabBlock> POLISHED_HUSK_CHITIN_SLAB = BLOCKS.registerBlock("polished_husk_chitin_slab", SlabBlock::new,
+            () -> huskChitinProperties());
+    public static final DeferredBlock<Block> HUSK_CHITIN_TILES = BLOCKS.registerBlock("husk_chitin_tiles", Block::new, ModBlocks::huskChitinProperties);
+    public static final DeferredBlock<StairBlock> HUSK_CHITIN_TILES_STAIRS = BLOCKS.registerBlock("husk_chitin_tiles_stairs",
+            properties -> new StairBlock(HUSK_CHITIN_TILES.get().defaultBlockState(), properties), () -> huskChitinProperties());
+    public static final DeferredBlock<SlabBlock> HUSK_CHITIN_TILES_SLAB = BLOCKS.registerBlock("husk_chitin_tiles_slab", SlabBlock::new,
+            () -> huskChitinProperties());
+    public static final DeferredBlock<RotatedPillarBlock> HUSK_CHITIN_PILLAR = BLOCKS.registerBlock("husk_chitin_pillar", RotatedPillarBlock::new,
+            ModBlocks::huskChitinProperties);
+    // Pieces of our world the Void swallowed and half digested: the swallowed ruins on its shoals.
+    public static final DeferredBlock<Block> GNAWED_COBBLESTONE = BLOCKS.registerBlock("gnawed_cobblestone", Block::new, ModBlocks::gnawedStoneProperties);
+    public static final DeferredBlock<Block> GNAWED_STONE_BRICKS = BLOCKS.registerBlock("gnawed_stone_bricks", Block::new, ModBlocks::gnawedStoneProperties);
+    public static final DeferredBlock<Block> GNAWED_BRICKS = BLOCKS.registerBlock("gnawed_bricks", Block::new,
+            () -> gnawedStoneProperties().mapColor(MapColor.COLOR_RED));
+    public static final DeferredBlock<Block> GNAWED_PLANKS = BLOCKS.registerBlock("gnawed_planks", Block::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).strength(1.2F, 2.0F)
+                    .sound(SoundType.WOOD));
+    // The sacs the Void grows in its nurseries.
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.VoidSacs.Nursery> VOID_SAC = BLOCKS.registerBlock("void_sac",
+            com.pockyl.hextale.thevoid.realm.VoidSacs.Nursery::new, () -> sacProperties(6));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.VoidSacs.Pearl> PEARL_SAC = BLOCKS.registerBlock("pearl_sac",
+            com.pockyl.hextale.thevoid.realm.VoidSacs.Pearl::new, () -> sacProperties(4));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.VoidSacs.Mimic> MIMIC_SAC = BLOCKS.registerBlock("mimic_sac",
+            com.pockyl.hextale.thevoid.realm.VoidSacs.Mimic::new, () -> sacProperties(4));
+
     // The Sinew Willow, the Void's one tree (thevoid/realm/VoidTrees): braided wood that never burns, lilac fronds,
     // ichor pods hanging under them. Sounds and set type borrowed from the nether's fungus wood.
     public static final DeferredBlock<RotatedPillarBlock> SINEW_WILLOW_LOG = BLOCKS.registerBlock("sinew_willow_log",
@@ -728,6 +762,11 @@ public final class ModBlocks {
     private static BlockBehaviour.Properties huskChitinProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_YELLOW).instrument(NoteBlockInstrument.BASEDRUM)
                 .requiresCorrectToolForDrops().strength(2.5F, 7.0F).sound(SoundType.BONE_BLOCK);
+    }
+
+    private static BlockBehaviour.Properties sacProperties(int light) {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(0.4F).sound(SoundType.HONEY_BLOCK).noOcclusion()
+                .lightLevel(state -> light).pushReaction(PushReaction.POPPED).isValidSpawn((state, level, pos, type) -> false);
     }
 
     private static BlockBehaviour.Properties membraneProperties(int light) {

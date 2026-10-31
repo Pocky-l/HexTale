@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "hextale:husk_chitin_tiles",
+  "result": {
+    "id": "hextale:husk_chitin_tiles_slab",
+    "count": 2
+  }
+}

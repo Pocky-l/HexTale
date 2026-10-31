@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -83,7 +82,7 @@ public class WornMembraneBlock extends MembraneBlock {
         }
         server.scheduleTick(pos, this, HOLDS);
         // It gives under the weight: a wet stretch, the skin sagging round the feet.
-        server.playSound(null, pos, SoundEvents.HONEY_BLOCK_SLIDE, SoundSource.BLOCKS, 0.7F, 0.55F);
+        server.playSound(null, pos, com.pockyl.hextale.registry.ModSounds.WORN_MEMBRANE_STRETCH.get(), SoundSource.BLOCKS, 0.8F, 0.9F + server.getRandom().nextFloat() * 0.2F);
         server.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), pos.getX() + 0.5, pos.getY() + 1.02, pos.getZ() + 0.5,
                 6, 0.3, 0.02, 0.3, 0.02);
     }
@@ -100,8 +99,7 @@ public class WornMembraneBlock extends MembraneBlock {
             return;
         }
         level.setBlock(pos, state.setValue(TORN, true), Block.UPDATE_ALL);
-        level.playSound(null, pos, SoundEvents.WOOL_BREAK, SoundSource.BLOCKS, 0.9F, 0.5F + random.nextFloat() * 0.15F);
-        level.playSound(null, pos, SoundEvents.SLIME_BLOCK_BREAK, SoundSource.BLOCKS, 0.6F, 0.6F);
+        level.playSound(null, pos, com.pockyl.hextale.registry.ModSounds.WORN_MEMBRANE_TEAR.get(), SoundSource.BLOCKS, 1.0F, 0.85F + random.nextFloat() * 0.3F);
         level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                 18, 0.35, 0.1, 0.35, 0.05);
         // The tear runs on through the worn skin round it.

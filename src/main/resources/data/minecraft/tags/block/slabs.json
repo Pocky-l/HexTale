@@ -6,6 +6,8 @@
     "hextale:void_rock_brick_slab",
     "hextale:scorched_calcite_brick_slab",
     "hextale:husk_chitin_slab",
-    "hextale:gnawed_stone_slab"
+    "hextale:gnawed_stone_slab",
+    "hextale:polished_husk_chitin_slab",
+    "hextale:husk_chitin_tiles_slab"
   ]
 }

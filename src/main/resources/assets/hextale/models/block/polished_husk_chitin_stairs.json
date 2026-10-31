@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "hextale:block/polished_husk_chitin",
+    "top": "hextale:block/polished_husk_chitin",
+    "side": "hextale:block/polished_husk_chitin"
+  }
+}

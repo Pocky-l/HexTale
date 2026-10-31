@@ -118,6 +118,21 @@
     "hextale:husk_chitin_wall",
     "hextale:gnawed_stone_wall",
     "hextale:void_glass",
-    "hextale:void_glass_pane"
+    "hextale:void_glass_pane",
+    "hextale:husk_crust",
+    "hextale:polished_husk_chitin",
+    "hextale:polished_husk_chitin_stairs",
+    "hextale:polished_husk_chitin_slab",
+    "hextale:husk_chitin_tiles",
+    "hextale:husk_chitin_tiles_stairs",
+    "hextale:husk_chitin_tiles_slab",
+    "hextale:husk_chitin_pillar",
+    "hextale:gnawed_cobblestone",
+    "hextale:gnawed_stone_bricks",
+    "hextale:gnawed_bricks",
+    "hextale:gnawed_planks",
+    "hextale:void_sac",
+    "hextale:pearl_sac",
+    "hextale:mimic_sac"
   ]
 }

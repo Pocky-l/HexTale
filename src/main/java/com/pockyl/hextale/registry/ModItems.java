@@ -519,6 +519,22 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> GNAWED_STONE_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_STONE_STAIRS);
     public static final DeferredItem<BlockItem> GNAWED_STONE_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_STONE_SLAB);
     public static final DeferredItem<BlockItem> GNAWED_STONE_WALL = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_STONE_WALL);
+    public static final DeferredItem<com.pockyl.hextale.item.NotedBlockItem> HUSK_CRUST = ITEMS.registerItem("husk_crust",
+            properties -> new com.pockyl.hextale.item.NotedBlockItem(ModBlocks.HUSK_CRUST.get(), properties.useBlockDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> POLISHED_HUSK_CHITIN = ITEMS.registerSimpleBlockItem(ModBlocks.POLISHED_HUSK_CHITIN);
+    public static final DeferredItem<BlockItem> POLISHED_HUSK_CHITIN_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.POLISHED_HUSK_CHITIN_STAIRS);
+    public static final DeferredItem<BlockItem> POLISHED_HUSK_CHITIN_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.POLISHED_HUSK_CHITIN_SLAB);
+    public static final DeferredItem<BlockItem> HUSK_CHITIN_TILES = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_TILES);
+    public static final DeferredItem<BlockItem> HUSK_CHITIN_TILES_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_TILES_STAIRS);
+    public static final DeferredItem<BlockItem> HUSK_CHITIN_TILES_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_TILES_SLAB);
+    public static final DeferredItem<BlockItem> HUSK_CHITIN_PILLAR = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_PILLAR);
+    public static final DeferredItem<BlockItem> GNAWED_COBBLESTONE = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_COBBLESTONE);
+    public static final DeferredItem<BlockItem> GNAWED_STONE_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_STONE_BRICKS);
+    public static final DeferredItem<BlockItem> GNAWED_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_BRICKS);
+    public static final DeferredItem<BlockItem> GNAWED_PLANKS = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_PLANKS);
+    public static final DeferredItem<BlockItem> VOID_SAC = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_SAC);
+    public static final DeferredItem<BlockItem> PEARL_SAC = ITEMS.registerSimpleBlockItem(ModBlocks.PEARL_SAC);
+    public static final DeferredItem<BlockItem> MIMIC_SAC = ITEMS.registerSimpleBlockItem(ModBlocks.MIMIC_SAC);
     public static final DeferredItem<com.pockyl.hextale.item.NotedBlockItem> SINEW_CURTAIN = ITEMS.registerItem("sinew_curtain",
             properties -> new com.pockyl.hextale.item.NotedBlockItem(ModBlocks.SINEW_CURTAIN.get(), properties.useBlockDescriptionPrefix()));
     public static final DeferredItem<com.pockyl.hextale.item.NotedBlockItem> SPRING_BLISTER = ITEMS.registerItem("spring_blister",
