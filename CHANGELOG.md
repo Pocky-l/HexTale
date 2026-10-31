@@ -4,7 +4,7 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.8.0] - Unreleased
 ### Added
 - The Void is a place now. A breach held by six anchors no longer throws a researcher back: walk into it and it pulls
   you through, down its throat, to the other side. Its ground is a field of huge curved plates of shell lying in
@@ -109,6 +109,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Riftmetal is no longer forged by throwing Radiant Alloy into a held breach: Raw Riftmetal from the Void is alloyed
   with Radiant Alloy in the furnace. Void Crystals no longer grow round a held breach; they grow on the geodes where the
   Void's skin sags lowest.
+
+### Fixed
+- With a shader pack on, the Void shows its own sky instead of an overworld sky.
 
 ## [1.7.0] - 2026-10-31
 ### Added
