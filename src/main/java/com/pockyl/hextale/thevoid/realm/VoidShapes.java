@@ -143,6 +143,7 @@ public final class VoidShapes {
         final List<Heart> hearts = new ArrayList<>();
         final List<Lake> lakes = new ArrayList<>();
         final List<Nursery> nurseries = new ArrayList<>();
+        final List<VoidCurrents.Current> currents = new ArrayList<>();
         final List<Plate> plates = new ArrayList<>();
         final List<Bladder> bladders = new ArrayList<>();
         final List<VoidTrees.Tree> trees = new ArrayList<>();
@@ -361,6 +362,7 @@ public final class VoidShapes {
                 region.lakes.add(new Lake(spot[0], ground(spot[0], spot[1]) - 2, spot[1], r, 3 + r * 0.18, random.nextInt()));
             }
         }
+        currents(region, zone, new Random(hash(seed, rx, rz, 0xC0BB)));
         // A nursery in every third region or so of the Husk Drift: the Void's brood, and its pearls.
         if (zone == VoidZones.Zone.DRIFT && random.nextDouble() < NURSERY_CHANCE) {
             double nx = x0 + 36 + random.nextDouble() * (REGION - 72);
@@ -1205,6 +1207,58 @@ public final class VoidShapes {
                 boolean worn = d > 0.8 && d < 0.9 && noise(x / 4.0, 2, z / 4.0, lake.salt() + 2) > 0.45;
                 kinds[idx] = vein ? VEINED : worn ? WORN : MEMBRANE;
             }
+        }
+    }
+
+    /** The currents of a region (see {@link VoidCurrents}). */
+    public List<VoidCurrents.Current> currents(int rx, int rz) {
+        return region(rx, rz).currents;
+    }
+
+    /**
+     * The region's currents: arcs of moving air from the rim of one plate over the gap to another, rising in the middle.
+     * More of them deeper in; about a third break now and then.
+     */
+    private void currents(Region region, VoidZones.Zone zone, Random random) {
+        int count = switch (zone) {
+            case THRESHOLD -> 1;
+            case REACH, SHOALS -> 2;
+            case DRIFT -> 2;
+            case VORTEX -> 3;
+        };
+        List<Plate> plates = region.plates;
+        for (int c = 0; c < count && plates.size() > 1; c++) {
+            Plate from = plates.get(random.nextInt(plates.size()));
+            Plate to = plates.get(random.nextInt(plates.size()));
+            double dx = to.x() - from.x(), dz = to.z() - from.z();
+            double apart = Math.sqrt(dx * dx + dz * dz);
+            if (from == to || apart < 40 || apart > 150) {
+                continue;
+            }
+            double ux = dx / apart, uz = dz / apart;
+            // From well inside each rim, so the ends lie over solid ground one can step into and out of.
+            double sx = from.x() + ux * Math.min(from.rx(), from.rz()) * 0.55, sz = from.z() + uz * Math.min(from.rx(), from.rz()) * 0.55;
+            double ex = to.x() - ux * Math.min(to.rx(), to.rz()) * 0.55, ez = to.z() - uz * Math.min(to.rx(), to.rz()) * 0.55;
+            double sy = plateTop(from, sx, sz), ey = plateTop(to, ex, ez);
+            if (Double.isNaN(sy) || Double.isNaN(ey)) {
+                continue;
+            }
+            sy += 1.6;
+            ey += 1.6;
+            double length = Math.sqrt(sq(ex - sx) + sq(ez - sz));
+            double rise = 6 + length * 0.12 + random.nextDouble() * 6;
+            double sway = (random.nextDouble() - 0.5) * length * 0.35;
+            double mx = (sx + ex) / 2 - uz * sway, mz = (sz + ez) / 2 + ux * sway, my = Math.max(sy, ey) + rise;
+            int points = Math.max(8, Math.min(120, (int) (length / 2)));
+            float[] xs = new float[points], ys = new float[points], zs = new float[points];
+            for (int i = 0; i < points; i++) {
+                double t = i / (double) (points - 1);
+                double a = (1 - t) * (1 - t), b = 2 * (1 - t) * t, d = t * t;
+                xs[i] = (float) (a * sx + b * mx + d * ex);
+                ys[i] = (float) (a * sy + b * my + d * ey);
+                zs[i] = (float) (a * sz + b * mz + d * ez);
+            }
+            region.currents.add(new VoidCurrents.Current(xs, ys, zs, random.nextDouble() < 0.3, random.nextInt(VoidCurrents.PERIOD)));
         }
     }
 

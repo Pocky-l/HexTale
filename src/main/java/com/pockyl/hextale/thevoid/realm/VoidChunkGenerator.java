@@ -55,7 +55,7 @@ public class VoidChunkGenerator extends ChunkGenerator {
         return CODEC;
     }
 
-    private VoidShapes shapes(RandomState random) {
+    public VoidShapes shapes(RandomState random) {
         VoidShapes known = shapes;
         if (known == null || known.seed() != random.seed()) {
             known = new VoidShapes(random.seed());

@@ -90,6 +90,8 @@ public final class HextaleClient {
             event.registerSpecial(ModParticles.ITEM_DRAW.get(), new com.pockyl.hextale.client.particle.ItemDrawParticle.Provider());
             event.registerSpriteSet(ModParticles.VOID_MOTE.get(), com.pockyl.hextale.client.particle.VoidMoteParticle.Provider::new);
             event.registerSpriteSet(ModParticles.VOID_DRIFT.get(), com.pockyl.hextale.client.particle.VoidDriftParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.VOID_CURRENT.get(), com.pockyl.hextale.client.particle.VoidStreakParticle.Current::new);
+            event.registerSpriteSet(ModParticles.VOID_MARK.get(), com.pockyl.hextale.client.particle.VoidStreakParticle.Mark::new);
             event.registerSpriteSet(ModParticles.RUNE_SHARD.get(), RuneShardParticle.Provider::new);
             event.registerSpriteSet(ModParticles.ESSENCE_WISP.get(), EssenceWispParticle.Provider::new);
             event.registerSpriteSet(ModParticles.ESSENCE_DROP.get(), EssenceDropParticle.Provider::new);
@@ -125,6 +127,8 @@ public final class HextaleClient {
         modBus.addListener(com.pockyl.hextale.client.render.StrikeGauntletClient::registerExtensions);
         modBus.addListener(IchorView::register);
         VoidLensView.register();
+        VoidCurrentsClient.register();
+        VoidFogBanks.register();
         com.pockyl.hextale.client.render.StrikeGauntletClient.register();
         modBus.addListener(com.pockyl.hextale.client.render.BulwarkHeartLayer::addLayers);
         modBus.addListener((net.neoforged.neoforge.client.event.EntityRenderersEvent.AddLayers event) -> com.pockyl.hextale.client.render.BulwarkAuraLayer.addLayers(event));

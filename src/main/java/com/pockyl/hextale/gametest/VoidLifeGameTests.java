@@ -92,6 +92,29 @@ public final class VoidLifeGameTests {
         helper.succeed();
     }
 
+    /** Currents run between the plates over the gaps; a point on one's line is caught by it, one far off is not. */
+    @HexTest(maxTicks = 400)
+    public static void currentsRunBetweenThePlates(GameTestHelper helper) {
+        VoidShapes shapes = new VoidShapes(20261031L);
+        int count = 0, breaking = 0;
+        for (int rx = -3; rx <= 3; rx++) {
+            for (int rz = -3; rz <= 3; rz++) {
+                for (var current : shapes.currents(rx, rz)) {
+                    count++;
+                    breaking += current.breaking() ? 1 : 0;
+                    var middle = current.point(current.points() / 2);
+                    helper.assertTrue(current.nearest(middle, com.pockyl.hextale.thevoid.realm.VoidCurrents.RADIUS)[0] >= 0, "its own line catches");
+                    helper.assertTrue(current.nearest(middle.add(0, 10, 0), com.pockyl.hextale.thevoid.realm.VoidCurrents.RADIUS)[0] < 0,
+                            "far above it does not");
+                    helper.assertTrue(middle.y > current.point(0).y, "it arcs up over the gap");
+                }
+            }
+        }
+        helper.assertTrue(count > 20, "currents in the Void: " + count);
+        helper.assertTrue(breaking > 0 && breaking < count, "some of them break: " + breaking);
+        helper.succeed();
+    }
+
     /** A creature on husk crust: it cracks, and the patch falls in. */
     @HexTest(maxTicks = 200)
     public static void huskCrustGivesWayUnderACreature(GameTestHelper helper) {

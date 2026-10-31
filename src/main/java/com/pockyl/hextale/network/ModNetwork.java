@@ -7,7 +7,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class ModNetwork {
-    private static final String PROTOCOL_VERSION = "17";
+    private static final String PROTOCOL_VERSION = "18";
 
     private ModNetwork() {
     }
@@ -38,6 +38,7 @@ public final class ModNetwork {
         registrar.playToServer(ShockwavePayload.TYPE, ShockwavePayload.STREAM_CODEC, ShockwavePayload::handle);
         registrar.playToClient(PylonLinkPayload.TYPE, PylonLinkPayload.STREAM_CODEC);
         registrar.playToClient(OpenStickerPayload.TYPE, OpenStickerPayload.STREAM_CODEC);
+        registrar.playToClient(VoidCurrentsPayload.TYPE, VoidCurrentsPayload.STREAM_CODEC);
         registrar.playToClient(ThinningPayload.TYPE, ThinningPayload.STREAM_CODEC);
         registrar.playToClient(BreachCinematicPayload.TYPE, BreachCinematicPayload.STREAM_CODEC);
         registrar.playToServer(ChooseStickerPayload.TYPE, ChooseStickerPayload.STREAM_CODEC, ChooseStickerPayload::handle);
