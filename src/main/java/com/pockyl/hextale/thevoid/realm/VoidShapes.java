@@ -52,10 +52,20 @@ public final class VoidShapes {
     }
 
     /** One rib: a tapering tube along a curve, as points and radii. */
-    record Rib(double[] x, double[] y, double[] z, double[] r, double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+    record Rib(double[] x, double[] y, double[] z, double[] r, double minX, double minY, double minZ, double maxX, double maxY, double maxZ,
+            int glowFrom) {
         int points() {
             return x.length;
         }
+
+        /** The same tube, glowing from point {@code from} to its tip. */
+        Rib glowingFrom(int from) {
+            return new Rib(x, y, z, r, minX, minY, minZ, maxX, maxY, maxZ, from);
+        }
+    }
+
+    /** A bladder of skin: a hollow sphere of membrane with a lump of flesh and crystals in its bottom. */
+    record Bladder(double x, double y, double z, double radius, boolean crystals, int salt) {
     }
 
     /** A knot of flesh and plates the ribs of a fan spring from. */
@@ -91,6 +101,7 @@ public final class VoidShapes {
         final List<Husk> husks = new ArrayList<>();
         final List<Shoal> shoals = new ArrayList<>();
         final List<Plate> plates = new ArrayList<>();
+        final List<Bladder> bladders = new ArrayList<>();
         /** Packed membrane blocks by chunk ({@link #chunkKey}): {@code lx | lz << 4 | y << 8 | kind << 20}. */
         final Map<Long, int[]> raster = new java.util.HashMap<>();
     }
@@ -145,6 +156,39 @@ public final class VoidShapes {
             region.plates.add(new Plate(px, ground(px, pz) + (random.nextDouble() - 0.5) * 6, pz, r, r * (0.6 + random.nextDouble() * 0.5),
                     random.nextDouble() * Math.PI, gx * 0.85, gz * 0.85, 1.5 + random.nextDouble() * 4, 5 + random.nextDouble() * 7,
                     2 + random.nextDouble() * 2.5, random.nextInt()));
+        }
+
+        int thickets = switch (zone) {
+            case THRESHOLD, SHOALS -> 1;
+            case REACH, DRIFT -> 2;
+            case VORTEX -> 3;
+        };
+        for (Plate plate : region.plates) {
+            for (int t = 0; t < thickets; t++) {
+                if (random.nextDouble() < 0.6) {
+                    thicket(region, plate, random);
+                }
+            }
+            int tendrils = 1 + random.nextInt(3);
+            for (int t = 0; t < tendrils; t++) {
+                tendril(region, plate, random);
+            }
+            if (random.nextDouble() < 0.35) {
+                // A bladder half sunk into the plate.
+                double[] at = onPlate(plate, random, 0.6);
+                if (!Double.isNaN(at[1])) {
+                    double r = 3 + random.nextDouble() * 3;
+                    region.bladders.add(new Bladder(at[0], at[1] + r * 0.25, at[2], r, random.nextDouble() < 0.6, random.nextInt()));
+                }
+            }
+        }
+        // Bladders drifting in the gaps, glowing over the abyss.
+        int drifting = 1 + random.nextInt(zone == VoidZones.Zone.VORTEX ? 4 : 3);
+        for (int b = 0; b < drifting; b++) {
+            double bx = x0 + random.nextDouble() * REGION;
+            double bz = z0 + random.nextDouble() * REGION;
+            double r = 2.5 + random.nextDouble() * 4;
+            region.bladders.add(new Bladder(bx, ground(bx, bz) - 10 - random.nextDouble() * 30, bz, r, random.nextDouble() < 0.4, random.nextInt()));
         }
 
         for (Knot knot : knots(rx, rz)) {
@@ -222,6 +266,75 @@ public final class VoidShapes {
     public double ground(double x, double z) {
         int salt = (int) (seed ^ (seed >>> 32));
         return 118 + 38 * (2 * noise(x / 420, 0, z / 420, salt + 71) - 1) + 12 * (2 * noise(x / 140, 0, z / 140, salt + 73) - 1);
+    }
+
+    /** The height of a plate's top at (x, z), NaN off it (the same sums as {@link #plate}, without the pores). */
+    private double plateTop(Plate plate, double x, double z) {
+        double dx = x + 0.5 - plate.x(), dz = z + 0.5 - plate.z();
+        double c = Math.cos(plate.yaw()), sn = Math.sin(plate.yaw());
+        double qx = dx * c + dz * sn, qz = -dx * sn + dz * c;
+        double e2 = (sq(qx / plate.rx()) + sq(qz / plate.rz())) * (1 + 0.22 * (noise(floor(x) / 9.0, 0, floor(z) / 9.0, plate.salt()) - 0.5));
+        if (e2 >= 1) {
+            return Double.NaN;
+        }
+        return plate.y() + plate.slopeX() * dx + plate.slopeZ() * dz + plate.dome() * (1 - e2)
+                + (noise(floor(x) / 13.0, 1, floor(z) / 13.0, plate.salt()) - 0.5) * 3;
+    }
+
+    /** A point on a plate's top within {@code share} of its radius from the middle: {x, top, z} (top NaN if off it). */
+    private double[] onPlate(Plate plate, Random random, double share) {
+        double a = random.nextDouble() * Math.PI * 2;
+        double d = Math.sqrt(random.nextDouble()) * share;
+        double c = Math.cos(plate.yaw()), sn = Math.sin(plate.yaw());
+        double qx = Math.cos(a) * d * plate.rx(), qz = Math.sin(a) * d * plate.rz();
+        double x = plate.x() + qx * c - qz * sn, z = plate.z() + qx * sn + qz * c;
+        return new double[]{x, plateTop(plate, x, z), z};
+    }
+
+    /** A thicket of thin curved spines rising out of a plate, leaning one way like grass in a wind. */
+    private void thicket(Region region, Plate plate, Random random) {
+        double[] centre = onPlate(plate, random, 0.65);
+        if (Double.isNaN(centre[1])) {
+            return;
+        }
+        double lean = random.nextDouble() * Math.PI * 2;
+        int count = 4 + random.nextInt(8);
+        for (int i = 0; i < count; i++) {
+            double ox = centre[0] + (random.nextDouble() - 0.5) * 12;
+            double oz = centre[2] + (random.nextDouble() - 0.5) * 12;
+            double top = plateTop(plate, ox, oz);
+            if (Double.isNaN(top)) {
+                continue;
+            }
+            double height = 6 + random.nextDouble() * 18;
+            double bend = height * (0.15 + random.nextDouble() * 0.35);
+            double lx = Math.cos(lean + (random.nextDouble() - 0.5) * 0.8), lz = Math.sin(lean + (random.nextDouble() - 0.5) * 0.8);
+            double[] p0 = {ox, top - 1, oz};
+            double[] p1 = {ox, top + height * 0.45, oz};
+            double[] p2 = {ox + lx * bend * 0.6, top + height * 0.85, oz + lz * bend * 0.6};
+            double[] p3 = {ox + lx * bend * 1.4, top + height * 0.95, oz + lz * bend * 1.4};
+            double root = 1.0 + random.nextDouble() * 0.8;
+            Rib spine = curve(p0, p1, p2, p3, t -> root * (1 - 0.7 * t), 16);
+            region.ribs.add(random.nextDouble() < 0.3 ? spine.glowingFrom(13) : spine);
+        }
+    }
+
+    /** A tendril hanging from a plate's underside into the abyss, swaying, its tip glowing. */
+    private void tendril(Region region, Plate plate, Random random) {
+        double[] at = onPlate(plate, random, 0.75);
+        if (Double.isNaN(at[1])) {
+            return;
+        }
+        double bottom = at[1] - plate.thick() - 2;
+        double length = 12 + random.nextDouble() * 26;
+        double sway = length * 0.35;
+        double a = random.nextDouble() * Math.PI * 2;
+        double[] p0 = {at[0], bottom + 2, at[2]};
+        double[] p1 = {at[0] + Math.cos(a) * sway * 0.3, bottom - length * 0.35, at[2] + Math.sin(a) * sway * 0.3};
+        double[] p2 = {at[0] - Math.cos(a) * sway * 0.4, bottom - length * 0.7, at[2] - Math.sin(a) * sway * 0.4};
+        double[] p3 = {at[0] + Math.cos(a + 1.2) * sway * 0.6, bottom - length, at[2] + Math.sin(a + 1.2) * sway * 0.6};
+        double root = 1.4 + random.nextDouble() * 1.2;
+        region.ribs.add(curve(p0, p1, p2, p3, t -> root * (1 - 0.65 * t), 24).glowingFrom(20));
     }
 
     /** A bow from one knot to another: it rises off both and sags or arches between, thick enough to walk. */
@@ -320,7 +433,7 @@ public final class VoidShapes {
             maxY = Math.max(maxY, y[i] + r[i]);
             maxZ = Math.max(maxZ, z[i] + r[i]);
         }
-        return new Rib(x, y, z, r, minX, minY, minZ, maxX, maxY, maxZ);
+        return new Rib(x, y, z, r, minX, minY, minZ, maxX, maxY, maxZ, n);
     }
 
     /**
@@ -484,6 +597,9 @@ public final class VoidShapes {
             for (Plate plate : region.plates) {
                 plate(plate, x0, z0, kinds, best);
             }
+            for (Bladder bladder : region.bladders) {
+                bladder(bladder, x0, z0, kinds, best);
+            }
         }
     }
 
@@ -522,7 +638,7 @@ public final class VoidShapes {
                         }
                         best[idx] = (float) s;
                         byte kind;
-                        if (s > -1.05 && qy > 0.8 * d) {
+                        if (i >= rib.glowFrom() || s > -1.05 && qy > 0.8 * d) {
                             kind = RIDGE;
                         } else if (s < -2.6 && r > 3.6) {
                             kind = FLESH;
@@ -630,6 +746,11 @@ public final class VoidShapes {
                     continue;
                 }
                 double e = Math.sqrt(e2);
+                // Pores: holes through the plate down to the abyss, ringed with a glowing rim.
+                double pore = e < 0.78 ? noise(x / 7.0, 3, z / 7.0, plate.salt() + 5) : 0;
+                if (pore > 0.82) {
+                    continue;
+                }
                 double base = plate.y() + plate.slopeX() * dx + plate.slopeZ() * dz + plate.dome() * (1 - e2)
                         + (noise(x / 13.0, 1, z / 13.0, plate.salt()) - 0.5) * 3;
                 double lip = e > 0.84 ? (e - 0.84) / 0.16 * plate.lip() : 0;
@@ -644,7 +765,7 @@ public final class VoidShapes {
                     best[idx] = s;
                     byte kind;
                     if (y == top) {
-                        kind = lip > 1.2 ? CHITIN : noise(x / 6.0, 2, z / 6.0, plate.salt()) > 0.64 ? FLESH : SOIL;
+                        kind = pore > 0.76 ? RIDGE : lip > 1.2 ? CHITIN : noise(x / 6.0, 2, z / 6.0, plate.salt()) > 0.64 ? FLESH : SOIL;
                     } else if (top - y <= 2 && lip <= 1.2) {
                         kind = FLESH;
                     } else if (y == bottom && hash(x, y, z, plate.salt()) < 0.14) {
@@ -654,6 +775,45 @@ public final class VoidShapes {
                         kind = CHITIN;
                     }
                     kinds[idx] = kind;
+                }
+            }
+        }
+    }
+
+    private void bladder(Bladder bladder, int x0, int z0, byte[] kinds, float[] best) {
+        double r = bladder.radius();
+        int minX = Math.max(x0, floor(bladder.x() - r - 1));
+        int maxX = Math.min(x0 + 15, floor(bladder.x() + r + 1));
+        int minZ = Math.max(z0, floor(bladder.z() - r - 1));
+        int maxZ = Math.min(z0 + 15, floor(bladder.z() + r + 1));
+        if (minX > maxX || minZ > maxZ) {
+            return;
+        }
+        int minY = Math.max(MIN_Y, floor(bladder.y() - r - 1));
+        int maxY = Math.min(MIN_Y + HEIGHT - 1, floor(bladder.y() + r + 1));
+        double coreY = bladder.y() - r * 0.45;
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                for (int y = minY; y <= maxY; y++) {
+                    double dx = x + 0.5 - bladder.x(), dy = y + 0.5 - bladder.y(), dz = z + 0.5 - bladder.z();
+                    double d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                    int idx = index(x - x0, y - MIN_Y, z - z0);
+                    double core = Math.sqrt(dx * dx + sq(y + 0.5 - coreY) * 1.6 + dz * dz) - r * 0.4;
+                    if (core < 0) {
+                        if (core < best[idx]) {
+                            best[idx] = (float) core;
+                            kinds[idx] = FLESH;
+                        }
+                        continue;
+                    }
+                    double shell = Math.abs(d - r) - 0.55;
+                    if (shell < 0 && shell < best[idx] && kinds[idx] == AIR) {
+                        best[idx] = (float) shell;
+                        kinds[idx] = Math.abs(noise(x / 3.0, y / 3.0, z / 3.0, bladder.salt()) - 0.5) < 0.08 ? VEINED : MEMBRANE;
+                    } else if (bladder.crystals() && core < 1.2 && dy > -r * 0.45 && kinds[idx] == AIR
+                            && hash(x, y, z, bladder.salt()) < 0.5) {
+                        kinds[idx] = CRYSTAL;
+                    }
                 }
             }
         }

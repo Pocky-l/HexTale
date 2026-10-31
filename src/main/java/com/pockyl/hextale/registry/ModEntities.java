@@ -76,5 +76,21 @@ public final class ModEntities {
                 event.put(VOID_MITE.get(), com.pockyl.hextale.thevoid.VoidMite.createAttributes().build()));
         modBus.addListener((net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent event) ->
                 event.put(VOIDLING.get(), com.pockyl.hextale.thevoid.Voidling.createAttributes().build()));
+        // In the Void its own creatures come out of the dark of their own accord (the Void's biomes list them).
+        modBus.addListener((net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent event) -> {
+            event.register(VOIDLING.get(), net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND,
+                    net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, ModEntities::spawnsInTheVoid,
+                    net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent.Operation.REPLACE);
+            event.register(VOID_MITE.get(), net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND,
+                    net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, ModEntities::spawnsInTheVoid,
+                    net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        });
+    }
+
+    private static <T extends net.minecraft.world.entity.monster.Monster> boolean spawnsInTheVoid(EntityType<T> type,
+            net.minecraft.world.level.ServerLevelAccessor level, net.minecraft.world.entity.EntitySpawnReason reason,
+            net.minecraft.core.BlockPos pos, net.minecraft.util.RandomSource random) {
+        return level.getLevel().dimension().equals(com.pockyl.hextale.thevoid.realm.VoidPassage.LEVEL)
+                && net.minecraft.world.entity.monster.Monster.checkMonsterSpawnRules(type, level, reason, pos, random);
     }
 }

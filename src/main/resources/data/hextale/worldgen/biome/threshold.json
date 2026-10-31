@@ -26,6 +26,34 @@
         "sound": "minecraft:ambient.basalt_deltas.mood",
         "tick_delay": 6000
       }
+    },
+    "minecraft:gameplay/natural_mob_spawns": {
+      "argument": {
+        "spawn_costs": {},
+        "spawns_by_category": {
+          "monster": [
+            {
+              "type": "hextale:voidling",
+              "count": {
+                "type": "minecraft:uniform",
+                "min_inclusive": 1,
+                "max_inclusive": 2
+              },
+              "weight": 40
+            },
+            {
+              "type": "hextale:void_mite",
+              "count": {
+                "type": "minecraft:uniform",
+                "min_inclusive": 1,
+                "max_inclusive": 2
+              },
+              "weight": 20
+            }
+          ]
+        }
+      },
+      "modifier": "overlay"
     }
   },
   "carvers": [],

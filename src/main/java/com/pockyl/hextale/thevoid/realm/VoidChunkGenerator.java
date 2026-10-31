@@ -120,7 +120,10 @@ public class VoidChunkGenerator extends ChunkGenerator {
                         continue;
                     }
                     double roll = VoidShapes.hash(x0 + x, y, z0 + z, 0xF10A);
-                    if (kind == VoidShapes.FLESH && roll < 0.09 || kind == VoidShapes.SOIL && roll < 0.06) {
+                    if (kind == VoidShapes.FLESH && roll < 0.012) {
+                        // Outcrops of Void crystal on open flesh.
+                        kinds[above] = CRYSTAL_UP;
+                    } else if (kind == VoidShapes.FLESH && roll < 0.16 || kind == VoidShapes.SOIL && roll < 0.12) {
                         kinds[above] = FLORA;
                     } else if (kind == VoidShapes.GNAWED && roll < 0.03) {
                         kinds[above] = HOLLOW;
