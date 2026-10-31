@@ -4,6 +4,30 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- The Void is a place now. A breach held by six anchors no longer throws a researcher back: walk into it and it pulls
+  you through, down its throat, to the other side. There is no ground there - colossal chitin ribs arch over a
+  bottomless magenta glow, skin is stretched between them, hollow husks drift, and islands of our world float in the
+  haze, half eaten. Everything curls toward the vortices at its heart.
+- The way out is always open: the breach stands on the other side as a gate, warm with our daylight, on a ledge of
+  chitin. It cannot be closed or broken; it follows its breach when a Breach Heart carries it elsewhere and still leads
+  to where it stood if it is gone. One step in the Void is eight in our world, so held breaches are joined by a short
+  road through it. A Recall Charm used in the Void pulls its bearer out to our world.
+- The Void is dangerous and does not warn twice: the abyss below kills, and worn patches of skin - a shade paler, the
+  veins nearly gone - hold a moment under your weight and then tear.
+- Its zones: the Threshold, the Ribcage Reach, the Swallowed Shoals, the Husk Drift and the Vortex.
+- New blocks: Husk Chitin and its lit ridge, Void Membrane (plain, veined, worn), Gnawed Stone, Rift Ore and Hollow
+  Crystal clusters. The swallowed islands keep the ores of our world.
+- Raw Riftmetal, broken out of the husks' walls deep in the Void (it wants a radiant pickaxe), and Hollow Crystals -
+  hextech the Void drank empty.
+- `/hextale void enter` and `/hextale void exit [player]` for operators.
+
+### Changed
+- Riftmetal is no longer forged by throwing Radiant Alloy into a held breach: Raw Riftmetal from the Void is alloyed
+  with Radiant Alloy in the furnace. Void Crystals no longer grow round a held breach; they grow on the geodes where the
+  Void's skin sags lowest.
+
 ## [1.7.0] - 2026-10-31
 ### Added
 - Radiant tools are wrapped in quiet lightning from pommel to tip - short arcs snapping here and there, a few sparks

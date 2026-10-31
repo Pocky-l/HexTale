@@ -98,6 +98,22 @@ public final class HextaleCommand {
                                                         IntegerArgumentType.getInteger(context, "radius"))))))
                         .then(Commands.literal("breach")
                                 .executes(context -> breach(context.getSource())))
+                        .then(Commands.literal("enter")
+                                .executes(context -> {
+                                    com.pockyl.hextale.thevoid.realm.VoidPassage.enterHere(context.getSource().getPlayerOrException());
+                                    return 1;
+                                }))
+                        .then(Commands.literal("exit")
+                                .executes(context -> {
+                                    com.pockyl.hextale.thevoid.realm.VoidPassage.recall(context.getSource().getPlayerOrException());
+                                    return 1;
+                                })
+                                .then(Commands.argument("player", net.minecraft.commands.arguments.EntityArgument.player())
+                                        .executes(context -> {
+                                            com.pockyl.hextale.thevoid.realm.VoidPassage.recall(
+                                                    net.minecraft.commands.arguments.EntityArgument.getPlayer(context, "player"));
+                                            return 1;
+                                        })))
                         .then(Commands.literal("clear")
                                 .executes(context -> setThinning(context.getSource(), 0, 0))
                                 .then(Commands.argument("radius", IntegerArgumentType.integer(0, 16))

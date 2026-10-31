@@ -1,0 +1,14 @@
+{
+  "type": "hextale:the_void",
+  "generator": {
+    "type": "hextale:the_void",
+    "biome_source": {
+      "type": "hextale:void_zones",
+      "threshold": "hextale:threshold",
+      "ribcage_reach": "hextale:ribcage_reach",
+      "swallowed_shoals": "hextale:swallowed_shoals",
+      "husk_drift": "hextale:husk_drift",
+      "vortex": "hextale:vortex"
+    }
+  }
+}

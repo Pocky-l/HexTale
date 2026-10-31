@@ -51,6 +51,8 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
         float calm;
         /** 0 .. 1 while it folds into its heart. */
         float fold;
+        /** A gate inside the Void: our world shows through it. */
+        boolean gate;
     }
 
     @Override
@@ -74,6 +76,7 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
         state.orientation.set(breach.orientation());
         state.calm = breach.calm();
         state.fold = breach.fold(partialTick);
+        state.gate = breach.gate();
         org.joml.Vector3fc push = breach.pushPoint();
         state.push = push == null ? 0 : breach.push(partialTick);
         if (push != null) {
@@ -176,7 +179,8 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
             open = Math.round(Mth.clamp(state.reveal, 0, 1) * 255);
             seed = state.seed & 0x7F;
             cellMm = Math.round(layout.cell * 1000);
-            core = Math.round(state.shape.core() * 1000);
+            // A gate carries its core as a negative number: the shader shows our world through it.
+            core = state.gate ? -Math.round(state.shape.core() * 1000) - 1 : Math.round(state.shape.core() * 1000);
             // The shaders read the size from the low 11 bits and how far it has cooled from the bits above.
             sizeCm = Math.min(2047, Math.round(state.size * 100)) | Math.round(Mth.clamp(state.calm, 0, 1) * 15) << 11;
             reveal = state.reveal;

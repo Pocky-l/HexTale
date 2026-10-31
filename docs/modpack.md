@@ -184,6 +184,15 @@ Sorting Matrix fills by itself), `hextale:whirl_crops`, `hextale:whirl_gourds`, 
 Empty a tag (`{"replace": true, "values": []}`) to turn a feature off. If a pack turns off struck geodes, hextech
 still comes from lightning rods next to amethyst.
 
+### The Void (dimension `hextale:the_void`)
+
+A datapack dimension with its own generator (`hextale:the_void`) and biome source (`hextale:void_zones`, biomes
+`hextale:threshold`, `ribcage_reach`, `swallowed_shoals`, `husk_drift`, `vortex`). Coordinate scale 8 like the Nether.
+Players enter only through a breach held by six Void Anchors; the way back is a gate on the other side, which is never
+closed. Its materials: Raw Riftmetal (`hextale:rift_ore`, needs a netherite-level pickaxe), Hollow Crystals, Void
+Crystals, Void Membranes, Husk Chitin. Operators: `/hextale void enter`, `/hextale void exit [player]`. A pack that
+removes the dimension leaves breaches as they always were: they throw players back.
+
 ## Chest loot
 
 Rune scrolls and hextech finds are added to vanilla chest loot by global loot modifiers

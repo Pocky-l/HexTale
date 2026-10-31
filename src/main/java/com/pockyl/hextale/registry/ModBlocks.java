@@ -581,6 +581,45 @@ public final class ModBlocks {
                     .pushReaction(PushReaction.POPPED)
                     .lightLevel(state -> com.pockyl.hextale.thevoid.HollowbloomBlock.LIGHT[state.getValue(com.pockyl.hextale.thevoid.HollowbloomBlock.VIGOR)]));
 
+    // The Void itself (the dimension): the ribs' chitin, the skin between them, the stone it swallowed, its ores.
+    public static final DeferredBlock<Block> HUSK_CHITIN = BLOCKS.registerBlock("husk_chitin", Block::new, ModBlocks::huskChitinProperties);
+    /** The gold-lit crest along the top of a rib. */
+    public static final DeferredBlock<Block> HUSK_CHITIN_RIDGE = BLOCKS.registerBlock("husk_chitin_ridge", Block::new,
+            () -> huskChitinProperties().lightLevel(state -> 6));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.MembraneBlock> VOID_MEMBRANE = BLOCKS.registerBlock("void_membrane",
+            com.pockyl.hextale.thevoid.realm.MembraneBlock::new, () -> membraneProperties(3));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.MembraneBlock> VEINED_VOID_MEMBRANE = BLOCKS.registerBlock(
+            "veined_void_membrane", com.pockyl.hextale.thevoid.realm.MembraneBlock::new, () -> membraneProperties(9));
+    /** Skin worn thin: it tears under a creature's weight. */
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.WornMembraneBlock> WORN_VOID_MEMBRANE = BLOCKS.registerBlock(
+            "worn_void_membrane", com.pockyl.hextale.thevoid.realm.WornMembraneBlock::new,
+            () -> membraneProperties(2).randomTicks().dynamicShape());
+    /** Stone of our world the Void has been eating. */
+    public static final DeferredBlock<Block> GNAWED_STONE = BLOCKS.registerBlock("gnawed_stone", Block::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_PURPLE).instrument(NoteBlockInstrument.BASEDRUM)
+                    .requiresCorrectToolForDrops().strength(1.2F, 4.0F).sound(SoundType.TUFF));
+    /** Black metal grown into a husk's wall: raw riftmetal. */
+    public static final DeferredBlock<net.minecraft.world.level.block.DropExperienceBlock> RIFT_ORE = BLOCKS.registerBlock("rift_ore",
+            properties -> new net.minecraft.world.level.block.DropExperienceBlock(net.minecraft.util.valueproviders.UniformInt.of(4, 9), properties),
+            () -> huskChitinProperties().strength(30.0F, 1200.0F).lightLevel(state -> 3));
+    /** Hextech the Void swallowed and drank empty. */
+    public static final DeferredBlock<net.minecraft.world.level.block.AmethystClusterBlock> HOLLOW_CRYSTAL_CLUSTER = BLOCKS.registerBlock(
+            "hollow_crystal_cluster", properties -> new net.minecraft.world.level.block.AmethystClusterBlock(7.0F, 3.0F, properties),
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).forceSolidOn().noOcclusion().strength(1.5F)
+                    .requiresCorrectToolForDrops().sound(SoundType.AMETHYST_CLUSTER).pushReaction(PushReaction.POPPED));
+
+    private static BlockBehaviour.Properties huskChitinProperties() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_YELLOW).instrument(NoteBlockInstrument.BASEDRUM)
+                .requiresCorrectToolForDrops().strength(2.5F, 7.0F).sound(SoundType.BONE_BLOCK);
+    }
+
+    private static BlockBehaviour.Properties membraneProperties(int light) {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).strength(0.6F).sound(SoundType.HONEY_BLOCK)
+                .noOcclusion().lightLevel(state -> light).isValidSpawn((state, level, pos, type) -> false)
+                .isRedstoneConductor((state, level, pos) -> false).isSuffocating((state, level, pos) -> false)
+                .isViewBlocking((state, level, pos, box) -> false);
+    }
+
     private static BlockBehaviour.Properties voidRockProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).instrument(NoteBlockInstrument.BASEDRUM)
                 .requiresCorrectToolForDrops().strength(1.5F, 6.0F).sound(SoundType.TUFF);

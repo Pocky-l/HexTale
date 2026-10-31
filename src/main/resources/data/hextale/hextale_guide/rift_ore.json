@@ -1,0 +1,16 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:raw_riftmetal",
+  "parents": [
+    "step_through"
+  ],
+  "goal": {
+    "type": "has_item",
+    "item": "hextale:raw_riftmetal"
+  },
+  "pos": [
+    420,
+    1080
+  ]
+}

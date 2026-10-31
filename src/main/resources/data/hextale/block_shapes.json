@@ -312,6 +312,20 @@
   "hextale:hextech_purifier": {"mode": "first", "cases": [
     {"when": {}, "boxes": [[2, 0, 2, 14, 5, 14], [3, 5, 3, 4, 13, 4], [3, 5, 12, 4, 13, 13], [12, 5, 3, 13, 12, 4], [12, 5, 12, 13, 12, 13], [6, 11, 6, 10, 15, 10], [3, 12, 3, 13, 13, 13]]}
   ]},
+  "hextale:hollow_crystal_cluster": {"mode": "first", "cases": [
+    {"when": {"facing": "down", "waterlogged": "false"}, "boxes": []},
+    {"when": {"facing": "down", "waterlogged": "true"}, "boxes": []},
+    {"when": {"facing": "east", "waterlogged": "false"}, "boxes": []},
+    {"when": {"facing": "east", "waterlogged": "true"}, "boxes": []},
+    {"when": {"facing": "north", "waterlogged": "false"}, "boxes": []},
+    {"when": {"facing": "north", "waterlogged": "true"}, "boxes": []},
+    {"when": {"facing": "south", "waterlogged": "false"}, "boxes": []},
+    {"when": {"facing": "south", "waterlogged": "true"}, "boxes": []},
+    {"when": {"facing": "up", "waterlogged": "false"}, "boxes": []},
+    {"when": {"facing": "up", "waterlogged": "true"}, "boxes": []},
+    {"when": {"facing": "west", "waterlogged": "false"}, "boxes": []},
+    {"when": {"facing": "west", "waterlogged": "true"}, "boxes": []}
+  ]},
   "hextale:hollowbloom": {"mode": "first", "cases": [
     {"when": {"vigor": "0"}, "boxes": []},
     {"when": {"vigor": "1"}, "boxes": []},

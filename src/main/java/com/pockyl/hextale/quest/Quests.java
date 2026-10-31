@@ -45,6 +45,8 @@ public final class Quests {
     public static final String BREACH_FOLDED = "breach_folded";
     /** The player let a Breach Heart unfold into a breach again. */
     public static final String BREACH_UNFOLDED = "breach_unfolded";
+    /** A player stepped through a held breach into the Void. */
+    public static final String VOID_ENTERED = "void_entered";
 
     /** The event of a block woken with hextech dust (its id path), for the one who woke it. */
     public static String awakened(String block) {

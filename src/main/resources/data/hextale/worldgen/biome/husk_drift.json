@@ -1,0 +1,39 @@
+{
+  "attributes": {
+    "minecraft:visual/fog_color": "#46304e",
+    "minecraft:visual/sky_color": "#46304e",
+    "minecraft:visual/fog_start_distance": 6.0,
+    "minecraft:visual/fog_end_distance": 72.0,
+    "minecraft:visual/ambient_particles": {
+      "argument": [
+        {
+          "particle": {
+            "type": "minecraft:reverse_portal"
+          },
+          "probability": 0.008
+        }
+      ],
+      "modifier": "append"
+    },
+    "minecraft:audio/ambient_sounds": {
+      "additions": {
+        "sound": "hextale:thinning.murmur",
+        "tick_chance": 0.0035
+      },
+      "mood": {
+        "block_search_extent": 8,
+        "offset": 2.0,
+        "sound": "minecraft:ambient.basalt_deltas.mood",
+        "tick_delay": 6000
+      }
+    }
+  },
+  "carvers": [],
+  "downfall": 0.0,
+  "effects": {
+    "water_color": "#6a4a8a"
+  },
+  "features": [],
+  "has_precipitation": false,
+  "temperature": 0.5
+}

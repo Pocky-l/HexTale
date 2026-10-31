@@ -2,6 +2,7 @@
   "values": [
     "hextale:radiant_alloy_block",
     "hextale:radiant_trim",
-    "hextale:riftmetal_block"
+    "hextale:riftmetal_block",
+    "hextale:rift_ore"
   ]
 }

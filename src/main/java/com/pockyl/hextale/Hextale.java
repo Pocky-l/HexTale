@@ -233,7 +233,9 @@ public final class Hextale {
         output.accept(ModItems.CHARGED_HEXSTEEL_INGOT);
         output.accept(ModItems.RADIANT_ALLOY_INGOT);
         output.accept(ModItems.GEMSTONE_DUST);
+        output.accept(ModItems.RAW_RIFTMETAL);
         output.accept(ModItems.RIFTMETAL_INGOT);
+        output.accept(ModItems.HOLLOW_CRYSTAL);
         output.accept(ModItems.VOID_CRYSTAL_CLUSTER);
         output.accept(ModItems.VOID_CRYSTAL);
         output.accept(ModItems.SEALED_VOID_CRYSTAL);
@@ -338,6 +340,16 @@ public final class Hextale {
         output.accept(ModItems.VOID_ROOTS);
         output.accept(ModItems.VOID_BULB);
         output.accept(ModItems.HOLLOWBLOOM);
+
+        // The Void itself: the ribs' chitin, its skin, the stone it swallowed and what grows in it.
+        output.accept(ModItems.HUSK_CHITIN);
+        output.accept(ModItems.HUSK_CHITIN_RIDGE);
+        output.accept(ModItems.VOID_MEMBRANE);
+        output.accept(ModItems.VEINED_VOID_MEMBRANE);
+        output.accept(ModItems.WORN_VOID_MEMBRANE);
+        output.accept(ModItems.GNAWED_STONE);
+        output.accept(ModItems.RIFT_ORE);
+        output.accept(ModItems.HOLLOW_CRYSTAL_CLUSTER);
 
         // Bottles of the primals and of unknown essence, then every essence as an item in catalogue order
         // (primals, pairs, deeper compounds), then every brew.

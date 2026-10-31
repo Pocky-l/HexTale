@@ -138,6 +138,12 @@ public final class ModItems {
     /** Level 4 metal: Radiant Alloy a held breach took in and gave back. */
     public static final DeferredItem<Item> RIFTMETAL_INGOT = ITEMS.registerItem("riftmetal_ingot",
             properties -> new Item(properties.rarity(Rarity.EPIC).fireResistant()));
+    /** Black metal broken out of a husk's wall in the Void; alloyed with Radiant Alloy it becomes Riftmetal. */
+    public static final DeferredItem<com.pockyl.hextale.item.NotedItem> RAW_RIFTMETAL = ITEMS.registerItem("raw_riftmetal",
+            properties -> new com.pockyl.hextale.item.NotedItem(properties.rarity(Rarity.RARE).fireResistant()));
+    /** Hextech the Void drank empty: it no longer gives, it takes. */
+    public static final DeferredItem<com.pockyl.hextale.item.NotedItem> HOLLOW_CRYSTAL = ITEMS.registerItem("hollow_crystal",
+            properties -> new com.pockyl.hextale.item.NotedItem(properties.rarity(Rarity.RARE)));
     /** Void Chitin softened in the crucible and pressed into a plate: the riftforged armour's shell. */
     public static final DeferredItem<Item> VOID_CARAPACE = ITEMS.registerItem("void_carapace", properties -> new Item(properties.rarity(Rarity.RARE)));
     /** Level 2 gem: a diamond cut to a brilliant with a groove that holds hextech. */
@@ -488,6 +494,15 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> VOID_SOIL = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_SOIL);
     public static final DeferredItem<BlockItem> VOID_ROCK = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK);
     public static final DeferredItem<BlockItem> VOID_ROCK_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK_BRICKS);
+    public static final DeferredItem<BlockItem> HUSK_CHITIN = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN);
+    public static final DeferredItem<BlockItem> HUSK_CHITIN_RIDGE = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_RIDGE);
+    public static final DeferredItem<BlockItem> VOID_MEMBRANE = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_MEMBRANE);
+    public static final DeferredItem<BlockItem> VEINED_VOID_MEMBRANE = ITEMS.registerSimpleBlockItem(ModBlocks.VEINED_VOID_MEMBRANE);
+    public static final DeferredItem<com.pockyl.hextale.item.NotedBlockItem> WORN_VOID_MEMBRANE = ITEMS.registerItem("worn_void_membrane",
+            properties -> new com.pockyl.hextale.item.NotedBlockItem(ModBlocks.WORN_VOID_MEMBRANE.get(), properties.useBlockDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> GNAWED_STONE = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_STONE);
+    public static final DeferredItem<BlockItem> RIFT_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.RIFT_ORE);
+    public static final DeferredItem<BlockItem> HOLLOW_CRYSTAL_CLUSTER = ITEMS.registerSimpleBlockItem(ModBlocks.HOLLOW_CRYSTAL_CLUSTER);
     public static final DeferredItem<BlockItem> VOID_ROCK_BRICK_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK_BRICK_STAIRS);
     public static final DeferredItem<BlockItem> VOID_ROCK_BRICK_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK_BRICK_SLAB);
     public static final DeferredItem<BlockItem> VOID_ROCK_BRICK_WALL = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK_BRICK_WALL);

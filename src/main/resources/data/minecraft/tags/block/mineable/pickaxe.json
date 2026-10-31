@@ -95,6 +95,11 @@
     "hextale:radiant_alloy_block",
     "hextale:radiant_trim",
     "hextale:riftmetal_block",
-    "hextale:void_carapace_tiles"
+    "hextale:void_carapace_tiles",
+    "hextale:husk_chitin",
+    "hextale:husk_chitin_ridge",
+    "hextale:gnawed_stone",
+    "hextale:rift_ore",
+    "hextale:hollow_crystal_cluster"
   ]
 }
