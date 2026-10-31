@@ -495,7 +495,8 @@ public class TheVoid extends Entity {
                     Quests.fireNear(level, position(), Breaches.WATCH_RADIUS, Quests.BREACH_KEPT);
                 }
             } else {
-                if (starve(level)) {
+                // A ring being built round it keeps it from starving: the anchors tied to it hold it in the world.
+                if (heldSides() == 0 && starve(level)) {
                     return;
                 }
                 Thinning.add(level, blockPosition(), FEED, Thinning.Source.BREACH);

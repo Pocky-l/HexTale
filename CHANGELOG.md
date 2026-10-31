@@ -32,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - A closed ring of anchors no longer wears its crystals just by holding: they cloud only while the ring is still open,
   with what the breach eats and with every passage through it. A breach once held stays held.
+- A breach on clean land no longer starves away while a ring of anchors is being built round it: one tied anchor is
+  enough to keep it.
 - Riftmetal is no longer forged by throwing Radiant Alloy into a held breach: Raw Riftmetal from the Void is alloyed
   with Radiant Alloy in the furnace. Void Crystals no longer grow round a held breach; they grow on the geodes where the
   Void's skin sags lowest.

@@ -156,6 +156,25 @@ public final class VoidRealmGameTests {
         });
     }
 
+    /** On clean land a breach starves - but not while a ring is being built round it. */
+    @HexTest(maxTicks = 400, padding = 8)
+    public static void aRingBeingBuiltKeepsABreachFromStarving(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        BlockPos centre = helper.absolutePos(new BlockPos(1, 4, 1));
+        List<VoidAnchorBlockEntity> anchors = VoidRoadGameTests.ring(helper);
+        anchors.get(0).insert(new ItemStack(ModItems.HEXTECH_CRYSTAL.get()));
+        TheVoid breach = TheVoid.rooted(level, Vec3.atCenterOf(centre), 0, VoidShape.EYE, 3.5F, 891);
+        level.addFreshEntity(breach);
+        breach.setStarved(TheVoid.STARVE_TICKS - TheVoid.FEED_TICKS);
+        helper.runAfterDelay(TheVoid.OMEN_TICKS + TheVoid.ROOTED_OPEN_TICKS + TheVoid.FEED_TICKS * 2 + 20, () -> {
+            helper.assertTrue(breach.heldSides() == 1, "one anchor ties it");
+            helper.assertTrue(!breach.closing() && breach.isAlive(), "and it does not starve");
+            breach.discard();
+            VoidRoadGameTests.clearRing(helper);
+            helper.succeed();
+        });
+    }
+
     /** Worn skin holds a moment under a creature and tears; the tear leaves nothing behind it. */
     @HexTest(maxTicks = 200)
     public static void wornSkinTearsUnderACreature(GameTestHelper helper) {
