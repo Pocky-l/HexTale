@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - The Void's sky no longer jumps while you walk or run: it was painted on a box only a few blocks round the camera,
   so the bobbing of the view slid it against the world. It now hangs as far away as a sky should.
+- A world no longer asks for a backup of its "experimental settings" when it opens: the game counted the Void, as
+  any dimension it does not know, as experimental. HexTale's dimensions are stable now.
 
 ## [1.8.0] - 2026-10-31
 ### Added
