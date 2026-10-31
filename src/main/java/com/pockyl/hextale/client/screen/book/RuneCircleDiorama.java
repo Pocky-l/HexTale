@@ -18,26 +18,27 @@ import net.minecraft.world.item.ItemStack;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import com.pockyl.hextale.block.HextechAltarBlockEntity;
+import com.pockyl.hextale.block.RuneCircleBlockEntity;
 import com.pockyl.hextale.block.RuneSteleBlockEntity;
 import com.pockyl.hextale.client.render.HexFx;
-import com.pockyl.hextale.client.render.TableModels;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.rune.ComplexRune;
 
 import org.jspecify.annotations.Nullable;
 
 /**
- * A small turning 3D scene for the research book: the Hextech Altar with its gimbal rings and a pickaxe floating over
- * it, a rune stele beside it with the chosen rune's glyph, and a thread of light carrying the rune into the pickaxe -
- * how a rune is burned in, at a glance.
+ * A small turning 3D scene for the research book: the Rune Circle carved into the floor with a tool (or a device)
+ * floating over it, a rune stele just outside the circle with the chosen rune's glyph, and a thread of light carrying
+ * the rune into the thing - how a rune is burned in, at a glance.
  */
-public final class AltarDiorama {
-    /** Blocks between the altar's and the stele's centres. */
-    private static final float STELE_X = 1.7F;
-    private static final float TILT = 22;
+public final class RuneCircleDiorama {
+    /** Blocks between the circle's and the stele's centres: the carved disc is three blocks across. */
+    private static final float STELE_X = 2.3F;
+    /** The middle of the whole scene (disc from -1.5, stele to STELE_X + 0.5), which it turns around. */
+    private static final float MIDDLE_X = (STELE_X + 0.5F - 1.5F) / 2;
+    private static final float TILT = 24;
 
-    private AltarDiorama() {
+    private RuneCircleDiorama() {
     }
 
     public static void register() {
@@ -45,23 +46,23 @@ public final class AltarDiorama {
     }
 
     /** Submits the scene into a screen box; {@code scale} = GUI pixels per block. */
-    public static void draw(GuiGraphicsExtractor graphics, ItemStack pickaxe, @Nullable ComplexRune rune, float time, int x0, int y0, int x1,
+    public static void draw(GuiGraphicsExtractor graphics, ItemStack item, @Nullable ComplexRune rune, float time, int x0, int y0, int x1,
                             int y1, float scale) {
-        graphics.submitPictureInPictureRenderState(new State(pickaxe, rune, time, x0, y0, x1, y1, scale, graphics.peekScissorStack()));
+        graphics.submitPictureInPictureRenderState(new State(item, rune, time, x0, y0, x1, y1, scale, graphics.peekScissorStack()));
     }
 
-    record State(ItemStack pickaxe, @Nullable ComplexRune rune, float time, int x0, int y0, int x1, int y1, float scale,
+    record State(ItemStack item, @Nullable ComplexRune rune, float time, int x0, int y0, int x1, int y1, float scale,
                  @Nullable ScreenRectangle scissorArea, @Nullable ScreenRectangle bounds) implements PictureInPictureRenderState {
-        State(ItemStack pickaxe, @Nullable ComplexRune rune, float time, int x0, int y0, int x1, int y1, float scale,
+        State(ItemStack item, @Nullable ComplexRune rune, float time, int x0, int y0, int x1, int y1, float scale,
               @Nullable ScreenRectangle scissorArea) {
-            this(pickaxe, rune, time, x0, y0, x1, y1, scale, scissorArea, PictureInPictureRenderState.getBounds(x0, y0, x1, y1, scissorArea));
+            this(item, rune, time, x0, y0, x1, y1, scale, scissorArea, PictureInPictureRenderState.getBounds(x0, y0, x1, y1, scissorArea));
         }
     }
 
     static final class Renderer extends PictureInPictureRenderer<State> {
-        private final ItemStackRenderState altar = new ItemStackRenderState();
+        private final ItemStackRenderState circle = new ItemStackRenderState();
         private final ItemStackRenderState stele = new ItemStackRenderState();
-        private final ItemStackRenderState pickaxe = new ItemStackRenderState();
+        private final ItemStackRenderState item = new ItemStackRenderState();
 
         @Override
         public Class<State> getRenderStateClass() {
@@ -72,9 +73,9 @@ public final class AltarDiorama {
         protected void renderToTexture(State state, PoseStack poseStack, SubmitNodeCollector collector) {
             Minecraft minecraft = Minecraft.getInstance();
             var resolver = com.pockyl.hextale.port.client.ItemModelResolver.INSTANCE;
-            resolver.updateForTopItem(altar, new ItemStack(ModItems.HEXTECH_ALTAR.get()), ItemDisplayContext.NONE, minecraft.level, null, 0);
+            resolver.updateForTopItem(circle, new ItemStack(ModItems.RUNE_CIRCLE.get()), ItemDisplayContext.NONE, minecraft.level, null, 0);
             resolver.updateForTopItem(stele, new ItemStack(ModItems.RUNE_STELE.get()), ItemDisplayContext.NONE, minecraft.level, null, 1);
-            resolver.updateForTopItem(pickaxe, state.pickaxe(), ItemDisplayContext.GROUND, minecraft.level, null, 2);
+            resolver.updateForTopItem(item, state.item(), ItemDisplayContext.GROUND, minecraft.level, null, 2);
             Lighting.setupFor3DItems();
 
             float time = state.time();
@@ -85,13 +86,12 @@ public final class AltarDiorama {
             poseStack.mulPose(Axis.YP.rotationDegrees(yaw));
             Quaternionf camera = new Quaternionf().rotationY(-yaw * Mth.DEG_TO_RAD).rotateX(-TILT * Mth.DEG_TO_RAD);
             Vector3f toCamera = camera.transform(new Vector3f(0, 0, 1));
-            // The pair turns around its middle.
-            poseStack.translate(-STELE_X / 2, -0.9F, 0);
+            poseStack.translate(-MIDDLE_X, -0.8F, 0);
 
             int light = LightTexture.FULL_BRIGHT;
             poseStack.pushPose();
             poseStack.translate(0, 0.5F, 0);
-            altar.submit(poseStack, collector, light, OverlayTexture.NO_OVERLAY, 0);
+            circle.submit(poseStack, collector, light, OverlayTexture.NO_OVERLAY, 0);
             poseStack.popPose();
             poseStack.pushPose();
             poseStack.translate(STELE_X, 0.5F, 0);
@@ -100,29 +100,26 @@ public final class AltarDiorama {
 
             ComplexRune rune = state.rune();
             int color = rune == null ? HexFx.HEXTECH : rune.color();
-            float itemY = (float) HextechAltarBlockEntity.ITEM_Y + Mth.sin(time * 0.08F) * 0.04F;
+            float pulse = 0.5F + 0.5F * Mth.sin(time * 0.15F);
+            float itemY = (float) RuneCircleBlockEntity.ITEM_Y + Mth.sin(time * 0.08F) * 0.04F;
             float glyphY = RuneSteleBlockEntity.GLYPH_Y + Mth.sin(time * 0.06F) * 0.02F;
 
-            // The altar's gimbal and the pickaxe inside it.
+            // The light in the circle's grooves, turning slowly under the thing in the middle.
+            poseStack.pushPose();
+            poseStack.translate(0, 0.09F, 0);
+            poseStack.mulPose(Axis.XP.rotationDegrees(90));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(time * 0.5F));
+            HexFx.sigilRing(poseStack, collector, 1.05F, 12, color, 0.3F + 0.25F * pulse);
+            poseStack.popPose();
+
+            // The thing being written on, turning over the circle.
             poseStack.pushPose();
             poseStack.translate(0, itemY, 0);
             HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.8F, color, 0.3F);
-            poseStack.pushPose();
-            poseStack.mulPose(Axis.YP.rotationDegrees(time * 2.2F));
-            poseStack.pushPose();
-            poseStack.translate(-0.5, -0.5, -0.5);
-            TableModels.submit(poseStack, collector, TableModels.ALTAR_RING_OUTER, light);
-            poseStack.popPose();
-            poseStack.mulPose(Axis.XP.rotationDegrees(time * 3.1F));
-            poseStack.translate(-0.5, -0.5, -0.5);
-            TableModels.submit(poseStack, collector, TableModels.ALTAR_RING_INNER, light);
-            poseStack.popPose();
-            poseStack.pushPose();
             poseStack.mulPose(Axis.YP.rotationDegrees(-time * 2.6F));
             poseStack.scale(1.1F, 1.1F, 1.1F);
             poseStack.translate(0, -0.15, 0);
-            pickaxe.submit(poseStack, collector, light, OverlayTexture.NO_OVERLAY, 0);
-            poseStack.popPose();
+            item.submit(poseStack, collector, light, OverlayTexture.NO_OVERLAY, 0);
             poseStack.popPose();
 
             if (rune != null) {
@@ -139,10 +136,9 @@ public final class AltarDiorama {
                 HexFx.glyph(poseStack, collector, rune, 0.36F, color, 0.9F);
                 poseStack.popPose();
 
-                // A thread of light from the rune to the pickaxe, with a spark running along it.
+                // A thread of light from the rune to the thing, with a spark running along it.
                 poseStack.pushPose();
                 poseStack.translate(STELE_X, glyphY, 0);
-                float pulse = 0.5F + 0.5F * Mth.sin(time * 0.15F);
                 HexFx.beam(poseStack, collector, -STELE_X, itemY - glyphY, 0, 0.07F, color, 0.25F + 0.3F * pulse, toCamera);
                 float run = (time * 0.025F) % 1;
                 poseStack.translate(-STELE_X * run, (itemY - glyphY) * run, 0);
@@ -158,7 +154,7 @@ public final class AltarDiorama {
 
         @Override
         protected String getTextureLabel() {
-            return "hextale altar diorama";
+            return "hextale rune circle diorama";
         }
     }
 }

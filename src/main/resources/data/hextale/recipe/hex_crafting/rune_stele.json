@@ -7,7 +7,7 @@
   ],
   "key": {
     "A": {
-      "tag": "c:gems/amethyst"
+      "item": "minecraft:glow_ink_sac"
     },
     "C": {
       "item": "hextale:chiseled_magic_bricks"

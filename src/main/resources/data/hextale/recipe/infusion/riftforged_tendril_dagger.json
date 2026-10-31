@@ -9,6 +9,18 @@
     },
     {
       "item": "hextale:sealed_void_crystal"
+    },
+    {
+      "item": "minecraft:echo_shard"
+    },
+    {
+      "item": "minecraft:ender_eye"
+    },
+    {
+      "item": "minecraft:phantom_membrane"
+    },
+    {
+      "item": "minecraft:dragon_breath"
     }
   ],
   "essences": {

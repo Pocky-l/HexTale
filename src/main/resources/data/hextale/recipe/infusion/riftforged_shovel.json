@@ -15,6 +15,18 @@
     },
     {
       "item": "hextale:void_crystal"
+    },
+    {
+      "item": "minecraft:echo_shard"
+    },
+    {
+      "item": "minecraft:ender_eye"
+    },
+    {
+      "item": "minecraft:sculk_catalyst"
+    },
+    {
+      "item": "minecraft:shulker_shell"
     }
   ],
   "essences": {

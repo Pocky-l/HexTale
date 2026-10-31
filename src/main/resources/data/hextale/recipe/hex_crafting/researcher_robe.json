@@ -1,13 +1,16 @@
 {
   "type": "hextale:hex_crafting",
   "pattern": [
-    "C C",
+    "CKC",
     "CDC",
     "LBL"
   ],
   "key": {
     "C": {
       "item": "hextale:arcane_cloth"
+    },
+    "K": {
+      "item": "minecraft:book"
     },
     "D": {
       "item": "hextale:hextech_dust"

@@ -1,13 +1,13 @@
 {
   "type": "hextale:hex_crafting",
   "pattern": [
-    " B ",
+    " C ",
     "G G",
-    "BGB"
+    "CGC"
   ],
   "key": {
-    "B": {
-      "tag": "c:ingots/brass"
+    "C": {
+      "tag": "c:ingots/copper"
     },
     "G": {
       "tag": "c:glass_blocks/colorless"

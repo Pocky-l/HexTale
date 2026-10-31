@@ -15,6 +15,12 @@
     },
     {
       "tag": "c:nuggets/brass"
+    },
+    {
+      "item": "minecraft:lead"
+    },
+    {
+      "item": "minecraft:soul_lantern"
     }
   ],
   "essences": {

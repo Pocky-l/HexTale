@@ -12,6 +12,18 @@
     },
     {
       "item": "hextale:engraved_diamond"
+    },
+    {
+      "tag": "minecraft:logs"
+    },
+    {
+      "item": "minecraft:honeycomb"
+    },
+    {
+      "item": "minecraft:bone_block"
+    },
+    {
+      "item": "minecraft:shears"
     }
   ],
   "essences": {

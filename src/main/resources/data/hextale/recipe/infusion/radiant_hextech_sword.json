@@ -19,6 +19,18 @@
         "hextale:brew": "acid"
       },
       "type": "neoforge:components"
+    },
+    {
+      "item": "minecraft:glowstone"
+    },
+    {
+      "item": "minecraft:ghast_tear"
+    },
+    {
+      "item": "minecraft:lightning_rod"
+    },
+    {
+      "item": "minecraft:experience_bottle"
     }
   ],
   "essences": {

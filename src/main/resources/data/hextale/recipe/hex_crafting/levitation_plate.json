@@ -1,15 +1,18 @@
 {
   "type": "hextale:hex_crafting",
   "pattern": [
-    "BUB",
+    "FUB",
     "SSS"
   ],
   "key": {
-    "B": {
-      "tag": "c:ingots/brass"
+    "F": {
+      "tag": "c:feathers"
     },
     "U": {
       "item": "hextale:unstable_hextech"
+    },
+    "B": {
+      "tag": "c:ingots/brass"
     },
     "S": {
       "item": "minecraft:smooth_stone_slab"

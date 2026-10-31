@@ -5,35 +5,79 @@
       "type": "minecraft:composite",
       "models": [
         {
-          "type": "minecraft:range_dispatch",
-          "property": "minecraft:use_duration",
-          "scale": 1,
-          "entries": [
+          "type": "minecraft:select",
+          "property": "minecraft:display_context",
+          "cases": [
             {
-              "threshold": 15,
+              "when": [
+                "thirdperson_lefthand",
+                "firstperson_lefthand"
+              ],
               "model": {
-                "type": "minecraft:model",
-                "model": "hextale:item/strike_gauntlet_charge_1"
-              }
-            },
-            {
-              "threshold": 30,
-              "model": {
-                "type": "minecraft:model",
-                "model": "hextale:item/strike_gauntlet_charge_2"
-              }
-            },
-            {
-              "threshold": 45,
-              "model": {
-                "type": "minecraft:model",
-                "model": "hextale:item/strike_gauntlet_charge_3"
+                "type": "minecraft:range_dispatch",
+                "property": "minecraft:use_duration",
+                "scale": 1,
+                "entries": [
+                  {
+                    "threshold": 15,
+                    "model": {
+                      "type": "minecraft:model",
+                      "model": "hextale:item/strike_gauntlet_charge_1_left"
+                    }
+                  },
+                  {
+                    "threshold": 30,
+                    "model": {
+                      "type": "minecraft:model",
+                      "model": "hextale:item/strike_gauntlet_charge_2_left"
+                    }
+                  },
+                  {
+                    "threshold": 45,
+                    "model": {
+                      "type": "minecraft:model",
+                      "model": "hextale:item/strike_gauntlet_charge_3_left"
+                    }
+                  }
+                ],
+                "fallback": {
+                  "type": "minecraft:model",
+                  "model": "hextale:item/strike_gauntlet_left"
+                }
               }
             }
           ],
           "fallback": {
-            "type": "minecraft:model",
-            "model": "hextale:item/strike_gauntlet"
+            "type": "minecraft:range_dispatch",
+            "property": "minecraft:use_duration",
+            "scale": 1,
+            "entries": [
+              {
+                "threshold": 15,
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "hextale:item/strike_gauntlet_charge_1"
+                }
+              },
+              {
+                "threshold": 30,
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "hextale:item/strike_gauntlet_charge_2"
+                }
+              },
+              {
+                "threshold": 45,
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "hextale:item/strike_gauntlet_charge_3"
+                }
+              }
+            ],
+            "fallback": {
+              "type": "minecraft:model",
+              "model": "hextale:item/strike_gauntlet"
+            }
           }
         },
         {

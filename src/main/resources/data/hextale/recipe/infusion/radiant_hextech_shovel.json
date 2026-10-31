@@ -19,6 +19,18 @@
         "hextale:brew": "acid"
       },
       "type": "neoforge:components"
+    },
+    {
+      "item": "minecraft:glowstone"
+    },
+    {
+      "item": "minecraft:ghast_tear"
+    },
+    {
+      "tag": "c:gems/emerald"
+    },
+    {
+      "item": "minecraft:glow_berries"
     }
   ],
   "essences": {

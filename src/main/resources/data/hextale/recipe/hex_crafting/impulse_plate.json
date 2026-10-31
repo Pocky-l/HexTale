@@ -1,7 +1,7 @@
 {
   "type": "hextale:hex_crafting",
   "pattern": [
-    "BSB",
+    "BSX",
     "PUP"
   ],
   "key": {
@@ -10,6 +10,9 @@
     },
     "S": {
       "tag": "c:slime_balls"
+    },
+    "X": {
+      "item": "minecraft:piston"
     },
     "P": {
       "item": "minecraft:smooth_stone_slab"

@@ -2,14 +2,17 @@
   "type": "hextale:hex_crafting",
   "pattern": [
     "B B",
-    "I I"
+    "LXL"
   ],
   "key": {
     "B": {
       "tag": "c:ingots/brass"
     },
-    "I": {
-      "tag": "c:ingots/iron"
+    "L": {
+      "tag": "c:leathers"
+    },
+    "X": {
+      "item": "minecraft:iron_boots"
     }
   },
   "result": {

@@ -1,16 +1,22 @@
 {
   "type": "hextale:hex_crafting",
   "pattern": [
-    "BGB",
-    "G G",
-    "BBB"
+    "GGG",
+    "BHB",
+    "III"
   ],
   "key": {
+    "G": {
+      "tag": "c:glass_blocks/colorless"
+    },
     "B": {
       "tag": "c:ingots/brass"
     },
-    "G": {
-      "tag": "c:glass_blocks/colorless"
+    "H": {
+      "item": "minecraft:hopper"
+    },
+    "I": {
+      "tag": "c:ingots/iron"
     }
   },
   "result": {

@@ -1,10 +1,13 @@
 {
   "type": "hextale:hex_crafting",
   "pattern": [
-    "BAB",
-    "CCC"
+    "BKB",
+    "CAC"
   ],
   "key": {
+    "K": {
+      "item": "hextale:rune_chalk"
+    },
     "A": {
       "tag": "c:gems/amethyst"
     },

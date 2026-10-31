@@ -12,6 +12,18 @@
     },
     {
       "item": "hextale:engraved_diamond"
+    },
+    {
+      "item": "minecraft:blaze_rod"
+    },
+    {
+      "tag": "c:ender_pearls"
+    },
+    {
+      "tag": "c:bones"
+    },
+    {
+      "item": "minecraft:gunpowder"
     }
   ],
   "essences": {

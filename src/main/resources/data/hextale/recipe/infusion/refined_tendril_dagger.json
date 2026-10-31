@@ -9,6 +9,15 @@
     },
     {
       "item": "hextale:engraved_diamond"
+    },
+    {
+      "tag": "c:feathers"
+    },
+    {
+      "tag": "c:strings"
+    },
+    {
+      "item": "minecraft:spider_eye"
     }
   ],
   "essences": {

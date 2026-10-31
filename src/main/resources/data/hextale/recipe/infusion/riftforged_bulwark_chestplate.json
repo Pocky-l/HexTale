@@ -18,6 +18,15 @@
     },
     {
       "item": "hextale:void_carapace"
+    },
+    {
+      "item": "minecraft:echo_shard"
+    },
+    {
+      "item": "minecraft:shulker_shell"
+    },
+    {
+      "item": "minecraft:crying_obsidian"
     }
   ],
   "essences": {

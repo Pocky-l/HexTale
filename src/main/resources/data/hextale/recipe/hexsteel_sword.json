@@ -3,12 +3,15 @@
   "category": "equipment",
   "pattern": [
     "X",
-    "X",
+    "D",
     "#"
   ],
   "key": {
     "X": {
       "tag": "c:ingots/hexsteel"
+    },
+    "D": {
+      "tag": "c:gems/diamond"
     },
     "#": {
       "tag": "c:rods/wooden"

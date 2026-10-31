@@ -12,6 +12,18 @@
     },
     {
       "item": "hextale:engraved_diamond"
+    },
+    {
+      "item": "minecraft:shield"
+    },
+    {
+      "tag": "c:leathers"
+    },
+    {
+      "tag": "c:chains"
+    },
+    {
+      "item": "minecraft:iron_boots"
     }
   ],
   "essences": {

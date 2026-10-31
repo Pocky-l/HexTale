@@ -19,6 +19,18 @@
         "hextale:brew": "acid"
       },
       "type": "neoforge:components"
+    },
+    {
+      "item": "minecraft:glowstone"
+    },
+    {
+      "item": "minecraft:ghast_tear"
+    },
+    {
+      "item": "minecraft:crying_obsidian"
+    },
+    {
+      "tag": "c:gems/diamond"
     }
   ],
   "essences": {

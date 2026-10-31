@@ -45,8 +45,8 @@ import java.util.Map;
  * entity without level renderer that draws the plain models, then the special one. Their 1.21.1 item models are
  * {@code builtin/entity} with the display of the definition's base (made by the asset port script). A composite may
  * hold several specials (drawn in order), a plain part that is the item's own model file (its geometry is kept in
- * {@code item/port/<id>}) and a {@code minecraft:range_dispatch} on {@code minecraft:use_duration} (the charge stages
- * of an item held in use).
+ * {@code item/port/<id>}), {@code minecraft:range_dispatch} on {@code minecraft:use_duration} (the charge stages of
+ * an item held in use) and {@code minecraft:select} on {@code minecraft:display_context}.
  */
 @EventBusSubscriber(modid = Hextale.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public final class SpecialItemModels {
@@ -65,24 +65,60 @@ public final class SpecialItemModels {
         TYPES.put(id, codec);
     }
 
-    /** A plain part: one model, or models picked by how long the item has been in use (thresholds rising). */
-    private record Plain(ModelResourceLocation fallback, float[] thresholds, List<ModelResourceLocation> stages) {
-        static Plain of(ModelResourceLocation model) {
-            return new Plain(model, new float[0], List.of());
+    /**
+     * A plain part: one model, models picked by how long the item has been in use (thresholds rising), or models picked
+     * by the display context.
+     */
+    private interface Plain {
+        ModelResourceLocation pick(ItemDisplayContext context, float used);
+
+        java.util.stream.Stream<ModelResourceLocation> all();
+    }
+
+    private record One(ModelResourceLocation model) implements Plain {
+        @Override
+        public ModelResourceLocation pick(ItemDisplayContext context, float used) {
+            return model;
         }
 
-        ModelResourceLocation pick(float used) {
-            ModelResourceLocation picked = fallback;
+        @Override
+        public java.util.stream.Stream<ModelResourceLocation> all() {
+            return java.util.stream.Stream.of(model);
+        }
+    }
+
+    private record UseDuration(Plain fallback, float[] thresholds, List<Plain> stages) implements Plain {
+        @Override
+        public ModelResourceLocation pick(ItemDisplayContext context, float used) {
+            Plain picked = fallback;
             for (int i = 0; i < thresholds.length; i++) {
                 if (used >= thresholds[i]) {
                     picked = stages.get(i);
                 }
             }
-            return picked;
+            return picked.pick(context, used);
         }
 
-        java.util.stream.Stream<ModelResourceLocation> all() {
-            return java.util.stream.Stream.concat(java.util.stream.Stream.of(fallback), stages.stream());
+        @Override
+        public java.util.stream.Stream<ModelResourceLocation> all() {
+            return java.util.stream.Stream.concat(fallback.all(), stages.stream().flatMap(Plain::all));
+        }
+    }
+
+    private record DisplayContext(Plain fallback, List<java.util.Set<String>> whens, List<Plain> cases) implements Plain {
+        @Override
+        public ModelResourceLocation pick(ItemDisplayContext context, float used) {
+            for (int i = 0; i < whens.size(); i++) {
+                if (whens.get(i).contains(context.getSerializedName())) {
+                    return cases.get(i).pick(context, used);
+                }
+            }
+            return fallback.pick(context, used);
+        }
+
+        @Override
+        public java.util.stream.Stream<ModelResourceLocation> all() {
+            return java.util.stream.Stream.concat(fallback.all(), cases.stream().flatMap(Plain::all));
         }
     }
 
@@ -130,25 +166,56 @@ public final class SpecialItemModels {
         List<Plain> plain = new ArrayList<>();
         List<JsonObject> specials = new ArrayList<>();
         for (JsonObject part : parts) {
-            String type = part.get("type").getAsString();
-            if (type.equals("minecraft:special")) {
+            if (part.get("type").getAsString().equals("minecraft:special")) {
                 specials.add(part.getAsJsonObject("model"));
-            } else if (type.equals("minecraft:model")) {
-                plain.add(Plain.of(location(id, part)));
-            } else if (type.equals("minecraft:range_dispatch") && "minecraft:use_duration".equals(part.get("property").getAsString())) {
-                float scale = part.has("scale") ? part.get("scale").getAsFloat() : 1;
-                JsonArray entries = part.getAsJsonArray("entries");
-                float[] thresholds = new float[entries.size()];
-                List<ModelResourceLocation> stages = new ArrayList<>();
-                for (int i = 0; i < thresholds.length; i++) {
-                    JsonObject entry = entries.get(i).getAsJsonObject();
-                    thresholds[i] = entry.get("threshold").getAsFloat() / scale;
-                    stages.add(location(id, entry.getAsJsonObject("model")));
+            } else {
+                Plain read = plain(id, part);
+                if (read != null) {
+                    plain.add(read);
                 }
-                plain.add(new Plain(location(id, part.getAsJsonObject("fallback")), thresholds, stages));
             }
         }
         return specials.isEmpty() ? null : new Entry(plain, specials);
+    }
+
+    private static @Nullable Plain plain(ResourceLocation id, JsonObject part) {
+        String type = part.get("type").getAsString();
+        if (type.equals("minecraft:model")) {
+            return new One(location(id, part));
+        }
+        if (type.equals("minecraft:range_dispatch") && "minecraft:use_duration".equals(part.get("property").getAsString())) {
+            float scale = part.has("scale") ? part.get("scale").getAsFloat() : 1;
+            JsonArray entries = part.getAsJsonArray("entries");
+            float[] thresholds = new float[entries.size()];
+            List<Plain> stages = new ArrayList<>();
+            for (int i = 0; i < thresholds.length; i++) {
+                JsonObject entry = entries.get(i).getAsJsonObject();
+                thresholds[i] = entry.get("threshold").getAsFloat() / scale;
+                stages.add(plain(id, entry.getAsJsonObject("model")));
+            }
+            Plain fallback = plain(id, part.getAsJsonObject("fallback"));
+            return fallback == null || stages.contains(null) ? null : new UseDuration(fallback, thresholds, stages);
+        }
+        if (type.equals("minecraft:select") && "minecraft:display_context".equals(part.get("property").getAsString())) {
+            List<java.util.Set<String>> whens = new ArrayList<>();
+            List<Plain> cases = new ArrayList<>();
+            for (JsonElement element : part.getAsJsonArray("cases")) {
+                JsonObject entry = element.getAsJsonObject();
+                java.util.Set<String> when = new java.util.HashSet<>();
+                JsonElement value = entry.get("when");
+                if (value.isJsonArray()) {
+                    value.getAsJsonArray().forEach(v -> when.add(v.getAsString()));
+                } else {
+                    when.add(value.getAsString());
+                }
+                whens.add(when);
+                cases.add(plain(id, entry.getAsJsonObject("model")));
+            }
+            Plain fallback = plain(id, part.getAsJsonObject("fallback"));
+            return fallback == null || cases.contains(null) ? null : new DisplayContext(fallback, whens, cases);
+        }
+        Hextale.LOGGER.warn("Item definition part {} of {} not drawn on 1.21.1", type, id);
+        return null;
     }
 
     /** A plain model part; the item's own model file is the builtin one on 1.21.1, its geometry sits in item/port. */
@@ -203,7 +270,7 @@ public final class SpecialItemModels {
                 @Override
                 public void renderByItem(ItemStack stack, ItemDisplayContext context, PoseStack poseStack, MultiBufferSource buffers,
                                          int light, int overlay) {
-                    draw(stack, poseStack, buffers, light, overlay);
+                    draw(stack, context, poseStack, buffers, light, overlay);
                 }
             };
         }
@@ -211,7 +278,8 @@ public final class SpecialItemModels {
     }
 
     @SuppressWarnings("unchecked")
-    private static void draw(ItemStack stack, PoseStack poseStack, MultiBufferSource buffers, int light, int overlay) {
+    private static void draw(ItemStack stack, ItemDisplayContext context, PoseStack poseStack, MultiBufferSource buffers, int light,
+                             int overlay) {
         Entry entry = entries().get(stack.getItem());
         if (entry == null) {
             return;
@@ -219,7 +287,7 @@ public final class SpecialItemModels {
         Minecraft minecraft = Minecraft.getInstance();
         float used = used(stack);
         for (Plain part : entry.plain()) {
-            BakedModel model = minecraft.getModelManager().getModel(part.pick(used));
+            BakedModel model = minecraft.getModelManager().getModel(part.pick(context, used));
             minecraft.getItemRenderer().renderModelLists(model, stack, light, overlay, poseStack,
                     ItemRenderer.getFoilBufferDirect(buffers, Sheets.translucentCullBlockSheet(), true, stack.hasFoil()));
         }

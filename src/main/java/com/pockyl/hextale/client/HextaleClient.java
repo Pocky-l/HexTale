@@ -113,6 +113,8 @@ public final class HextaleClient {
         modBus.addListener(com.pockyl.hextale.client.render.BulwarkClient::registerLayers);
         modBus.addListener(com.pockyl.hextale.client.render.BulwarkClient::bake);
         modBus.addListener(com.pockyl.hextale.client.render.BulwarkClient::registerExtensions);
+        modBus.addListener(com.pockyl.hextale.client.render.StrikeGauntletClient::registerExtensions);
+        com.pockyl.hextale.client.render.StrikeGauntletClient.register();
         modBus.addListener(com.pockyl.hextale.client.render.BulwarkHeartLayer::addLayers);
         modBus.addListener((net.neoforged.neoforge.client.event.EntityRenderersEvent.AddLayers event) -> com.pockyl.hextale.client.render.BulwarkAuraLayer.addLayers(event));
         com.pockyl.hextale.port.client.SpecialItemModels.register(
@@ -122,7 +124,7 @@ public final class HextaleClient {
                 com.pockyl.hextale.client.render.ResearcherClothesItemRenderer.ID,
                 com.pockyl.hextale.client.render.ResearcherClothesItemRenderer.Unbaked.MAP_CODEC);
         SkypackClient.register();
-        com.pockyl.hextale.client.screen.book.AltarDiorama.register();
+        com.pockyl.hextale.client.screen.book.RuneCircleDiorama.register();
         com.pockyl.hextale.client.screen.book.CircleDiorama.register();
         com.pockyl.hextale.client.screen.MultiblockDiorama.register();
         com.pockyl.hextale.port.client.SubmitCustomGeometryEvent.register();

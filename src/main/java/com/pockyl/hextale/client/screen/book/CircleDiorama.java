@@ -21,9 +21,11 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import com.pockyl.hextale.block.HextechAltarBlockEntity;
+import com.pockyl.hextale.block.RuneCircleBlockEntity;
 import com.pockyl.hextale.block.RuneSteleBlockEntity;
 import com.pockyl.hextale.block.PedestalBlockEntity;
 import com.pockyl.hextale.client.render.HexFx;
+import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.client.render.TableModels;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.quest.Quest;
@@ -32,17 +34,20 @@ import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.Essence;
+import com.pockyl.hextale.runework.HextechPickaxe;
 
 import java.util.List;
 
 import org.jspecify.annotations.Nullable;
 
 /**
- * The ritual circle at work, as a turning 3D scene for the research book: the Hextech Altar in the middle with raw
- * hextech floating in its gimbal rings, four pedestals around it holding amethyst and brass, two rune steles and two
- * Essence Jars further out. The ritual plays in a loop - the rings wake up, the pedestals' items rise one after another
- * and fly into the altar, the jars pour their essences in as streams of motes, a flash, and the hextech gemstone turns
- * over the altar. The part a step is about (the altar, the pedestals or the steles) stands in a ring of light.
+ * The circles at work, as turning 3D scenes for the research book. The altar's: the Ritual Altar in the middle with a
+ * cut crystal floating in its gimbal rings, four pedestals around it and two Essence Jars further out; the pedestals'
+ * items rise one after another and fly into the altar, the jars pour their essences in as streams of motes, a flash,
+ * and a pylon turns over the altar. The steles' (they serve the Rune Circle only): the carved Rune Circle with a
+ * pickaxe over it, two steles just outside it with their runes, two jars; the runes run into the pickaxe as threads of
+ * light while the jars pay their essence, and it comes out glowing in the runes' colours. The part a step is about (the
+ * altar, the pedestals or the steles) stands in a ring of light.
  */
 public final class CircleDiorama {
     /** One loop of the ritual, in ticks: warm-up, four items, the essences, the finale, a moment to admire the result. */
@@ -52,11 +57,15 @@ public final class CircleDiorama {
     private static final float ESSENCES = 60;
     private static final float FINALE = 24;
     private static final float PEDESTAL_R = 2.1F;
-    private static final float STELE_R = 3.1F;
     private static final float JAR_R = 3.0F;
     private static final float CENTRE_Y = (float) HextechAltarBlockEntity.ITEM_Y + 0.05F;
     private static final float TILT = 30;
     private static final List<Essence> DRAWN = List.of(Essence.CRYSTAL, Essence.MAGIC, Essence.SPARK);
+    /** The steles of the rune scene stand just outside the carved disc, which is three blocks across. */
+    private static final float CIRCLE_STELE_R = 2.4F;
+    private static final float RUNES = 90;
+    private static final List<String> SCENE_RUNES = List.of("fire_earth", "spark_life");
+    private static final List<Essence> RUNE_ESSENCES = List.of(Essence.FIRE, Essence.SPARK);
 
     private CircleDiorama() {
     }
@@ -90,6 +99,7 @@ public final class CircleDiorama {
         private final ItemStackRenderState[] offerings = {new ItemStackRenderState(), new ItemStackRenderState(), new ItemStackRenderState(),
                 new ItemStackRenderState()};
         private final ItemStackRenderState centre = new ItemStackRenderState();
+        private final ItemStackRenderState circle = new ItemStackRenderState();
 
         @Override
         public Class<State> getRenderStateClass() {
@@ -98,6 +108,10 @@ public final class CircleDiorama {
 
         @Override
         protected void renderToTexture(State state, PoseStack poseStack, SubmitNodeCollector collector) {
+            if (state.focus() == Quest.Scene.STELE) {
+                runeWork(state, poseStack, collector);
+                return;
+            }
             Minecraft minecraft = Minecraft.getInstance();
             ItemModelResolver resolver = com.pockyl.hextale.port.client.ItemModelResolver.INSTANCE;
             float time = state.time();
@@ -109,7 +123,6 @@ public final class CircleDiorama {
 
             resolver.updateForTopItem(altar, new ItemStack(ModItems.HEXTECH_ALTAR.get()), ItemDisplayContext.NONE, minecraft.level, null, 0);
             resolver.updateForTopItem(pedestal, new ItemStack(ModItems.PEDESTAL.get()), ItemDisplayContext.NONE, minecraft.level, null, 1);
-            resolver.updateForTopItem(stele, new ItemStack(ModItems.RUNE_STELE.get()), ItemDisplayContext.NONE, minecraft.level, null, 2);
             for (int j = 0; j < 2; j++) {
                 ItemStack jar = new ItemStack(ModItems.ESSENCE_TANK.get());
                 jar.set(ModDataComponents.ESSENCE.get(), EssenceMix.pure(DRAWN.get(j), 2400));
@@ -138,13 +151,10 @@ public final class CircleDiorama {
             float pulse = 0.5F + 0.5F * Mth.sin(time * 0.12F);
             if (focus == Quest.Scene.ALTAR) {
                 groundRing(poseStack, collector, 0, 0, 1.1F, time, pulse);
-            } else if (focus == Quest.Scene.PEDESTAL) {
+            } else {
                 for (int i = 0; i < 4; i++) {
                     groundRing(poseStack, collector, Mth.cos(pedestalAngle(i)) * PEDESTAL_R, Mth.sin(pedestalAngle(i)) * PEDESTAL_R, 0.7F, time, pulse);
                 }
-            } else {
-                groundRing(poseStack, collector, STELE_R, 0, 0.7F, time, pulse);
-                groundRing(poseStack, collector, -STELE_R, 0, 0.7F, time, pulse);
             }
 
             // The blocks of the circle.
@@ -152,8 +162,6 @@ public final class CircleDiorama {
             for (int i = 0; i < 4; i++) {
                 block(poseStack, collector, pedestal, Mth.cos(pedestalAngle(i)) * PEDESTAL_R, Mth.sin(pedestalAngle(i)) * PEDESTAL_R, light);
             }
-            block(poseStack, collector, stele, STELE_R, 0, light);
-            block(poseStack, collector, stele, -STELE_R, 0, light);
             block(poseStack, collector, jars[0], 0, JAR_R, light);
             block(poseStack, collector, jars[1], 0, -JAR_R, light);
 
@@ -181,26 +189,6 @@ public final class CircleDiorama {
                 poseStack.translate(0, -0.15F, 0);
                 offerings[i].submit(poseStack, collector, light, OverlayTexture.NO_OVERLAY, 0);
                 poseStack.popPose();
-            }
-
-            // The runes on the steles, always facing the reader, and their threads into the altar while the ritual runs.
-            ComplexRune rune = ComplexRunes.byKey("fire_earth");
-            boolean running = t >= WARMUP && t < essencesEnd;
-            for (int side = -1; side <= 1; side += 2) {
-                float sx = STELE_R * side;
-                poseStack.pushPose();
-                poseStack.translate(sx, RuneSteleBlockEntity.GLYPH_Y + Mth.sin(time * 0.06F + side) * 0.02F, 0);
-                HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.6F, rune.color(), 0.3F + (focus == Quest.Scene.STELE ? 0.25F * pulse : 0));
-                poseStack.mulPose(new org.joml.Quaternionf(camera));
-                poseStack.translate(0, 0, 0.03F);
-                HexFx.glyph(poseStack, collector, rune, 0.34F, rune.color(), 0.9F);
-                poseStack.popPose();
-                if (running) {
-                    poseStack.pushPose();
-                    poseStack.translate(sx, RuneSteleBlockEntity.GLYPH_Y, 0);
-                    HexFx.beam(poseStack, collector, -sx, CENTRE_Y - RuneSteleBlockEntity.GLYPH_Y, 0, 0.05F, rune.color(), 0.25F + 0.2F * pulse, toCamera);
-                    poseStack.popPose();
-                }
             }
 
             // The essences: streams of motes from the jars' lids into the altar.
@@ -245,6 +233,109 @@ public final class CircleDiorama {
             poseStack.translate(0, -0.15F, 0);
             centre.submit(poseStack, collector, light, OverlayTexture.NO_OVERLAY, 0);
             poseStack.popPose();
+            poseStack.popPose();
+        }
+
+        /** The steles' scene: runes burned into a pickaxe in the Rune Circle, in a loop. */
+        private void runeWork(State state, PoseStack poseStack, SubmitNodeCollector collector) {
+            Minecraft minecraft = Minecraft.getInstance();
+            ItemModelResolver resolver = com.pockyl.hextale.port.client.ItemModelResolver.INSTANCE;
+            float time = state.time();
+            float t = time % LOOP;
+            float runesEnd = WARMUP + RUNES;
+            float finaleEnd = runesEnd + FINALE;
+            boolean made = t >= runesEnd + FINALE / 2;
+
+            resolver.updateForTopItem(circle, new ItemStack(ModItems.RUNE_CIRCLE.get()), ItemDisplayContext.NONE, minecraft.level, null, 0);
+            resolver.updateForTopItem(stele, new ItemStack(ModItems.RUNE_STELE.get()), ItemDisplayContext.NONE, minecraft.level, null, 1);
+            for (int j = 0; j < 2; j++) {
+                ItemStack jar = new ItemStack(ModItems.ESSENCE_TANK.get());
+                jar.set(ModDataComponents.ESSENCE.get(), EssenceMix.pure(RUNE_ESSENCES.get(j), 2400));
+                resolver.updateForTopItem(jars[j], jar, ItemDisplayContext.NONE, minecraft.level, null, 3 + j);
+            }
+            resolver.updateForTopItem(centre, new ItemStack(ModItems.pickaxe(HextechPickaxe.HEXTECH).get()), ItemDisplayContext.GROUND,
+                    minecraft.level, null, 20);
+            Lighting.setupFor3DItems();
+
+            float yaw = time * 0.35F + 20;
+            poseStack.scale(1, -1, -1);
+            poseStack.mulPose(Axis.XP.rotationDegrees(TILT));
+            poseStack.mulPose(Axis.YP.rotationDegrees(yaw));
+            Quaternionf camera = new Quaternionf().rotationY(-yaw * Mth.DEG_TO_RAD).rotateX(-TILT * Mth.DEG_TO_RAD);
+            Vector3f toCamera = camera.transform(new Vector3f(0, 0, 1));
+            poseStack.translate(0, -0.8F, 0);
+            int light = LightTexture.FULL_BRIGHT;
+            float pulse = 0.5F + 0.5F * Mth.sin(time * 0.12F);
+            groundRing(poseStack, collector, CIRCLE_STELE_R, 0, 0.7F, time, pulse);
+            groundRing(poseStack, collector, -CIRCLE_STELE_R, 0, 0.7F, time, pulse);
+
+            block(poseStack, collector, circle, 0, 0, light);
+            block(poseStack, collector, stele, CIRCLE_STELE_R, 0, light);
+            block(poseStack, collector, stele, -CIRCLE_STELE_R, 0, light);
+            block(poseStack, collector, jars[0], 0, JAR_R, light);
+            block(poseStack, collector, jars[1], 0, -JAR_R, light);
+
+            boolean running = t >= WARMUP && t < runesEnd;
+            float flash = t >= runesEnd && t < finaleEnd ? Mth.sin((t - runesEnd) / FINALE * Mth.PI) : 0;
+            float itemY = (float) RuneCircleBlockEntity.ITEM_Y + Mth.sin(time * 0.08F) * 0.04F;
+            int blend = PixelArt.mix(ComplexRunes.byKey(SCENE_RUNES.get(0)).color(), ComplexRunes.byKey(SCENE_RUNES.get(1)).color(), 0.5F);
+
+            // The light in the circle's grooves, brighter while the runes run in.
+            poseStack.pushPose();
+            poseStack.translate(0, 0.09F, 0);
+            poseStack.mulPose(Axis.XP.rotationDegrees(90));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(time * (running ? 1.6F : 0.5F)));
+            HexFx.sigilRing(poseStack, collector, 1.05F, 12, blend, (running ? 0.5F : 0.25F) + 0.25F * pulse);
+            poseStack.popPose();
+
+            // The runes over the steles, always facing the reader, and their threads into the pickaxe while they burn in.
+            for (int side = 0; side < 2; side++) {
+                ComplexRune rune = ComplexRunes.byKey(SCENE_RUNES.get(side));
+                float sx = side == 0 ? CIRCLE_STELE_R : -CIRCLE_STELE_R;
+                float glyphY = RuneSteleBlockEntity.GLYPH_Y + Mth.sin(time * 0.06F + side) * 0.02F;
+                poseStack.pushPose();
+                poseStack.translate(sx, glyphY, 0);
+                HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.6F, rune.color(), 0.3F + 0.25F * pulse);
+                poseStack.mulPose(new org.joml.Quaternionf(camera));
+                poseStack.translate(0, 0, 0.03F);
+                HexFx.glyph(poseStack, collector, rune, 0.34F, rune.color(), 0.9F);
+                poseStack.popPose();
+                if (running) {
+                    poseStack.pushPose();
+                    poseStack.translate(sx, glyphY, 0);
+                    HexFx.beam(poseStack, collector, -sx, itemY - glyphY, 0, 0.06F, rune.color(), 0.25F + 0.3F * pulse, toCamera);
+                    float run = ((t - WARMUP) * 0.03F + side * 0.5F) % 1;
+                    poseStack.translate(-sx * run, (itemY - glyphY) * run, 0);
+                    HexFx.sprite(poseStack, collector, camera, HexFx.MOTE, 0.15F, rune.color(), 0.9F);
+                    poseStack.popPose();
+                }
+            }
+
+            // The jars pay the runes' essence: streams of motes from their lids into the pickaxe.
+            if (running) {
+                float k = (t - WARMUP) / RUNES;
+                for (int j = 0; j < 2; j++) {
+                    int color = RUNE_ESSENCES.get(j).color();
+                    float jz = (j == 0 ? 1 : -1) * JAR_R;
+                    for (int m = 0; m < 4; m++) {
+                        float run = (time * 0.04F + m * 0.25F + j * 0.1F) % 1;
+                        poseStack.pushPose();
+                        poseStack.translate(0, Mth.lerp(run, 1.05F, itemY) + Mth.sin(run * Mth.PI) * 0.5F, Mth.lerp(run, jz, 0));
+                        HexFx.sprite(poseStack, collector, camera, HexFx.MOTE, 0.13F, color, 0.9F * Mth.sin(k * Mth.PI));
+                        poseStack.popPose();
+                    }
+                }
+            }
+
+            // The pickaxe, glowing in the runes' colours once they are in.
+            poseStack.pushPose();
+            poseStack.translate(0, itemY, 0);
+            HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.8F + 1.4F * flash, made ? blend : HexFx.HEXTECH,
+                    (made ? 0.45F : 0.25F) + 0.5F * flash);
+            poseStack.mulPose(Axis.YP.rotationDegrees(-time * 2.4F));
+            poseStack.scale(0.9F, 0.9F, 0.9F);
+            poseStack.translate(0, -0.15F, 0);
+            centre.submit(poseStack, collector, light, OverlayTexture.NO_OVERLAY, 0);
             poseStack.popPose();
         }
 

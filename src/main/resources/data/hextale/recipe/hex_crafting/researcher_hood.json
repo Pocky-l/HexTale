@@ -2,7 +2,7 @@
   "type": "hextale:hex_crafting",
   "pattern": [
     "CBC",
-    "C C"
+    "CFC"
   ],
   "key": {
     "C": {
@@ -10,6 +10,9 @@
     },
     "B": {
       "tag": "c:ingots/brass"
+    },
+    "F": {
+      "tag": "c:feathers"
     }
   },
   "result": {

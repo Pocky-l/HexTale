@@ -46,6 +46,8 @@ public final class HextechWorkingCategory {
                 new ItemStack(ModItems.HEXTECH_CRYSTAL.get()), "cut"));
         steps.add(step(List.of(new ItemStack(ModItems.HEXTECH_CRYSTAL.get()), new ItemStack(ModItems.MASTER_CUTTING_DISC.get())),
                 new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), "finish"));
+        steps.add(step(List.of(new ItemStack(Items.DIAMOND), new ItemStack(ModItems.MASTER_CUTTING_DISC.get())),
+                new ItemStack(ModItems.ENGRAVED_DIAMOND.get()), "engrave"));
         return steps;
     }
 
