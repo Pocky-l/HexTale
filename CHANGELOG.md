@@ -128,6 +128,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   no longer flickers from afar.
 
 ### Fixed
+- JEI shows where the Engraved Diamond comes from: a diamond cut with the Master Cutting Disc on the Lapidary.
 - The Researcher's Diary no longer drags the frame rate down while it is open: its star map ran at about half the
   frame rate of the game behind it and now costs about as much as an inventory screen. The links between the steps are
   traced once instead of every frame, the hazes behind the steps are drawn as one picture each, and nothing outside the
