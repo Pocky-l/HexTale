@@ -3,12 +3,12 @@
   "pattern": [
     "B B",
     "BOB",
-    "IBI"
+    "BXB"
   ],
   "key": {
     "B": "#c:ingots/brass",
-    "I": "#c:ingots/iron",
-    "O": "hextale:unstable_hextech"
+    "O": "hextale:unstable_hextech",
+    "X": "minecraft:iron_chestplate"
   },
   "result": {
     "id": "hextale:bulwark_chestplate"

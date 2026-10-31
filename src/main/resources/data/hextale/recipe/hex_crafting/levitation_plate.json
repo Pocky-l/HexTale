@@ -1,12 +1,13 @@
 {
   "type": "hextale:hex_crafting",
   "pattern": [
-    "BUB",
+    "FUB",
     "SSS"
   ],
   "key": {
-    "B": "#c:ingots/brass",
+    "F": "#c:feathers",
     "U": "hextale:unstable_hextech",
+    "B": "#c:ingots/brass",
     "S": "minecraft:smooth_stone_slab"
   },
   "result": {

@@ -3,10 +3,11 @@
   "category": "equipment",
   "pattern": [
     "X X",
-    "X X"
+    "XDX"
   ],
   "key": {
-    "X": "#c:ingots/hexsteel"
+    "X": "#c:ingots/hexsteel",
+    "D": "#c:gems/diamond"
   },
   "result": {
     "id": "hextale:hexsteel_boots"

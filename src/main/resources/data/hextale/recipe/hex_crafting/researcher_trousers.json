@@ -2,12 +2,13 @@
   "type": "hextale:hex_crafting",
   "pattern": [
     "CLC",
-    "C C",
+    "CMC",
     "C C"
   ],
   "key": {
     "C": "hextale:arcane_cloth",
-    "L": "#c:leathers"
+    "L": "#c:leathers",
+    "M": "minecraft:compass"
   },
   "result": {
     "id": "hextale:researcher_trousers"

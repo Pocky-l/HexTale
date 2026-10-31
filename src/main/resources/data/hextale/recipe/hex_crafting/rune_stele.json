@@ -6,7 +6,7 @@
     "BBB"
   ],
   "key": {
-    "A": "#c:gems/amethyst",
+    "A": "minecraft:glow_ink_sac",
     "C": "hextale:chiseled_magic_bricks",
     "B": "hextale:magic_bricks"
   },

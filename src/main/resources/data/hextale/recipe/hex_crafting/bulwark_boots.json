@@ -2,11 +2,12 @@
   "type": "hextale:hex_crafting",
   "pattern": [
     "B B",
-    "I I"
+    "LXL"
   ],
   "key": {
     "B": "#c:ingots/brass",
-    "I": "#c:ingots/iron"
+    "L": "#c:leathers",
+    "X": "minecraft:iron_boots"
   },
   "result": {
     "id": "hextale:bulwark_boots"

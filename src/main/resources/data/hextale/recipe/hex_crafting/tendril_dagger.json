@@ -1,11 +1,12 @@
 {
   "type": "hextale:hex_crafting",
   "pattern": [
-    "I",
-    "B",
-    "O"
+    "LI",
+    "BI",
+    "OB"
   ],
   "key": {
+    "L": "minecraft:lead",
     "I": "#c:ingots/iron",
     "B": "#c:ingots/brass",
     "O": "hextale:unstable_hextech"

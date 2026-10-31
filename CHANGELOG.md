@@ -87,6 +87,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   for the radiant sword, echo shards, ender eyes, dragon's breath and shulker shells for the riftforged gear. The
   Recall Charm also wants a compass and a chorus fruit, and the Soul Flask a lead and a soul lantern.
 - Each pedestal item unsettles the Hexcore a little less, so the bigger late rituals are no angrier than before.
+- Recipes were gone over at every bench so that each thing reads as what it is, with less brass everywhere:
+  - the Alembic is a copper still now, and the Separator takes a hopper and iron instead of looking like the Alembic;
+    the Pump is half iron;
+  - the Rune Stele wants a glow ink sac for its letters, and the Rune Circle a stick of Rune Chalk to draw it;
+  - the Tendril Dagger is no longer the cheapest thing on the bench: two iron, two brass, a raw orb and a lead for
+    its tendril;
+  - the first Bulwark is built over a real iron piece (helmet, chestplate, leggings or boots) with brass plates,
+    leather or chains;
+  - hexsteel tools and armour need one diamond each for the edge or the plate, so they no longer replace diamond
+    gear for a handful of iron and dust;
+  - the Sealed Void Crystal is set in tinted glass and sealed with honeycomb besides the nullstone, and the Warding
+    Lamppost costs 3 charge instead of 6;
+  - each piece of the researcher's clothes has a thing of its own: a feather in the hood, a notebook in the robe, a
+    compass in the trousers, rabbit hide on the boots;
+  - the Impulse Plate takes a piston and the Levitation Plate a feather; the Sawmill a stonecutter, the Whirl Reaper
+    a composter, the Experience Condenser a book, the Spawner Cage and the Void Anchor chains;
+  - every Lab Bench experiment for a device is sealed with a sample of its own (tropical fish for the Axolotl Tank,
+    gunpowder for the Chem Boiler, magma cream for the Chem Burner, sugar for the Chem Still, rotten flesh for the
+    Disintegrator, redstone for the Pink Brazier, an amethyst shard for Synthetic Crystals).
 - Every level of tools and Bulwark armour mends with its own metal at an anvil: brass, Charged Hexsteel, Radiant
   Alloy, Riftmetal.
 - The refined research shows up once the level's materials and the Runed Pickaxe are known - no need to make the

@@ -3,12 +3,13 @@
   "pattern": [
     " P ",
     "BXB",
-    "BBB"
+    "III"
   ],
   "key": {
     "P": "hextale:brass_pipe",
     "B": "#c:ingots/brass",
-    "X": "minecraft:piston"
+    "X": "minecraft:piston",
+    "I": "#c:ingots/iron"
   },
   "result": {
     "id": "hextale:pump",

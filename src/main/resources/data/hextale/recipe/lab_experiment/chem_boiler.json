@@ -3,5 +3,6 @@
   "topic": "chem_boiler",
   "target": "steam",
   "amount": 10,
-  "purity": 0.6
+  "purity": 0.6,
+  "sample": "minecraft:gunpowder"
 }

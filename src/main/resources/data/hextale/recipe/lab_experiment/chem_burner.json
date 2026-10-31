@@ -3,5 +3,6 @@
   "topic": "chem_burner",
   "target": "magma",
   "amount": 6,
-  "purity": 0.6
+  "purity": 0.6,
+  "sample": "minecraft:magma_cream"
 }

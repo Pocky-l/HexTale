@@ -3,5 +3,6 @@
   "topic": "pink_brazier",
   "target": "circuit",
   "amount": 8,
-  "purity": 0.65
+  "purity": 0.65,
+  "sample": "minecraft:redstone"
 }

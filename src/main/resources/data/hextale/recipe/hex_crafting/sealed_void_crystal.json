@@ -1,13 +1,15 @@
 {
   "type": "hextale:hex_crafting",
   "pattern": [
-    " N ",
+    "TNT",
     "NVN",
-    " N "
+    "HNH"
   ],
   "key": {
+    "T": "minecraft:tinted_glass",
     "N": "hextale:nullstone",
-    "V": "hextale:void_crystal"
+    "V": "hextale:void_crystal",
+    "H": "minecraft:honeycomb"
   },
   "result": {
     "id": "hextale:sealed_void_crystal"

@@ -1,13 +1,13 @@
 {
   "type": "hextale:hex_crafting",
   "pattern": [
-    "BIB",
-    "B B",
-    "I I"
+    "BXB",
+    "C C"
   ],
   "key": {
     "B": "#c:ingots/brass",
-    "I": "#c:ingots/iron"
+    "X": "minecraft:iron_leggings",
+    "C": "#c:chains"
   },
   "result": {
     "id": "hextale:bulwark_leggings"
