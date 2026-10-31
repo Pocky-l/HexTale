@@ -61,6 +61,24 @@ public final class ModEntities {
                             com.pockyl.hextale.thevoid.Voidling::new, MobCategory.MONSTER).sized(0.9F, 1.0F)
                     .eyeHeight(0.7F).clientTrackingRange(8).build(id.toString()));
 
+    /** A Rib Crawler: hangs under the Void's ribs and drops on whoever passes below. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.realm.RibCrawler>> RIB_CRAWLER =
+            ENTITIES.register("rib_crawler", id -> EntityType.Builder.<com.pockyl.hextale.thevoid.realm.RibCrawler>of(
+                            com.pockyl.hextale.thevoid.realm.RibCrawler::new, MobCategory.MONSTER).sized(1.3F, 0.55F)
+                    .eyeHeight(0.4F).clientTrackingRange(8).build(id.toString()));
+
+    /** A Pit Maw: a mouth lying flush in the ground of the Void that tears open under a step. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.realm.PitMaw>> PIT_MAW =
+            ENTITIES.register("pit_maw", id -> EntityType.Builder.<com.pockyl.hextale.thevoid.realm.PitMaw>of(
+                            com.pockyl.hextale.thevoid.realm.PitMaw::new, MobCategory.MONSTER).sized(2.2F, 0.6F)
+                    .eyeHeight(0.5F).clientTrackingRange(8).build(id.toString()));
+
+    /** A Seer: a floating eye of the Void that marks players for its creatures. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.realm.Seer>> SEER =
+            ENTITIES.register("seer", id -> EntityType.Builder.<com.pockyl.hextale.thevoid.realm.Seer>of(
+                            com.pockyl.hextale.thevoid.realm.Seer::new, MobCategory.MONSTER).sized(0.8F, 0.8F)
+                    .eyeHeight(0.4F).clientTrackingRange(10).build(id.toString()));
+
     /** The eye a player watches a breach open through (client only, never in a level's entity list). */
     public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.BreachCamera>> BREACH_CAMERA =
             ENTITIES.register("breach_camera", id -> EntityType.Builder.<com.pockyl.hextale.thevoid.BreachCamera>of(
@@ -76,5 +94,40 @@ public final class ModEntities {
                 event.put(VOID_MITE.get(), com.pockyl.hextale.thevoid.VoidMite.createAttributes().build()));
         modBus.addListener((net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent event) ->
                 event.put(VOIDLING.get(), com.pockyl.hextale.thevoid.Voidling.createAttributes().build()));
+        modBus.addListener((net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent event) -> {
+            event.put(RIB_CRAWLER.get(), com.pockyl.hextale.thevoid.realm.RibCrawler.createAttributes().build());
+            event.put(PIT_MAW.get(), com.pockyl.hextale.thevoid.realm.PitMaw.createAttributes().build());
+            event.put(SEER.get(), com.pockyl.hextale.thevoid.realm.Seer.createAttributes().build());
+        });
+        // In the Void its own creatures come out of the dark of their own accord (the Void's biomes list them).
+        modBus.addListener((net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent event) -> {
+            event.register(VOIDLING.get(), net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND,
+                    net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, ModEntities::spawnsInTheVoid,
+                    net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent.Operation.REPLACE);
+            event.register(VOID_MITE.get(), net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND,
+                    net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, ModEntities::spawnsInTheVoid,
+                    net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent.Operation.REPLACE);
+            event.register(RIB_CRAWLER.get(), net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND,
+                    net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, ModEntities::spawnsInTheVoid,
+                    net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent.Operation.REPLACE);
+            event.register(SEER.get(), net.minecraft.world.entity.SpawnPlacementTypes.NO_RESTRICTIONS,
+                    net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, ModEntities::seerSpawns,
+                    net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        });
+    }
+
+    /** Seers drift into being over the Void's ground in any light. */
+    private static boolean seerSpawns(EntityType<com.pockyl.hextale.thevoid.realm.Seer> type,
+            net.minecraft.world.level.ServerLevelAccessor level, net.minecraft.world.entity.MobSpawnType reason,
+            net.minecraft.core.BlockPos pos, net.minecraft.util.RandomSource random) {
+        return level.getLevel().dimension().equals(com.pockyl.hextale.thevoid.realm.VoidPassage.LEVEL)
+                && level.getDifficulty() != net.minecraft.world.Difficulty.PEACEFUL;
+    }
+
+    private static <T extends net.minecraft.world.entity.monster.Monster> boolean spawnsInTheVoid(EntityType<T> type,
+            net.minecraft.world.level.ServerLevelAccessor level, net.minecraft.world.entity.MobSpawnType reason,
+            net.minecraft.core.BlockPos pos, net.minecraft.util.RandomSource random) {
+        return level.getLevel().dimension().equals(com.pockyl.hextale.thevoid.realm.VoidPassage.LEVEL)
+                && net.minecraft.world.entity.monster.Monster.checkMonsterSpawnRules(type, level, reason, pos, random);
     }
 }

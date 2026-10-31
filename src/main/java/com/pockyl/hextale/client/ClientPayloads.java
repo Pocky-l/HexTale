@@ -37,6 +37,8 @@ public final class ClientPayloads {
         event.register(OpenDiaryPayload.TYPE, (payload, context) -> openDiary(payload));
         event.register(com.pockyl.hextale.network.RecipesPayload.TYPE, (payload, context) -> payload.recipes().apply());
         event.register(com.pockyl.hextale.network.GuidePayload.TYPE, (payload, context) -> com.pockyl.hextale.quest.Guide.setClient(payload.steps()));
+        event.register(com.pockyl.hextale.network.VoidPullPayload.TYPE, (payload, context) -> VoidPassageFx.pull(payload));
+        event.register(com.pockyl.hextale.network.VoidCurrentsPayload.TYPE, (payload, context) -> VoidCurrentsClient.accept(payload));
         event.register(com.pockyl.hextale.network.ThinningPayload.TYPE, (payload, context) -> ClientThinning.accept(payload));
         event.register(com.pockyl.hextale.network.BreachCinematicPayload.TYPE, (payload, context) -> BreachCinematic.start(payload.breach()));
         event.register(OpenStelePayload.TYPE, (payload, context) -> Minecraft.getInstance().setScreen(new SteleScreen(payload.pos())));

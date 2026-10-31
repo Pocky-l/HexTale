@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:void_pearl"
+        }
+      ],
+      "bonus_rolls": 0.0
+    }
+  ],
+  "random_sequence": "hextale:blocks/pearl_sac"
+}

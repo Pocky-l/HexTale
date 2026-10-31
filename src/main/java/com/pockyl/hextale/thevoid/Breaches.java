@@ -188,6 +188,24 @@ public final class Breaches {
         }
     }
 
+    /**
+     * A breach opened by hand (a Void Shard) is a breach all the same: the land near it does not tear open another one.
+     */
+    public static void note(ServerLevel level, TheVoid breach) {
+        sites(level).add(breach.blockPosition());
+    }
+
+    /** A breach opened by hand is gone: the place is free again at once (only the land's own breaches leave a rest). */
+    static void forgetQuietly(ServerLevel level, TheVoid breach) {
+        sites(level).remove(breach.blockPosition());
+    }
+
+    /** Whether the land at {@code pos} may tear open: no breach of any kind near, and none lately gone from near it. */
+    public static boolean mayOpenAt(ServerLevel level, BlockPos pos) {
+        Sites sites = sites(level);
+        return sites.near(pos) == null && !sites.resting(pos, level.getGameTime());
+    }
+
     @SubscribeEvent
     public static void onLevelTick(LevelTickEvent.Post event) {
         if (!(event.getLevel() instanceof ServerLevel level)) {
@@ -230,7 +248,7 @@ public final class Breaches {
         noGround.values().removeIf(retry -> retry <= now);
         for (LevelChunk chunk : ready) {
             BlockPos middle = chunk.getPos().getMiddleBlockPosition(0);
-            if (sites.near(middle) != null || sites.resting(middle, now)) {
+            if (!mayOpenAt(level, middle)) {
                 return false;
             }
             if (noGround.containsKey(chunk.getPos().toLong())) {

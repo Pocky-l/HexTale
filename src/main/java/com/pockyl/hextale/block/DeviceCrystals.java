@@ -21,13 +21,18 @@ import com.pockyl.hextale.registry.ModSounds;
 public final class DeviceCrystals {
     /** Share of a cut crystal's hold that a crystal grown in shimmer has. */
     public static final float SYNTHETIC_SHARE = 0.4F;
+    /**
+     * Share of a cut crystal's hold that a Hollow Crystal has: hextech the Void drank empty drinks in turn, and holds four
+     * times as long before it clouds through.
+     */
+    public static final float HOLLOW_SHARE = 4F;
 
     private DeviceCrystals() {
     }
 
     /** Whether the stack can power such a device. */
     public static boolean fits(ItemStack stack) {
-        return stack.is(ModItems.HEXTECH_CRYSTAL.get()) || synthetic(stack);
+        return stack.is(ModItems.HEXTECH_CRYSTAL.get()) || synthetic(stack) || stack.is(ModItems.HOLLOW_CRYSTAL.get());
     }
 
     public static boolean synthetic(ItemStack stack) {
@@ -36,7 +41,7 @@ public final class DeviceCrystals {
 
     /** How much of a cut crystal's hold the crystal has. */
     public static float share(ItemStack stack) {
-        return synthetic(stack) ? SYNTHETIC_SHARE : 1;
+        return synthetic(stack) ? SYNTHETIC_SHARE : stack.is(ModItems.HOLLOW_CRYSTAL.get()) ? HOLLOW_SHARE : 1;
     }
 
     /** A spent crystal grown in shimmer crumbles: shards and dust burst from it, a pinch of hextech dust falls. */

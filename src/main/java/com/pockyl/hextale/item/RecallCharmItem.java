@@ -160,6 +160,21 @@ public class RecallCharmItem extends Item {
             return InteractionResult.FAIL;
         }
         var runes = RuneHolder.RECALL.runes(stack);
+        if (com.pockyl.hextale.thevoid.realm.VoidPassage.inVoid(player)) {
+            // There is no trail to follow in the Void: the charm pulls its bearer out to our world.
+            Vec3 left = player.position();
+            Vec3 landed = com.pockyl.hextale.thevoid.realm.VoidPassage.recall(serverPlayer);
+            if (player.level() instanceof ServerLevel home) {
+                home.playSound(null, landed.x, landed.y, landed.z, ModSounds.SKYPACK_IGNITE.get(), SoundSource.PLAYERS, 0.7F, 0.6F);
+                home.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), landed.x, landed.y + 1, landed.z, 14, 0.3, 0.6, 0.3, 0.03);
+            }
+            server.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), left.x, left.y + 1, left.z, 14, 0.3, 0.6, 0.3, 0.03);
+            player.getCooldowns().addCooldown(stack.getItem(), RecallRune.rest(runes.strength(RecallRune.HASTE.rune())));
+            if (!player.hasInfiniteMaterials()) {
+                setWindings(stack, windings(stack) - 1);
+            }
+            return InteractionResult.SUCCESS;
+        }
         Mark mark = back(player, RecallRune.seconds(runes.strength(RecallRune.SHIFT.rune())));
         if (mark == null) {
             player.displayClientMessage(Component.translatable("item.hextale.recall_charm.nowhere"), true);

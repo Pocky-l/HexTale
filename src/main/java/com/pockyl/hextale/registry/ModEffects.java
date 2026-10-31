@@ -24,6 +24,10 @@ public final class ModEffects {
     public static final DeferredHolder<MobEffect, MobEffect> SHIMMER_CRAVING = EFFECTS.register("shimmer_craving",
             () -> new Shown(MobEffectCategory.NEUTRAL, 0x7A6A88));
 
+    /** Marked by a Seer of the Void: the Void's creatures nearby come for the marked one. */
+    public static final DeferredHolder<MobEffect, MobEffect> VOID_MARKED = EFFECTS.register("void_marked",
+            () -> new com.pockyl.hextale.thevoid.realm.Seer.Marked(0xA25CE8));
+
     private ModEffects() {
     }
 

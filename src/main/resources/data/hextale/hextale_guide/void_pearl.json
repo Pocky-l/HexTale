@@ -1,0 +1,16 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:void_pearl",
+  "parents": [
+    "nursery"
+  ],
+  "goal": {
+    "type": "has_item",
+    "item": "hextale:void_pearl"
+  },
+  "pos": [
+    560,
+    1310
+  ]
+}

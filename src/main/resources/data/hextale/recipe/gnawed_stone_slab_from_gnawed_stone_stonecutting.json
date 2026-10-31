@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "hextale:gnawed_stone"
+  },
+  "result": {
+    "id": "hextale:gnawed_stone_slab",
+    "count": 2
+  }
+}

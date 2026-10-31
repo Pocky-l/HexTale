@@ -1,0 +1,16 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:sinew_willow_sprout",
+  "parents": [
+    "step_through"
+  ],
+  "goal": {
+    "type": "has_item",
+    "item": "hextale:sinew_willow_log"
+  },
+  "pos": [
+    280,
+    1110
+  ]
+}

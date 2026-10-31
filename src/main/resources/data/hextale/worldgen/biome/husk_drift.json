@@ -1,0 +1,59 @@
+{
+  "carvers": {},
+  "downfall": 0.0,
+  "features": [],
+  "has_precipitation": false,
+  "temperature": 0.5,
+  "effects": {
+    "water_color": 6965898,
+    "fog_color": 4599886,
+    "sky_color": 4599886,
+    "water_fog_color": 6965898,
+    "particle": {
+      "options": {
+        "type": "hextale:void_drift",
+        "color": -1660804
+      },
+      "probability": 0.006
+    },
+    "mood_sound": {
+      "block_search_extent": 8,
+      "offset": 2.0,
+      "sound": "minecraft:ambient.basalt_deltas.mood",
+      "tick_delay": 6000
+    },
+    "additions_sound": {
+      "sound": "hextale:thinning.murmur",
+      "tick_chance": 0.0035
+    }
+  },
+  "spawn_costs": {},
+  "spawners": {
+    "monster": [
+      {
+        "type": "hextale:voidling",
+        "weight": 90,
+        "minCount": 1,
+        "maxCount": 3
+      },
+      {
+        "type": "hextale:void_mite",
+        "weight": 70,
+        "minCount": 2,
+        "maxCount": 4
+      },
+      {
+        "type": "hextale:rib_crawler",
+        "weight": 25,
+        "minCount": 1,
+        "maxCount": 1
+      },
+      {
+        "type": "hextale:seer",
+        "weight": 10,
+        "minCount": 1,
+        "maxCount": 1
+      }
+    ]
+  }
+}

@@ -140,6 +140,15 @@ public final class ModItems {
     /** Level 4 metal: Radiant Alloy a held breach took in and gave back. */
     public static final DeferredItem<Item> RIFTMETAL_INGOT = ITEMS.registerItem("riftmetal_ingot",
             properties -> new Item(properties.rarity(Rarity.EPIC).fireResistant()));
+    /** Black metal broken out of a husk's wall in the Void; alloyed with Radiant Alloy it becomes Riftmetal. */
+    public static final DeferredItem<com.pockyl.hextale.item.NotedItem> RAW_RIFTMETAL = ITEMS.registerItem("raw_riftmetal",
+            properties -> new com.pockyl.hextale.item.NotedItem(properties.rarity(Rarity.RARE).fireResistant()));
+    /** Hextech the Void drank empty: it no longer gives, it takes. */
+    public static final DeferredItem<com.pockyl.hextale.item.NotedItem> HOLLOW_CRYSTAL = ITEMS.registerItem("hollow_crystal",
+            properties -> new com.pockyl.hextale.item.NotedItem(properties.rarity(Rarity.RARE)));
+    /** A black pearl the Void grows in its sacs (and some maws carry): it keeps the Void's turning inside. */
+    public static final DeferredItem<com.pockyl.hextale.item.NotedItem> VOID_PEARL = ITEMS.registerItem("void_pearl",
+            properties -> new com.pockyl.hextale.item.NotedItem(properties.rarity(Rarity.RARE)));
     /** Void Chitin softened in the crucible and pressed into a plate: the riftforged armour's shell. */
     public static final DeferredItem<Item> VOID_CARAPACE = ITEMS.registerItem("void_carapace", properties -> new Item(properties.rarity(Rarity.RARE)));
     /** Level 2 gem: a diamond cut to a brilliant with a groove that holds hextech. */
@@ -502,6 +511,86 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> VOID_SOIL = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_SOIL);
     public static final DeferredItem<BlockItem> VOID_ROCK = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK);
     public static final DeferredItem<BlockItem> VOID_ROCK_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK_BRICKS);
+    public static final DeferredItem<BlockItem> HUSK_CHITIN = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN);
+    public static final DeferredItem<BlockItem> HUSK_CHITIN_RIDGE = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_RIDGE);
+    public static final DeferredItem<BlockItem> VOID_MEMBRANE = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_MEMBRANE);
+    public static final DeferredItem<BlockItem> VEINED_VOID_MEMBRANE = ITEMS.registerSimpleBlockItem(ModBlocks.VEINED_VOID_MEMBRANE);
+    public static final DeferredItem<com.pockyl.hextale.item.NotedBlockItem> WORN_VOID_MEMBRANE = ITEMS.registerItem("worn_void_membrane",
+            properties -> new com.pockyl.hextale.item.NotedBlockItem(ModBlocks.WORN_VOID_MEMBRANE.get(), properties));
+    public static final DeferredItem<BlockItem> GNAWED_STONE = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_STONE);
+    public static final DeferredItem<BlockItem> RIFT_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.RIFT_ORE);
+    public static final DeferredItem<BlockItem> HOLLOW_CRYSTAL_CLUSTER = ITEMS.registerSimpleBlockItem(ModBlocks.HOLLOW_CRYSTAL_CLUSTER);
+    public static final DeferredItem<BlockItem> VOID_CILIA = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_CILIA);
+    public static final DeferredItem<net.minecraft.world.item.DoubleHighBlockItem> TALL_VOID_CILIA = ITEMS.registerItem("tall_void_cilia",
+            properties -> new net.minecraft.world.item.DoubleHighBlockItem(ModBlocks.TALL_VOID_CILIA.get(), properties));
+    public static final DeferredItem<com.pockyl.hextale.item.NotedBlockItem> VOID_TENDRILS = ITEMS.registerItem("void_tendrils",
+            properties -> new com.pockyl.hextale.item.NotedBlockItem(ModBlocks.VOID_TENDRILS.get(), properties));
+    public static final DeferredItem<com.pockyl.hextale.thevoid.realm.SporePuffItem> SPORE_PUFF = ITEMS.registerItem("spore_puff",
+            properties -> new com.pockyl.hextale.thevoid.realm.SporePuffItem(ModBlocks.SPORE_PUFF.get(), properties));
+    public static final DeferredItem<BlockItem> HUSK_CHITIN_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_STAIRS);
+    public static final DeferredItem<BlockItem> HUSK_CHITIN_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_SLAB);
+    public static final DeferredItem<BlockItem> HUSK_CHITIN_WALL = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_WALL);
+    public static final DeferredItem<BlockItem> GNAWED_STONE_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_STONE_STAIRS);
+    public static final DeferredItem<BlockItem> GNAWED_STONE_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_STONE_SLAB);
+    public static final DeferredItem<BlockItem> GNAWED_STONE_WALL = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_STONE_WALL);
+    public static final DeferredItem<com.pockyl.hextale.item.NotedBlockItem> HUSK_CRUST = ITEMS.registerItem("husk_crust",
+            properties -> new com.pockyl.hextale.item.NotedBlockItem(ModBlocks.HUSK_CRUST.get(), properties));
+    public static final DeferredItem<BlockItem> POLISHED_HUSK_CHITIN = ITEMS.registerSimpleBlockItem(ModBlocks.POLISHED_HUSK_CHITIN);
+    public static final DeferredItem<BlockItem> POLISHED_HUSK_CHITIN_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.POLISHED_HUSK_CHITIN_STAIRS);
+    public static final DeferredItem<BlockItem> POLISHED_HUSK_CHITIN_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.POLISHED_HUSK_CHITIN_SLAB);
+    public static final DeferredItem<BlockItem> HUSK_CHITIN_TILES = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_TILES);
+    public static final DeferredItem<BlockItem> HUSK_CHITIN_TILES_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_TILES_STAIRS);
+    public static final DeferredItem<BlockItem> HUSK_CHITIN_TILES_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_TILES_SLAB);
+    public static final DeferredItem<BlockItem> HUSK_CHITIN_PILLAR = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_PILLAR);
+    public static final DeferredItem<BlockItem> GNAWED_COBBLESTONE = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_COBBLESTONE);
+    public static final DeferredItem<BlockItem> GNAWED_STONE_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_STONE_BRICKS);
+    public static final DeferredItem<BlockItem> GNAWED_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_BRICKS);
+    public static final DeferredItem<BlockItem> GNAWED_PLANKS = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_PLANKS);
+    public static final DeferredItem<BlockItem> VOID_SAC = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_SAC);
+    public static final DeferredItem<BlockItem> PEARL_SAC = ITEMS.registerSimpleBlockItem(ModBlocks.PEARL_SAC);
+    public static final DeferredItem<BlockItem> MIMIC_SAC = ITEMS.registerSimpleBlockItem(ModBlocks.MIMIC_SAC);
+    public static final DeferredItem<com.pockyl.hextale.item.NotedBlockItem> SINEW_CURTAIN = ITEMS.registerItem("sinew_curtain",
+            properties -> new com.pockyl.hextale.item.NotedBlockItem(ModBlocks.SINEW_CURTAIN.get(), properties));
+    public static final DeferredItem<com.pockyl.hextale.item.NotedBlockItem> SPRING_BLISTER = ITEMS.registerItem("spring_blister",
+            properties -> new com.pockyl.hextale.item.NotedBlockItem(ModBlocks.SPRING_BLISTER.get(), properties));
+    // The Sinew Willow's wood set, its sprout and its pods (eaten, they let one see a little way into ichor).
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_SPROUT = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_SPROUT);
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_FRONDS = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_FRONDS);
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_LOG = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_LOG);
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_WOOD = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_WOOD);
+    public static final DeferredItem<BlockItem> STRIPPED_SINEW_WILLOW_LOG = ITEMS.registerSimpleBlockItem(ModBlocks.STRIPPED_SINEW_WILLOW_LOG);
+    public static final DeferredItem<BlockItem> STRIPPED_SINEW_WILLOW_WOOD = ITEMS.registerSimpleBlockItem(ModBlocks.STRIPPED_SINEW_WILLOW_WOOD);
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_PLANKS = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_PLANKS);
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_STAIRS);
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_SLAB);
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_FENCE = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_FENCE);
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_FENCE_GATE = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_FENCE_GATE);
+    public static final DeferredItem<net.minecraft.world.item.DoubleHighBlockItem> SINEW_WILLOW_DOOR = ITEMS.registerItem("sinew_willow_door",
+            properties -> new net.minecraft.world.item.DoubleHighBlockItem(ModBlocks.SINEW_WILLOW_DOOR.get(), properties));
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_TRAPDOOR = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_TRAPDOOR);
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_BUTTON = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_BUTTON);
+    public static final DeferredItem<BlockItem> SINEW_WILLOW_PRESSURE_PLATE = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_WILLOW_PRESSURE_PLATE);
+    public static final DeferredItem<BlockItem> ICHOR_POD = ITEMS.registerItem("ichor_pod",
+            properties -> new BlockItem(ModBlocks.ICHOR_POD.get(), properties.food(
+                    new net.minecraft.world.food.FoodProperties.Builder().nutrition(3).saturationModifier(0.3F)
+                            .effect(() -> new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.NIGHT_VISION, 400, 0), 1.0F)
+                            .build())));
+    public static final DeferredItem<BlockItem> VOID_GLASS = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_GLASS);
+    public static final DeferredItem<BlockItem> VOID_GLASS_PANE = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_GLASS_PANE);
+    public static final DeferredItem<BlockItem> GNAWED_IRON_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_IRON_ORE);
+    public static final DeferredItem<BlockItem> GNAWED_GOLD_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_GOLD_ORE);
+    /** A spyglass with a Hollow Crystal for a lens: it drinks the Void's haze, and what the Void hides shows through. */
+    public static final DeferredItem<com.pockyl.hextale.thevoid.realm.VoidLensItem> VOID_LENS = ITEMS.registerItem("void_lens",
+            properties -> new com.pockyl.hextale.thevoid.realm.VoidLensItem(properties.stacksTo(1)));
+    public static final DeferredItem<net.minecraft.world.item.BucketItem> VOID_ICHOR_BUCKET = ITEMS.registerItem("void_ichor_bucket",
+            properties -> new net.minecraft.world.item.BucketItem(ModFluids.VOID_ICHOR.get(), properties.craftRemainder(net.minecraft.world.item.Items.BUCKET).stacksTo(1)) {
+                // Burns in a furnace as long as lava (1.21.1: data map neoforge:furnace_fuels).
+                @Override
+                public void appendHoverText(net.minecraft.world.item.ItemStack stack, TooltipContext context,
+                        java.util.List<net.minecraft.network.chat.Component> tooltip, net.minecraft.world.item.TooltipFlag flag) {
+                    tooltip.add(net.minecraft.network.chat.Component.translatable(getDescriptionId() + ".tooltip").withStyle(net.minecraft.ChatFormatting.GRAY));
+                }
+            });
     public static final DeferredItem<BlockItem> VOID_ROCK_BRICK_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK_BRICK_STAIRS);
     public static final DeferredItem<BlockItem> VOID_ROCK_BRICK_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK_BRICK_SLAB);
     public static final DeferredItem<BlockItem> VOID_ROCK_BRICK_WALL = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK_BRICK_WALL);

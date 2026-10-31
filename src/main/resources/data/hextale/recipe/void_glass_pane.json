@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "hextale:void_glass"
+    }
+  },
+  "result": {
+    "id": "hextale:void_glass_pane",
+    "count": 16
+  }
+}

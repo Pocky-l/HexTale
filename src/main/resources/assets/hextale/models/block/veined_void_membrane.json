@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "hextale:block/veined_void_membrane"
+  },
+  "render_type": "minecraft:translucent"
+}

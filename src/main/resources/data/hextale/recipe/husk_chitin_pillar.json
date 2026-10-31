@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "#",
+    "#"
+  ],
+  "key": {
+    "#": {
+      "item": "hextale:polished_husk_chitin"
+    }
+  },
+  "result": {
+    "id": "hextale:husk_chitin_pillar",
+    "count": 2
+  }
+}

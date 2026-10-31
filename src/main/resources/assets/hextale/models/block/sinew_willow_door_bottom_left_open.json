@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/door_bottom_left_open",
+  "textures": {
+    "bottom": "hextale:block/sinew_willow_door_bottom"
+  }
+}

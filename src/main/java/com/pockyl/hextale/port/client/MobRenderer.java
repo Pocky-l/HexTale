@@ -2,11 +2,14 @@ package com.pockyl.hextale.port.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.phys.AABB;
 
 /**
  * A 26.x mob renderer (extract a render state, pose the model from it) on the 1.21.1 one: the vanilla renderer draws
@@ -76,7 +79,25 @@ public abstract class MobRenderer<T extends Mob, S extends LivingEntityRenderSta
         S state = state(entity, partialTick);
         state.lightCoords = light;
         super.render(entity, yaw, partialTick, poseStack, buffers, light);
+        submit(state, poseStack, new SubmitNodeCollector(buffers), CameraRenderState.current());
         current = null;
+    }
+
+    /** What a 26.x renderer draws after the model (beams and the like), at the entity's position. */
+    public void submit(S state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
+    }
+
+    protected AABB getBoundingBoxForCulling(T entity, float partialTick) {
+        return entity.getBoundingBoxForCulling();
+    }
+
+    @Override
+    public boolean shouldRender(T entity, Frustum frustum, double camX, double camY, double camZ) {
+        if (super.shouldRender(entity, frustum, camX, camY, camZ)) {
+            return true;
+        }
+        float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
+        return entity.shouldRender(camX, camY, camZ) && frustum.isVisible(getBoundingBoxForCulling(entity, partialTick).inflate(0.5));
     }
 
     @Override

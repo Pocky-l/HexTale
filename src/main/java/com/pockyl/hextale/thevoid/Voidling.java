@@ -70,6 +70,8 @@ public class Voidling extends Monster {
     /** Chitin it drops on top of its loot table, by stage. */
     private static final int[] EXTRA_CHITIN = {0, 1, 2};
     private int fed;
+    /** Client only: the tick count a molt reached this client at (-1 none). */
+    private int moltSeen = -1;
 
     public Voidling(EntityType<? extends Voidling> type, Level level) {
         super(type, level);
@@ -121,12 +123,28 @@ public class Voidling extends Monster {
 
     /** 0..1..0 while it molts (it curls and shakes), 0 otherwise. */
     public float molting(float partialTick) {
-        int start = entityData.get(DATA_MOLT);
+        float k = moltProgress(partialTick);
+        return k < 0 ? 0 : 1 - Math.abs(k * 2 - 1);
+    }
+
+    /** 0 -> 1 through a molt, -1 when it does not molt. */
+    public float moltProgress(float partialTick) {
+        // The synced start is a server tick: a client counts from the moment the molt reached it.
+        int start = level().isClientSide() ? moltSeen : entityData.get(DATA_MOLT);
         if (start < 0) {
-            return 0;
+            return -1;
         }
         float k = (tickCount - start + partialTick) / MOLT_TICKS;
-        return k >= 1 || k < 0 ? 0 : 1 - Math.abs(k * 2 - 1);
+        return k >= 1 || k < 0 ? -1 : k;
+    }
+
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
+        super.onSyncedDataUpdated(key);
+        // A molt long past arrives with the voidling itself (tickCount 0) and is not played again.
+        if (DATA_MOLT.equals(key) && level().isClientSide() && tickCount > 0 && entityData.get(DATA_MOLT) >= 0) {
+            moltSeen = tickCount;
+        }
     }
 
     /** Sets its stage at once (a fed breach gives birth to a grown one), with the body that goes with it. */

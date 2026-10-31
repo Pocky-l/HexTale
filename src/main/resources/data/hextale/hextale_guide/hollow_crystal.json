@@ -1,0 +1,16 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:hollow_crystal",
+  "parents": [
+    "void_crystal"
+  ],
+  "goal": {
+    "type": "has_item",
+    "item": "hextale:hollow_crystal"
+  },
+  "pos": [
+    700,
+    1060
+  ]
+}

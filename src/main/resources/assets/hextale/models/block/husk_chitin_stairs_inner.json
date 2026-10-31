@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/inner_stairs",
+  "textures": {
+    "bottom": "hextale:block/husk_chitin",
+    "top": "hextale:block/husk_chitin",
+    "side": "hextale:block/husk_chitin"
+  }
+}

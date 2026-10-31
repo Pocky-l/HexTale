@@ -51,6 +51,11 @@ public final class ModAttachments {
     public static final Supplier<AttachmentType<Long>> SLUMBER = ATTACHMENT_TYPES.register("slumber",
             () -> AttachmentType.builder(() -> 0L).serialize(com.mojang.serialization.Codec.LONG, until -> until > 0).build());
 
+    /** Where a player in the Void came in from (see {@link com.pockyl.hextale.thevoid.realm.VoidPassage}); saved while set. */
+    public static final Supplier<AttachmentType<com.pockyl.hextale.thevoid.realm.VoidPassage.Return>> VOID_RETURN = ATTACHMENT_TYPES.register(
+            "void_return", () -> AttachmentType.builder(() -> com.pockyl.hextale.thevoid.realm.VoidPassage.Return.NONE)
+                    .serialize(com.pockyl.hextale.thevoid.realm.VoidPassage.Return.CODEC, back -> !back.none()).build());
+
     /** Placeholder for "nobody": attachments need a default value. */
     public static final java.util.UUID NOBODY = new java.util.UUID(0L, 0L);
 

@@ -233,7 +233,10 @@ public final class Hextale {
         output.accept(ModItems.CHARGED_HEXSTEEL_INGOT);
         output.accept(ModItems.RADIANT_ALLOY_INGOT);
         output.accept(ModItems.GEMSTONE_DUST);
+        output.accept(ModItems.RAW_RIFTMETAL);
         output.accept(ModItems.RIFTMETAL_INGOT);
+        output.accept(ModItems.HOLLOW_CRYSTAL);
+        output.accept(ModItems.VOID_PEARL);
         output.accept(ModItems.VOID_CRYSTAL_CLUSTER);
         output.accept(ModItems.VOID_CRYSTAL);
         output.accept(ModItems.SEALED_VOID_CRYSTAL);
@@ -338,6 +341,64 @@ public final class Hextale {
         output.accept(ModItems.VOID_ROOTS);
         output.accept(ModItems.VOID_BULB);
         output.accept(ModItems.HOLLOWBLOOM);
+
+        // The Void itself: the ribs' chitin, its skin, the stone it swallowed and what grows in it.
+        output.accept(ModItems.HUSK_CHITIN);
+        output.accept(ModItems.HUSK_CHITIN_RIDGE);
+        output.accept(ModItems.HUSK_CHITIN_STAIRS);
+        output.accept(ModItems.HUSK_CHITIN_SLAB);
+        output.accept(ModItems.HUSK_CHITIN_WALL);
+        output.accept(ModItems.GNAWED_STONE_STAIRS);
+        output.accept(ModItems.GNAWED_STONE_SLAB);
+        output.accept(ModItems.GNAWED_STONE_WALL);
+        output.accept(ModItems.HUSK_CRUST);
+        output.accept(ModItems.POLISHED_HUSK_CHITIN);
+        output.accept(ModItems.POLISHED_HUSK_CHITIN_STAIRS);
+        output.accept(ModItems.POLISHED_HUSK_CHITIN_SLAB);
+        output.accept(ModItems.HUSK_CHITIN_TILES);
+        output.accept(ModItems.HUSK_CHITIN_TILES_STAIRS);
+        output.accept(ModItems.HUSK_CHITIN_TILES_SLAB);
+        output.accept(ModItems.HUSK_CHITIN_PILLAR);
+        output.accept(ModItems.GNAWED_COBBLESTONE);
+        output.accept(ModItems.GNAWED_STONE_BRICKS);
+        output.accept(ModItems.GNAWED_BRICKS);
+        output.accept(ModItems.GNAWED_PLANKS);
+        output.accept(ModItems.VOID_SAC);
+        output.accept(ModItems.PEARL_SAC);
+        output.accept(ModItems.VOID_MEMBRANE);
+        output.accept(ModItems.VEINED_VOID_MEMBRANE);
+        output.accept(ModItems.WORN_VOID_MEMBRANE);
+        output.accept(ModItems.GNAWED_STONE);
+        output.accept(ModItems.RIFT_ORE);
+        output.accept(ModItems.HOLLOW_CRYSTAL_CLUSTER);
+        output.accept(ModItems.VOID_CILIA);
+        output.accept(ModItems.TALL_VOID_CILIA);
+        output.accept(ModItems.VOID_TENDRILS);
+        output.accept(ModItems.SPORE_PUFF);
+        output.accept(ModItems.SINEW_CURTAIN);
+        output.accept(ModItems.SPRING_BLISTER);
+        output.accept(ModItems.VOID_ICHOR_BUCKET);
+        output.accept(ModItems.SINEW_WILLOW_SPROUT);
+        output.accept(ModItems.SINEW_WILLOW_LOG);
+        output.accept(ModItems.SINEW_WILLOW_WOOD);
+        output.accept(ModItems.STRIPPED_SINEW_WILLOW_LOG);
+        output.accept(ModItems.STRIPPED_SINEW_WILLOW_WOOD);
+        output.accept(ModItems.SINEW_WILLOW_PLANKS);
+        output.accept(ModItems.SINEW_WILLOW_STAIRS);
+        output.accept(ModItems.SINEW_WILLOW_SLAB);
+        output.accept(ModItems.SINEW_WILLOW_FENCE);
+        output.accept(ModItems.SINEW_WILLOW_FENCE_GATE);
+        output.accept(ModItems.SINEW_WILLOW_DOOR);
+        output.accept(ModItems.SINEW_WILLOW_TRAPDOOR);
+        output.accept(ModItems.SINEW_WILLOW_BUTTON);
+        output.accept(ModItems.SINEW_WILLOW_PRESSURE_PLATE);
+        output.accept(ModItems.SINEW_WILLOW_FRONDS);
+        output.accept(ModItems.ICHOR_POD);
+        output.accept(ModItems.VOID_GLASS);
+        output.accept(ModItems.VOID_GLASS_PANE);
+        output.accept(ModItems.GNAWED_IRON_ORE);
+        output.accept(ModItems.GNAWED_GOLD_ORE);
+        output.accept(ModItems.VOID_LENS);
 
         // Bottles of the primals and of unknown essence, then every essence as an item in catalogue order
         // (primals, pairs, deeper compounds), then every brew.

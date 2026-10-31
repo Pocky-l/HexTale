@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "cookingtime": 200,
+  "experience": 0.7,
+  "group": "iron_ingot",
+  "ingredient": {
+    "item": "hextale:gnawed_iron_ore"
+  },
+  "result": {
+    "id": "minecraft:iron_ingot"
+  }
+}

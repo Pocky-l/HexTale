@@ -45,6 +45,17 @@ public final class Quests {
     public static final String BREACH_FOLDED = "breach_folded";
     /** The player let a Breach Heart unfold into a breach again. */
     public static final String BREACH_UNFOLDED = "breach_unfolded";
+    /** A player stepped through a held breach into the Void. */
+    public static final String VOID_ENTERED = "void_entered";
+    /** The Void's life and traps: riding a current, its floor giving way, a crawler dropping, a maw opening, a Seer's mark,
+     * a nursery sac waking, a swallowed ruin's chest opened. */
+    public static final String VOID_CURRENT = "void_current";
+    public static final String VOID_FLOOR_GAVE = "void_floor_gave";
+    public static final String CRAWLER_DROPPED = "crawler_dropped";
+    public static final String MAW_OPENED = "maw_opened";
+    public static final String VOID_MARKED = "void_marked";
+    public static final String NURSERY_HATCHED = "nursery_hatched";
+    public static final String SWALLOWED_RUIN = "swallowed_ruin";
 
     /** The event of a block woken with hextech dust (its id path), for the one who woke it. */
     public static String awakened(String block) {

@@ -1,0 +1,56 @@
+{
+  "variants": {
+    "facing=down,twitch=false": {
+      "model": "hextale:block/mimic_sac",
+      "x": 180
+    },
+    "facing=down,twitch=true": {
+      "model": "hextale:block/mimic_sac_twitch",
+      "x": 180
+    },
+    "facing=east,twitch=false": {
+      "model": "hextale:block/mimic_sac",
+      "x": 90,
+      "y": 90
+    },
+    "facing=east,twitch=true": {
+      "model": "hextale:block/mimic_sac_twitch",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north,twitch=false": {
+      "model": "hextale:block/mimic_sac",
+      "x": 90
+    },
+    "facing=north,twitch=true": {
+      "model": "hextale:block/mimic_sac_twitch",
+      "x": 90
+    },
+    "facing=south,twitch=false": {
+      "model": "hextale:block/mimic_sac",
+      "x": 90,
+      "y": 180
+    },
+    "facing=south,twitch=true": {
+      "model": "hextale:block/mimic_sac_twitch",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,twitch=false": {
+      "model": "hextale:block/mimic_sac"
+    },
+    "facing=up,twitch=true": {
+      "model": "hextale:block/mimic_sac_twitch"
+    },
+    "facing=west,twitch=false": {
+      "model": "hextale:block/mimic_sac",
+      "x": 90,
+      "y": 270
+    },
+    "facing=west,twitch=true": {
+      "model": "hextale:block/mimic_sac_twitch",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

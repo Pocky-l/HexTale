@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "hextale:block/hollow_crystal_cluster"
+  },
+  "render_type": "minecraft:cutout"
+}

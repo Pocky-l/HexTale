@@ -3,7 +3,7 @@
   "stage": "late",
   "icon": "hextale:void_crystal",
   "parents": [
-    "subdued_breach"
+    "step_through"
   ],
   "goal": {
     "type": "studied",
@@ -12,7 +12,7 @@
   "display": {
     "kind": "scheme",
     "ingredients": [
-      "hextale:void_anchor"
+      "hextale:void_membrane"
     ],
     "result": "hextale:void_crystal"
   },

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "torn=false": {
+      "model": "hextale:block/worn_void_membrane"
+    },
+    "torn=true": {
+      "model": "hextale:block/worn_void_membrane"
+    }
+  }
+}

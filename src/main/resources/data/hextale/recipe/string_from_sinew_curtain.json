@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "hextale:sinew_curtain"
+    },
+    {
+      "item": "hextale:sinew_curtain"
+    },
+    {
+      "item": "hextale:sinew_curtain"
+    }
+  ],
+  "result": {
+    "id": "minecraft:string",
+    "count": 4
+  }
+}

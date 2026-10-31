@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_horizontal",
+  "textures": {
+    "end": "hextale:block/husk_chitin_pillar_top",
+    "side": "hextale:block/husk_chitin_pillar"
+  }
+}

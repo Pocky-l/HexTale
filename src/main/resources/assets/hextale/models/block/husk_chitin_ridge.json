@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "hextale:block/husk_chitin_ridge_top",
+    "side": "hextale:block/husk_chitin_ridge_side",
+    "bottom": "hextale:block/husk_chitin"
+  }
+}

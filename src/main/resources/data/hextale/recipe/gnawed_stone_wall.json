@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "hextale:gnawed_stone"
+    }
+  },
+  "result": {
+    "id": "hextale:gnawed_stone_wall",
+    "count": 6
+  }
+}

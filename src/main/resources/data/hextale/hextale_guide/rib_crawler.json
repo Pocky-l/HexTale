@@ -1,0 +1,16 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:void_chitin",
+  "parents": [
+    "thin_floors"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "crawler_dropped"
+  },
+  "pos": [
+    120,
+    1330
+  ]
+}

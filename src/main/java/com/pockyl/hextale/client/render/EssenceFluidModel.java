@@ -48,5 +48,6 @@ public final class EssenceFluidModel {
                 return FastColor.ARGB32.opaque(essence == null ? PLAIN : EssenceTankRenderer.vivid(essence.color()));
             }
         }, ModFluids.ESSENCE_TYPE.get());
+        // The Void's ichor wears its own colours, no tint (1.21.1: its sprites are given by IchorView's extensions).
     }
 }

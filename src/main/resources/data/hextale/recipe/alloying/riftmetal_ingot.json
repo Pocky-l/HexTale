@@ -1,0 +1,23 @@
+{
+  "type": "hextale:alloying",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "hextale:raw_riftmetal"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "hextale:radiant_alloy_ingot"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "hextale:riftmetal_ingot",
+    "count": 1
+  },
+  "time": 400,
+  "experience": 4.0
+}

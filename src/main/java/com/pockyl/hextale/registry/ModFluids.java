@@ -19,6 +19,14 @@ public final class ModFluids {
     public static final DeferredHolder<FluidType, EssenceFluid.Type> ESSENCE_TYPE = FLUID_TYPES.register("essence", EssenceFluid.Type::new);
     public static final DeferredHolder<Fluid, EssenceFluid> ESSENCE = FLUIDS.register("essence", EssenceFluid::new);
 
+    /** The Void's own blood, pooled in the hollows of its plates. */
+    public static final DeferredHolder<FluidType, FluidType> VOID_ICHOR_TYPE = FLUID_TYPES.register("void_ichor",
+            com.pockyl.hextale.thevoid.realm.VoidIchor::type);
+    public static final DeferredHolder<Fluid, net.neoforged.neoforge.fluids.BaseFlowingFluid.Source> VOID_ICHOR = FLUIDS.register("void_ichor",
+            () -> new net.neoforged.neoforge.fluids.BaseFlowingFluid.Source(com.pockyl.hextale.thevoid.realm.VoidIchor.properties()));
+    public static final DeferredHolder<Fluid, net.neoforged.neoforge.fluids.BaseFlowingFluid.Flowing> FLOWING_VOID_ICHOR = FLUIDS.register(
+            "flowing_void_ichor", () -> new net.neoforged.neoforge.fluids.BaseFlowingFluid.Flowing(com.pockyl.hextale.thevoid.realm.VoidIchor.properties()));
+
     private ModFluids() {
     }
 

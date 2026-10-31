@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:spring_blister"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "bonus_rolls": 0.0
+    }
+  ],
+  "random_sequence": "hextale:blocks/spring_blister"
+}

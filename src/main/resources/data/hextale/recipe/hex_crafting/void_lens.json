@@ -1,0 +1,26 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    " H ",
+    "CSC",
+    " N "
+  ],
+  "key": {
+    "H": {
+      "item": "hextale:hollow_crystal"
+    },
+    "C": {
+      "item": "hextale:void_chitin"
+    },
+    "S": {
+      "item": "minecraft:spyglass"
+    },
+    "N": {
+      "item": "hextale:nullstone"
+    }
+  },
+  "result": {
+    "id": "hextale:void_lens"
+  },
+  "charge": 3
+}

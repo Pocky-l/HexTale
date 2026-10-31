@@ -10,7 +10,7 @@
 
 <p style="text-align:center"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/hexcore.gif" width="720" alt="A ritual on the Hexcore"></p>
 
-<p style="text-align:center"><span style="color:#e2b86a"><strong>300+</strong></span> blocks and items &nbsp;&middot;&nbsp; <span style="color:#e2b86a"><strong>22</strong></span> essences &nbsp;&middot;&nbsp; <span style="color:#e2b86a"><strong>72</strong></span> runes &nbsp;&middot;&nbsp; <span style="color:#e2b86a"><strong>180</strong></span> steps in the guide<br><em>The mod is still in development, and a lot more is planned.</em></p>
+<p style="text-align:center"><span style="color:#e2b86a"><strong>300+</strong></span> blocks and items &nbsp;&middot;&nbsp; <span style="color:#e2b86a"><strong>22</strong></span> essences &nbsp;&middot;&nbsp; <span style="color:#e2b86a"><strong>60+</strong></span> runes &nbsp;&middot;&nbsp; <span style="color:#e2b86a"><strong>4</strong></span> levels of gear &nbsp;&middot;&nbsp; <span style="color:#e2b86a"><strong>1</strong></span> dimension<br><em>The mod is still in development, and a lot more is planned.</em></p>
 
 <hr>
 
@@ -19,8 +19,8 @@
 <p style="text-align:center"><em>Everything breaks down into essences. Coal is mostly fire, seeds are mostly life. I boil things in the alembic,<br>keep what comes out in jars and move it around with brass pipes.</em></p>
 
 <h2 style="text-align:center"><span style="color:#e2b86a">Page 15.</span> Runes</h2>
-<p style="text-align:center"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/altar.gif" width="720" alt="A ritual at the Ritual Altar"></p>
-<p style="text-align:center"><em>I find rune scrolls in dungeon chests, and sometimes I work one out myself while researching.<br>A rune circle burns them into tools and machines. My pickaxe smelts ore now and can see it through stone.</em></p>
+<p style="text-align:center"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/circle.gif" width="720" alt="Steles burning runes into a pickaxe in the Rune Circle"></p>
+<p style="text-align:center"><em>I find rune scrolls in dungeon chests, and sometimes I work one out myself while researching.<br>Steles around the rune circle burn them into tools and machines. My pickaxe smelts ore now and can see it through stone.</em></p>
 
 <h2 style="text-align:center"><span style="color:#e2b86a">Page 19.</span> Machines</h2>
 <p style="text-align:center"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/pylons.gif" width="264" alt="Pylons gathering loot"> <img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/reaper.gif" width="264" alt="The Whirl Reaper"> <img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/sawmill.gif" width="264" alt="The Whirl Sawmill"></p>
@@ -29,6 +29,14 @@
 <h2 style="text-align:center"><span style="color:#e2b86a">Page 22.</span> The Void</h2>
 <p style="text-align:center"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/void.gif" width="720" alt="A breach of the Void, voidlings at its feet"></p>
 <p style="text-align:center"><em>I think I used too much magic around the house. The grass is going grey, there's a purple haze in the evenings,<br>and a few days ago a rift opened behind the barn. I haven't decided yet whether to close it or see what happens if I feed it.</em></p>
+
+<h2 style="text-align:center"><span style="color:#e2b86a">Page 26.</span> Arsenal</h2>
+<p style="text-align:center"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/arsenal.gif" width="720" alt="Four levels of Bulwark armour with their swords and daggers"></p>
+<p style="text-align:center"><em>Iron with a crystal in it was only the start. Then came charged hexsteel, then an alloy that keeps glowing after a night on the Hexcore,<br>and at last a metal brought back from the Void. Every new set of armour holds more runes than the one before.</em></p>
+
+<h2 style="text-align:center"><span style="color:#e2b86a">Page 31.</span> Beyond the breach</h2>
+<p style="text-align:center"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/realm.gif" width="720" alt="Inside the Void: a gate home and Sinew Willows"></p>
+<p style="text-align:center"><em>Once the breach was held, I stepped through. There is no ground in there, only old shells drifting in a violet haze,<br>trees made of sinew and something that watches from the dark. The gate home stays open behind me. I won't stay long.</em></p>
 
 <h2 style="text-align:center"><span style="color:#e2b86a">Every page.</span> The diary</h2>
 <p style="text-align:center"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/diary.gif" width="720" alt="The Researcher's Diary"></p>

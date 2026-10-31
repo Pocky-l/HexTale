@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "crack=0": {
+      "model": "hextale:block/husk_crust"
+    },
+    "crack=1": {
+      "model": "hextale:block/husk_crust_cracked"
+    },
+    "crack=2": {
+      "model": "hextale:block/husk_crust_breaking"
+    },
+    "crack=3": {
+      "model": "hextale:block/husk_crust"
+    }
+  }
+}

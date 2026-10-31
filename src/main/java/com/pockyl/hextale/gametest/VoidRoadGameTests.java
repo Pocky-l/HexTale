@@ -39,7 +39,7 @@ public final class VoidRoadGameTests {
     /** One anchor in every sixth of the circle round (1, 4, 1), five blocks out. */
     private static final int[][] RING = {{5, 0}, {3, 4}, {-3, 4}, {-5, 0}, {-3, -4}, {3, -4}};
 
-    private static List<VoidAnchorBlockEntity> ring(GameTestHelper helper) {
+    static List<VoidAnchorBlockEntity> ring(GameTestHelper helper) {
         List<VoidAnchorBlockEntity> anchors = new ArrayList<>();
         for (int[] offset : RING) {
             BlockPos at = new BlockPos(1 + offset[0], 1, 1 + offset[1]);
@@ -50,7 +50,7 @@ public final class VoidRoadGameTests {
     }
 
     /** Takes the ring (and the jar beside it) away again: test spots lie close, and a ring left standing holds the next. */
-    private static void clearRing(GameTestHelper helper) {
+    static void clearRing(GameTestHelper helper) {
         for (int[] offset : RING) {
             helper.setBlock(new BlockPos(1 + offset[0], 1, 1 + offset[1]), net.minecraft.world.level.block.Blocks.AIR);
         }
@@ -79,43 +79,15 @@ public final class VoidRoadGameTests {
                 helper.assertTrue(false, "the sixth anchor gets its crystal");
             }
             helper.assertTrue(breach.subdued(), "the closed ring subdues it, sides " + breach.heldSides());
-            for (VoidAnchorBlockEntity anchor : anchors) {
-                helper.assertTrue(anchor.tied() && anchor.subdued() && anchor.clouding() > 0, "every anchor holds it and wears");
+            for (int i = 0; i < anchors.size(); i++) {
+                VoidAnchorBlockEntity anchor = anchors.get(i);
+                helper.assertTrue(anchor.tied() && anchor.subdued(), "every anchor holds it");
+                // The five that fought the open ring wore; the sixth came into a closed ring, which holds without wearing.
+                helper.assertTrue(i < 5 ? anchor.clouding() > 0 : anchor.clouding() == 0, "anchor " + i + " wears only while the ring is open");
             }
+            helper.assertTrue(breach.heldMask() == 0b111111, "all six sides are marked held");
             breach.discard();
             Thinning.setAround(level, centre, 1, 0);
-            clearRing(helper);
-        });
-    }
-
-    /** A held breach keeps Radiant Alloy thrown in by a researcher and gives it back as Riftmetal (level 4). */
-    @HexTest(maxTicks = 1000, padding = 8)
-    @SuppressWarnings("removal")
-    public static void aHeldBreachGivesBackRiftmetal(GameTestHelper helper) {
-        ServerLevel level = helper.getLevel();
-        BlockPos centre = helper.absolutePos(new BlockPos(1, 4, 1));
-        List<VoidAnchorBlockEntity> anchors = ring(helper);
-        anchors.forEach(anchor -> anchor.insert(new ItemStack(ModItems.HEXTECH_CRYSTAL.get())));
-        TheVoid breach = TheVoid.rooted(level, Vec3.atCenterOf(centre), 0, VoidShape.EYE, 3.5F, 883);
-        level.addFreshEntity(breach);
-        net.minecraft.server.level.ServerPlayer smith = helper.makeMockServerPlayerInLevel();
-        com.pockyl.hextale.knowledge.Research.research(smith, com.pockyl.hextale.research.ResearchTopics.RIFTMETAL);
-        ItemEntity[] thrown = {null};
-        helper.succeedWhen(() -> {
-            helper.assertTrue(breach.subdued(), "the ring holds it");
-            if (thrown[0] == null) {
-                thrown[0] = new ItemEntity(level, breach.getX(), breach.getY() - 0.125, breach.getZ(), new ItemStack(ModItems.RADIANT_ALLOY_INGOT.get(), 2));
-                thrown[0].setNoGravity(true);
-                thrown[0].setDeltaMovement(Vec3.ZERO);
-                thrown[0].setThrower(smith);
-                level.addFreshEntity(thrown[0]);
-            }
-            helper.assertTrue(thrown[0].isRemoved(), "the breach takes the alloy in");
-            List<ItemEntity> back = level.getEntitiesOfClass(ItemEntity.class, breach.getBoundingBox().inflate(4),
-                    item -> item.getItem().is(ModItems.RIFTMETAL_INGOT.get()));
-            helper.assertTrue(!back.isEmpty() && back.get(0).getItem().getCount() == 2, "and gives it back as Riftmetal");
-            back.forEach(net.minecraft.world.entity.Entity::discard);
-            breach.discard();
             clearRing(helper);
         });
     }
@@ -269,6 +241,9 @@ public final class VoidRoadGameTests {
         helper.assertTrue(voidling.stage() == Voidling.GROWN, "fed enough, it molts into a grown one");
         helper.assertTrue(voidling.getAttributeValue(Attributes.SCALE) > scale && voidling.getMaxHealth() > health,
                 "bigger and tougher");
+        helper.assertTrue(voidling.moltProgress(0) >= 0 && voidling.molting(0.5F) > 0, "the molt is under way");
+        voidling.tickCount += Voidling.MOLT_TICKS;
+        helper.assertTrue(voidling.moltProgress(0) < 0 && voidling.molting(0) == 0, "and over after its ticks");
         voidling.feed(level, Voidling.ELDER_AT);
         helper.assertTrue(voidling.stage() == Voidling.ELDER, "and at last an elder");
         voidling.feed(level, Voidling.ELDER_AT);

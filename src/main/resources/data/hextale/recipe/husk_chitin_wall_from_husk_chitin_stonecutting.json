@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "hextale:husk_chitin"
+  },
+  "result": {
+    "id": "hextale:husk_chitin_wall"
+  }
+}

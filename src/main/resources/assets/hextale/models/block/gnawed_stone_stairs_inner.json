@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/inner_stairs",
+  "textures": {
+    "bottom": "hextale:block/gnawed_stone",
+    "top": "hextale:block/gnawed_stone",
+    "side": "hextale:block/gnawed_stone"
+  }
+}

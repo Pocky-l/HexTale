@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "hextale:block/void_cilia"
+  },
+  "render_type": "minecraft:cutout"
+}

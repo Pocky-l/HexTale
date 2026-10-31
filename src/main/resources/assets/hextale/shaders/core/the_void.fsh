@@ -121,6 +121,35 @@ vec3 throat(vec2 uv, vec3 ray, float t, float seed, float core, float R) {
     return col * mix(0.45, 1.0, smoothstep(1.25, 0.3, length(uv) / R));
 }
 
+// A gate seen from inside the Void: our world through it, soft as if through warm water - a daylit sky over a green
+// smear of land, a low sun, slow clouds and gold dust drifting in front. The only warm light in the realm.
+vec3 home(vec2 uv, vec3 ray, float t, float seed, float R) {
+    float slope = 1.0 / max(abs(ray.z), 0.22);
+    // The world beyond sits far behind the plane: it shifts with the view, the dust in front barely does.
+    vec2 far = (uv + ray.xy * 9.0 * slope) / R;
+    float horizon = -0.18 + 0.05 * sin(far.x * 1.7 + seed);
+    float above = far.y - horizon;
+    vec3 sky = mix(vec3(0.95, 0.82, 0.60), vec3(0.55, 0.76, 0.92), smoothstep(0.0, 0.9, above));
+    float clouds = smoothstep(0.55, 0.8, fbm(vec2(far.x * 1.3 + t * 0.012, far.y * 3.0) + seed));
+    sky = mix(sky, vec3(1.0, 0.96, 0.9), clouds * 0.55 * smoothstep(0.05, 0.4, above));
+    vec2 sun = far - vec2(0.35 + 0.1 * sin(seed), horizon + 0.22);
+    sky += vec3(1.0, 0.85, 0.55) * exp(-dot(sun, sun) * 9.0) * 0.8;
+    float hills = horizon - 0.05 * fbm(vec2(far.x * 2.0, seed));
+    vec3 land = mix(vec3(0.33, 0.52, 0.27), vec3(0.50, 0.69, 0.41), fbm(far * 3.0 + seed) * 0.8);
+    land = mix(land, vec3(0.86, 0.78, 0.58), smoothstep(-0.02, 0.0, far.y - hills) * 0.4);
+    vec3 col = mix(land, sky, smoothstep(-0.01, 0.01, far.y - hills));
+    // Seen through the Void's skin: a little hazed with lilac at the edges.
+    col = mix(col, vec3(0.78, 0.70, 0.86), smoothstep(0.55, 1.25, length(uv) / R) * 0.55);
+    // Gold dust, close to the plane.
+    vec2 sp = uv + ray.xy * 0.6 * slope + vec2(0.0, t * 0.02);
+    vec2 g = sp / 0.18;
+    float h = hash12(floor(g) + seed);
+    vec2 f = abs(fract(g) - 0.5);
+    float speck = step(0.93, h) * step(max(f.x, f.y), 0.12) * (0.5 + 0.5 * sin(t * (0.6 + h) + h * 30.0));
+    col += vec3(1.0, 0.86, 0.5) * speck * 0.6;
+    return col;
+}
+
 void main() {
     int mask = voidData.r;
     float open = float(voidData.g) / 255.0;
@@ -129,7 +158,9 @@ void main() {
     int seams = voidData.a & 15;
     int shadeLevel = voidData.a >> 4;
     float cell = float(cellCore.x) / 1000.0;
-    float core = float(cellCore.y) / 1000.0;
+    // A gate inside the Void carries its core as a negative number.
+    bool gate = cellCore.y < 0;
+    float core = float(gate ? -cellCore.y - 1 : cellCore.y) / 1000.0;
     float fresh = float(freshSize.x) / 1000.0;
     // The size's low 11 bits; above them how far a held breach has calmed (0-15).
     float R = float(freshSize.y & 2047) / 200.0;
@@ -161,7 +192,7 @@ void main() {
             }
         }
 
-        col = throat(localUv, ray, t, seed, core, max(R, 0.5));
+        col = gate ? home(localUv, ray, t, seed, max(R, 0.5)) : throat(localUv, ray, t, seed, core, max(R, 0.5));
 
         // Regions: the rectangles the breach is made of differ in shade; a dead cell is black.
         float shade = float(shadeLevel) / 15.0;
@@ -195,13 +226,18 @@ void main() {
         float band = smoothstep(0.2, 0.0, d);
         float hot = smoothstep(0.07, 0.0, d);
         vec3 rim = mix(vec3(0.68, 0.05, 0.5), vec3(1.0, 0.7, 0.95), hot) * 1.3 * pulse * tearing;
+        if (gate) {
+            rim = cooled(rim);
+        }
         col = mix(col, rim, band);
     }
 
     // A cell that has only just broken through is still black.
     col *= 1.0 - fresh * 0.85;
-    // Held by its anchors, the breach cools from magenta to a cold violet.
-    col = mix(col, cooled(col), calm);
+    // Held by its anchors, the breach cools from magenta to a cold violet (a gate keeps its warm view, only the rim cools).
+    if (!gate) {
+        col = mix(col, cooled(col), calm);
+    }
 
     fragColor = linear_fog(vec4(col, 1.0), vertexDistance, FogStart, FogEnd, FogColor);
 }

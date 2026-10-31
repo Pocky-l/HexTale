@@ -3,13 +3,11 @@
   "stage": "late",
   "icon": "hextale:riftmetal_ingot",
   "parents": [
-    "radiant_alloy"
+    "radiant_alloy",
+    "rift_ore"
   ],
   "display": {
-    "kind": "scheme",
-    "ingredients": [
-      "hextale:radiant_alloy_ingot"
-    ],
+    "kind": "alloy",
     "result": "hextale:riftmetal_ingot"
   },
   "research": "riftmetal",

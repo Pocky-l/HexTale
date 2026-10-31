@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=lower": {
+      "model": "hextale:block/tall_void_cilia_bottom"
+    },
+    "half=upper": {
+      "model": "hextale:block/tall_void_cilia_top"
+    }
+  }
+}

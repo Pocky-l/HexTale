@@ -13,36 +13,38 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 
 import com.pockyl.hextale.Hextale;
+import com.pockyl.hextale.thevoid.Voidling;
 
 /**
  * The voidling of the original HexTale, carried over without an animation library: a wedge of a hooded head with three
- * eyes over a pale mouth and three pincers, two thin forelimbs and four long scythe legs. Geometry converted from its
+ * eyes over a fanged mouth and three pincers, two thin forelimbs and four long scythe legs. Geometry converted from its
  * Bedrock model in Blockbench ({@code art/models/entity/voidling.bbmodel}, Modded Entity, Mojang mappings), drawn at half
  * size by the renderer as before. Its own keyframe animations ({@link VoidlingAnimations}) play as vanilla ones: one of
- * three idle breaths, faded out by the walk; the head follows the look, the pincers spread in a bite.
+ * three idles, each voidling at its own phase, faded out by the walk; the lunge over a bite's swing, the unfolding out
+ * of a breach and the molt over their own clocks. The head does not follow the look smoothly: it holds, then snaps.
  */
 public class VoidlingModel extends EntityModel<VoidlingRenderer.State> {
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(Hextale.id("voidling"), "main");
+    /** Degrees of look between two snaps of the head. */
+    private static final float HEAD_STEP = 15.0F;
+    /** Length of {@link VoidlingAnimations#ATTACK}, spread over a bite's swing. */
+    private static final float ATTACK_MILLIS = 350.0F;
     private final ModelPart head;
-    private final ModelPart hands;
-    private final ModelPart leftPincer;
-    private final ModelPart rightPincer;
-    private final ModelPart middlePincer;
     private final KeyframeAnimation[] idles;
     private final KeyframeAnimation walk;
+    private final KeyframeAnimation attack;
+    private final KeyframeAnimation emerge;
+    private final KeyframeAnimation molt;
 
     public VoidlingModel(ModelPart root) {
         super(root);
-        ModelPart body = root.getChild("body");
-        head = body.getChild("neck").getChild("head");
-        hands = body.getChild("hands");
-        ModelPart pincers = head.getChild("pincles");
-        leftPincer = pincers.getChild("front_left_pincle");
-        rightPincer = pincers.getChild("front_right_pincle");
-        middlePincer = pincers.getChild("front_middle_pincle");
+        head = root.getChild("body").getChild("neck").getChild("head");
         idles = new KeyframeAnimation[] {com.pockyl.hextale.port.client.KeyframeAnimation.bake(VoidlingAnimations.IDLE, root), com.pockyl.hextale.port.client.KeyframeAnimation.bake(VoidlingAnimations.IDLE_2, root),
                 com.pockyl.hextale.port.client.KeyframeAnimation.bake(VoidlingAnimations.IDLE_3, root)};
         walk = com.pockyl.hextale.port.client.KeyframeAnimation.bake(VoidlingAnimations.WALK, root);
+        attack = com.pockyl.hextale.port.client.KeyframeAnimation.bake(VoidlingAnimations.ATTACK, root);
+        emerge = com.pockyl.hextale.port.client.KeyframeAnimation.bake(VoidlingAnimations.EMERGE, root);
+        molt = com.pockyl.hextale.port.client.KeyframeAnimation.bake(VoidlingAnimations.MOLT, root);
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -132,19 +134,23 @@ public class VoidlingModel extends EntityModel<VoidlingRenderer.State> {
     public void setupAnim(VoidlingRenderer.State state) {
         super.setupAnim(state);
         float walking = Math.min(1, state.walkAnimationSpeed * 2.5F);
-        idles[Math.floorMod(state.idleVariant, idles.length)].apply((long) (state.ageInTicks * 50), 1 - walking);
+        // Each voidling keeps its own idle at its own phase, so a pack never twitches in step.
+        long idleTime = (long) (state.ageInTicks * 50) + state.idleVariant * 997L;
+        idles[Math.floorMod(state.idleVariant, idles.length)].apply(idleTime, 1 - walking);
         walk.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed, 2.0F, 2.5F);
-        head.yRot += state.yRot * Mth.DEG_TO_RAD * 0.5F;
+        head.yRot += Math.round(state.yRot / HEAD_STEP) * HEAD_STEP * Mth.DEG_TO_RAD * 0.5F;
         head.xRot += state.xRot * Mth.DEG_TO_RAD * 0.4F;
 
-        // A bite: the pincers spread and snap shut.
-        float bite = Mth.sin(state.bite * Mth.PI);
-        leftPincer.yRot += bite * 0.5F;
-        rightPincer.yRot -= bite * 0.5F;
-        middlePincer.xRot += bite * 0.45F;
-
-        // Just pushed out of a breach: the forelimbs drawn in over the head, unfolding.
-        float curl = state.emerge * state.emerge;
-        hands.xRot -= 0.8F * curl;
+        // A bite: rear up and lunge over the swing.
+        if (state.bite > 0) {
+            attack.apply((long) (state.bite * ATTACK_MILLIS), 1);
+        }
+        // Just pushed out of a breach: curled up, it unfolds.
+        if (state.emerge > 0) {
+            emerge.apply((long) ((1 - state.emerge) * Voidling.EMERGE_TICKS * 50), 1);
+        }
+        if (state.moltTime >= 0) {
+            molt.apply((long) (state.moltTime * Voidling.MOLT_TICKS * 50), 1);
+        }
     }
 }

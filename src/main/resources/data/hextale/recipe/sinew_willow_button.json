@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "group": "wooden_button",
+  "ingredients": [
+    {
+      "item": "hextale:sinew_willow_planks"
+    }
+  ],
+  "result": {
+    "id": "hextale:sinew_willow_button"
+  }
+}

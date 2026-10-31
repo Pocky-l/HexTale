@@ -1,0 +1,162 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/sinew_willow_fronds",
+    "sinew_willow_fronds": "hextale:block/sinew_willow_fronds",
+    "sinew_willow_fronds_glow": "hextale:block/sinew_willow_fronds_glow"
+  },
+  "elements": [
+    {
+      "name": "sinew_willow_fronds",
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#sinew_willow_fronds",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#sinew_willow_fronds",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#sinew_willow_fronds",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#sinew_willow_fronds",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#sinew_willow_fronds",
+          "cullface": "up"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#sinew_willow_fronds",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "sinew_willow_fronds_glow",
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#sinew_willow_fronds_glow",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#sinew_willow_fronds_glow",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#sinew_willow_fronds_glow",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#sinew_willow_fronds_glow",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#sinew_willow_fronds_glow",
+          "cullface": "up"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#sinew_willow_fronds_glow",
+          "cullface": "down"
+        }
+      }
+    }
+  ],
+  "render_type": "minecraft:cutout"
+}

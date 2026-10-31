@@ -1881,5 +1881,403 @@
         "attenuation_distance": 16
       }
     ]
+  },
+  "rib_crawler.ambient": {
+    "subtitle": "subtitles.hextale.rib_crawler.ambient",
+    "sounds": [
+      {
+        "name": "hextale:rib_crawler_ambient1",
+        "volume": 0.4
+      },
+      {
+        "name": "hextale:rib_crawler_ambient2",
+        "volume": 0.4
+      },
+      {
+        "name": "hextale:rib_crawler_ambient3",
+        "volume": 0.4
+      }
+    ]
+  },
+  "rib_crawler.hurt": {
+    "subtitle": "subtitles.hextale.rib_crawler.hurt",
+    "sounds": [
+      {
+        "name": "hextale:rib_crawler_hurt1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:rib_crawler_hurt2",
+        "volume": 0.6
+      }
+    ]
+  },
+  "rib_crawler.death": {
+    "subtitle": "subtitles.hextale.rib_crawler.death",
+    "sounds": [
+      {
+        "name": "hextale:rib_crawler_death1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:rib_crawler_death2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "rib_crawler.step": {
+    "subtitle": "subtitles.hextale.rib_crawler.step",
+    "sounds": [
+      {
+        "name": "hextale:rib_crawler_step1",
+        "volume": 0.3
+      },
+      {
+        "name": "hextale:rib_crawler_step2",
+        "volume": 0.3
+      },
+      {
+        "name": "hextale:rib_crawler_step3",
+        "volume": 0.3
+      }
+    ]
+  },
+  "rib_crawler.click": {
+    "subtitle": "subtitles.hextale.rib_crawler.click",
+    "sounds": [
+      {
+        "name": "hextale:rib_crawler_click1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:rib_crawler_click2",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:rib_crawler_click3",
+        "volume": 0.6
+      }
+    ]
+  },
+  "rib_crawler.drop": {
+    "subtitle": "subtitles.hextale.rib_crawler.drop",
+    "sounds": [
+      {
+        "name": "hextale:rib_crawler_drop1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:rib_crawler_drop2",
+        "volume": 0.6
+      }
+    ]
+  },
+  "rib_crawler.land": {
+    "subtitle": "subtitles.hextale.rib_crawler.land",
+    "sounds": [
+      {
+        "name": "hextale:rib_crawler_land1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:rib_crawler_land2",
+        "volume": 0.6
+      }
+    ]
+  },
+  "rib_crawler.bite": {
+    "subtitle": "subtitles.hextale.rib_crawler.bite",
+    "sounds": [
+      {
+        "name": "hextale:rib_crawler_bite1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:rib_crawler_bite2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "pit_maw.open": {
+    "subtitle": "subtitles.hextale.pit_maw.open",
+    "sounds": [
+      {
+        "name": "hextale:pit_maw_open1",
+        "volume": 0.8
+      },
+      {
+        "name": "hextale:pit_maw_open2",
+        "volume": 0.8
+      }
+    ]
+  },
+  "pit_maw.pull": {
+    "subtitle": "subtitles.hextale.pit_maw.pull",
+    "sounds": [
+      {
+        "name": "hextale:pit_maw_pull1",
+        "volume": 0.5
+      },
+      {
+        "name": "hextale:pit_maw_pull2",
+        "volume": 0.5
+      }
+    ]
+  },
+  "pit_maw.bite": {
+    "subtitle": "subtitles.hextale.pit_maw.bite",
+    "sounds": [
+      {
+        "name": "hextale:pit_maw_bite1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:pit_maw_bite2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "pit_maw.close": {
+    "subtitle": "subtitles.hextale.pit_maw.close",
+    "sounds": [
+      {
+        "name": "hextale:pit_maw_close1",
+        "volume": 0.5
+      },
+      {
+        "name": "hextale:pit_maw_close2",
+        "volume": 0.5
+      }
+    ]
+  },
+  "pit_maw.hurt": {
+    "subtitle": "subtitles.hextale.pit_maw.hurt",
+    "sounds": [
+      {
+        "name": "hextale:pit_maw_hurt1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:pit_maw_hurt2",
+        "volume": 0.6
+      }
+    ]
+  },
+  "pit_maw.death": {
+    "subtitle": "subtitles.hextale.pit_maw.death",
+    "sounds": [
+      {
+        "name": "hextale:pit_maw_death1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:pit_maw_death2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "seer.ambient": {
+    "subtitle": "subtitles.hextale.seer.ambient",
+    "sounds": [
+      {
+        "name": "hextale:seer_ambient1",
+        "volume": 0.35
+      },
+      {
+        "name": "hextale:seer_ambient2",
+        "volume": 0.35
+      },
+      {
+        "name": "hextale:seer_ambient3",
+        "volume": 0.35
+      }
+    ]
+  },
+  "seer.open": {
+    "subtitle": "subtitles.hextale.seer.open",
+    "sounds": [
+      {
+        "name": "hextale:seer_open1",
+        "volume": 0.5
+      },
+      {
+        "name": "hextale:seer_open2",
+        "volume": 0.5
+      }
+    ]
+  },
+  "seer.mark": {
+    "subtitle": "subtitles.hextale.seer.mark",
+    "sounds": [
+      {
+        "name": "hextale:seer_mark1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:seer_mark2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "seer.hurt": {
+    "subtitle": "subtitles.hextale.seer.hurt",
+    "sounds": [
+      {
+        "name": "hextale:seer_hurt1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:seer_hurt2",
+        "volume": 0.6
+      }
+    ]
+  },
+  "seer.death": {
+    "subtitle": "subtitles.hextale.seer.death",
+    "sounds": [
+      {
+        "name": "hextale:seer_death1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:seer_death2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "husk_crust.crack": {
+    "subtitle": "subtitles.hextale.husk_crust.crack",
+    "sounds": [
+      {
+        "name": "hextale:husk_crust_crack1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:husk_crust_crack2",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:husk_crust_crack3",
+        "volume": 0.6
+      }
+    ]
+  },
+  "husk_crust.collapse": {
+    "subtitle": "subtitles.hextale.husk_crust.collapse",
+    "sounds": [
+      {
+        "name": "hextale:husk_crust_collapse1",
+        "volume": 0.8
+      },
+      {
+        "name": "hextale:husk_crust_collapse2",
+        "volume": 0.8
+      }
+    ]
+  },
+  "worn_membrane.stretch": {
+    "subtitle": "subtitles.hextale.worn_membrane.stretch",
+    "sounds": [
+      {
+        "name": "hextale:worn_membrane_stretch1",
+        "volume": 0.5
+      },
+      {
+        "name": "hextale:worn_membrane_stretch2",
+        "volume": 0.5
+      }
+    ]
+  },
+  "worn_membrane.tear": {
+    "subtitle": "subtitles.hextale.worn_membrane.tear",
+    "sounds": [
+      {
+        "name": "hextale:worn_membrane_tear1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:worn_membrane_tear2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "void_sac.burst": {
+    "subtitle": "subtitles.hextale.void_sac.burst",
+    "sounds": [
+      {
+        "name": "hextale:void_sac_burst1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:void_sac_burst2",
+        "volume": 0.6
+      }
+    ]
+  },
+  "void_sac.twitch": {
+    "subtitle": "subtitles.hextale.void_sac.twitch",
+    "sounds": [
+      {
+        "name": "hextale:void_sac_twitch1",
+        "volume": 0.35
+      },
+      {
+        "name": "hextale:void_sac_twitch2",
+        "volume": 0.35
+      },
+      {
+        "name": "hextale:void_sac_twitch3",
+        "volume": 0.35
+      }
+    ]
+  },
+  "void_current.loop": {
+    "subtitle": "subtitles.hextale.void_current.loop",
+    "sounds": [
+      {
+        "name": "hextale:void_current_loop",
+        "volume": 0.35
+      }
+    ]
+  },
+  "void_current.break": {
+    "subtitle": "subtitles.hextale.void_current.break",
+    "sounds": [
+      {
+        "name": "hextale:void_current_break1",
+        "volume": 0.5
+      },
+      {
+        "name": "hextale:void_current_break2",
+        "volume": 0.5
+      }
+    ]
+  },
+  "void_fog.bank": {
+    "subtitle": "subtitles.hextale.void_fog.bank",
+    "sounds": [
+      {
+        "name": "hextale:void_fog_bank",
+        "volume": 0.45
+      }
+    ]
+  },
+  "void_passage.pull": {
+    "subtitle": "subtitles.hextale.void_passage.pull",
+    "sounds": [
+      {
+        "name": "hextale:void_passage_pull",
+        "volume": 0.8
+      }
+    ]
+  },
+  "void_passage.arrive": {
+    "subtitle": "subtitles.hextale.void_passage.arrive",
+    "sounds": [
+      {
+        "name": "hextale:void_passage_arrive",
+        "volume": 0.6
+      }
+    ]
   }
 }

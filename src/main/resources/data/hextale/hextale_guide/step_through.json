@@ -1,0 +1,16 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:void_membrane",
+  "parents": [
+    "subdued_breach"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "void_entered"
+  },
+  "pos": [
+    270,
+    960
+  ]
+}
