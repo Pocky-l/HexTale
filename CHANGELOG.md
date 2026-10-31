@@ -31,8 +31,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   veins running to a crystal knot; islands of swallowed stone at the level one walks on in the Shoals; husks thirty
   blocks long in the Husk Drift, lit from inside; and over the Vortex its sealed heart, a bud of chitin petals with
   light in its seams.
-- The Void's own sky: a vortex turning slowly overhead with rings of script round its eye, far silhouettes in the haze,
-  the abyss glowing below; motes of its air rise slowly from the dark, lilac or amber by the zone.
+- The Void's own sky: a funnel of veined membrane turning slowly overhead, its veils spiralling in toward a beating
+  violet eye; far ribs, curled horns and crystal-tipped spires stand in drifting mist at the horizon; below, the abyss
+  glows round its own slower funnel, and motes of its air rise slowly from the dark, lilac or amber by the zone.
 - Every gate in the Void stands under a column of warm light, seen from far off: the way home.
 - The Void's flora: cilia carpets and tall cilia, hanging tendrils (one can climb them), spore puffs (brush one for slow
   falling, crush a picked one for longer), sinew curtains stretched across narrow gaps (they hold you back, then
