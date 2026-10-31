@@ -52,6 +52,30 @@ public final class VoidRealmGameTests {
         helper.succeed();
     }
 
+    /** A world with the Void opens without the "experimental settings" backup question: our dimension counts as stable. */
+    @HexTest
+    public static void theVoidDoesNotAskForABackup(GameTestHelper helper) {
+        var server = helper.getLevel().getServer();
+        var ops = net.minecraft.resources.RegistryOps.create(com.mojang.serialization.JsonOps.INSTANCE, server.registryAccess());
+        var resource = server.getResourceManager().getResource(Hextale.id("dimension/the_void.json"));
+        helper.assertTrue(resource.isPresent(), "the dimension file");
+        try (var reader = resource.get().openAsReader()) {
+            var json = com.google.gson.JsonParser.parseReader(reader);
+            var stem = net.minecraft.world.level.dimension.LevelStem.CODEC.parse(ops, json).getOrThrow();
+            ResourceKey<net.minecraft.world.level.dimension.LevelStem> key = ResourceKey.create(Registries.LEVEL_STEM, Hextale.id("the_void"));
+            // bake() wants an overworld; the game test server has no dimension registry, so a second copy of the Void stands in.
+            var standIn = net.minecraft.world.level.dimension.LevelStem.CODEC.parse(ops, json).getOrThrow();
+            var base = new net.minecraft.core.MappedRegistry<>(Registries.LEVEL_STEM, com.mojang.serialization.Lifecycle.stable()).freeze();
+            var dimensions = java.util.Map.of(net.minecraft.world.level.dimension.LevelStem.OVERWORLD, standIn, key, stem);
+            var baked = new net.minecraft.world.level.levelgen.WorldDimensions(dimensions).bake(base);
+            var lifecycle = baked.dimensions().registrationInfo(key).map(net.minecraft.core.RegistrationInfo::lifecycle).orElse(null);
+            helper.assertTrue(lifecycle == com.mojang.serialization.Lifecycle.stable(), "the Void is a stable dimension, not " + lifecycle);
+        } catch (java.io.IOException e) {
+            throw new IllegalStateException(e);
+        }
+        helper.succeed();
+    }
+
     /** Over a stretch of the Void: ribs with lit crests, skin with veins and worn patches, flesh - and nothing low down. */
     @HexTest(maxTicks = 200)
     public static void theVoidIsBuiltOfRibsAndSkin(GameTestHelper helper) {
