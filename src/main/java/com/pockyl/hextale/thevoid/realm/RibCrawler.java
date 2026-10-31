@@ -249,6 +249,9 @@ public class RibCrawler extends Monster {
         setClinging(false);
         entityData.set(DATA_DROP, tickCount);
         playSound(ModSounds.RIB_CRAWLER_DROP.get(), 1.0F, 1.0F);
+        if (getTarget() instanceof net.minecraft.server.level.ServerPlayer player) {
+            com.pockyl.hextale.quest.Quests.fire(player, com.pockyl.hextale.quest.Quests.CRAWLER_DROPPED);
+        }
     }
 
     @Override

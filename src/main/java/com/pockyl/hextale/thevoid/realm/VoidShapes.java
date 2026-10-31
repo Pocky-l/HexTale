@@ -47,6 +47,9 @@ public final class VoidShapes {
     public static final byte FRONDS = 18;
     /** An ichor pod hanging under the fronds. */
     public static final byte POD = 19;
+    /** Sacs of a nursery (the generator turns them to face away from what they grow on). */
+    public static final byte SAC = 20;
+    public static final byte PEARL_SAC = 21;
 
     private static final int CACHE_LIMIT = 512;
 
@@ -106,6 +109,21 @@ public final class VoidShapes {
     }
 
     /**
+     * A nursery: a husk the size of a cathedral, closed but for one mouth at the level one walks on, its inner walls
+     * hung with sacs, a mound of flesh in its middle carrying the pearl sacs.
+     */
+    public record Nursery(double x, double y, double z, double a, double b, double mouth, int salt) {
+        double reach() {
+            return Math.max(a, b) + 2;
+        }
+
+        /** Height of its floor. */
+        public double floor() {
+            return y - b * 0.55;
+        }
+    }
+
+    /**
      * A plate of shell: an ellipse (radii rx, rz, turned by yaw) round (x, z) at height y, sloping with the ground round
      * it, domed, thick in the middle and thin at the edge where its lip curls up.
      */
@@ -124,6 +142,8 @@ public final class VoidShapes {
         final List<Shoal> shoals = new ArrayList<>();
         final List<Heart> hearts = new ArrayList<>();
         final List<Lake> lakes = new ArrayList<>();
+        final List<Nursery> nurseries = new ArrayList<>();
+        final List<VoidCurrents.Current> currents = new ArrayList<>();
         final List<Plate> plates = new ArrayList<>();
         final List<Bladder> bladders = new ArrayList<>();
         final List<VoidTrees.Tree> trees = new ArrayList<>();
@@ -341,6 +361,15 @@ public final class VoidShapes {
             if (spot != null && open >= 10) {
                 region.lakes.add(new Lake(spot[0], ground(spot[0], spot[1]) - 2, spot[1], r, 3 + r * 0.18, random.nextInt()));
             }
+        }
+        currents(region, zone, new Random(hash(seed, rx, rz, 0xC0BB)));
+        // A nursery in every third region or so of the Husk Drift: the Void's brood, and its pearls.
+        if (zone == VoidZones.Zone.DRIFT && random.nextDouble() < NURSERY_CHANCE) {
+            double nx = x0 + 36 + random.nextDouble() * (REGION - 72);
+            double nz = z0 + 36 + random.nextDouble() * (REGION - 72);
+            double a = 17 + random.nextDouble() * 5;
+            double b = a * (0.62 + random.nextDouble() * 0.12);
+            region.nurseries.add(new Nursery(nx, ground(nx, nz) + b * 0.42, nz, a, b, random.nextDouble() * Math.PI * 2, random.nextInt()));
         }
         // The heart of the vortex, in the region that holds its centre, high over the ground so it shows from the Drift.
         double[] vortex = VoidZones.vortex(x0 + REGION / 2.0, z0 + REGION / 2.0);
@@ -716,6 +745,12 @@ public final class VoidShapes {
         for (Region region : near) {
             for (Lake lake : region.lakes) {
                 lake(lake, x0, z0, kinds, best);
+            }
+        }
+        // Nurseries last of the solid shapes: nothing else may grow into their hollow.
+        for (Region region : near) {
+            for (Nursery nursery : region.nurseries) {
+                nursery(nursery, x0, z0, kinds, best);
             }
         }
         veins(x0, z0, kinds);
@@ -1171,6 +1206,137 @@ public final class VoidShapes {
                 boolean vein = Math.abs(Math.sin(angle * 3.5)) < 0.09 + 0.05 * (1 - d);
                 boolean worn = d > 0.8 && d < 0.9 && noise(x / 4.0, 2, z / 4.0, lake.salt() + 2) > 0.45;
                 kinds[idx] = vein ? VEINED : worn ? WORN : MEMBRANE;
+            }
+        }
+    }
+
+    /** The currents of a region (see {@link VoidCurrents}). */
+    public List<VoidCurrents.Current> currents(int rx, int rz) {
+        return region(rx, rz).currents;
+    }
+
+    /**
+     * The region's currents: arcs of moving air from the rim of one plate over the gap to another, rising in the middle.
+     * More of them deeper in; about a third break now and then.
+     */
+    private void currents(Region region, VoidZones.Zone zone, Random random) {
+        int count = switch (zone) {
+            case THRESHOLD -> 1;
+            case REACH, SHOALS -> 2;
+            case DRIFT -> 2;
+            case VORTEX -> 3;
+        };
+        List<Plate> plates = region.plates;
+        for (int c = 0; c < count && plates.size() > 1; c++) {
+            Plate from = plates.get(random.nextInt(plates.size()));
+            Plate to = plates.get(random.nextInt(plates.size()));
+            double dx = to.x() - from.x(), dz = to.z() - from.z();
+            double apart = Math.sqrt(dx * dx + dz * dz);
+            if (from == to || apart < 40 || apart > 150) {
+                continue;
+            }
+            double ux = dx / apart, uz = dz / apart;
+            // From well inside each rim, so the ends lie over solid ground one can step into and out of.
+            double sx = from.x() + ux * Math.min(from.rx(), from.rz()) * 0.55, sz = from.z() + uz * Math.min(from.rx(), from.rz()) * 0.55;
+            double ex = to.x() - ux * Math.min(to.rx(), to.rz()) * 0.55, ez = to.z() - uz * Math.min(to.rx(), to.rz()) * 0.55;
+            double sy = plateTop(from, sx, sz), ey = plateTop(to, ex, ez);
+            if (Double.isNaN(sy) || Double.isNaN(ey)) {
+                continue;
+            }
+            sy += 1.6;
+            ey += 1.6;
+            double length = Math.sqrt(sq(ex - sx) + sq(ez - sz));
+            double rise = 6 + length * 0.12 + random.nextDouble() * 6;
+            double sway = (random.nextDouble() - 0.5) * length * 0.35;
+            double mx = (sx + ex) / 2 - uz * sway, mz = (sz + ez) / 2 + ux * sway, my = Math.max(sy, ey) + rise;
+            int points = Math.max(8, Math.min(120, (int) (length / 2)));
+            float[] xs = new float[points], ys = new float[points], zs = new float[points];
+            for (int i = 0; i < points; i++) {
+                double t = i / (double) (points - 1);
+                double a = (1 - t) * (1 - t), b = 2 * (1 - t) * t, d = t * t;
+                xs[i] = (float) (a * sx + b * mx + d * ex);
+                ys[i] = (float) (a * sy + b * my + d * ey);
+                zs[i] = (float) (a * sz + b * mz + d * ez);
+            }
+            region.currents.add(new VoidCurrents.Current(xs, ys, zs, random.nextDouble() < 0.3, random.nextInt(VoidCurrents.PERIOD)));
+        }
+    }
+
+    /** Share of Husk Drift regions that hold a nursery. */
+    static final double NURSERY_CHANCE = 0.4;
+
+    /** The nurseries whose middle lies in the given chunk. */
+    public List<Nursery> nurseriesIn(int chunkX, int chunkZ) {
+        List<Nursery> found = new ArrayList<>();
+        Region region = region(Math.floorDiv(chunkX << 4, REGION), Math.floorDiv(chunkZ << 4, REGION));
+        for (Nursery nursery : region.nurseries) {
+            if (floor(nursery.x()) >> 4 == chunkX && floor(nursery.z()) >> 4 == chunkZ) {
+                found.add(nursery);
+            }
+        }
+        return found;
+    }
+
+    private void nursery(Nursery nursery, int x0, int z0, byte[] kinds, float[] best) {
+        double reach = nursery.reach();
+        int minX = Math.max(x0, floor(nursery.x() - reach));
+        int maxX = Math.min(x0 + 15, floor(nursery.x() + reach));
+        int minZ = Math.max(z0, floor(nursery.z() - reach));
+        int maxZ = Math.min(z0 + 15, floor(nursery.z() + reach));
+        if (minX > maxX || minZ > maxZ) {
+            return;
+        }
+        int minY = Math.max(MIN_Y, floor(nursery.y() - nursery.b() - 2));
+        int maxY = Math.min(MIN_Y + HEIGHT - 1, floor(nursery.y() + nursery.b() + 2));
+        double a = nursery.a(), b = nursery.b();
+        double floorY = nursery.floor();
+        double mx = Math.cos(nursery.mouth()), mz = Math.sin(nursery.mouth());
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                double dx = x + 0.5 - nursery.x(), dz = z + 0.5 - nursery.z();
+                double flat = Math.sqrt(dx * dx + dz * dz);
+                for (int y = minY; y <= maxY; y++) {
+                    double dy = y + 0.5 - nursery.y();
+                    double wobble = (noise(x / 7.0, y / 7.0, z / 7.0, nursery.salt()) - 0.5) * 0.12;
+                    double e = Math.sqrt(sq(dx / a) + sq(dy / b) + sq(dz / a)) + wobble;
+                    double shell = (e - 1) * b;
+                    int idx = index(x - x0, y - MIN_Y, z - z0);
+                    if (shell > 1.6) {
+                        continue;
+                    }
+                    // The mouth: one opening, as tall as two players, on the level of the floor.
+                    boolean mouth = flat > 1e-6 && (dx * mx + dz * mz) / flat > 0.93 && y + 0.5 > floorY && y + 0.5 < floorY + 4.5;
+                    if (shell > -0.4) {
+                        if (mouth) {
+                            kinds[idx] = AIR;
+                            best[idx] = -100;
+                            continue;
+                        }
+                        best[idx] = -100;
+                        // Ribs of light run round the shell from the crown down, like the seams of a seed.
+                        double azimuth = Math.atan2(dz, dx);
+                        boolean seam = Math.abs(Math.sin(azimuth * 5 + dy * 0.08)) < 0.06;
+                        kinds[idx] = seam && shell < 0.6 ? RIDGE : shell > 1.0 ? CHITIN : hash(x, y, z, nursery.salt()) < 0.02 ? RIFT_ORE : CHITIN;
+                        continue;
+                    }
+                    // Inside: hollow, a floor of flesh with lit veins in it, a mound in the middle.
+                    best[idx] = -100;
+                    double mound = Math.sqrt(dx * dx + sq((y + 0.5 - floorY) * 1.6) + dz * dz) - 4.2;
+                    if (y + 0.5 < floorY || mound < 0) {
+                        kinds[idx] = noise(x / 4.0, y / 3.0, z / 4.0, nursery.salt() + 1) > 0.66 ? VEINED : FLESH;
+                        continue;
+                    }
+                    kinds[idx] = AIR;
+                    // Against the inner wall (and on the floor near it) the sacs hang; on the mound the pearl sacs.
+                    double h = hash(x, y, z, nursery.salt() + 2);
+                    if (mound < 1.2 && y + 0.5 > floorY && h < 0.45) {
+                        kinds[idx] = PEARL_SAC;
+                    } else if (shell > -1.4 && h < 0.16) {
+                        kinds[idx] = SAC;
+                    } else if (y + 0.5 < floorY + 1 && h < 0.03) {
+                        kinds[idx] = SAC;
+                    }
+                }
             }
         }
     }

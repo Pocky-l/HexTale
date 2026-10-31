@@ -238,6 +238,9 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> VOID_CURRENT = register("void_current.loop");
     public static final DeferredHolder<SoundEvent, SoundEvent> VOID_CURRENT_BREAK = register("void_current.break");
     public static final DeferredHolder<SoundEvent, SoundEvent> VOID_FOG_BANK = register("void_fog.bank");
+    /** Passing through a breach or a gate: the pull drawing one in (a rising rush), the arrival on the other side. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOID_PASSAGE_PULL = register("void_passage.pull");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOID_PASSAGE_ARRIVE = register("void_passage.arrive");
     /** The Void's Rib Crawler: voice, steps, the dry clicking before it lets go, the drop, the landing, the bite. */
     public static final DeferredHolder<SoundEvent, SoundEvent> RIB_CRAWLER_AMBIENT = register("rib_crawler.ambient");
     public static final DeferredHolder<SoundEvent, SoundEvent> RIB_CRAWLER_HURT = register("rib_crawler.hurt");

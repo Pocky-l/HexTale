@@ -161,6 +161,9 @@ public final class VoidSacs {
 
         private static void hatchOut(ServerLevel level, BlockPos pos, BlockState state, @Nullable Player player) {
             pop(level, pos, state);
+            if (player instanceof net.minecraft.server.level.ServerPlayer server) {
+                com.pockyl.hextale.quest.Quests.fire(server, com.pockyl.hextale.quest.Quests.NURSERY_HATCHED);
+            }
             Direction facing = state.getValue(FACING);
             if (level.getRandom().nextFloat() < 0.6F) {
                 Voidling voidling = hatch(level, pos, facing, ModEntities.VOIDLING.get(), player);

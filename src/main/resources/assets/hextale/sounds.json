@@ -2261,5 +2261,23 @@
         "volume": 0.45
       }
     ]
+  },
+  "void_passage.pull": {
+    "subtitle": "subtitles.hextale.void_passage.pull",
+    "sounds": [
+      {
+        "name": "hextale:void_passage_pull",
+        "volume": 0.8
+      }
+    ]
+  },
+  "void_passage.arrive": {
+    "subtitle": "subtitles.hextale.void_passage.arrive",
+    "sounds": [
+      {
+        "name": "hextale:void_passage_arrive",
+        "volume": 0.6
+      }
+    ]
   }
 }

@@ -220,6 +220,9 @@ public class Seer extends Monster {
                 if (level() instanceof ServerLevel server) {
                     Marked.call(server, target);
                 }
+                if (target instanceof net.minecraft.server.level.ServerPlayer player) {
+                    com.pockyl.hextale.quest.Quests.fire(player, com.pockyl.hextale.quest.Quests.VOID_MARKED);
+                }
             }
             if (time >= STARE_TICKS) {
                 float k = (time - STARE_TICKS) / (float) BEAM_TICKS;
@@ -339,12 +342,15 @@ public class Seer extends Monster {
 
         @Override
         public boolean shouldApplyEffectTickThisTick(int tickCount, int amplification) {
-            return tickCount % 40 == 0;
+            return tickCount % 10 == 0;
         }
 
         @Override
         public boolean applyEffectTick(ServerLevel level, LivingEntity mob, int amplification) {
-            if (mob instanceof Player player && !player.isCreative() && !player.isSpectator()) {
+            // A faint violet flare round the marked one, seen by everyone; every two seconds the Void's creatures are called.
+            level.sendParticles(com.pockyl.hextale.registry.ModParticles.voidMark(0xA25CE8), mob.getX(), mob.getY() + mob.getBbHeight() * 0.6,
+                    mob.getZ(), 3, mob.getBbWidth() * 0.6, mob.getBbHeight() * 0.35, mob.getBbWidth() * 0.6, 0.01);
+            if (mob instanceof Player player && !player.isCreative() && !player.isSpectator() && mob.tickCount % 40 < 10) {
                 call(level, player);
             }
             return true;

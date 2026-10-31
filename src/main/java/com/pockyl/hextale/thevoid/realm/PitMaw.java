@@ -113,7 +113,13 @@ public class PitMaw extends Monster {
             return;
         }
         AABB reach = getBoundingBox().inflate(0.9, 1.4, 0.9).move(0, 0.6, 0);
-        if (!level.getEntitiesOfClass(Player.class, reach, PitMaw::prey).isEmpty()) {
+        var prey = level.getEntitiesOfClass(Player.class, reach, PitMaw::prey);
+        if (!prey.isEmpty()) {
+            for (Player player : prey) {
+                if (player instanceof net.minecraft.server.level.ServerPlayer server) {
+                    com.pockyl.hextale.quest.Quests.fire(server, com.pockyl.hextale.quest.Quests.MAW_OPENED);
+                }
+            }
             setState(OPEN);
             hurtWhileOpen = 0;
             empty = 0;

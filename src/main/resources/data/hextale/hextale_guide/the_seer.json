@@ -1,0 +1,16 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:hollow_crystal",
+  "parents": [
+    "the_undertow"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "void_marked"
+  },
+  "pos": [
+    30,
+    1260
+  ]
+}

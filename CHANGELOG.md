@@ -63,6 +63,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Holding a Void Anchor or a crystal near a breach shows where its ring goes: six marks on the ground round it, a
   missing side pulsing magenta with sparks rising, a held side glowing cold. Placing anchors tells you how many of the
   six sides the ring holds.
+- The Void has its own creatures now. Rib Crawlers hang upside down under ribs and plates; a dry clicking overhead is
+  all the warning before one drops, lands coiled and runs at you, climbing walls. Pit Maws lie flush in the ground - a
+  low bulge with a ring of short spines - and tear open into a funnel when you step on them, pulling you toward their
+  throat; run, or hurt one enough, and it lets go. Seers drift over the plates, eyes in cages of petals: one that stares
+  at you long enough marks you with a thin violet line, and every voidling, mite and crawler around comes for you for
+  half a minute. Seers never fight themselves.
+- Husk crust grows thin over hollows in the plates, paler than the shell round it. It ticks under your feet; stand
+  still on it and it cracks and falls in, with the patch round it.
+- Currents run through the Void in long arcs from plate to plate over the gaps, pale streaks showing their way. Step
+  in and one carries you across (sneak to let go). Some of them fade every now and then and drop whoever rides them -
+  their streaks thin and their whoosh sinks first.
+- Fog banks roll over the Void every few minutes, closing the view to a few blocks for half a minute. The fog takes
+  the abyss's magenta glow when you look down.
+- Nurseries: husks the size of a hall in the Husk Drift, closed but for one mouth, their walls hung with sacs that
+  hatch voidlings and mites when someone comes near. On a mound in the middle the pearl sacs hold Void Pearls - but
+  some of them are mimics that twitch when you come close and burst into mites when touched.
+- Void Pearls, the heart of the riftforged chestplate (in place of crying obsidian). Pit Maws carry one now and then.
+- Swallowed ruins on the crowns of the Shoals: corners of our houses and halls, gnawed through, a chest still standing
+  in them.
+- Building blocks of the Void: Polished Husk Chitin, Husk Chitin Tiles (both with stairs and slabs) and Husk Chitin
+  Pillars; and the gnawed blocks of the ruins (cobblestone, planks, stone bricks, bricks).
+- Passing through a breach or a gate is felt now: it draws you in along a tightening spiral, the view narrows and
+  twists and the breach's throat closes round you; the fall down the throat lasts a moment however fast the other side
+  is ready, and the other side spits you out.
+- Own sounds for the Void's new creatures, its traps, currents, fog banks and the passage; worn skin has its own stretch
+  and tear.
+- Diary pages for the Undertow, thin floors, the new creatures, the Nursery, Void Pearls and the swallowed ruins.
 
 ### Changed
 - Rift Ore is called Riftmetal Ore and looks like it: dark shards of the metal grown into the chitin, sparks of violet

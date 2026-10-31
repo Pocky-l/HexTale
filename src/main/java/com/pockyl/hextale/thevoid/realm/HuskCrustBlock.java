@@ -24,8 +24,8 @@ import com.pockyl.hextale.registry.ModSounds;
 
 /**
  * Husk crust: a thin floor of chitin grown over a hollow, lighter and plainer than the shell round it (the tell). Stand
- * on it and it cracks with a dry ticking - once, twice - and then it gives way into the hollow under it. Who keeps
- * moving gets across. The crust round a collapse cracks along with it; the hole grows shut again, slowly.
+ * on it a moment and it cracks with a dry ticking; once cracked it cracks again and gives way into the hollow under it,
+ * whoever is on it by then. Who keeps moving gets across. The crust round a collapse cracks along with it; the hole grows shut again, slowly.
  */
 public class HuskCrustBlock extends Block {
     /** 0 whole, 1 cracked, 2 breaking, 3 fallen in. */
@@ -104,7 +104,8 @@ public class HuskCrustBlock extends Block {
         if (crack == FALLEN) {
             return;
         }
-        boolean pushed = crack == 2 || stoodOn(level, pos);
+        // Once it has cracked it goes on breaking, whether the weight stays or not.
+        boolean pushed = crack > 0 || stoodOn(level, pos);
         if (!pushed) {
             return;
         }
@@ -121,6 +122,8 @@ public class HuskCrustBlock extends Block {
 
     private void collapse(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         level.setBlock(pos, state.setValue(CRACK, FALLEN), Block.UPDATE_ALL);
+        com.pockyl.hextale.quest.Quests.fireNear(level, net.minecraft.world.phys.Vec3.atCenterOf(pos.above()), 1.6,
+                com.pockyl.hextale.quest.Quests.VOID_FLOOR_GAVE);
         level.playSound(null, pos, ModSounds.HUSK_CRUST_COLLAPSE.get(), SoundSource.BLOCKS, 1.0F, 0.8F + random.nextFloat() * 0.2F);
         level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                 24, 0.35, 0.15, 0.35, 0.05);

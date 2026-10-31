@@ -1,0 +1,16 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:spore_puff",
+  "parents": [
+    "step_through"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "void_current"
+  },
+  "pos": [
+    140,
+    1190
+  ]
+}
