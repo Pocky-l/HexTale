@@ -1,0 +1,16 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:gnawed_planks",
+  "parents": [
+    "hollow_crystal"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "swallowed_ruin"
+  },
+  "pos": [
+    720,
+    1280
+  ]
+}

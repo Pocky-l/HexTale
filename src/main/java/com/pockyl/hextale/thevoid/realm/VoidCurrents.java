@@ -157,8 +157,20 @@ public final class VoidCurrents {
             SENT.put(player.getUUID(), region);
             ModNetwork.sendToPlayer(player, new VoidCurrentsPayload(near(level, player.getX(), player.getZ())));
         }
-        if (player.tickCount % 4 == 0 && riding(level, player.position()) != null) {
+        if (player.tickCount % 4 == 0 && riding(level, player.position().add(0, player.getBbHeight() * 0.5, 0)) != null) {
             player.resetFallDistance();
+            if (player.tickCount % 20 == 0) {
+                com.pockyl.hextale.quest.Quests.fire(player, com.pockyl.hextale.quest.Quests.VOID_CURRENT);
+            }
+        }
+    }
+
+    /** A chest opened in the Void is a swallowed ruin's (nothing else of ours stands there). */
+    @SubscribeEvent
+    public static void onContainerOpen(net.neoforged.neoforge.event.entity.player.PlayerContainerEvent.Open event) {
+        if (event.getEntity() instanceof ServerPlayer player && player.level().dimension().equals(VoidPassage.LEVEL)
+                && event.getContainer() instanceof net.minecraft.world.inventory.ChestMenu) {
+            com.pockyl.hextale.quest.Quests.fire(player, com.pockyl.hextale.quest.Quests.SWALLOWED_RUIN);
         }
     }
 

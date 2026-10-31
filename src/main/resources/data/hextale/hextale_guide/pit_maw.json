@@ -1,0 +1,16 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:void_membrane",
+  "parents": [
+    "thin_floors"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "maw_opened"
+  },
+  "pos": [
+    330,
+    1380
+  ]
+}

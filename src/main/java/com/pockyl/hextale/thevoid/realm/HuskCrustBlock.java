@@ -122,6 +122,8 @@ public class HuskCrustBlock extends Block {
 
     private void collapse(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         level.setBlock(pos, state.setValue(CRACK, FALLEN), Block.UPDATE_ALL);
+        com.pockyl.hextale.quest.Quests.fireNear(level, net.minecraft.world.phys.Vec3.atCenterOf(pos.above()), 1.6,
+                com.pockyl.hextale.quest.Quests.VOID_FLOOR_GAVE);
         level.playSound(null, pos, ModSounds.HUSK_CRUST_COLLAPSE.get(), SoundSource.BLOCKS, 1.0F, 0.8F + random.nextFloat() * 0.2F);
         level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                 24, 0.35, 0.15, 0.35, 0.05);

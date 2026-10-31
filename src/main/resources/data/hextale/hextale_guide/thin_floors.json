@@ -1,0 +1,16 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:husk_crust",
+  "parents": [
+    "step_through"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "void_floor_gave"
+  },
+  "pos": [
+    230,
+    1300
+  ]
+}

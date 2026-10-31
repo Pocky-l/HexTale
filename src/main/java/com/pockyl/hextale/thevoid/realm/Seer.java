@@ -220,6 +220,9 @@ public class Seer extends Monster {
                 if (level() instanceof ServerLevel server) {
                     Marked.call(server, target);
                 }
+                if (target instanceof net.minecraft.server.level.ServerPlayer player) {
+                    com.pockyl.hextale.quest.Quests.fire(player, com.pockyl.hextale.quest.Quests.VOID_MARKED);
+                }
             }
             if (time >= STARE_TICKS) {
                 float k = (time - STARE_TICKS) / (float) BEAM_TICKS;

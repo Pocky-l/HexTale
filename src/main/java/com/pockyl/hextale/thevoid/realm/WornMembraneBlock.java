@@ -99,6 +99,8 @@ public class WornMembraneBlock extends MembraneBlock {
             return;
         }
         level.setBlock(pos, state.setValue(TORN, true), Block.UPDATE_ALL);
+        com.pockyl.hextale.quest.Quests.fireNear(level, net.minecraft.world.phys.Vec3.atCenterOf(pos.above()), 1.6,
+                com.pockyl.hextale.quest.Quests.VOID_FLOOR_GAVE);
         level.playSound(null, pos, com.pockyl.hextale.registry.ModSounds.WORN_MEMBRANE_TEAR.get(), SoundSource.BLOCKS, 1.0F, 0.85F + random.nextFloat() * 0.3F);
         level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                 18, 0.35, 0.1, 0.35, 0.05);
