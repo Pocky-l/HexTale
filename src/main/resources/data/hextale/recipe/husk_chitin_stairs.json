@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "#  ",
+    "## ",
+    "###"
+  ],
+  "key": {
+    "#": "hextale:husk_chitin"
+  },
+  "result": {
+    "id": "hextale:husk_chitin_stairs",
+    "count": 4
+  }
+}

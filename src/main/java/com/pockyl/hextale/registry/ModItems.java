@@ -506,12 +506,28 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> VOID_CILIA = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_CILIA);
     public static final DeferredItem<net.minecraft.world.item.DoubleHighBlockItem> TALL_VOID_CILIA = ITEMS.registerItem("tall_void_cilia",
             properties -> new net.minecraft.world.item.DoubleHighBlockItem(ModBlocks.TALL_VOID_CILIA.get(), properties.useBlockDescriptionPrefix()));
-    public static final DeferredItem<BlockItem> VOID_TENDRILS = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_TENDRILS);
-    public static final DeferredItem<BlockItem> SPORE_PUFF = ITEMS.registerSimpleBlockItem(ModBlocks.SPORE_PUFF);
-    public static final DeferredItem<BlockItem> SINEW_CURTAIN = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_CURTAIN);
-    public static final DeferredItem<BlockItem> SPRING_BLISTER = ITEMS.registerSimpleBlockItem(ModBlocks.SPRING_BLISTER);
+    public static final DeferredItem<com.pockyl.hextale.item.NotedBlockItem> VOID_TENDRILS = ITEMS.registerItem("void_tendrils",
+            properties -> new com.pockyl.hextale.item.NotedBlockItem(ModBlocks.VOID_TENDRILS.get(), properties.useBlockDescriptionPrefix()));
+    public static final DeferredItem<com.pockyl.hextale.thevoid.realm.SporePuffItem> SPORE_PUFF = ITEMS.registerItem("spore_puff",
+            properties -> new com.pockyl.hextale.thevoid.realm.SporePuffItem(ModBlocks.SPORE_PUFF.get(), properties.useBlockDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> HUSK_CHITIN_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_STAIRS);
+    public static final DeferredItem<BlockItem> HUSK_CHITIN_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_SLAB);
+    public static final DeferredItem<BlockItem> HUSK_CHITIN_WALL = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_WALL);
+    public static final DeferredItem<BlockItem> GNAWED_STONE_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_STONE_STAIRS);
+    public static final DeferredItem<BlockItem> GNAWED_STONE_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_STONE_SLAB);
+    public static final DeferredItem<BlockItem> GNAWED_STONE_WALL = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_STONE_WALL);
+    public static final DeferredItem<com.pockyl.hextale.item.NotedBlockItem> SINEW_CURTAIN = ITEMS.registerItem("sinew_curtain",
+            properties -> new com.pockyl.hextale.item.NotedBlockItem(ModBlocks.SINEW_CURTAIN.get(), properties.useBlockDescriptionPrefix()));
+    public static final DeferredItem<com.pockyl.hextale.item.NotedBlockItem> SPRING_BLISTER = ITEMS.registerItem("spring_blister",
+            properties -> new com.pockyl.hextale.item.NotedBlockItem(ModBlocks.SPRING_BLISTER.get(), properties.useBlockDescriptionPrefix()));
     public static final DeferredItem<net.minecraft.world.item.BucketItem> VOID_ICHOR_BUCKET = ITEMS.registerItem("void_ichor_bucket",
-            properties -> new net.minecraft.world.item.BucketItem(ModFluids.VOID_ICHOR.get(), properties.craftRemainder(net.minecraft.world.item.Items.BUCKET).stacksTo(1)));
+            properties -> new net.minecraft.world.item.BucketItem(ModFluids.VOID_ICHOR.get(), properties.craftRemainder(net.minecraft.world.item.Items.BUCKET).stacksTo(1)) {
+                @Override
+                public void appendHoverText(net.minecraft.world.item.ItemStack stack, TooltipContext context, net.minecraft.world.item.component.TooltipDisplay display,
+                        java.util.function.Consumer<net.minecraft.network.chat.Component> tooltip, net.minecraft.world.item.TooltipFlag flag) {
+                    tooltip.accept(net.minecraft.network.chat.Component.translatable(getDescriptionId() + ".tooltip").withStyle(net.minecraft.ChatFormatting.GRAY));
+                }
+            });
     public static final DeferredItem<BlockItem> VOID_ROCK_BRICK_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK_BRICK_STAIRS);
     public static final DeferredItem<BlockItem> VOID_ROCK_BRICK_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK_BRICK_SLAB);
     public static final DeferredItem<BlockItem> VOID_ROCK_BRICK_WALL = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK_BRICK_WALL);

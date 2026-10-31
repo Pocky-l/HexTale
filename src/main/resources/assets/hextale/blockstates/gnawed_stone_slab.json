@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "hextale:block/gnawed_stone_slab"
+    },
+    "type=double": {
+      "model": "hextale:block/gnawed_stone"
+    },
+    "type=top": {
+      "model": "hextale:block/gnawed_stone_slab_top"
+    }
+  }
+}

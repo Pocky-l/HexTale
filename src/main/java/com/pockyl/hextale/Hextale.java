@@ -344,6 +344,12 @@ public final class Hextale {
         // The Void itself: the ribs' chitin, its skin, the stone it swallowed and what grows in it.
         output.accept(ModItems.HUSK_CHITIN);
         output.accept(ModItems.HUSK_CHITIN_RIDGE);
+        output.accept(ModItems.HUSK_CHITIN_STAIRS);
+        output.accept(ModItems.HUSK_CHITIN_SLAB);
+        output.accept(ModItems.HUSK_CHITIN_WALL);
+        output.accept(ModItems.GNAWED_STONE_STAIRS);
+        output.accept(ModItems.GNAWED_STONE_SLAB);
+        output.accept(ModItems.GNAWED_STONE_WALL);
         output.accept(ModItems.VOID_MEMBRANE);
         output.accept(ModItems.VEINED_VOID_MEMBRANE);
         output.accept(ModItems.WORN_VOID_MEMBRANE);

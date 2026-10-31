@@ -1,5 +1,16 @@
 {
   "type": "minecraft:block",
-  "pools": [],
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:worn_void_membrane",
+          "condition": "minecraft:tool/can_silk_touch"
+        }
+      ]
+    }
+  ],
   "random_sequence": "hextale:blocks/worn_void_membrane"
 }

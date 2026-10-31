@@ -2654,7 +2654,7 @@
   "item.hextale.raw_riftmetal": "Сырой разломный металл",
   "item.hextale.raw_riftmetal.tooltip": "Чёрный металл, вросший в стенку кокона глубоко в Пустоте. Внутри плывут фиолетовые искры и не гаснут. Сам по себе в огне рассыпается - ему нужно за что-то держаться.",
   "item.hextale.hollow_crystal": "Полый кристалл",
-  "item.hextale.hollow_crystal.tooltip": "Когда-то это был хекстек. Пустота выпила его досуха, и теперь он делает то же самое: рядом с банкой тянет к себе. Что бы ему дать выпить?",
+  "item.hextale.hollow_crystal.tooltip": "Когда-то это был хекстек. Пустота выпила его досуха, и теперь он пьёт сам - медленно и очень долго. Где кристалл, который не устаёт, нужнее всего?",
   "biome.hextale.threshold": "Преддверие",
   "biome.hextale.ribcage_reach": "Рёберные просторы",
   "biome.hextale.swallowed_shoals": "Проглоченные отмели",
@@ -2676,5 +2676,16 @@
   "block.hextale.sinew_curtain": "Жильная завеса",
   "block.hextale.spring_blister": "Пружинящий волдырь",
   "block.hextale.void_ichor": "Ихор Пустоты",
-  "item.hextale.void_ichor_bucket": "Ведро ихора Пустоты"
+  "item.hextale.void_ichor_bucket": "Ведро ихора Пустоты",
+  "block.hextale.husk_chitin_slab": "Плита из хитина оболочки",
+  "block.hextale.husk_chitin_stairs": "Ступени из хитина оболочки",
+  "block.hextale.husk_chitin_wall": "Стена из хитина оболочки",
+  "block.hextale.gnawed_stone_slab": "Плита из изъеденного камня",
+  "block.hextale.gnawed_stone_stairs": "Ступени из изъеденного камня",
+  "block.hextale.gnawed_stone_wall": "Стена из изъеденного камня",
+  "block.hextale.spore_puff.tooltip": "Стоит задеть - лопается, и на миг споры держат в воздухе. Если раздавить в руке, будет то же - стоит носить пару над бездной.",
+  "block.hextale.spring_blister.tooltip": "Тугая кожа над чем-то, что давит в ответ. Если наступить - подбрасывает высоко, а падать на неё не больно. (Присесть, чтобы продавить)",
+  "block.hextale.sinew_curtain.tooltip": "Мокрые нити липнут и отпускают нехотя. Свои, из Пустоты, проскальзывают сквозь них, будто их нет. Может, вместо двери?",
+  "block.hextale.void_tendrils.tooltip": "Свисают с нижней стороны всего подряд и светятся на кончиках. Мой вес держат - путь вниз, в расщелину, или наверх из неё.",
+  "item.hextale.void_ichor_bucket.tooltip": "Густой, тёплый, едва светится. Горит долго и ровно. Что ещё можно получить из крови Пустоты?"
 }

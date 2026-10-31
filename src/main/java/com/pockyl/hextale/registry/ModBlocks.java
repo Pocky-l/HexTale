@@ -594,10 +594,8 @@ public final class ModBlocks {
     public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.WornMembraneBlock> WORN_VOID_MEMBRANE = BLOCKS.registerBlock(
             "worn_void_membrane", com.pockyl.hextale.thevoid.realm.WornMembraneBlock::new,
             () -> membraneProperties(2).randomTicks().dynamicShape());
-    /** Stone of our world the Void has been eating. */
-    public static final DeferredBlock<Block> GNAWED_STONE = BLOCKS.registerBlock("gnawed_stone", Block::new,
-            () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_PURPLE).instrument(NoteBlockInstrument.BASEDRUM)
-                    .requiresCorrectToolForDrops().strength(1.2F, 4.0F).sound(SoundType.TUFF));
+    /** Matter the Void has half digested: porous, light, easy to cut. */
+    public static final DeferredBlock<Block> GNAWED_STONE = BLOCKS.registerBlock("gnawed_stone", Block::new, ModBlocks::gnawedStoneProperties);
     /** Black metal grown into a husk's wall: raw riftmetal. */
     public static final DeferredBlock<net.minecraft.world.level.block.DropExperienceBlock> RIFT_ORE = BLOCKS.registerBlock("rift_ore",
             properties -> new net.minecraft.world.level.block.DropExperienceBlock(net.minecraft.util.valueproviders.UniformInt.of(4, 9), properties),
@@ -637,6 +635,22 @@ public final class ModBlocks {
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).replaceable().noCollision().strength(100.0F)
                     .lightLevel(state -> 10).pushReaction(PushReaction.POPPED).noLootTable().liquid()
                     .sound(SoundType.EMPTY));
+
+    public static final DeferredBlock<StairBlock> HUSK_CHITIN_STAIRS = BLOCKS.registerBlock("husk_chitin_stairs",
+            properties -> new StairBlock(HUSK_CHITIN.get().defaultBlockState(), properties), () -> huskChitinProperties());
+    public static final DeferredBlock<SlabBlock> HUSK_CHITIN_SLAB = BLOCKS.registerBlock("husk_chitin_slab", SlabBlock::new, () -> huskChitinProperties());
+    public static final DeferredBlock<WallBlock> HUSK_CHITIN_WALL = BLOCKS.registerBlock("husk_chitin_wall", WallBlock::new,
+            () -> huskChitinProperties().forceSolidOn());
+    public static final DeferredBlock<StairBlock> GNAWED_STONE_STAIRS = BLOCKS.registerBlock("gnawed_stone_stairs",
+            properties -> new StairBlock(GNAWED_STONE.get().defaultBlockState(), properties), () -> gnawedStoneProperties());
+    public static final DeferredBlock<SlabBlock> GNAWED_STONE_SLAB = BLOCKS.registerBlock("gnawed_stone_slab", SlabBlock::new, () -> gnawedStoneProperties());
+    public static final DeferredBlock<WallBlock> GNAWED_STONE_WALL = BLOCKS.registerBlock("gnawed_stone_wall", WallBlock::new,
+            () -> gnawedStoneProperties().forceSolidOn());
+
+    private static BlockBehaviour.Properties gnawedStoneProperties() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_PURPLE).instrument(NoteBlockInstrument.BASEDRUM)
+                .requiresCorrectToolForDrops().strength(1.2F, 4.0F).sound(SoundType.TUFF);
+    }
 
     private static BlockBehaviour.Properties huskChitinProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_YELLOW).instrument(NoteBlockInstrument.BASEDRUM)

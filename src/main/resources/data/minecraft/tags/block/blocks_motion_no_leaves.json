@@ -110,6 +110,12 @@
     "hextale:veined_void_membrane",
     "hextale:worn_void_membrane",
     "hextale:hollow_crystal_cluster",
-    "hextale:spring_blister"
+    "hextale:spring_blister",
+    "hextale:husk_chitin_slab",
+    "hextale:gnawed_stone_slab",
+    "hextale:husk_chitin_stairs",
+    "hextale:gnawed_stone_stairs",
+    "hextale:husk_chitin_wall",
+    "hextale:gnawed_stone_wall"
   ]
 }

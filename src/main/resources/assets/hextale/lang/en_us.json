@@ -2654,7 +2654,7 @@
   "item.hextale.raw_riftmetal": "Raw Riftmetal",
   "item.hextale.raw_riftmetal.tooltip": "Black metal grown into the wall of a husk, deep in the Void. Violet sparks drift inside it and do not go out. On its own it crumbles in the fire - it wants something to hold on to.",
   "item.hextale.hollow_crystal": "Hollow Crystal",
-  "item.hextale.hollow_crystal.tooltip": "Hextech, once. The Void drank it empty, and now it does the same: held near a jar, it pulls. What could I give it to drink?",
+  "item.hextale.hollow_crystal.tooltip": "Hextech, once. The Void drank it empty, and now it drinks in turn - slowly, and for a long time. Where would a crystal that does not tire be worth the most?",
   "biome.hextale.threshold": "Threshold",
   "biome.hextale.ribcage_reach": "Ribcage Reach",
   "biome.hextale.swallowed_shoals": "Swallowed Shoals",
@@ -2676,5 +2676,16 @@
   "block.hextale.sinew_curtain": "Sinew Curtain",
   "block.hextale.spring_blister": "Spring Blister",
   "block.hextale.void_ichor": "Void Ichor",
-  "item.hextale.void_ichor_bucket": "Bucket of Void Ichor"
+  "item.hextale.void_ichor_bucket": "Bucket of Void Ichor",
+  "block.hextale.husk_chitin_slab": "Husk Chitin Slab",
+  "block.hextale.husk_chitin_stairs": "Husk Chitin Stairs",
+  "block.hextale.husk_chitin_wall": "Husk Chitin Wall",
+  "block.hextale.gnawed_stone_slab": "Gnawed Stone Slab",
+  "block.hextale.gnawed_stone_stairs": "Gnawed Stone Stairs",
+  "block.hextale.gnawed_stone_wall": "Gnawed Stone Wall",
+  "block.hextale.spore_puff.tooltip": "Brush it and it bursts, and for a moment the spores hold me up. One crushed in the hand would do the same - worth keeping a few over the abyss.",
+  "block.hextale.spring_blister.tooltip": "Taut skin over something that pushes back. Stepped on, it throws me high, and a fall onto it does no harm. (Sneak to press it down)",
+  "block.hextale.sinew_curtain.tooltip": "Wet strands that cling and let go slowly. The Void's own slip through as if they were not there - a curtain for a door?",
+  "block.hextale.void_tendrils.tooltip": "They hang from the underside of things and glow at the tips. They hold my weight - a way down into a gap, or up out of one.",
+  "item.hextale.void_ichor_bucket.tooltip": "Thick, warm, faintly glowing. It burns long and steady. What else could come of the Void's blood?"
 }

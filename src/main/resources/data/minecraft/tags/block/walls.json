@@ -3,6 +3,8 @@
     "hextale:magic_brick_wall",
     "hextale:fire_brick_wall",
     "hextale:void_rock_brick_wall",
-    "hextale:scorched_calcite_brick_wall"
+    "hextale:scorched_calcite_brick_wall",
+    "hextale:husk_chitin_wall",
+    "hextale:gnawed_stone_wall"
   ]
 }

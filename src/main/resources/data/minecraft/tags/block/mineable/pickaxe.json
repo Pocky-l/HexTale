@@ -100,6 +100,12 @@
     "hextale:husk_chitin_ridge",
     "hextale:gnawed_stone",
     "hextale:rift_ore",
-    "hextale:hollow_crystal_cluster"
+    "hextale:hollow_crystal_cluster",
+    "hextale:husk_chitin_slab",
+    "hextale:gnawed_stone_slab",
+    "hextale:husk_chitin_stairs",
+    "hextale:gnawed_stone_stairs",
+    "hextale:husk_chitin_wall",
+    "hextale:gnawed_stone_wall"
   ]
 }
