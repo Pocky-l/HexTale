@@ -139,7 +139,7 @@ public class VoidChunkGenerator extends ChunkGenerator {
                     double roll = VoidShapes.hash(x0 + x, y, z0 + z, 0xF10A);
                     if (kind == VoidShapes.SOIL) {
                         // The plates' own carpet: cilia everywhere, tall ones in places, puffballs and the Void's plants.
-                        if (roll < 0.004) {
+                        if (roll < 0.004 && inland(kinds, x, y, z)) {
                             kinds[i] = BLISTER;
                         } else if (roll < 0.3) {
                             kinds[above] = CILIA;
@@ -170,6 +170,21 @@ public class VoidChunkGenerator extends ChunkGenerator {
         }
     }
 
+    /** Whether the ground at (x, y, z) has ground all round it two blocks out (a blister there throws no one off a ledge). */
+    private static boolean inland(byte[] kinds, int x, int y, int z) {
+        if (x < 2 || x > 13 || z < 2 || z > 13) {
+            return false;
+        }
+        for (int dx = -2; dx <= 2; dx += 2) {
+            for (int dz = -2; dz <= 2; dz += 2) {
+                if (!solid(kinds[VoidShapes.index(x + dx, y, z + dz)]) && !solid(kinds[VoidShapes.index(x + dx, y - 1, z + dz)])) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     /** A strand of tendrils hanging from the underside of what is at (x, y, z), down through the air below it. */
     private static void hang(byte[] kinds, int x, int y, int z, int x0, int z0) {
         int length = 2 + (int) (VoidShapes.hash(x0 + x, y, z0 + z, 0xF1D1) * 9);
@@ -193,7 +208,7 @@ public class VoidChunkGenerator extends ChunkGenerator {
         }
         boolean acrossX = shell(kinds[VoidShapes.index(x - 1, y, z)]) && shell(kinds[VoidShapes.index(x + 1, y, z)]);
         boolean acrossZ = shell(kinds[VoidShapes.index(x, y, z - 1)]) && shell(kinds[VoidShapes.index(x, y, z + 1)]);
-        if ((acrossX || acrossZ) && VoidShapes.hash(x0 + x, y, z0 + z, 0xF1D2) < 0.45) {
+        if ((acrossX || acrossZ) && VoidShapes.hash(x0 + x, y, z0 + z, 0xF1D2) < 0.18) {
             kinds[VoidShapes.index(x, y, z)] = SINEW;
         }
     }

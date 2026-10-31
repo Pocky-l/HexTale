@@ -242,6 +242,64 @@
   "hextale:gathering_pylon": {"mode": "first", "cases": [
     {"when": {}, "boxes": [[5, 0, 5, 11, 2, 11], [2, 2, 2, 14, 6, 14]]}
   ]},
+  "hextale:gnawed_stone_slab": {"mode": "first", "cases": [
+    {"when": {"type": "bottom"}, "boxes": [[0, 0, 0, 16, 8, 16]]},
+    {"when": {"type": "double"}, "boxes": [[0, 0, 0, 16, 16, 16]]},
+    {"when": {"type": "top"}, "boxes": [[0, 8, 0, 16, 16, 16]]}
+  ]},
+  "hextale:gnawed_stone_stairs": {"mode": "first", "cases": [
+    {"when": {"facing": "east", "half": "bottom", "shape": "inner_left"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 0, 16, 16, 8], [8, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "east", "half": "bottom", "shape": "inner_right"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 8, 16, 16, 16], [8, 8, 0, 16, 16, 8]]},
+    {"when": {"facing": "east", "half": "bottom", "shape": "outer_left"}, "boxes": [[0, 0, 0, 16, 8, 16], [8, 8, 0, 16, 16, 8]]},
+    {"when": {"facing": "east", "half": "bottom", "shape": "outer_right"}, "boxes": [[0, 0, 0, 16, 8, 16], [8, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "east", "half": "bottom", "shape": "straight"}, "boxes": [[0, 0, 0, 16, 8, 16], [8, 8, 0, 16, 16, 16]]},
+    {"when": {"facing": "east", "half": "top", "shape": "inner_left"}, "boxes": [[0, 0, 0, 16, 16, 8], [8, 0, 8, 16, 8, 16], [0, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "east", "half": "top", "shape": "inner_right"}, "boxes": [[0, 0, 8, 16, 16, 16], [8, 0, 0, 16, 8, 8], [0, 8, 0, 16, 16, 8]]},
+    {"when": {"facing": "east", "half": "top", "shape": "outer_left"}, "boxes": [[8, 0, 0, 16, 8, 8], [0, 8, 0, 16, 16, 16]]},
+    {"when": {"facing": "east", "half": "top", "shape": "outer_right"}, "boxes": [[8, 0, 8, 16, 8, 16], [0, 8, 0, 16, 16, 16]]},
+    {"when": {"facing": "east", "half": "top", "shape": "straight"}, "boxes": [[8, 0, 0, 16, 8, 16], [0, 8, 0, 16, 16, 16]]},
+    {"when": {"facing": "north", "half": "bottom", "shape": "inner_left"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 0, 16, 16, 8], [0, 8, 8, 8, 16, 16]]},
+    {"when": {"facing": "north", "half": "bottom", "shape": "inner_right"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 0, 16, 16, 8], [8, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "north", "half": "bottom", "shape": "outer_left"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 0, 8, 16, 8]]},
+    {"when": {"facing": "north", "half": "bottom", "shape": "outer_right"}, "boxes": [[0, 0, 0, 16, 8, 16], [8, 8, 0, 16, 16, 8]]},
+    {"when": {"facing": "north", "half": "bottom", "shape": "straight"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 0, 16, 16, 8]]},
+    {"when": {"facing": "north", "half": "top", "shape": "inner_left"}, "boxes": [[0, 0, 0, 16, 16, 8], [0, 0, 8, 8, 16, 16], [8, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "north", "half": "top", "shape": "inner_right"}, "boxes": [[0, 0, 0, 16, 16, 8], [8, 0, 8, 16, 8, 16], [0, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "north", "half": "top", "shape": "outer_left"}, "boxes": [[0, 0, 0, 8, 16, 8], [0, 8, 0, 16, 16, 16]]},
+    {"when": {"facing": "north", "half": "top", "shape": "outer_right"}, "boxes": [[8, 0, 0, 16, 8, 8], [0, 8, 0, 16, 16, 16]]},
+    {"when": {"facing": "north", "half": "top", "shape": "straight"}, "boxes": [[0, 0, 0, 16, 16, 8], [0, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "south", "half": "bottom", "shape": "inner_left"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 8, 16, 16, 16], [8, 8, 0, 16, 16, 8]]},
+    {"when": {"facing": "south", "half": "bottom", "shape": "inner_right"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 0, 8, 16, 16], [8, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "south", "half": "bottom", "shape": "outer_left"}, "boxes": [[0, 0, 0, 16, 8, 16], [8, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "south", "half": "bottom", "shape": "outer_right"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 8, 8, 16, 16]]},
+    {"when": {"facing": "south", "half": "bottom", "shape": "straight"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "south", "half": "top", "shape": "inner_left"}, "boxes": [[0, 0, 8, 16, 16, 16], [8, 0, 0, 16, 8, 8], [0, 8, 0, 16, 16, 8]]},
+    {"when": {"facing": "south", "half": "top", "shape": "inner_right"}, "boxes": [[0, 0, 0, 8, 16, 16], [8, 0, 8, 16, 16, 16], [8, 8, 0, 16, 16, 8]]},
+    {"when": {"facing": "south", "half": "top", "shape": "outer_left"}, "boxes": [[8, 0, 8, 16, 8, 16], [0, 8, 0, 16, 16, 16]]},
+    {"when": {"facing": "south", "half": "top", "shape": "outer_right"}, "boxes": [[0, 0, 8, 8, 16, 16], [0, 8, 0, 16, 16, 16]]},
+    {"when": {"facing": "south", "half": "top", "shape": "straight"}, "boxes": [[0, 0, 8, 16, 16, 16], [0, 8, 0, 16, 16, 8]]},
+    {"when": {"facing": "west", "half": "bottom", "shape": "inner_left"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 0, 8, 16, 16], [8, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "west", "half": "bottom", "shape": "inner_right"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 0, 16, 16, 8], [0, 8, 8, 8, 16, 16]]},
+    {"when": {"facing": "west", "half": "bottom", "shape": "outer_left"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 8, 8, 16, 16]]},
+    {"when": {"facing": "west", "half": "bottom", "shape": "outer_right"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 0, 8, 16, 8]]},
+    {"when": {"facing": "west", "half": "bottom", "shape": "straight"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 0, 8, 16, 16]]},
+    {"when": {"facing": "west", "half": "top", "shape": "inner_left"}, "boxes": [[0, 0, 0, 8, 16, 16], [8, 0, 8, 16, 16, 16], [8, 8, 0, 16, 16, 8]]},
+    {"when": {"facing": "west", "half": "top", "shape": "inner_right"}, "boxes": [[0, 0, 0, 16, 16, 8], [0, 0, 8, 8, 16, 16], [8, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "west", "half": "top", "shape": "outer_left"}, "boxes": [[0, 0, 8, 8, 16, 16], [0, 8, 0, 16, 16, 16]]},
+    {"when": {"facing": "west", "half": "top", "shape": "outer_right"}, "boxes": [[0, 0, 0, 8, 16, 8], [0, 8, 0, 16, 16, 16]]},
+    {"when": {"facing": "west", "half": "top", "shape": "straight"}, "boxes": [[0, 0, 0, 8, 16, 16], [8, 8, 0, 16, 16, 16]]}
+  ]},
+  "hextale:gnawed_stone_wall": {"mode": "all", "cases": [
+    {"boxes": [[4, 0, 4, 12, 16, 12]], "when": {"up": "true"}},
+    {"boxes": [[5, 0, 0, 11, 14, 8]], "when": {"north": "low"}},
+    {"boxes": [[8, 0, 5, 16, 14, 11]], "when": {"east": "low"}},
+    {"boxes": [[5, 0, 8, 11, 14, 16]], "when": {"south": "low"}},
+    {"boxes": [[0, 0, 5, 8, 14, 11]], "when": {"west": "low"}},
+    {"boxes": [[5, 0, 0, 11, 16, 8]], "when": {"north": "tall"}},
+    {"boxes": [[8, 0, 5, 16, 16, 11]], "when": {"east": "tall"}},
+    {"boxes": [[5, 0, 8, 11, 16, 16]], "when": {"south": "tall"}},
+    {"boxes": [[0, 0, 5, 8, 16, 11]], "when": {"west": "tall"}}
+  ]},
   "hextale:hex_furnace": {"mode": "all", "cases": [
     {"boxes": [[1, 0, 1, 15, 15, 15], [2, 0, 3, 14, 17, 13], [5, 17, 7, 11, 24, 13]], "when": {"facing": "north", "lit": "false"}},
     {"boxes": [[1, 0, 1, 15, 15, 15], [2, 0, 3, 14, 17, 13], [5, 17, 7, 11, 24, 13]], "when": {"facing": "north", "lit": "true"}},
@@ -332,6 +390,64 @@
     {"when": {"vigor": "2"}, "boxes": []},
     {"when": {"vigor": "3"}, "boxes": []},
     {"when": {"vigor": "4"}, "boxes": []}
+  ]},
+  "hextale:husk_chitin_slab": {"mode": "first", "cases": [
+    {"when": {"type": "bottom"}, "boxes": [[0, 0, 0, 16, 8, 16]]},
+    {"when": {"type": "double"}, "boxes": [[0, 0, 0, 16, 16, 16]]},
+    {"when": {"type": "top"}, "boxes": [[0, 8, 0, 16, 16, 16]]}
+  ]},
+  "hextale:husk_chitin_stairs": {"mode": "first", "cases": [
+    {"when": {"facing": "east", "half": "bottom", "shape": "inner_left"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 0, 16, 16, 8], [8, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "east", "half": "bottom", "shape": "inner_right"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 8, 16, 16, 16], [8, 8, 0, 16, 16, 8]]},
+    {"when": {"facing": "east", "half": "bottom", "shape": "outer_left"}, "boxes": [[0, 0, 0, 16, 8, 16], [8, 8, 0, 16, 16, 8]]},
+    {"when": {"facing": "east", "half": "bottom", "shape": "outer_right"}, "boxes": [[0, 0, 0, 16, 8, 16], [8, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "east", "half": "bottom", "shape": "straight"}, "boxes": [[0, 0, 0, 16, 8, 16], [8, 8, 0, 16, 16, 16]]},
+    {"when": {"facing": "east", "half": "top", "shape": "inner_left"}, "boxes": [[0, 0, 0, 16, 16, 8], [8, 0, 8, 16, 8, 16], [0, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "east", "half": "top", "shape": "inner_right"}, "boxes": [[0, 0, 8, 16, 16, 16], [8, 0, 0, 16, 8, 8], [0, 8, 0, 16, 16, 8]]},
+    {"when": {"facing": "east", "half": "top", "shape": "outer_left"}, "boxes": [[8, 0, 0, 16, 8, 8], [0, 8, 0, 16, 16, 16]]},
+    {"when": {"facing": "east", "half": "top", "shape": "outer_right"}, "boxes": [[8, 0, 8, 16, 8, 16], [0, 8, 0, 16, 16, 16]]},
+    {"when": {"facing": "east", "half": "top", "shape": "straight"}, "boxes": [[8, 0, 0, 16, 8, 16], [0, 8, 0, 16, 16, 16]]},
+    {"when": {"facing": "north", "half": "bottom", "shape": "inner_left"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 0, 16, 16, 8], [0, 8, 8, 8, 16, 16]]},
+    {"when": {"facing": "north", "half": "bottom", "shape": "inner_right"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 0, 16, 16, 8], [8, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "north", "half": "bottom", "shape": "outer_left"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 0, 8, 16, 8]]},
+    {"when": {"facing": "north", "half": "bottom", "shape": "outer_right"}, "boxes": [[0, 0, 0, 16, 8, 16], [8, 8, 0, 16, 16, 8]]},
+    {"when": {"facing": "north", "half": "bottom", "shape": "straight"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 0, 16, 16, 8]]},
+    {"when": {"facing": "north", "half": "top", "shape": "inner_left"}, "boxes": [[0, 0, 0, 16, 16, 8], [0, 0, 8, 8, 16, 16], [8, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "north", "half": "top", "shape": "inner_right"}, "boxes": [[0, 0, 0, 16, 16, 8], [8, 0, 8, 16, 8, 16], [0, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "north", "half": "top", "shape": "outer_left"}, "boxes": [[0, 0, 0, 8, 16, 8], [0, 8, 0, 16, 16, 16]]},
+    {"when": {"facing": "north", "half": "top", "shape": "outer_right"}, "boxes": [[8, 0, 0, 16, 8, 8], [0, 8, 0, 16, 16, 16]]},
+    {"when": {"facing": "north", "half": "top", "shape": "straight"}, "boxes": [[0, 0, 0, 16, 16, 8], [0, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "south", "half": "bottom", "shape": "inner_left"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 8, 16, 16, 16], [8, 8, 0, 16, 16, 8]]},
+    {"when": {"facing": "south", "half": "bottom", "shape": "inner_right"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 0, 8, 16, 16], [8, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "south", "half": "bottom", "shape": "outer_left"}, "boxes": [[0, 0, 0, 16, 8, 16], [8, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "south", "half": "bottom", "shape": "outer_right"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 8, 8, 16, 16]]},
+    {"when": {"facing": "south", "half": "bottom", "shape": "straight"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "south", "half": "top", "shape": "inner_left"}, "boxes": [[0, 0, 8, 16, 16, 16], [8, 0, 0, 16, 8, 8], [0, 8, 0, 16, 16, 8]]},
+    {"when": {"facing": "south", "half": "top", "shape": "inner_right"}, "boxes": [[0, 0, 0, 8, 16, 16], [8, 0, 8, 16, 16, 16], [8, 8, 0, 16, 16, 8]]},
+    {"when": {"facing": "south", "half": "top", "shape": "outer_left"}, "boxes": [[8, 0, 8, 16, 8, 16], [0, 8, 0, 16, 16, 16]]},
+    {"when": {"facing": "south", "half": "top", "shape": "outer_right"}, "boxes": [[0, 0, 8, 8, 16, 16], [0, 8, 0, 16, 16, 16]]},
+    {"when": {"facing": "south", "half": "top", "shape": "straight"}, "boxes": [[0, 0, 8, 16, 16, 16], [0, 8, 0, 16, 16, 8]]},
+    {"when": {"facing": "west", "half": "bottom", "shape": "inner_left"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 0, 8, 16, 16], [8, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "west", "half": "bottom", "shape": "inner_right"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 0, 16, 16, 8], [0, 8, 8, 8, 16, 16]]},
+    {"when": {"facing": "west", "half": "bottom", "shape": "outer_left"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 8, 8, 16, 16]]},
+    {"when": {"facing": "west", "half": "bottom", "shape": "outer_right"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 0, 8, 16, 8]]},
+    {"when": {"facing": "west", "half": "bottom", "shape": "straight"}, "boxes": [[0, 0, 0, 16, 8, 16], [0, 8, 0, 8, 16, 16]]},
+    {"when": {"facing": "west", "half": "top", "shape": "inner_left"}, "boxes": [[0, 0, 0, 8, 16, 16], [8, 0, 8, 16, 16, 16], [8, 8, 0, 16, 16, 8]]},
+    {"when": {"facing": "west", "half": "top", "shape": "inner_right"}, "boxes": [[0, 0, 0, 16, 16, 8], [0, 0, 8, 8, 16, 16], [8, 8, 8, 16, 16, 16]]},
+    {"when": {"facing": "west", "half": "top", "shape": "outer_left"}, "boxes": [[0, 0, 8, 8, 16, 16], [0, 8, 0, 16, 16, 16]]},
+    {"when": {"facing": "west", "half": "top", "shape": "outer_right"}, "boxes": [[0, 0, 0, 8, 16, 8], [0, 8, 0, 16, 16, 16]]},
+    {"when": {"facing": "west", "half": "top", "shape": "straight"}, "boxes": [[0, 0, 0, 8, 16, 16], [8, 8, 0, 16, 16, 16]]}
+  ]},
+  "hextale:husk_chitin_wall": {"mode": "all", "cases": [
+    {"boxes": [[4, 0, 4, 12, 16, 12]], "when": {"up": "true"}},
+    {"boxes": [[5, 0, 0, 11, 14, 8]], "when": {"north": "low"}},
+    {"boxes": [[8, 0, 5, 16, 14, 11]], "when": {"east": "low"}},
+    {"boxes": [[5, 0, 8, 11, 14, 16]], "when": {"south": "low"}},
+    {"boxes": [[0, 0, 5, 8, 14, 11]], "when": {"west": "low"}},
+    {"boxes": [[5, 0, 0, 11, 16, 8]], "when": {"north": "tall"}},
+    {"boxes": [[8, 0, 5, 16, 16, 11]], "when": {"east": "tall"}},
+    {"boxes": [[5, 0, 8, 11, 16, 16]], "when": {"south": "tall"}},
+    {"boxes": [[0, 0, 5, 8, 16, 11]], "when": {"west": "tall"}}
   ]},
   "hextale:large_hextech_bud": {"mode": "first", "cases": [
     {"when": {"facing": "down", "waterlogged": "false"}, "boxes": []},
@@ -745,6 +861,9 @@
     {"when": {"hanging": "true", "wall": "west"}, "boxes": []},
     {"when": {"hanging": "true", "wall": "east"}, "boxes": []}
   ]},
+  "hextale:sinew_curtain": {"mode": "first", "cases": [
+    {"when": {}, "boxes": []}
+  ]},
   "hextale:siphon_pylon": {"mode": "first", "cases": [
     {"when": {}, "boxes": [[5, 0, 5, 11, 12, 11], [4, 4, 4, 12, 11, 12], [7, 12, 7, 9, 15, 9]]}
   ]},
@@ -765,10 +884,21 @@
   "hextale:sorting_matrix": {"mode": "first", "cases": [
     {"when": {}, "boxes": [[1, 0, 1, 15, 2, 15], [2, 2, 2, 3, 15, 3], [2, 2, 13, 3, 15, 14], [4, 2, 4, 12, 6, 12], [13, 2, 2, 14, 13, 3], [13, 2, 13, 14, 13, 14], [1, 13, 1, 15, 15, 15]]}
   ]},
+  "hextale:spore_puff": {"mode": "first", "cases": [
+    {"when": {"ripe": "true"}, "boxes": []},
+    {"when": {"ripe": "false"}, "boxes": []}
+  ]},
+  "hextale:tall_void_cilia": {"mode": "first", "cases": [
+    {"when": {"half": "lower"}, "boxes": []},
+    {"when": {"half": "upper"}, "boxes": []}
+  ]},
   "hextale:void_anchor": {"mode": "first", "cases": [
     {"when": {}, "boxes": [[2, 0, 2, 14, 2, 14], [4, 2, 4, 12, 5, 12], [4, 5, 4, 6, 12, 12], [10, 5, 4, 12, 11, 12], [4, 11, 4, 12, 16, 12], [3, 12, 3, 13, 13, 13]]}
   ]},
   "hextale:void_bulb": {"mode": "first", "cases": [
+    {"when": {}, "boxes": []}
+  ]},
+  "hextale:void_cilia": {"mode": "first", "cases": [
     {"when": {}, "boxes": []}
   ]},
   "hextale:void_coral": {"mode": "first", "cases": [
@@ -787,6 +917,9 @@
     {"when": {"facing": "up", "waterlogged": "true"}, "boxes": []},
     {"when": {"facing": "west", "waterlogged": "false"}, "boxes": []},
     {"when": {"facing": "west", "waterlogged": "true"}, "boxes": []}
+  ]},
+  "hextale:void_ichor": {"mode": "first", "cases": [
+    {"when": {}, "boxes": []}
   ]},
   "hextale:void_rock_brick_slab": {"mode": "first", "cases": [
     {"when": {"type": "bottom"}, "boxes": [[0, 0, 0, 16, 8, 16]]},
@@ -847,6 +980,37 @@
     {"boxes": [[0, 0, 5, 8, 16, 11]], "when": {"west": "tall"}}
   ]},
   "hextale:void_roots": {"mode": "first", "cases": [
+    {"when": {}, "boxes": []}
+  ]},
+  "hextale:void_tendrils": {"mode": "first", "cases": [
+    {"when": {"age": "0"}, "boxes": []},
+    {"when": {"age": "1"}, "boxes": []},
+    {"when": {"age": "2"}, "boxes": []},
+    {"when": {"age": "3"}, "boxes": []},
+    {"when": {"age": "4"}, "boxes": []},
+    {"when": {"age": "5"}, "boxes": []},
+    {"when": {"age": "6"}, "boxes": []},
+    {"when": {"age": "7"}, "boxes": []},
+    {"when": {"age": "8"}, "boxes": []},
+    {"when": {"age": "9"}, "boxes": []},
+    {"when": {"age": "10"}, "boxes": []},
+    {"when": {"age": "11"}, "boxes": []},
+    {"when": {"age": "12"}, "boxes": []},
+    {"when": {"age": "13"}, "boxes": []},
+    {"when": {"age": "14"}, "boxes": []},
+    {"when": {"age": "15"}, "boxes": []},
+    {"when": {"age": "16"}, "boxes": []},
+    {"when": {"age": "17"}, "boxes": []},
+    {"when": {"age": "18"}, "boxes": []},
+    {"when": {"age": "19"}, "boxes": []},
+    {"when": {"age": "20"}, "boxes": []},
+    {"when": {"age": "21"}, "boxes": []},
+    {"when": {"age": "22"}, "boxes": []},
+    {"when": {"age": "23"}, "boxes": []},
+    {"when": {"age": "24"}, "boxes": []},
+    {"when": {"age": "25"}, "boxes": []}
+  ]},
+  "hextale:void_tendrils_plant": {"mode": "first", "cases": [
     {"when": {}, "boxes": []}
   ]},
   "hextale:whirl_reaper": {"mode": "first", "cases": [

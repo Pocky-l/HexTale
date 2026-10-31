@@ -8,9 +8,17 @@
       "argument": [
         {
           "particle": {
-            "type": "minecraft:reverse_portal"
+            "type": "hextale:void_drift",
+            "color": -1660804
           },
-          "probability": 0.008
+          "probability": 0.006
+        },
+        {
+          "particle": {
+            "type": "hextale:void_drift",
+            "color": -997232
+          },
+          "probability": 0.00072
         }
       ],
       "modifier": "append"

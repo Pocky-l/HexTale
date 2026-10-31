@@ -329,7 +329,19 @@ public final class VoidPassage {
                 }
             }
         }
+        // No worn skin round a gate: the Void's traps wait further out, never at the door.
+        BlockState skin = ModBlocks.VOID_MEMBRANE.get().defaultBlockState();
+        java.util.List<BlockPos> worn = new java.util.ArrayList<>();
+        com.pockyl.hextale.farm.SectionScan.forEach(realm, centre.offset(-SAFE_FROM_TRAPS, -24, -SAFE_FROM_TRAPS),
+                centre.offset(SAFE_FROM_TRAPS, 24, SAFE_FROM_TRAPS), state -> state.is(ModBlocks.WORN_VOID_MEMBRANE.get()),
+                (at, state) -> worn.add(at.immutable()));
+        for (BlockPos at : worn) {
+            realm.setBlock(at, skin, Block.UPDATE_CLIENTS);
+        }
     }
+
+    /** How far round a gate no skin is worn thin. */
+    private static final int SAFE_FROM_TRAPS = 32;
 
     /**
      * {@code /hextale void enter}: into the Void from where the player stands, without a breach - a gate is raised at the

@@ -27,6 +27,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Crystal clusters.
 - Raw Riftmetal, broken out of the husks' walls deep in the Void (it wants a radiant pickaxe), and Hollow Crystals -
   hextech the Void drank empty.
+- Each zone has something of its own to find: membrane lakes sagging between rims of chitin in the Ribcage Reach, their
+  veins running to a crystal knot; islands of swallowed stone at the level one walks on in the Shoals; husks thirty
+  blocks long in the Husk Drift, lit from inside; and over the Vortex its sealed heart, a bud of chitin petals with
+  light in its seams.
+- The Void's own sky: a vortex turning slowly overhead with rings of script round its eye, far silhouettes in the haze,
+  the abyss glowing below; motes of its air rise slowly from the dark, lilac or amber by the zone.
+- Every gate in the Void stands under a column of warm light, seen from far off: the way home.
+- The Void's flora: cilia carpets and tall cilia, hanging tendrils (one can climb them), spore puffs (brush one for slow
+  falling, crush a picked one for longer), sinew curtains stretched across narrow gaps (they hold you back, then
+  snap), spring blisters that throw you high. Pools of Void Ichor glow in the plates' hollows: thick, slow, one wades
+  out of it.
+- Everything found in the Void has a use: chitin and gnawed stone building sets (stairs, slabs, walls), dyes from cilia,
+  string from sinews, craftable spring blisters and lit ridges, a bucket of ichor burns as long as lava, Hollow Crystals
+  hold four times as long in anchors and purifiers, Husk Chitin sometimes breaks off Void Chitin, worn skin can be
+  taken with Silk Touch for traps. The Void's matter carries its own essences (rift first of all).
 - `/hextale void enter` and `/hextale void exit [player]` for operators.
 - A breach opened with a Void Shard is held by a ring of anchors and lets a player through like any other (it still
   does not feed on the land or send voidlings out).
@@ -42,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   enough to keep it.
 - A breach opened with a Void Shard counts as a breach for the land around it: sick land near it no longer tears open
   a second one. Breaches already open side by side stay open and work as before.
+- The Sealed Void Crystal is sealed with Void Membrane instead of honeycomb.
 - Riftmetal is no longer forged by throwing Radiant Alloy into a held breach: Raw Riftmetal from the Void is alloyed
   with Radiant Alloy in the furnace. Void Crystals no longer grow round a held breach; they grow on the geodes where the
   Void's skin sags lowest.

@@ -24,7 +24,7 @@
     "neoforge:custom_skybox": "hextale:void",
     "minecraft:visual/cloud_height": 4000.0
   },
-  "cardinal_light": "default",
+  "cardinal_light": "nether",
   "coordinate_scale": 8.0,
   "has_ceiling": false,
   "has_ender_dragon_fight": false,

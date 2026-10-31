@@ -521,7 +521,11 @@ public final class ModItems {
     public static final DeferredItem<com.pockyl.hextale.item.NotedBlockItem> SPRING_BLISTER = ITEMS.registerItem("spring_blister",
             properties -> new com.pockyl.hextale.item.NotedBlockItem(ModBlocks.SPRING_BLISTER.get(), properties.useBlockDescriptionPrefix()));
     public static final DeferredItem<net.minecraft.world.item.BucketItem> VOID_ICHOR_BUCKET = ITEMS.registerItem("void_ichor_bucket",
-            properties -> new net.minecraft.world.item.BucketItem(ModFluids.VOID_ICHOR.get(), properties.craftRemainder(net.minecraft.world.item.Items.BUCKET).stacksTo(1)) {
+            properties -> new net.minecraft.world.item.BucketItem(ModFluids.VOID_ICHOR.get(), properties.craftRemainder(net.minecraft.world.item.Items.BUCKET).stacksTo(1)
+                    // Burns in a furnace as long as lava.
+                    .component(net.minecraft.core.component.DataComponents.COOKING_FUEL, new net.minecraft.world.item.component.CookingFuel(
+                            net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders.COOKING_TIME_LAVA_BUCKET,
+                            net.minecraft.world.level.storage.loot.providers.number.floats.ContextFloatProviders.COOKING_DEFAULT_SPEED_MULTIPLIER))) {
                 @Override
                 public void appendHoverText(net.minecraft.world.item.ItemStack stack, TooltipContext context, net.minecraft.world.item.component.TooltipDisplay display,
                         java.util.function.Consumer<net.minecraft.network.chat.Component> tooltip, net.minecraft.world.item.TooltipFlag flag) {

@@ -88,6 +88,14 @@ public final class VoidRealmGameTests {
         helper.succeed();
     }
 
+    /** A bucket of ichor is fuel, as lava is. */
+    @HexTest
+    public static void ichorBurnsInAFurnace(GameTestHelper helper) {
+        helper.assertTrue(new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.VOID_ICHOR_BUCKET.get())
+                .has(net.minecraft.core.component.DataComponents.COOKING_FUEL), "the ichor bucket burns");
+        helper.succeed();
+    }
+
     /** Wherever a gate lands, ground to stand on lies within the reach of its search (40 blocks). */
     @HexTest(maxTicks = 400)
     public static void everyGateFindsGroundNearby(GameTestHelper helper) {

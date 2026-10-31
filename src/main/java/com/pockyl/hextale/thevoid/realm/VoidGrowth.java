@@ -131,9 +131,11 @@ public final class VoidGrowth {
         }
     }
 
-    /** Sinews stretched across a gap: one pushes through them, slowly. */
+    /** Sinews stretched across a gap: one pushes through them, slowly, and they snap after a while of pushing. */
     public static class SinewCurtain extends Block {
         private static final Vec3 SLOWS = new Vec3(0.72, 0.8, 0.72);
+        /** Chance per tick of pushing that the sinews give way (about a second and a half on average). */
+        private static final float SNAPS = 1 / 30F;
 
         public SinewCurtain(Properties properties) {
             super(properties);
@@ -143,6 +145,11 @@ public final class VoidGrowth {
         protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effects, boolean intersects) {
             if (ofTheWorld(entity)) {
                 entity.makeStuckInBlock(state, SLOWS);
+                if (level instanceof ServerLevel server && entity instanceof net.minecraft.world.entity.LivingEntity
+                        && entity.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4 && level.getRandom().nextFloat() < SNAPS) {
+                    com.pockyl.hextale.world.WorldEdits.destroy(server, pos, true,
+                            com.pockyl.hextale.world.WorldEdits.actor(server, entity, null));
+                }
             }
         }
     }

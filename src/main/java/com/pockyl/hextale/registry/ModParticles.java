@@ -105,6 +105,9 @@ public final class ModParticles {
      */
     public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> VOID_MOTE = colored("void_mote");
 
+    /** A mote of the Void's own air, rising slowly from the abyss (the Void's biomes spawn it round the player). */
+    public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> VOID_DRIFT = colored("void_drift");
+
     /**
      * A fragment of an item's own texture drawn into the altar: spawned AT the altar's item with the offset to the item it
      * comes from as velocity (client: {@code ItemDrawParticle}).

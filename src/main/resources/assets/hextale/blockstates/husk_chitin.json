@@ -1,7 +1,12 @@
 {
   "variants": {
-    "": {
-      "model": "hextale:block/husk_chitin"
-    }
+    "": [
+      { "model": "hextale:block/husk_chitin", "weight": 3 },
+      { "model": "hextale:block/husk_chitin", "y": 90, "weight": 2 },
+      { "model": "hextale:block/husk_chitin_2", "weight": 3 },
+      { "model": "hextale:block/husk_chitin_2", "y": 180, "weight": 2 },
+      { "model": "hextale:block/husk_chitin_3", "weight": 2 },
+      { "model": "hextale:block/husk_chitin_3", "y": 270, "weight": 2 }
+    ]
   }
 }

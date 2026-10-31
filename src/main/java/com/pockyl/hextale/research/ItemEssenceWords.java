@@ -201,6 +201,18 @@ final class ItemEssenceWords {
         word("charcoal", FIRE, 3, ASH, 1);
         word("coal", FIRE, 4);
 
+        // ---- The Void's own matter ----
+        word("void", RIFT, 3, SHADOW, 1);
+        word("rift", RIFT, 4);
+        word("husk", BEAST, 2, DECAY, 1);
+        word("chitin", BEAST, 3, EARTH, 1);
+        word("ichor", RIFT, 3, WATER, 2);
+        word("sinew", BEAST, 3, LIFE, 1);
+        word("cilia", PLANT, 2, RIFT, 1);
+        word("gnawed", DECAY, 2, EARTH, 1);
+        word("blister", BEAST, 2, AIR, 2);
+        word("tendril", PLANT, 2, RIFT, 1);
+
         // ---- Life: plants, animals, food ----
         word("log", PLANT, 4, SAP, 1);
         word("wood", PLANT, 4);

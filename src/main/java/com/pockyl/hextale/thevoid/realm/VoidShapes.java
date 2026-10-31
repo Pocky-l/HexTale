@@ -86,6 +86,14 @@ public final class VoidShapes {
     }
 
     /** A mass the Void is digesting, hanging in a gap: its flat bottom at y, a gnawed cone rising out of it. */
+    /** The heart of a vortex: a sealed sphere of chitin petals, seams of light between them, a core of flesh inside. */
+    record Heart(double x, double y, double z, double radius, int salt) {
+    }
+
+    /** A sheet of skin sagging between rims of chitin over a gap: veins run to a crystal knot at its lowest point. */
+    record Lake(double x, double y, double z, double radius, double sag, int salt) {
+    }
+
     record Shoal(double x, double y, double z, double radius, double height, int salt) {
     }
 
@@ -106,6 +114,8 @@ public final class VoidShapes {
         final List<Knot> knots = new ArrayList<>();
         final List<Husk> husks = new ArrayList<>();
         final List<Shoal> shoals = new ArrayList<>();
+        final List<Heart> hearts = new ArrayList<>();
+        final List<Lake> lakes = new ArrayList<>();
         final List<Plate> plates = new ArrayList<>();
         final List<Bladder> bladders = new ArrayList<>();
         final Map<Plate, List<Pool>> pools = new java.util.HashMap<>();
@@ -231,7 +241,8 @@ public final class VoidShapes {
         };
         for (double left = huskChance; left > 0; left--) {
             if (random.nextDouble() < left) {
-                double a = 9 + random.nextDouble() * 12 * (1 + depth * 0.4);
+                // The Drift's husks are the big ones, read as husks from far off.
+                double a = zone == VoidZones.Zone.DRIFT && left >= 1 ? 22 + random.nextDouble() * 16 : 9 + random.nextDouble() * 12 * (1 + depth * 0.4);
                 double hx = x0 + random.nextDouble() * REGION;
                 double hz = z0 + random.nextDouble() * REGION;
                 double b = a * (0.7 + random.nextDouble() * 0.5);
@@ -248,10 +259,52 @@ public final class VoidShapes {
                 double radius = 8 + random.nextDouble() * 12;
                 double sx = x0 + 20 + random.nextDouble() * (REGION - 40);
                 double sz = z0 + 20 + random.nextDouble() * (REGION - 40);
-                // Hanging below the plates, in the gaps between them.
-                region.shoals.add(new Shoal(sx, ground(sx, sz) - 18 - random.nextDouble() * 30, sz, radius,
-                        radius * (0.8 + random.nextDouble() * 0.6), random.nextInt()));
+                // In their own zone most hang at the level one walks on, islands one can reach; elsewhere they sink
+                // below the plates, into the gaps between them.
+                boolean high = zone == VoidZones.Zone.SHOALS && random.nextDouble() < 0.65;
+                if (high) {
+                    radius += 6;
+                }
+                double sy = high ? ground(sx, sz) - radius * 0.9 + (random.nextDouble() - 0.4) * 12 : ground(sx, sz) - 18 - random.nextDouble() * 30;
+                region.shoals.add(new Shoal(sx, sy, sz, radius, radius * (0.8 + random.nextDouble() * 0.6), random.nextInt()));
             }
+        }
+        // The Reach: skin sagging between rims of chitin, one lake every other region.
+        if (zone == VoidZones.Zone.REACH && random.nextDouble() < 0.5) {
+            // Stretched over the widest gap between the plates.
+            double r = 15 + random.nextDouble() * 10;
+            double[] spot = null;
+            int open = 0;
+            for (int attempt = 0; attempt < 20; attempt++) {
+                double lx = x0 + 32 + random.nextDouble() * (REGION - 64);
+                double lz = z0 + 32 + random.nextDouble() * (REGION - 64);
+                int free = 0;
+                for (int k = 0; k < 17; k++) {
+                    double a = Math.PI * 2 * k / 16;
+                    double d = k == 16 ? 0 : r * 0.75;
+                    double sx = lx + Math.cos(a) * d, sz = lz + Math.sin(a) * d;
+                    boolean covered = false;
+                    for (Plate plate : region.plates) {
+                        if (!Double.isNaN(plateTop(plate, sx, sz))) {
+                            covered = true;
+                            break;
+                        }
+                    }
+                    free += covered ? 0 : 1;
+                }
+                if (free > open) {
+                    open = free;
+                    spot = new double[]{lx, lz};
+                }
+            }
+            if (spot != null && open >= 10) {
+                region.lakes.add(new Lake(spot[0], ground(spot[0], spot[1]) - 2, spot[1], r, 3 + r * 0.18, random.nextInt()));
+            }
+        }
+        // The heart of the vortex, in the region that holds its centre, high over the ground so it shows from the Drift.
+        double[] vortex = VoidZones.vortex(x0 + REGION / 2.0, z0 + REGION / 2.0);
+        if (floor(vortex[0]) >= x0 && floor(vortex[0]) < x0 + REGION && floor(vortex[1]) >= z0 && floor(vortex[1]) < z0 + REGION) {
+            region.hearts.add(new Heart(vortex[0], ground(vortex[0], vortex[1]) + 38, vortex[1], 20 + random.nextDouble() * 4, random.nextInt()));
         }
         return region;
     }
@@ -615,6 +668,14 @@ public final class VoidShapes {
             for (Bladder bladder : region.bladders) {
                 bladder(bladder, x0, z0, kinds, best);
             }
+            for (Heart heart : region.hearts) {
+                heart(heart, x0, z0, kinds, best);
+            }
+        }
+        for (Region region : near) {
+            for (Lake lake : region.lakes) {
+                lake(lake, x0, z0, kinds, best);
+            }
         }
     }
 
@@ -730,7 +791,9 @@ public final class VoidShapes {
                         }
                         if (shell < best[idx]) {
                             best[idx] = (float) shell;
-                            kinds[idx] = hash(x, y, z, husk.salt()) < husk.ore() ? RIFT_ORE : CHITIN;
+                            // The inner wall is lined with lit veins, so a husk glows from inside its mouth.
+                            boolean inner = e < 1 && shell > -0.6 && Math.abs(noise(x / 5.0, y / 5.0, z / 5.0, husk.salt() + 2) - 0.5) < 0.07;
+                            kinds[idx] = hash(x, y, z, husk.salt()) < husk.ore() ? RIFT_ORE : inner ? VEINED : CHITIN;
                         }
                     } else if (e < 1 && qy < -0.5 * husk.b() && noise(x / 4.0, y / 4.0, z / 4.0, husk.salt() + 1) > 0.35) {
                         // The dark flesh pooled at the bottom inside.
@@ -877,6 +940,113 @@ public final class VoidShapes {
                         kinds[idx] = CRYSTAL;
                     }
                 }
+            }
+        }
+    }
+
+    private void heart(Heart heart, int x0, int z0, byte[] kinds, float[] best) {
+        double r = heart.radius();
+        int minX = Math.max(x0, floor(heart.x() - r - 2));
+        int maxX = Math.min(x0 + 15, floor(heart.x() + r + 2));
+        int minZ = Math.max(z0, floor(heart.z() - r - 2));
+        int maxZ = Math.min(z0 + 15, floor(heart.z() + r + 2));
+        if (minX > maxX || minZ > maxZ) {
+            return;
+        }
+        int minY = Math.max(MIN_Y, floor(heart.y() - r - 2));
+        int maxY = Math.min(MIN_Y + HEIGHT - 1, floor(heart.y() + r + 2));
+        int petals = 7;
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                double dx = x + 0.5 - heart.x(), dz = z + 0.5 - heart.z();
+                double azimuth = Math.atan2(dz, dx) + (noise(x / 9.0, 0, z / 9.0, heart.salt()) - 0.5) * 0.3;
+                for (int y = minY; y <= maxY; y++) {
+                    double dy = y + 0.5 - heart.y();
+                    double d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                    double up = dy / Math.max(1e-6, d);
+                    // Petals swell between the seams, so the sphere reads as a closed bud.
+                    double seam = Math.abs(Math.sin(petals * azimuth / 2));
+                    double swell = r * (1 + 0.06 * seam - 0.03 * up * up);
+                    double shell = Math.abs(d - swell) - 1.4;
+                    int idx = index(x - x0, y - MIN_Y, z - z0);
+                    double core = d - r * 0.28;
+                    if (core < 0) {
+                        if (core < best[idx]) {
+                            best[idx] = (float) core;
+                            kinds[idx] = noise(x / 3.0, y / 3.0, z / 3.0, heart.salt() + 1) > 0.55 ? VEINED : FLESH;
+                        }
+                        continue;
+                    }
+                    if (shell >= 0 || shell >= best[idx]) {
+                        if (d < swell - 1.4 && d < r * 0.55 && up > 0 && kinds[idx] == AIR && hash(x, y, z, heart.salt()) < 0.25) {
+                            // Crystals grown on the core's crown.
+                            kinds[idx] = CRYSTAL;
+                        }
+                        continue;
+                    }
+                    best[idx] = (float) shell;
+                    if (seam < 0.11 || Math.abs(up) > 0.97) {
+                        kinds[idx] = RIDGE;
+                    } else if (d < swell && hash(x, y, z, heart.salt() + 3) < 0.07) {
+                        kinds[idx] = RIFT_ORE;
+                    } else {
+                        kinds[idx] = d < swell - 0.6 ? FLESH : CHITIN;
+                    }
+                }
+            }
+        }
+    }
+
+    private void lake(Lake lake, int x0, int z0, byte[] kinds, float[] best) {
+        double reach = lake.radius() * 1.25 + 2;
+        int minX = Math.max(x0, floor(lake.x() - reach));
+        int maxX = Math.min(x0 + 15, floor(lake.x() + reach));
+        int minZ = Math.max(z0, floor(lake.z() - reach));
+        int maxZ = Math.min(z0 + 15, floor(lake.z() + reach));
+        if (minX > maxX || minZ > maxZ) {
+            return;
+        }
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                double dx = x + 0.5 - lake.x(), dz = z + 0.5 - lake.z();
+                double edge = lake.radius() * (1 + 0.25 * (noise(x / 11.0, 0, z / 11.0, lake.salt()) - 0.5));
+                double d = Math.sqrt(dx * dx + dz * dz) / edge;
+                if (d > 1.12) {
+                    continue;
+                }
+                if (d > 0.97) {
+                    // The rim: a curled lip of chitin the skin is stretched from.
+                    int rim = floor(lake.y() + 1.5 * (1 - Math.abs(d - 1.05) / 0.08));
+                    for (int y = Math.max(MIN_Y, floor(lake.y()) - 2); y <= Math.min(MIN_Y + HEIGHT - 1, rim); y++) {
+                        int idx = index(x - x0, y - MIN_Y, z - z0);
+                        if (kinds[idx] == AIR) {
+                            best[idx] = -1;
+                            kinds[idx] = y == rim ? RIDGE : CHITIN;
+                        }
+                    }
+                    continue;
+                }
+                int y = floor(lake.y() - lake.sag() * (1 - d * d));
+                if (y < MIN_Y + 1 || y >= MIN_Y + HEIGHT - 1) {
+                    continue;
+                }
+                int idx = index(x - x0, y - MIN_Y, z - z0);
+                if (kinds[idx] != AIR) {
+                    continue;
+                }
+                if (d < 0.12) {
+                    // The knot at the low point, where the veins meet.
+                    kinds[idx] = FLESH;
+                    if (d < 0.07 && kinds[index(x - x0, y + 1 - MIN_Y, z - z0)] == AIR) {
+                        kinds[index(x - x0, y + 1 - MIN_Y, z - z0)] = CRYSTAL;
+                    }
+                    continue;
+                }
+                // Veins wander in from the rim to the knot.
+                double angle = Math.atan2(dz, dx) + (noise(x / 6.0, 1, z / 6.0, lake.salt() + 1) - 0.5) * 1.1;
+                boolean vein = Math.abs(Math.sin(angle * 3.5)) < 0.09 + 0.05 * (1 - d);
+                boolean worn = d > 0.8 && d < 0.9 && noise(x / 4.0, 2, z / 4.0, lake.salt() + 2) > 0.45;
+                kinds[idx] = vein ? VEINED : worn ? WORN : MEMBRANE;
             }
         }
     }

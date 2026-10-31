@@ -30,6 +30,9 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
     /** The plain look's tint of the stars and colour of the rim. */
     private static final int PLAIN_TINT = 0xFFC9A6FF;
     private static final int RIM = 0xB98FE6;
+    /** A gate's beacon: a column of warm light over it, seen from far off - the way home. */
+    private static final int BEACON = 0xF2B266;
+    private static final float BEACON_HEIGHT = 150;
     private static final int[][] NEIGHBOURS = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {-1, 1}, {-1, -1}, {1, -1}};
 
     public TheVoidRenderer(EntityRendererProvider.Context context) {
@@ -87,7 +90,8 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
 
     @Override
     protected AABB getBoundingBoxForCulling(TheVoid breach, float partialTick) {
-        return new AABB(breach.position(), breach.position()).inflate(breach.layout().reach() + 1);
+        AABB box = new AABB(breach.position(), breach.position()).inflate(breach.layout().reach() + 1);
+        return breach.gate() ? box.expandTowards(0, BEACON_HEIGHT, 0) : box;
     }
 
     @Override
@@ -112,6 +116,9 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
             return;
         }
         Frame frame = new Frame(layout, shows, state);
+        if (state.gate && !com.pockyl.hextale.client.IrisCompat.shadowPass()) {
+            beacon(state, layout, poseStack, collector, camera);
+        }
         poseStack.pushPose();
         poseStack.rotate(state.orientation);
         if (state.fold > 0 && !fold(state, poseStack)) {
@@ -135,6 +142,26 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
         }
         poseStack.popPose();
         super.submit(state, poseStack, collector, camera);
+    }
+
+    /** The column of warm light standing over a gate, breathing slowly, fading as it rises. */
+    private static void beacon(State state, VoidLayout layout, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
+        float bottom = layout.reach() * state.reveal;
+        int segments = 15;
+        net.minecraft.world.phys.Vec3[] points = new net.minecraft.world.phys.Vec3[segments + 1];
+        float[] light = new float[segments + 1];
+        for (int k = 0; k <= segments; k++) {
+            float t = k / (float) segments;
+            points[k] = new net.minecraft.world.phys.Vec3(0, bottom + (BEACON_HEIGHT - bottom) * t, 0);
+            light[k] = (1 - t) * (1 - t) * Math.min(1, k * 0.6F);
+        }
+        org.joml.Vector3f eye = new org.joml.Vector3f((float) (camera.pos.x - state.x), (float) (camera.pos.y - state.y),
+                (float) (camera.pos.z - state.z));
+        float breath = (0.8F + 0.2F * Mth.sin(state.ageInTicks * 0.05F)) * state.reveal;
+        collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> {
+            JarStreamFx.strip(consumer, pose, points, light, eye, 2.6F, BEACON, 0.16F * breath);
+            JarStreamFx.strip(consumer, pose, points, light, eye, 0.55F, BEACON, 0.32F * breath);
+        });
     }
 
     /**
