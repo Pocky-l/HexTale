@@ -115,8 +115,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Tubes are dark green glass held by iron bands instead of neon stripes, the Block of Hexsteel is a plain brushed
   plate, the steel of the World Anchor, Rift Gates and Grapple is blued, and Magic Leaves grow in white clumps with
   only a few golden glints.
-- The Pylon Filter is a brass sieve with a small crystal in the middle (it looked like a missing texture), and the
-  Essence Sticker is a paper label with a round seal that takes the essence's colour.
 - The Rune Circle stands out on a pale floor: its outer ring of stones is darker, and light-blue light glows in its
   grooves instead of a dark navy line.
 - Riftforged Bulwark reads as armour now, not a violet lump: black riftmetal plates with lit rims and blackened brass
