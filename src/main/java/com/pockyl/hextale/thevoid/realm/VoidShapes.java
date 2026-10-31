@@ -290,7 +290,7 @@ public final class VoidShapes {
                 // Half sunk into the ground, its openings at the level one walks on.
                 region.husks.add(new Husk(hx, ground(hx, hz) + b * (0.15 + random.nextDouble() * 0.3), hz, a, b, a * (0.75 + random.nextDouble() * 0.6),
                         random.nextDouble() * Math.PI * 2, (random.nextDouble() - 0.5) * 0.9, random.nextInt(),
-                        zone == VoidZones.Zone.VORTEX ? 0.05 : zone == VoidZones.Zone.DRIFT ? 0.035 : 0.012));
+                        zone == VoidZones.Zone.VORTEX ? 0.02 : zone == VoidZones.Zone.DRIFT ? 0.015 : 0.005));
             }
         }
 
@@ -718,6 +718,7 @@ public final class VoidShapes {
                 lake(lake, x0, z0, kinds, best);
             }
         }
+        veins(x0, z0, kinds);
         // Trees last: their fronds only fill air the rest left.
         VoidTrees.Grid grid = new VoidTrees.Grid() {
             @Override
@@ -748,6 +749,54 @@ public final class VoidShapes {
                 }
             }
         }
+    }
+
+    /**
+     * Veins of riftmetal: clots of ore where open chitin meets the air (rib flanks, husk walls, plate edges), none at the
+     * Threshold, a few in the Reach and the Shoals, many in the Husk Drift and round the vortex. A clot runs a few
+     * blocks into the chitin behind its face, so a vein that shows is worth digging.
+     */
+    private static void veins(int x0, int z0, byte[] kinds) {
+        double depth = VoidZones.depth(x0 + 8, z0 + 8);
+        if (depth < VEINS_FROM) {
+            return;
+        }
+        // Deeper in, the clots grow more common: the cut-off falls from 0.955 at the Reach's edge to 0.9 at the heart.
+        double cut = 0.955 - 0.055 * Math.min(1, (depth - VEINS_FROM) / (0.75 - VEINS_FROM));
+        for (int y = 1; y < HEIGHT - 1; y++) {
+            for (int lz = 0; lz < 16; lz++) {
+                for (int lx = 0; lx < 16; lx++) {
+                    int i = index(lx, y, lz);
+                    if (kinds[i] != CHITIN) {
+                        continue;
+                    }
+                    int x = x0 + lx, z = z0 + lz;
+                    if (noise(x / 3.2, y / 3.2, z / 3.2, 0x51F7) < cut) {
+                        continue;
+                    }
+                    // Only clots that reach the surface within two blocks: veins one can see, not ore lost in a rib.
+                    if (openNear(kinds, lx, y, lz)) {
+                        kinds[i] = RIFT_ORE;
+                    }
+                }
+            }
+        }
+    }
+
+    /** Depth (see {@link VoidZones#depth}) from which riftmetal veins appear: the Ribcage Reach. */
+    private static final double VEINS_FROM = 0.16;
+
+    private static boolean openNear(byte[] kinds, int lx, int y, int lz) {
+        for (int d = -2; d <= 2; d++) {
+            if (air(kinds, lx + d, y, lz) || air(kinds, lx, y + d, lz) || air(kinds, lx, y, lz + d)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean air(byte[] kinds, int lx, int y, int lz) {
+        return lx >= 0 && lx < 16 && lz >= 0 && lz < 16 && y >= 0 && y < HEIGHT && kinds[index(lx, y, lz)] == AIR;
     }
 
     public static int index(int lx, int y, int lz) {

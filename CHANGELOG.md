@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   drifting in the gaps. The great ribs glow at their joints. Voidlings and Void Mites come out of its dark.
 - New blocks: Husk Chitin and its lit ridge, Void Membrane (plain, veined, worn), Gnawed Stone, Riftmetal Ore and
   Hollow Crystal clusters.
-- Raw Riftmetal, broken out of the husks' walls deep in the Void (it wants a radiant pickaxe), and Hollow Crystals -
+- Raw Riftmetal, broken out of veins in the Void's chitin (it wants a radiant pickaxe), and Hollow Crystals -
   hextech the Void drank empty.
 - Each zone has something of its own to find: membrane lakes sagging between rims of chitin in the Ribcage Reach, their
   veins running to a crystal knot; islands of swallowed stone at the level one walks on in the Shoals; husks thirty
@@ -40,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   out of it.
 - Everything found in the Void has a use: chitin and gnawed stone building sets (stairs, slabs, walls), dyes from cilia,
   string from sinews, craftable spring blisters and lit ridges, a bucket of ichor burns as long as lava, Hollow Crystals
-  hold four times as long in anchors and purifiers, Husk Chitin sometimes breaks off Void Chitin, worn skin can be
+  hold four times as long in anchors and purifiers, worn skin can be
   taken with Silk Touch for traps. The Void's matter carries its own essences (rift first of all).
 - Sinew Willows grow on the Void's plates: trunks braided of two or three sinews, roots gripping the plate, boughs that
   arch out and droop, lilac fronds with glowing buds and long curtains of fronds hanging from them. Groves stand at the
@@ -64,8 +64,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   six sides the ring holds.
 
 ### Changed
-- Rift Ore is called Riftmetal Ore and looks like it: dark shards of the metal grown into the husk's chitin, sparks of
-  violet light running through them now and then.
+- Rift Ore is called Riftmetal Ore and looks like it: dark shards of the metal grown into the chitin, sparks of violet
+  light running through them. It grows in veins on the open flanks of ribs, husks and plates: a few in the Ribcage
+  Reach and the Shoals, many in the Husk Drift and round the vortex, none at the Threshold. Veins glow faintly and
+  throw violet sparks, so they show from across a gap.
+- Void Chitin comes only from the Void's creatures; Husk Chitin no longer breaks off any.
 - Void Ichor looks like a glowing magenta lava, and with your head in it you see as little as in lava.
 - The Void Chitin item has its earlier, darker look back.
 - A closed ring of anchors no longer wears its crystals just by holding: they cloud only while the ring is still open,

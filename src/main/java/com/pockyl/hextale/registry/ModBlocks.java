@@ -597,9 +597,8 @@ public final class ModBlocks {
     /** Matter the Void has half digested: porous, light, easy to cut. */
     public static final DeferredBlock<Block> GNAWED_STONE = BLOCKS.registerBlock("gnawed_stone", Block::new, ModBlocks::gnawedStoneProperties);
     /** Black metal grown into a husk's wall: raw riftmetal. */
-    public static final DeferredBlock<net.minecraft.world.level.block.DropExperienceBlock> RIFT_ORE = BLOCKS.registerBlock("rift_ore",
-            properties -> new net.minecraft.world.level.block.DropExperienceBlock(net.minecraft.util.valueproviders.UniformInt.of(4, 9), properties),
-            () -> huskChitinProperties().strength(30.0F, 1200.0F).lightLevel(state -> 3));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.RiftOreBlock> RIFT_ORE = BLOCKS.registerBlock("rift_ore",
+            com.pockyl.hextale.thevoid.realm.RiftOreBlock::new, () -> huskChitinProperties().strength(30.0F, 1200.0F).lightLevel(state -> 6));
     /** Hextech the Void swallowed and drank empty. */
     public static final DeferredBlock<net.minecraft.world.level.block.AmethystClusterBlock> HOLLOW_CRYSTAL_CLUSTER = BLOCKS.registerBlock(
             "hollow_crystal_cluster", properties -> new net.minecraft.world.level.block.AmethystClusterBlock(7.0F, 3.0F, properties),
