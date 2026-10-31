@@ -31,8 +31,9 @@ import com.pockyl.hextale.registry.ModSounds;
 import java.util.function.Consumer;
 
 /**
- * A sliver of the Void (creative only while the Void has no logic): use breaks it open where the player looks, of
- * the chosen shape or any; sneak + use on a breach closes it, sneak + use elsewhere picks the next shape.
+ * A sliver of the Void (creative only): use breaks it open where the player looks, of the chosen shape or any;
+ * sneak + use on a breach closes it, sneak + use elsewhere picks the next shape. Such a breach is held by a ring of
+ * anchors and lets a player through like any other, but it does not feed on the land or send voidlings out.
  */
 public class VoidShardItem extends Item {
     /** How far away the Void can be opened. */

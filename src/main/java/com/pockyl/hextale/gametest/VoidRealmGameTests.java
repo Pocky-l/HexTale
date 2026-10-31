@@ -139,6 +139,23 @@ public final class VoidRealmGameTests {
         });
     }
 
+    /** A breach opened by hand (a Void Shard) is held by a ring of anchors like one the land tore open. */
+    @HexTest(maxTicks = 300, padding = 8)
+    public static void aShardBreachIsHeldByARing(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        BlockPos centre = helper.absolutePos(new BlockPos(1, 4, 1));
+        List<VoidAnchorBlockEntity> anchors = VoidRoadGameTests.ring(helper);
+        anchors.forEach(anchor -> anchor.insert(new ItemStack(ModItems.HEXTECH_CRYSTAL.get())));
+        TheVoid breach = TheVoid.open(level, Vec3.atCenterOf(centre), 0, VoidShape.EYE, 3.5F, 889);
+        level.addFreshEntity(breach);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(breach.subdued(), "the ring holds it");
+            helper.assertTrue(breach.calm() > 0.5F, "and it cools");
+            breach.discard();
+            VoidRoadGameTests.clearRing(helper);
+        });
+    }
+
     /** Worn skin holds a moment under a creature and tears; the tear leaves nothing behind it. */
     @HexTest(maxTicks = 200)
     public static void wornSkinTearsUnderACreature(GameTestHelper helper) {

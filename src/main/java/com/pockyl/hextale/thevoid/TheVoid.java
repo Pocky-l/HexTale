@@ -450,11 +450,17 @@ public class TheVoid extends Entity {
             return;
         }
         touch(level);
-        if (!rooted() || age(0) < openTicks()) {
+        if (age(0) < openTicks()) {
             return;
         }
         if (now % ANCHOR_TICKS == 0) {
             countAnchors(level);
+        }
+        if (!rooted()) {
+            // A breach opened by hand (a Void Shard) is held by a ring like any other and lets one through, but it
+            // neither feeds on the land nor eats nor sends anything out.
+            cool();
+            return;
         }
         if (folding()) {
             // Folding, it neither eats nor feeds nor sends anything out: it only winds in on itself.
@@ -463,11 +469,7 @@ public class TheVoid extends Entity {
             }
             return;
         }
-        float calm = calm();
-        float wanted = subdued() ? 1 : 0;
-        if (calm != wanted) {
-            entityData.set(DATA_CALM, wanted > calm ? Math.min(wanted, calm + 1 / 60F) : Math.max(wanted, calm - 1 / 30F));
-        }
+        cool();
         if (subdued() && now % 10 == 5) {
             eatThrown(level);
         }
@@ -506,6 +508,15 @@ public class TheVoid extends Entity {
             } else {
                 nextPush = now + 100;
             }
+        }
+    }
+
+    /** Held, it cools to a cold violet over three seconds; let go, it flares back twice as fast. */
+    private void cool() {
+        float calm = calm();
+        float wanted = subdued() ? 1 : 0;
+        if (calm != wanted) {
+            entityData.set(DATA_CALM, wanted > calm ? Math.min(wanted, calm + 1 / 60F) : Math.max(wanted, calm - 1 / 30F));
         }
     }
 
@@ -668,7 +679,7 @@ public class TheVoid extends Entity {
             if (Math.abs(local.z) > depth || !layout.touches(local.x, local.y, halfW, halfH, reveal)) {
                 continue;
             }
-            if (living instanceof net.minecraft.server.level.ServerPlayer player && subdued() && rooted() && !folding()
+            if (living instanceof net.minecraft.server.level.ServerPlayer player && subdued() && !folding()
                     && com.pockyl.hextale.thevoid.realm.VoidPassage.enter(level, this, player, local)) {
                 continue;
             }

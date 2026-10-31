@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Raw Riftmetal, broken out of the husks' walls deep in the Void (it wants a radiant pickaxe), and Hollow Crystals -
   hextech the Void drank empty.
 - `/hextale void enter` and `/hextale void exit [player]` for operators.
+- A breach opened with a Void Shard is held by a ring of anchors and lets a player through like any other (it still
+  does not feed on the land or send voidlings out).
 
 ### Changed
 - Riftmetal is no longer forged by throwing Radiant Alloy into a held breach: Raw Riftmetal from the Void is alloyed
