@@ -144,6 +144,9 @@ public final class ModItems {
     /** Hextech the Void drank empty: it no longer gives, it takes. */
     public static final DeferredItem<com.pockyl.hextale.item.NotedItem> HOLLOW_CRYSTAL = ITEMS.registerItem("hollow_crystal",
             properties -> new com.pockyl.hextale.item.NotedItem(properties.rarity(Rarity.RARE)));
+    /** A black pearl the Void grows in its sacs (and some maws carry): it keeps the Void's turning inside. */
+    public static final DeferredItem<com.pockyl.hextale.item.NotedItem> VOID_PEARL = ITEMS.registerItem("void_pearl",
+            properties -> new com.pockyl.hextale.item.NotedItem(properties.rarity(Rarity.RARE)));
     /** Void Chitin softened in the crucible and pressed into a plate: the riftforged armour's shell. */
     public static final DeferredItem<Item> VOID_CARAPACE = ITEMS.registerItem("void_carapace", properties -> new Item(properties.rarity(Rarity.RARE)));
     /** Level 2 gem: a diamond cut to a brilliant with a groove that holds hextech. */

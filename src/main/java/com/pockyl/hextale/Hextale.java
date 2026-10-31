@@ -236,6 +236,7 @@ public final class Hextale {
         output.accept(ModItems.RAW_RIFTMETAL);
         output.accept(ModItems.RIFTMETAL_INGOT);
         output.accept(ModItems.HOLLOW_CRYSTAL);
+        output.accept(ModItems.VOID_PEARL);
         output.accept(ModItems.VOID_CRYSTAL_CLUSTER);
         output.accept(ModItems.VOID_CRYSTAL);
         output.accept(ModItems.SEALED_VOID_CRYSTAL);
