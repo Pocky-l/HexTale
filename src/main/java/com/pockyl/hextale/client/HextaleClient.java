@@ -122,6 +122,8 @@ public final class HextaleClient {
                 com.pockyl.hextale.client.render.RibCrawlerModel.LAYER, com.pockyl.hextale.client.render.RibCrawlerModel::createBodyLayer));
         modBus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> event.registerLayerDefinition(
                 com.pockyl.hextale.client.render.PitMawModel.LAYER, com.pockyl.hextale.client.render.PitMawModel::createBodyLayer));
+        modBus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> event.registerLayerDefinition(
+                com.pockyl.hextale.client.render.SeerModel.LAYER, com.pockyl.hextale.client.render.SeerModel::createBodyLayer));
         modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::registerLayers);
         modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::bake);
         modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::registerExtensions);
@@ -293,8 +295,8 @@ public final class HextaleClient {
                 com.pockyl.hextale.client.render.RibCrawlerRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.PIT_MAW.get(),
                 com.pockyl.hextale.client.render.PitMawRenderer::new);
-        // Until its own model lands (MOBS session): drawn as nothing rather than crashing the client.
-        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.SEER.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.SEER.get(),
+                com.pockyl.hextale.client.render.SeerRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.GRAPPLE_HOOK.get(),
                 com.pockyl.hextale.client.render.GrappleHookRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.BREACH_CAMERA.get(),
