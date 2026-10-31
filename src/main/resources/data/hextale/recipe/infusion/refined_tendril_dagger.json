@@ -3,7 +3,10 @@
   "center": "hextale:tendril_dagger",
   "pedestals": [
     "hextale:charged_hexsteel_ingot",
-    "hextale:engraved_diamond"
+    "hextale:engraved_diamond",
+    "#c:feathers",
+    "#c:strings",
+    "minecraft:spider_eye"
   ],
   "essences": {
     "metal": 16,

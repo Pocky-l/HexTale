@@ -5,7 +5,9 @@
     "hextale:unstable_hextech",
     "#c:ender_pearls",
     "#c:ingots/brass",
-    "#c:ingots/brass"
+    "#c:ingots/brass",
+    "minecraft:compass",
+    "minecraft:chorus_fruit"
   ],
   "essences": {
     "rift": 16,

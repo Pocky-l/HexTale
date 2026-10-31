@@ -467,9 +467,17 @@ public final class RuneWorkGameTests {
     @HexTest
     public static void onlyAHexcoreForgesWithTheVoid(GameTestHelper helper) {
         ItemStack radiant = pickaxe(HextechPickaxe.RADIANT, PickaxeRune.SMELTING);
-        List<ItemStack> items = List.of(new ItemStack(ModItems.RIFTMETAL_INGOT.get()), new ItemStack(ModItems.RIFTMETAL_INGOT.get()),
-                new ItemStack(ModItems.SEALED_VOID_CRYSTAL.get()), new ItemStack(ModItems.VOID_CRYSTAL.get()));
-        circle(helper, radiant, items, EssenceMix.EMPTY);
+        List<ItemStack> items = InfusionRecipes.ALL.named(Hextale.id("riftforged_pickaxe"), false).pedestals().stream()
+                .map(part -> new ItemStack(part.items().findFirst().orElseThrow())).toList();
+        circle(helper, radiant, items.subList(0, PEDESTALS.size()), EssenceMix.EMPTY);
+        // The late rituals want more pedestals than the four of the small circle.
+        List<BlockPos> more = List.of(new BlockPos(5, 2, 1), new BlockPos(5, 2, 5), new BlockPos(1, 2, 5), new BlockPos(0, 2, 3),
+                new BlockPos(6, 2, 3), new BlockPos(3, 2, 0));
+        for (int i = PEDESTALS.size(); i < items.size(); i++) {
+            BlockPos at = more.get(i - PEDESTALS.size());
+            helper.setBlock(at, ModBlocks.PEDESTAL.get());
+            helper.getBlockEntity(at, PedestalBlockEntity.class).place(items.get(i));
+        }
         Ritual.Circle altar = scan(helper);
         helper.assertTrue(Ritual.plan(radiant, altar, false) == null, "a plain altar cannot forge with the Void");
         Ritual.Circle hexcore = new Ritual.Circle(altar.pedestals(), altar.steles(), altar.tanks(), true);

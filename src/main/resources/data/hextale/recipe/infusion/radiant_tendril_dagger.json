@@ -10,7 +10,10 @@
       "components": {
         "hextale:brew": "acid"
       }
-    }
+    },
+    "minecraft:glowstone",
+    "minecraft:ghast_tear",
+    "minecraft:phantom_membrane"
   ],
   "essences": {
     "magic": 40,

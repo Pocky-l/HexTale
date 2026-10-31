@@ -157,7 +157,7 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
 
     /** How hard a ritual is on the matrix: pedestal items, mB of essence and runes on steles, 0..1. */
     public static float instabilityOf(int items, int essenceMb, int runes) {
-        return Mth.clamp(items * 0.07F + essenceMb / 300F + runes * 0.08F - 0.15F, 0, 1);
+        return Mth.clamp(items * 0.04F + essenceMb / 300F + runes * 0.08F - 0.15F, 0, 1);
     }
 
     /** The matrix's anger {@code ticks} into a ritual of that instability: it only grows, waiting or not. */

@@ -5,7 +5,11 @@
     "hextale:riftmetal_ingot",
     "hextale:riftmetal_ingot",
     "hextale:sealed_void_crystal",
-    "hextale:void_crystal"
+    "hextale:void_crystal",
+    "minecraft:echo_shard",
+    "minecraft:ender_eye",
+    "minecraft:sculk_catalyst",
+    "minecraft:shulker_shell"
   ],
   "essences": {
     "rift": 64,

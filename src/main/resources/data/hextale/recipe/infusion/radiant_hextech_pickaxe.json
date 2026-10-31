@@ -11,7 +11,11 @@
       "components": {
         "hextale:brew": "acid"
       }
-    }
+    },
+    "minecraft:glowstone",
+    "minecraft:ghast_tear",
+    "minecraft:crying_obsidian",
+    "#c:gems/diamond"
   ],
   "essences": {
     "magic": 72,

@@ -6,7 +6,10 @@
     "hextale:riftmetal_ingot",
     "hextale:sealed_void_crystal",
     "hextale:void_carapace",
-    "hextale:void_carapace"
+    "hextale:void_carapace",
+    "minecraft:echo_shard",
+    "minecraft:shulker_shell",
+    "minecraft:crying_obsidian"
   ],
   "essences": {
     "rift": 64,

@@ -11,7 +11,10 @@
       "components": {
         "hextale:brew": "acid"
       }
-    }
+    },
+    "minecraft:glowstone",
+    "minecraft:ghast_tear",
+    "minecraft:golden_boots"
   ],
   "essences": {
     "magic": 72,

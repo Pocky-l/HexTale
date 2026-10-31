@@ -4,7 +4,11 @@
   "pedestals": [
     "hextale:charged_hexsteel_ingot",
     "hextale:charged_hexsteel_ingot",
-    "hextale:engraved_diamond"
+    "hextale:engraved_diamond",
+    "minecraft:obsidian",
+    "minecraft:redstone_block",
+    "minecraft:tnt",
+    "#c:gems/quartz"
   ],
   "essences": {
     "metal": 32,

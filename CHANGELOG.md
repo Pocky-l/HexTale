@@ -81,6 +81,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     animals it fells drop their meat cooked.
 
 ### Changed
+- The later gear asks for more at the altar: every refined, radiant and riftforged tool, Tendril Dagger and Bulwark
+  piece now takes six to eight pedestal items instead of two to five, with vanilla finds that fit the tool - obsidian,
+  redstone and TNT for the refined pickaxe, a brush and moss for the shovel, a lightning rod and a bottle o' enchanting
+  for the radiant sword, echo shards, ender eyes, dragon's breath and shulker shells for the riftforged gear. The
+  Recall Charm also wants a compass and a chorus fruit, and the Soul Flask a lead and a soul lantern.
+- Each pedestal item unsettles the Hexcore a little less, so the bigger late rituals are no angrier than before.
 - Every level of tools and Bulwark armour mends with its own metal at an anvil: brass, Charged Hexsteel, Radiant
   Alloy, Riftmetal.
 - The refined research shows up once the level's materials and the Runed Pickaxe are known - no need to make the
