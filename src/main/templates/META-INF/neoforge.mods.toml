@@ -12,6 +12,8 @@ displayURL="${mod_url}"
 # Square icon for the mod list (NeoForge 26.2+); a wide "bannerFile" could head the info panel.
 iconFile="logo.png"
 description='''${mod_description}'''
+# New arm poses (the Strike Gauntlet's wind-up).
+enumExtensions="META-INF/enumextensions.json"
 
 [[dependencies.${mod_id}]]
     modId="neoforge"

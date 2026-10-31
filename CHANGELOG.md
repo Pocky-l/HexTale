@@ -20,7 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Strike Gauntlet, made on the Hexcore: hold Use to charge it in three beats, release to punch. At a block within
   reach it breaks it - a 3 x 3 face from the second beat, two deep at the third; into the air it sends a shockwave
   that hurts and throws back the creatures in front. Held too long, it vents its steam and starts over, never hurting
-  its wearer. It takes the sword's runes, three of them.
+  its wearer. It takes the sword's runes, three of them. It is worn rather than held: it closes round the fist and
+  forearm in first person and on the player alike (a right and a left glove), the bare arm punches with it, and while
+  it charges the arm comes up aiming the fist and the fist draws back, trembling harder with every beat.
 - Tendril Dagger in four levels, researched and refined with the tools of its level: a quick blade that takes the
   sword's runes. In the off hand beside another weapon it now and then finds a gap and strikes along with the blow
   (30-45% by level). Held and released after a
