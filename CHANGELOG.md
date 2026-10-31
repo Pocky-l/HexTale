@@ -112,6 +112,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Where Minecraft 1.21.1 differs: with a shader pack on, the Void keeps the pack's sky (1.21.1's Iris cannot draw the
   Void's own sky over the pack).
 
+### Fixed
+- The Void's sky no longer jumps while you walk or run.
+- A world no longer asks for a backup of its "experimental settings" when it opens: HexTale's dimensions count as
+  stable now.
+
 ## [1.7.0+1.21.1] - 2026-10-31
 ### Changed
 - Everything of 1.7.0 for Minecraft 26.3 is included: the Arsenal - Refined, Radiant and Riftforged tools with their
