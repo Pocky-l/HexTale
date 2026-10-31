@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "age=0": {
+      "model": "hextale:block/ichor_pod_0"
+    },
+    "age=1": {
+      "model": "hextale:block/ichor_pod_1"
+    },
+    "age=2": {
+      "model": "hextale:block/ichor_pod_2"
+    }
+  }
+}

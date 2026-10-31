@@ -5,6 +5,12 @@
     },
     "hextale:magic_wood": {
       "stripped_block": "hextale:stripped_magic_wood"
+    },
+    "hextale:sinew_willow_log": {
+      "stripped_block": "hextale:stripped_sinew_willow_log"
+    },
+    "hextale:sinew_willow_wood": {
+      "stripped_block": "hextale:stripped_sinew_willow_wood"
     }
   }
 }

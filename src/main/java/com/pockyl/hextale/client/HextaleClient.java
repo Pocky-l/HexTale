@@ -89,6 +89,9 @@ public final class HextaleClient {
             event.registerSpriteSet(ModParticles.FLOW.get(), FlowParticle.Provider::new);
             event.registerSpecial(ModParticles.ITEM_DRAW.get(), new com.pockyl.hextale.client.particle.ItemDrawParticle.Provider());
             event.registerSpriteSet(ModParticles.VOID_MOTE.get(), com.pockyl.hextale.client.particle.VoidMoteParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.VOID_DRIFT.get(), com.pockyl.hextale.client.particle.VoidDriftParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.VOID_CURRENT.get(), com.pockyl.hextale.client.particle.VoidStreakParticle.Current::new);
+            event.registerSpriteSet(ModParticles.VOID_MARK.get(), com.pockyl.hextale.client.particle.VoidStreakParticle.Mark::new);
             event.registerSpriteSet(ModParticles.RUNE_SHARD.get(), RuneShardParticle.Provider::new);
             event.registerSpriteSet(ModParticles.ESSENCE_WISP.get(), EssenceWispParticle.Provider::new);
             event.registerSpriteSet(ModParticles.ESSENCE_DROP.get(), EssenceDropParticle.Provider::new);
@@ -115,6 +118,12 @@ public final class HextaleClient {
                 com.pockyl.hextale.client.render.VoidMiteModel.LAYER, com.pockyl.hextale.client.render.VoidMiteModel::createBodyLayer));
         modBus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> event.registerLayerDefinition(
                 com.pockyl.hextale.client.render.VoidlingModel.LAYER, com.pockyl.hextale.client.render.VoidlingModel::createBodyLayer));
+        modBus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> event.registerLayerDefinition(
+                com.pockyl.hextale.client.render.RibCrawlerModel.LAYER, com.pockyl.hextale.client.render.RibCrawlerModel::createBodyLayer));
+        modBus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> event.registerLayerDefinition(
+                com.pockyl.hextale.client.render.PitMawModel.LAYER, com.pockyl.hextale.client.render.PitMawModel::createBodyLayer));
+        modBus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> event.registerLayerDefinition(
+                com.pockyl.hextale.client.render.SeerModel.LAYER, com.pockyl.hextale.client.render.SeerModel::createBodyLayer));
         modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::registerLayers);
         modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::bake);
         modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::registerExtensions);
@@ -122,6 +131,11 @@ public final class HextaleClient {
         modBus.addListener(com.pockyl.hextale.client.render.BulwarkClient::bake);
         modBus.addListener(com.pockyl.hextale.client.render.BulwarkClient::registerExtensions);
         modBus.addListener(com.pockyl.hextale.client.render.StrikeGauntletClient::registerExtensions);
+        modBus.addListener(IchorView::register);
+        VoidLensView.register();
+        VoidCurrentsClient.register();
+        VoidPassageFx.register();
+        VoidFogBanks.register();
         com.pockyl.hextale.client.render.StrikeGauntletClient.register();
         modBus.addListener(com.pockyl.hextale.client.render.BulwarkHeartLayer::addLayers);
         modBus.addListener((net.neoforged.neoforge.client.event.EntityRenderersEvent.AddLayers event) -> com.pockyl.hextale.client.render.BulwarkAuraLayer.addLayers(event));
@@ -145,6 +159,9 @@ public final class HextaleClient {
         TheVoidSounds.register();
         VoidAtmosphere.register(modBus);
         BreachCinematic.register(modBus);
+        VoidTransitionScreen.register(modBus);
+        RingGuide.register();
+        com.pockyl.hextale.client.render.VoidSky.register(modBus);
         SilenceHush.register();
         ClientGrapple.register();
         LevitationHum.register();
@@ -274,6 +291,12 @@ public final class HextaleClient {
                 com.pockyl.hextale.client.render.VoidMiteRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.VOIDLING.get(),
                 com.pockyl.hextale.client.render.VoidlingRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.RIB_CRAWLER.get(),
+                com.pockyl.hextale.client.render.RibCrawlerRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.PIT_MAW.get(),
+                com.pockyl.hextale.client.render.PitMawRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.SEER.get(),
+                com.pockyl.hextale.client.render.SeerRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.GRAPPLE_HOOK.get(),
                 com.pockyl.hextale.client.render.GrappleHookRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.BREACH_CAMERA.get(),

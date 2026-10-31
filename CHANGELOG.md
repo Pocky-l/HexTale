@@ -4,6 +4,125 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0+26.1.2] - 2026-10-31
+### Changed
+- Ported to Minecraft 26.1.2 ([NeoForge](https://neoforged.net/) 26.1.2). Everything of 1.8.0 for Minecraft 26.3
+  ([full changelog](https://github.com/Pocky-l/HexTale/blob/main/CHANGELOG.md)) is included: the Void as a place to
+  travel to through a held breach, its zones, sky, flora, Sinew Willows and their wood, the Rib Crawlers, Pit Maws and
+  Seers, husk crust, currents, fog banks, nurseries, swallowed ruins, Raw Riftmetal and the riftmetal alloy, Hollow
+  Crystals, Void Glass, the Void Lens, the passage through a breach and the new sounds and diary pages. As before on
+  26.1.2, poplar saplings are not Magic Tree catalysts and overlapping translucent effects (the new sky over a shader
+  pack, the gates' columns of light too) may sort a little differently. A bed used in the Void simply refuses to work
+  instead of falling apart (26.1.2 beds cannot be set to break on use).
+
+## [1.8.0] - 2026-10-31
+### Added
+- The Void is a place now. A breach held by six anchors no longer throws a researcher back: walk into it and it pulls
+  you through, down its throat, to the other side. Its ground is a field of huge curved plates of shell lying in
+  terraces over a bottomless magenta glow - soil and flesh on top, glowing seams beneath, lips curled at the edges, the
+  abyss open in the gaps between them. Colossal chitin ribs arch out of knots of flesh and from plate to plate, skin is
+  stretched between them, hollow husks lie sunk into the plates and digested masses hang in the gaps. Nothing of our
+  world is in it. Everything curls toward the vortices at its heart.
+- The way out is always open: the breach stands on the other side as a gate, warm with our daylight, on a ledge of
+  chitin. It cannot be closed or broken; it follows its breach when a Breach Heart carries it elsewhere and still leads
+  to where it stood if it is gone. One step in the Void is eight in our world, so held breaches are joined by a short
+  road through it. A Recall Charm used in the Void pulls its bearer out to our world.
+- The Void is dangerous and does not warn twice: the abyss below kills, and worn patches of skin - a shade paler, the
+  veins nearly gone - hold a moment under your weight and then tear.
+- Its zones: the Threshold, the Ribcage Reach, the Swallowed Shoals, the Husk Drift and the Vortex.
+- Its plates are alive with detail: veins of light running across them like rivers, thickets of thin curved spines,
+  bladders of skin with crystals in their bottoms, pores through to the abyss ringed with light, outcrops of Void
+  crystal, banded edges of chitin and flesh, tendrils hanging from their undersides with glowing tips, bladders
+  drifting in the gaps. The great ribs glow at their joints. Voidlings and Void Mites come out of its dark.
+- New blocks: Husk Chitin and its lit ridge, Void Membrane (plain, veined, worn), Gnawed Stone, Riftmetal Ore and
+  Hollow Crystal clusters.
+- Raw Riftmetal, broken out of veins in the Void's chitin (it wants a radiant pickaxe), and Hollow Crystals -
+  hextech the Void drank empty.
+- Each zone has something of its own to find: membrane lakes sagging between rims of chitin in the Ribcage Reach, their
+  veins running to a crystal knot; islands of swallowed stone at the level one walks on in the Shoals; husks thirty
+  blocks long in the Husk Drift, lit from inside; and over the Vortex its sealed heart, a bud of chitin petals with
+  light in its seams.
+- The Void's own sky: a funnel of veined membrane turning slowly overhead, its veils spiralling in toward a beating
+  violet eye; far ribs, curled horns and crystal-tipped spires stand in drifting mist at the horizon; below, the abyss
+  glows round its own slower funnel, and motes of its air rise slowly from the dark, lilac or amber by the zone.
+- Every gate in the Void stands under a column of warm light, seen from far off: the way home.
+- The Void's flora: cilia carpets and tall cilia, hanging tendrils (one can climb them), spore puffs (brush one for slow
+  falling, crush a picked one for longer), sinew curtains stretched across narrow gaps (they hold you back, then
+  snap), spring blisters that throw you high. Pools of Void Ichor glow in the plates' hollows: thick, slow, one wades
+  out of it.
+- Everything found in the Void has a use: chitin and gnawed stone building sets (stairs, slabs, walls), dyes from cilia,
+  string from sinews, craftable spring blisters and lit ridges, a bucket of ichor burns as long as lava, Hollow Crystals
+  hold four times as long in anchors and purifiers, worn skin can be
+  taken with Silk Touch for traps. The Void's matter carries its own essences (rift first of all).
+- Sinew Willows grow on the Void's plates: trunks braided of two or three sinews, roots gripping the plate, boughs that
+  arch out and droop, lilac fronds with glowing buds and long curtains of fronds hanging from them. Groves stand at the
+  Threshold, fewer and younger trees deeper in, none round the vortex. Their wood is a full set (logs, stripped,
+  planks, stairs, slab, fence, gate, door, trapdoor, button, pressure plate) that never burns and works wherever wood
+  does - a crafting table and tools can be made in the Void at last. Fronds drop sprouts that grow on the Void's soil.
+- Ichor Pods hang under the willows' fronds and glow brighter as they ripen. Pick a ripe one by hand; eaten, it lets
+  you see in the dark - and a few blocks into ichor. Pods and tendrils light a Husk Chitin ridge as glowstone does,
+  and a pod gives magenta dye.
+- Gnawed Iron Ore and Gnawed Gold Ore: the metal our world lost to the Void, in clots through the gnawed stone of the
+  Shoals.
+- Void Glass and its pane: a Hollow Crystal and membrane fused into glass, lilac with the skin's net in it.
+- The Void Lens, a spyglass with a Hollow Crystal for its lens: looking through it, the haze draws back, and riftmetal
+  ore, hollow crystals and worn skin glint far off.
+- `/hextale void enter` and `/hextale void exit [player]` for operators.
+- A breach opened with a Void Shard is held by a ring of anchors and lets a player through like any other (it still
+  does not feed on the land or send voidlings out).
+
+- Holding a Void Anchor or a crystal near a breach shows where its ring goes: six marks on the ground round it, a
+  missing side pulsing magenta with sparks rising, a held side glowing cold. Placing anchors tells you how many of the
+  six sides the ring holds.
+- The Void has its own creatures now. Rib Crawlers hang upside down under ribs and plates; a dry clicking overhead is
+  all the warning before one drops, lands coiled and runs at you, climbing walls. Pit Maws lie flush in the ground - a
+  low bulge with a ring of short spines - and tear open into a funnel when you step on them, pulling you toward their
+  throat; run, or hurt one enough, and it lets go. Seers drift over the plates, eyes in cages of petals: one that stares
+  at you long enough marks you with a thin violet line, and every voidling, mite and crawler around comes for you for
+  half a minute. Seers never fight themselves.
+- Husk crust grows thin over hollows in the plates, paler than the shell round it. It ticks under your feet; stand
+  still on it and it cracks and falls in, with the patch round it.
+- Currents run through the Void in long arcs from plate to plate over the gaps, pale streaks showing their way. Step
+  in and one carries you across (sneak to let go). Some of them fade every now and then and drop whoever rides them -
+  their streaks thin and their whoosh sinks first.
+- Fog banks roll over the Void every few minutes, closing the view to a few blocks for half a minute. The fog takes
+  the abyss's magenta glow when you look down.
+- Nurseries: husks the size of a hall in the Husk Drift, closed but for one mouth, their walls hung with sacs that
+  hatch voidlings and mites when someone comes near. On a mound in the middle the pearl sacs hold Void Pearls - but
+  some of them are mimics that twitch when you come close and burst into mites when touched.
+- Void Pearls, the heart of the riftforged chestplate (in place of crying obsidian). Pit Maws carry one now and then.
+- Swallowed ruins on the crowns of the Shoals: corners of our houses and halls, gnawed through, a chest still standing
+  in them.
+- Building blocks of the Void: Polished Husk Chitin, Husk Chitin Tiles (both with stairs and slabs) and Husk Chitin
+  Pillars; and the gnawed blocks of the ruins (cobblestone, planks, stone bricks, bricks).
+- Passing through a breach or a gate is felt now: it draws you in along a tightening spiral, the view narrows and
+  twists and the breach's throat closes round you; the fall down the throat lasts a moment however fast the other side
+  is ready, and the other side spits you out.
+- Own sounds for the Void's new creatures, its traps, currents, fog banks and the passage; worn skin has its own stretch
+  and tear.
+- Diary pages for the Undertow, thin floors, the new creatures, the Nursery, Void Pearls and the swallowed ruins.
+
+### Changed
+- Rift Ore is called Riftmetal Ore and looks like it: dark shards of the metal grown into the chitin, sparks of violet
+  light running through them. It grows in veins on the open flanks of ribs, husks and plates: a few in the Ribcage
+  Reach and the Shoals, many in the Husk Drift and round the vortex, none at the Threshold. Veins glow faintly and
+  throw violet sparks, so they show from across a gap.
+- Void Chitin comes only from the Void's creatures; Husk Chitin no longer breaks off any.
+- Void Ichor looks like a glowing magenta lava, and with your head in it you see as little as in lava.
+- The Void Chitin item has its earlier, darker look back.
+- A closed ring of anchors no longer wears its crystals just by holding: they cloud only while the ring is still open,
+  with what the breach eats and with every passage through it. A breach once held stays held.
+- A breach on clean land no longer starves away while a ring of anchors is being built round it: one tied anchor is
+  enough to keep it.
+- A breach opened with a Void Shard counts as a breach for the land around it: sick land near it no longer tears open
+  a second one. Breaches already open side by side stay open and work as before.
+- The Sealed Void Crystal is sealed with Void Membrane instead of honeycomb.
+- Riftmetal is no longer forged by throwing Radiant Alloy into a held breach: Raw Riftmetal from the Void is alloyed
+  with Radiant Alloy in the furnace. Void Crystals no longer grow round a held breach; they grow on the geodes where the
+  Void's skin sags lowest.
+
+### Fixed
+- With a shader pack on, the Void shows its own sky instead of an overworld sky.
 ## [1.7.0+26.1.2] - 2026-10-31
 ### Changed
 - Ported to Minecraft 26.1.2 ([NeoForge](https://neoforged.net/) 26.1.2). Everything of 1.7.0 for Minecraft 26.3

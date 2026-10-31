@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "magenta_dye",
+  "ingredients": [
+    "hextale:ichor_pod"
+  ],
+  "result": {
+    "id": "minecraft:magenta_dye",
+    "count": 1
+  }
+}

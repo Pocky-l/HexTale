@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "stage=0": {
+      "model": "hextale:block/sinew_willow_sprout"
+    },
+    "stage=1": {
+      "model": "hextale:block/sinew_willow_sprout"
+    }
+  }
+}

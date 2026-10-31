@@ -31,8 +31,9 @@ import com.pockyl.hextale.registry.ModSounds;
 import java.util.function.Consumer;
 
 /**
- * A sliver of the Void (creative only while the Void has no logic): use breaks it open where the player looks, of
- * the chosen shape or any; sneak + use on a breach closes it, sneak + use elsewhere picks the next shape.
+ * A sliver of the Void (creative only): use breaks it open where the player looks, of the chosen shape or any;
+ * sneak + use on a breach closes it, sneak + use elsewhere picks the next shape. Such a breach is held by a ring of
+ * anchors and lets a player through like any other, but it does not feed on the land or send voidlings out.
  */
 public class VoidShardItem extends Item {
     /** How far away the Void can be opened. */
@@ -76,7 +77,9 @@ public class VoidShardItem extends Item {
         Vec3 centre = place(server, player, VoidLayout.of(shape, size, seed));
         // A breach faces the player square on, as the Void tends to.
         float yaw = player.getYRot() + (random.nextFloat() - 0.5F) * 10;
-        level.addFreshEntity(TheVoid.open(level, centre, yaw, shape, size, seed));
+        TheVoid breach = TheVoid.open(level, centre, yaw, shape, size, seed);
+        level.addFreshEntity(breach);
+        com.pockyl.hextale.thevoid.Breaches.note(server, breach);
         level.playSound(null, centre.x, centre.y, centre.z, ModSounds.THE_VOID_OPEN.get(), SoundSource.AMBIENT,
                 0.8F + size * 0.12F, 1.1F - Math.min(size, 8) * 0.05F);
         player.getCooldowns().addCooldown(stack, 10);

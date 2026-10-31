@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "hextale:block/tall_void_cilia_top"
+  }
+}

@@ -29,6 +29,23 @@ public final class EssenceFluidModel {
 
     public static void register(RegisterFluidModelsEvent event) {
         event.register(new FluidModel.Unbaked(LIQUID, LIQUID, null, Tint.INSTANCE), ModFluids.ESSENCE);
+        // The Void's ichor wears its own colours: no tint.
+        event.register(new FluidModel.Unbaked(new Material(Hextale.id("block/void_ichor_still")), new Material(Hextale.id("block/void_ichor_flow")),
+                null, Plain.INSTANCE), ModFluids.VOID_ICHOR, ModFluids.FLOWING_VOID_ICHOR);
+    }
+
+    private enum Plain implements FluidTintSource {
+        INSTANCE;
+
+        @Override
+        public int color(FluidState state) {
+            return 0xFFFFFFFF;
+        }
+
+        @Override
+        public int colorAsStack(FluidStack stack) {
+            return 0xFFFFFFFF;
+        }
     }
 
     private enum Tint implements FluidTintSource {

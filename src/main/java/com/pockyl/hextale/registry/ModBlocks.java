@@ -581,6 +581,201 @@ public final class ModBlocks {
                     .pushReaction(PushReaction.DESTROY)
                     .lightLevel(state -> com.pockyl.hextale.thevoid.HollowbloomBlock.LIGHT[state.getValue(com.pockyl.hextale.thevoid.HollowbloomBlock.VIGOR)]));
 
+    // The Void itself (the dimension): the ribs' chitin, the skin between them, the stone it swallowed, its ores.
+    public static final DeferredBlock<Block> HUSK_CHITIN = BLOCKS.registerBlock("husk_chitin", Block::new, ModBlocks::huskChitinProperties);
+    /** The gold-lit crest along the top of a rib. */
+    public static final DeferredBlock<Block> HUSK_CHITIN_RIDGE = BLOCKS.registerBlock("husk_chitin_ridge", Block::new,
+            () -> huskChitinProperties().lightLevel(state -> 6));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.MembraneBlock> VOID_MEMBRANE = BLOCKS.registerBlock("void_membrane",
+            com.pockyl.hextale.thevoid.realm.MembraneBlock::new, () -> membraneProperties(3));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.MembraneBlock> VEINED_VOID_MEMBRANE = BLOCKS.registerBlock(
+            "veined_void_membrane", com.pockyl.hextale.thevoid.realm.MembraneBlock::new, () -> membraneProperties(9));
+    /** Skin worn thin: it tears under a creature's weight. */
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.WornMembraneBlock> WORN_VOID_MEMBRANE = BLOCKS.registerBlock(
+            "worn_void_membrane", com.pockyl.hextale.thevoid.realm.WornMembraneBlock::new,
+            () -> membraneProperties(2).randomTicks().dynamicShape());
+    /** Matter the Void has half digested: porous, light, easy to cut. */
+    public static final DeferredBlock<Block> GNAWED_STONE = BLOCKS.registerBlock("gnawed_stone", Block::new, ModBlocks::gnawedStoneProperties);
+    /** Black metal grown into a husk's wall: raw riftmetal. */
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.RiftOreBlock> RIFT_ORE = BLOCKS.registerBlock("rift_ore",
+            com.pockyl.hextale.thevoid.realm.RiftOreBlock::new, () -> huskChitinProperties().strength(30.0F, 1200.0F).lightLevel(state -> 6));
+    /** Hextech the Void swallowed and drank empty. */
+    public static final DeferredBlock<net.minecraft.world.level.block.AmethystClusterBlock> HOLLOW_CRYSTAL_CLUSTER = BLOCKS.registerBlock(
+            "hollow_crystal_cluster", properties -> new net.minecraft.world.level.block.AmethystClusterBlock(7.0F, 3.0F, properties),
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).forceSolidOn().noOcclusion().strength(1.5F)
+                    .requiresCorrectToolForDrops().sound(SoundType.AMETHYST_CLUSTER).pushReaction(PushReaction.DESTROY));
+
+    // The Void's growth and the blocks of its plates that do something to those who walk on them.
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.VoidFloraBlock> VOID_CILIA = BLOCKS.registerBlock("void_cilia",
+            properties -> new com.pockyl.hextale.thevoid.VoidFloraBlock(false, properties), () -> voidFloraProperties(0));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.VoidGrowth.TallCilia> TALL_VOID_CILIA = BLOCKS.registerBlock(
+            "tall_void_cilia", com.pockyl.hextale.thevoid.realm.VoidGrowth.TallCilia::new, () -> voidFloraProperties(0));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.VoidGrowth.Tendrils> VOID_TENDRILS = BLOCKS.registerBlock("void_tendrils",
+            com.pockyl.hextale.thevoid.realm.VoidGrowth.Tendrils::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).randomTicks().noCollision().instabreak()
+                    .sound(SoundType.WEEPING_VINES).lightLevel(state -> 7).pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.VoidGrowth.TendrilsPlant> VOID_TENDRILS_PLANT = BLOCKS.registerBlock(
+            "void_tendrils_plant", com.pockyl.hextale.thevoid.realm.VoidGrowth.TendrilsPlant::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).noCollision().instabreak()
+                    .sound(SoundType.WEEPING_VINES).pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.VoidGrowth.SporePuff> SPORE_PUFF = BLOCKS.registerBlock("spore_puff",
+            com.pockyl.hextale.thevoid.realm.VoidGrowth.SporePuff::new,
+            () -> voidFloraProperties(5).lightLevel(state -> state.getValue(com.pockyl.hextale.thevoid.realm.VoidGrowth.SporePuff.RIPE) ? 6 : 2));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.VoidGrowth.SinewCurtain> SINEW_CURTAIN = BLOCKS.registerBlock(
+            "sinew_curtain", com.pockyl.hextale.thevoid.realm.VoidGrowth.SinewCurtain::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).forceSolidOn().noCollision().strength(2.0F)
+                    .sound(SoundType.WEEPING_VINES).pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.VoidGrowth.SpringBlister> SPRING_BLISTER = BLOCKS.registerBlock(
+            "spring_blister", com.pockyl.hextale.thevoid.realm.VoidGrowth.SpringBlister::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).strength(0.8F).sound(SoundType.SLIME_BLOCK)
+                    .lightLevel(state -> 5));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.VoidIchor.Block> VOID_ICHOR = BLOCKS.registerBlock("void_ichor",
+            properties -> new com.pockyl.hextale.thevoid.realm.VoidIchor.Block(ModFluids.VOID_ICHOR.get(), properties),
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).replaceable().noCollision().strength(100.0F)
+                    .lightLevel(state -> 13).pushReaction(PushReaction.DESTROY).noLootTable().liquid()
+                    .sound(SoundType.EMPTY));
+
+    public static final DeferredBlock<StairBlock> HUSK_CHITIN_STAIRS = BLOCKS.registerBlock("husk_chitin_stairs",
+            properties -> new StairBlock(HUSK_CHITIN.get().defaultBlockState(), properties), () -> huskChitinProperties());
+    public static final DeferredBlock<SlabBlock> HUSK_CHITIN_SLAB = BLOCKS.registerBlock("husk_chitin_slab", SlabBlock::new, () -> huskChitinProperties());
+    public static final DeferredBlock<WallBlock> HUSK_CHITIN_WALL = BLOCKS.registerBlock("husk_chitin_wall", WallBlock::new,
+            () -> huskChitinProperties().forceSolidOn());
+    public static final DeferredBlock<StairBlock> GNAWED_STONE_STAIRS = BLOCKS.registerBlock("gnawed_stone_stairs",
+            properties -> new StairBlock(GNAWED_STONE.get().defaultBlockState(), properties), () -> gnawedStoneProperties());
+    public static final DeferredBlock<SlabBlock> GNAWED_STONE_SLAB = BLOCKS.registerBlock("gnawed_stone_slab", SlabBlock::new, () -> gnawedStoneProperties());
+    public static final DeferredBlock<WallBlock> GNAWED_STONE_WALL = BLOCKS.registerBlock("gnawed_stone_wall", WallBlock::new,
+            () -> gnawedStoneProperties().forceSolidOn());
+
+    /** Thin chitin over a hollow: it cracks under a weight and falls in. */
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.HuskCrustBlock> HUSK_CRUST = BLOCKS.registerBlock("husk_crust",
+            com.pockyl.hextale.thevoid.realm.HuskCrustBlock::new,
+            () -> huskChitinProperties().strength(0.8F, 1.0F).randomTicks().dynamicShape().noOcclusion());
+    // Chitin worked for building: polished, laid in scales, cut into ringed pillars.
+    public static final DeferredBlock<Block> POLISHED_HUSK_CHITIN = BLOCKS.registerBlock("polished_husk_chitin", Block::new,
+            ModBlocks::huskChitinProperties);
+    public static final DeferredBlock<StairBlock> POLISHED_HUSK_CHITIN_STAIRS = BLOCKS.registerBlock("polished_husk_chitin_stairs",
+            properties -> new StairBlock(POLISHED_HUSK_CHITIN.get().defaultBlockState(), properties), () -> huskChitinProperties());
+    public static final DeferredBlock<SlabBlock> POLISHED_HUSK_CHITIN_SLAB = BLOCKS.registerBlock("polished_husk_chitin_slab", SlabBlock::new,
+            () -> huskChitinProperties());
+    public static final DeferredBlock<Block> HUSK_CHITIN_TILES = BLOCKS.registerBlock("husk_chitin_tiles", Block::new, ModBlocks::huskChitinProperties);
+    public static final DeferredBlock<StairBlock> HUSK_CHITIN_TILES_STAIRS = BLOCKS.registerBlock("husk_chitin_tiles_stairs",
+            properties -> new StairBlock(HUSK_CHITIN_TILES.get().defaultBlockState(), properties), () -> huskChitinProperties());
+    public static final DeferredBlock<SlabBlock> HUSK_CHITIN_TILES_SLAB = BLOCKS.registerBlock("husk_chitin_tiles_slab", SlabBlock::new,
+            () -> huskChitinProperties());
+    public static final DeferredBlock<RotatedPillarBlock> HUSK_CHITIN_PILLAR = BLOCKS.registerBlock("husk_chitin_pillar", RotatedPillarBlock::new,
+            ModBlocks::huskChitinProperties);
+    // Pieces of our world the Void swallowed and half digested: the swallowed ruins on its shoals.
+    public static final DeferredBlock<Block> GNAWED_COBBLESTONE = BLOCKS.registerBlock("gnawed_cobblestone", Block::new, ModBlocks::gnawedStoneProperties);
+    public static final DeferredBlock<Block> GNAWED_STONE_BRICKS = BLOCKS.registerBlock("gnawed_stone_bricks", Block::new, ModBlocks::gnawedStoneProperties);
+    public static final DeferredBlock<Block> GNAWED_BRICKS = BLOCKS.registerBlock("gnawed_bricks", Block::new,
+            () -> gnawedStoneProperties().mapColor(MapColor.COLOR_RED));
+    public static final DeferredBlock<Block> GNAWED_PLANKS = BLOCKS.registerBlock("gnawed_planks", Block::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).strength(1.2F, 2.0F)
+                    .sound(SoundType.WOOD));
+    // The sacs the Void grows in its nurseries.
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.VoidSacs.Nursery> VOID_SAC = BLOCKS.registerBlock("void_sac",
+            com.pockyl.hextale.thevoid.realm.VoidSacs.Nursery::new, () -> sacProperties(6));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.VoidSacs.Pearl> PEARL_SAC = BLOCKS.registerBlock("pearl_sac",
+            com.pockyl.hextale.thevoid.realm.VoidSacs.Pearl::new, () -> sacProperties(4));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.VoidSacs.Mimic> MIMIC_SAC = BLOCKS.registerBlock("mimic_sac",
+            com.pockyl.hextale.thevoid.realm.VoidSacs.Mimic::new, () -> sacProperties(4));
+
+    // The Sinew Willow, the Void's one tree (thevoid/realm/VoidTrees): braided wood that never burns, lilac fronds,
+    // ichor pods hanging under them. Sounds and set type borrowed from the nether's fungus wood.
+    public static final DeferredBlock<RotatedPillarBlock> SINEW_WILLOW_LOG = BLOCKS.registerBlock("sinew_willow_log",
+            RotatedPillarBlock::new, ModBlocks::sinewWillowLogProperties);
+    public static final DeferredBlock<RotatedPillarBlock> SINEW_WILLOW_WOOD = BLOCKS.registerBlock("sinew_willow_wood",
+            RotatedPillarBlock::new, ModBlocks::sinewWillowLogProperties);
+    public static final DeferredBlock<RotatedPillarBlock> STRIPPED_SINEW_WILLOW_LOG = BLOCKS.registerBlock("stripped_sinew_willow_log",
+            RotatedPillarBlock::new, ModBlocks::sinewWillowLogProperties);
+    public static final DeferredBlock<RotatedPillarBlock> STRIPPED_SINEW_WILLOW_WOOD = BLOCKS.registerBlock("stripped_sinew_willow_wood",
+            RotatedPillarBlock::new, ModBlocks::sinewWillowLogProperties);
+    public static final DeferredBlock<Block> SINEW_WILLOW_PLANKS = BLOCKS.registerBlock("sinew_willow_planks", Block::new,
+            ModBlocks::sinewWillowPlankProperties);
+    public static final DeferredBlock<StairBlock> SINEW_WILLOW_STAIRS = BLOCKS.registerBlock("sinew_willow_stairs",
+            properties -> new StairBlock(SINEW_WILLOW_PLANKS.get().defaultBlockState(), properties), ModBlocks::sinewWillowPlankProperties);
+    public static final DeferredBlock<SlabBlock> SINEW_WILLOW_SLAB = BLOCKS.registerBlock("sinew_willow_slab", SlabBlock::new,
+            ModBlocks::sinewWillowPlankProperties);
+    public static final DeferredBlock<FenceBlock> SINEW_WILLOW_FENCE = BLOCKS.registerBlock("sinew_willow_fence", FenceBlock::new,
+            ModBlocks::sinewWillowPlankProperties);
+    public static final DeferredBlock<FenceGateBlock> SINEW_WILLOW_FENCE_GATE = BLOCKS.registerBlock("sinew_willow_fence_gate",
+            properties -> new FenceGateBlock(WoodType.CRIMSON, properties), () -> sinewWillowPlankProperties().forceSolidOn());
+    public static final DeferredBlock<DoorBlock> SINEW_WILLOW_DOOR = BLOCKS.registerBlock("sinew_willow_door",
+            properties -> new DoorBlock(BlockSetType.CRIMSON, properties),
+            () -> sinewWillowPlankProperties().strength(3.0F).noOcclusion().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<TrapDoorBlock> SINEW_WILLOW_TRAPDOOR = BLOCKS.registerBlock("sinew_willow_trapdoor",
+            properties -> new TrapDoorBlock(BlockSetType.CRIMSON, properties),
+            () -> sinewWillowPlankProperties().strength(3.0F).noOcclusion().isValidSpawn((state, level, pos, type) -> false));
+    public static final DeferredBlock<ButtonBlock> SINEW_WILLOW_BUTTON = BLOCKS.registerBlock("sinew_willow_button",
+            properties -> new ButtonBlock(BlockSetType.CRIMSON, 30, properties),
+            () -> BlockBehaviour.Properties.of().noCollision().strength(0.5F).pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<PressurePlateBlock> SINEW_WILLOW_PRESSURE_PLATE = BLOCKS.registerBlock("sinew_willow_pressure_plate",
+            properties -> new PressurePlateBlock(BlockSetType.CRIMSON, properties),
+            () -> sinewWillowPlankProperties().forceSolidOn().noCollision().strength(0.5F).pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.SinewWillow.Fronds> SINEW_WILLOW_FRONDS = BLOCKS.registerBlock(
+            "sinew_willow_fronds", com.pockyl.hextale.thevoid.realm.SinewWillow.Fronds::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.2F).randomTicks().sound(SoundType.AZALEA_LEAVES)
+                    .noOcclusion().isValidSpawn((state, level, pos, type) -> false).isSuffocating((state, level, pos) -> false)
+                    .pushReaction(PushReaction.DESTROY)
+                    .isRedstoneConductor((state, level, pos) -> false));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.SinewWillow.Sprout> SINEW_WILLOW_SPROUT = BLOCKS.registerBlock(
+            "sinew_willow_sprout", com.pockyl.hextale.thevoid.realm.SinewWillow.Sprout::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).noCollision().randomTicks().instabreak()
+                    .sound(SoundType.ROOTS).lightLevel(state -> 3).pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.SinewWillow.Pod> ICHOR_POD = BLOCKS.registerBlock("ichor_pod",
+            com.pockyl.hextale.thevoid.realm.SinewWillow.Pod::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).noCollision().randomTicks().strength(0.2F)
+                    .sound(SoundType.CAVE_VINES).pushReaction(PushReaction.DESTROY)
+                    .lightLevel(state -> com.pockyl.hextale.thevoid.realm.SinewWillow.Pod.LIGHT[state.getValue(
+                            com.pockyl.hextale.thevoid.realm.SinewWillow.Pod.AGE)]));
+
+    /** Glass with a Hollow Crystal ground into it: lilac, a faint net of the membrane in it. */
+    public static final DeferredBlock<TransparentBlock> VOID_GLASS = BLOCKS.registerBlock("void_glass", TransparentBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.6F).sound(SoundType.GLASS).noOcclusion()
+                    .isValidSpawn((state, level, pos, type) -> false).isRedstoneConductor((state, level, pos) -> false)
+                    .isSuffocating((state, level, pos) -> false).isViewBlocking((state, level, pos) -> false));
+    public static final DeferredBlock<IronBarsBlock> VOID_GLASS_PANE = BLOCKS.registerBlock("void_glass_pane", IronBarsBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.3F).sound(SoundType.GLASS).noOcclusion());
+    // Metal our world lost to the Void, half digested in the gnawed stone of its shoals.
+    public static final DeferredBlock<net.minecraft.world.level.block.DropExperienceBlock> GNAWED_IRON_ORE = BLOCKS.registerBlock(
+            "gnawed_iron_ore", properties -> new net.minecraft.world.level.block.DropExperienceBlock(
+                    net.minecraft.util.valueproviders.ConstantInt.of(0), properties), () -> gnawedStoneProperties().strength(2.6F, 4.0F));
+    public static final DeferredBlock<net.minecraft.world.level.block.DropExperienceBlock> GNAWED_GOLD_ORE = BLOCKS.registerBlock(
+            "gnawed_gold_ore", properties -> new net.minecraft.world.level.block.DropExperienceBlock(
+                    net.minecraft.util.valueproviders.ConstantInt.of(0), properties), () -> gnawedStoneProperties().strength(2.6F, 4.0F));
+
+    private static BlockBehaviour.Properties sinewWillowLogProperties() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_PURPLE).instrument(NoteBlockInstrument.BASS).strength(2.0F)
+                .sound(SoundType.STEM);
+    }
+
+    private static BlockBehaviour.Properties sinewWillowPlankProperties() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_MAGENTA).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F)
+                .sound(SoundType.NETHER_WOOD);
+    }
+
+    private static BlockBehaviour.Properties gnawedStoneProperties() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_PURPLE).instrument(NoteBlockInstrument.BASEDRUM)
+                .requiresCorrectToolForDrops().strength(1.2F, 4.0F).sound(SoundType.TUFF);
+    }
+
+    private static BlockBehaviour.Properties huskChitinProperties() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_YELLOW).instrument(NoteBlockInstrument.BASEDRUM)
+                .requiresCorrectToolForDrops().strength(2.5F, 7.0F).sound(SoundType.BONE_BLOCK);
+    }
+
+    private static BlockBehaviour.Properties sacProperties(int light) {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(0.4F).sound(SoundType.HONEY_BLOCK).noOcclusion()
+                .lightLevel(state -> light).pushReaction(PushReaction.DESTROY).isValidSpawn((state, level, pos, type) -> false);
+    }
+
+    private static BlockBehaviour.Properties membraneProperties(int light) {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).strength(0.6F).sound(SoundType.HONEY_BLOCK)
+                .noOcclusion().lightLevel(state -> light).isValidSpawn((state, level, pos, type) -> false)
+                .isRedstoneConductor((state, level, pos) -> false).isSuffocating((state, level, pos) -> false)
+                .isViewBlocking((state, level, pos) -> false);
+    }
+
     private static BlockBehaviour.Properties voidRockProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).instrument(NoteBlockInstrument.BASEDRUM)
                 .requiresCorrectToolForDrops().strength(1.5F, 6.0F).sound(SoundType.TUFF);

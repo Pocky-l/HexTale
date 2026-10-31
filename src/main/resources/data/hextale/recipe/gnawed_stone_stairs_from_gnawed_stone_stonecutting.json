@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "hextale:gnawed_stone",
+  "result": {
+    "id": "hextale:gnawed_stone_stairs"
+  }
+}

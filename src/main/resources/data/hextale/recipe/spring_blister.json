@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "M",
+    "S",
+    "R"
+  ],
+  "key": {
+    "M": "hextale:void_membrane",
+    "S": "minecraft:slime_ball",
+    "R": "hextale:void_rock"
+  },
+  "result": {
+    "id": "hextale:spring_blister",
+    "count": 2
+  }
+}

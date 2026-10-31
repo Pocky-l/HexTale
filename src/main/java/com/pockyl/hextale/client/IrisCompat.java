@@ -43,6 +43,8 @@ public final class IrisCompat {
             // Not drawn while a pack is on; mapped all the same so a frame caught between the two never draws raw.
             assign(assign, assignShadow, instance, program, shadowProgram, VoidPipelines.BODY, "ENTITIES", "SHADOW_ENTITIES");
             assign(assign, assignShadow, instance, program, shadowProgram, VoidPipelines.HALO, "ENTITIES_TRANSLUCENT", "SHADOW_ENTITIES");
+            assign(assign, assignShadow, instance, program, shadowProgram, com.pockyl.hextale.client.render.VoidSky.OVER_PACK, "BASIC",
+                    "SHADOW_LIGHTNING");
             packInUse = apiClass.getMethod("isShaderPackInUse");
             shadowPass = apiClass.getMethod("isRenderingShadowPass");
             api = instance;

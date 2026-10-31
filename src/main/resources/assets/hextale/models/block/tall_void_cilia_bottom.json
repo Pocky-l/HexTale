@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "hextale:block/tall_void_cilia_bottom"
+  }
+}

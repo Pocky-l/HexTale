@@ -9,7 +9,7 @@
     "T": "minecraft:tinted_glass",
     "N": "hextale:nullstone",
     "V": "hextale:void_crystal",
-    "H": "minecraft:honeycomb"
+    "H": "hextale:void_membrane"
   },
   "result": {
     "id": "hextale:sealed_void_crystal"

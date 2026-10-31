@@ -16,7 +16,7 @@
 
 <p align="center"><img src="docs/showcase/hexcore.gif" alt="A ritual on the Hexcore" width="720"></p>
 
-<p align="center"><b>300+</b> blocks and items &middot; <b>22</b> essences &middot; <b>72</b> runes &middot; <b>180</b> steps in the guide<br><i>The mod is still in development, and a lot more is planned.</i></p>
+<p align="center"><b>300+</b> blocks and items &middot; <b>22</b> essences &middot; <b>60+</b> runes &middot; <b>4</b> levels of gear &middot; <b>1</b> dimension<br><i>The mod is still in development, and a lot more is planned.</i></p>
 
 ## Features
 
@@ -25,8 +25,8 @@
 <p align="center"><i>Everything breaks down into essences. Coal is mostly fire, seeds are mostly life. I boil things in the alembic,<br>keep what comes out in jars and move it around with brass pipes.</i></p>
 
 <h3 align="center">Page 15. Runes</h3>
-<p align="center"><img src="docs/showcase/altar.gif" alt="A ritual at the Ritual Altar" width="720"></p>
-<p align="center"><i>I find rune scrolls in dungeon chests, and sometimes I work one out myself while researching.<br>A rune circle burns them into tools and machines. My pickaxe smelts ore now and can see it through stone.</i></p>
+<p align="center"><img src="docs/showcase/circle.gif" alt="Steles burning runes into a pickaxe in the Rune Circle" width="720"></p>
+<p align="center"><i>I find rune scrolls in dungeon chests, and sometimes I work one out myself while researching.<br>Steles around the rune circle burn them into tools and machines. My pickaxe smelts ore now and can see it through stone.</i></p>
 
 <h3 align="center">Page 19. Machines</h3>
 <p align="center">
@@ -39,6 +39,14 @@
 <h3 align="center">Page 22. The Void</h3>
 <p align="center"><img src="docs/showcase/void.gif" alt="A breach of the Void, voidlings at its feet" width="720"></p>
 <p align="center"><i>I think I used too much magic around the house. The grass is going grey, there's a purple haze in the evenings,<br>and a few days ago a rift opened behind the barn. I haven't decided yet whether to close it or see what happens if I feed it.</i></p>
+
+<h3 align="center">Page 26. Arsenal</h3>
+<p align="center"><img src="docs/showcase/arsenal.gif" alt="Four levels of Bulwark armour with their swords and daggers" width="720"></p>
+<p align="center"><i>Iron with a crystal in it was only the start. Then came charged hexsteel, then an alloy that keeps glowing after a night on the Hexcore,<br>and at last a metal brought back from the Void. Every new set of armour holds more runes than the one before.</i></p>
+
+<h3 align="center">Page 31. Beyond the breach</h3>
+<p align="center"><img src="docs/showcase/realm.gif" alt="Inside the Void: a gate home and Sinew Willows" width="720"></p>
+<p align="center"><i>Once the breach was held, I stepped through. There is no ground in there, only old shells drifting in a violet haze,<br>trees made of sinew and something that watches from the dark. The gate home stays open behind me. I won't stay long.</i></p>
 
 <h3 align="center">Every page. The diary</h3>
 <p align="center"><img src="docs/showcase/diary.gif" alt="The Researcher's Diary" width="720"></p>
@@ -61,13 +69,15 @@ land around a base (the Thinning); `thinning = false` in `hextale-synced.toml` t
 | Action | Default |
 |---|---|
 | Open the Researcher's Diary | *Use* with the diary in hand |
-| Start or stop an altar ritual | *Sneak* + *Use* the altar with an empty hand (or a redstone signal) |
+| Start or stop a ritual (altar, Hexcore, Rune Circle) | *Sneak* + *Use* it with an empty hand (or a redstone signal) |
 | Link a pylon | *Use* the pylon, then *Use* the target |
 | Set a pipe side | *Sneak* + *Use* the pipe with an empty hand |
 | Fly with the skypack | *Jump*, then *Jump* again in the air |
 | Listen with the tuning fork | Hold *Use* |
 | Swing on the grapple | Hold *Use*; *Jump* reels in, *Sneak* lets out |
 | Wind the recall charm | *Use* a jar of rift essence with the charm |
+| Shockwave rune | A fully charged blow at the ground |
+| Blink rune | *Use* the sword at a creature |
 | Skip the breach cinematic | `Backspace` |
 
 ## Compatibility

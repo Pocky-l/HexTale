@@ -30,6 +30,9 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
     /** The plain look's tint of the stars and colour of the rim. */
     private static final int PLAIN_TINT = 0xFFC9A6FF;
     private static final int RIM = 0xB98FE6;
+    /** A gate's beacon: a column of warm light over it, seen from far off - the way home. */
+    private static final int BEACON = 0xF2B266;
+    private static final float BEACON_HEIGHT = 150;
     private static final int[][] NEIGHBOURS = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {-1, 1}, {-1, -1}, {1, -1}};
 
     public TheVoidRenderer(EntityRendererProvider.Context context) {
@@ -51,6 +54,8 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
         float calm;
         /** 0 .. 1 while it folds into its heart. */
         float fold;
+        /** A gate inside the Void: our world shows through it. */
+        boolean gate;
     }
 
     @Override
@@ -74,6 +79,7 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
         state.orientation.set(breach.orientation());
         state.calm = breach.calm();
         state.fold = breach.fold(partialTick);
+        state.gate = breach.gate();
         org.joml.Vector3fc push = breach.pushPoint();
         state.push = push == null ? 0 : breach.push(partialTick);
         if (push != null) {
@@ -84,7 +90,8 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
 
     @Override
     protected AABB getBoundingBoxForCulling(TheVoid breach) {
-        return new AABB(breach.position(), breach.position()).inflate(breach.layout().reach() + 1);
+        AABB box = new AABB(breach.position(), breach.position()).inflate(breach.layout().reach() + 1);
+        return breach.gate() ? box.expandTowards(0, BEACON_HEIGHT, 0) : box;
     }
 
     @Override
@@ -109,6 +116,9 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
             return;
         }
         Frame frame = new Frame(layout, shows, state);
+        if (state.gate && !com.pockyl.hextale.client.IrisCompat.shadowPass()) {
+            beacon(state, layout, poseStack, collector, camera);
+        }
         poseStack.pushPose();
         poseStack.mulPose(state.orientation);
         if (state.fold > 0 && !fold(state, poseStack)) {
@@ -132,6 +142,27 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
         }
         poseStack.popPose();
         super.submit(state, poseStack, collector, camera);
+    }
+
+    /** The column of warm light standing over a gate, breathing slowly, fading as it rises. */
+    private static void beacon(State state, VoidLayout layout, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
+        float bottom = layout.reach() * state.reveal;
+        int segments = 15;
+        net.minecraft.world.phys.Vec3[] points = new net.minecraft.world.phys.Vec3[segments + 1];
+        float[] light = new float[segments + 1];
+        for (int k = 0; k <= segments; k++) {
+            float t = k / (float) segments;
+            points[k] = new net.minecraft.world.phys.Vec3(0, bottom + (BEACON_HEIGHT - bottom) * t, 0);
+            light[k] = (1 - t) * Math.min(1, k * 0.6F);
+        }
+        org.joml.Vector3f eye = new org.joml.Vector3f((float) (camera.pos.x - state.x), (float) (camera.pos.y - state.y),
+                (float) (camera.pos.z - state.z));
+        float breath = (0.8F + 0.2F * Mth.sin(state.ageInTicks * 0.05F)) * state.reveal;
+        collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> {
+            JarStreamFx.strip(consumer, pose, points, light, eye, 4.0F, BEACON, 0.22F * breath);
+            JarStreamFx.strip(consumer, pose, points, light, eye, 1.4F, BEACON, 0.4F * breath);
+            JarStreamFx.strip(consumer, pose, points, light, eye, 0.4F, 0xFFE8C0, 0.6F * breath);
+        });
     }
 
     /**
@@ -176,7 +207,8 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
             open = Math.round(Mth.clamp(state.reveal, 0, 1) * 255);
             seed = state.seed & 0x7F;
             cellMm = Math.round(layout.cell * 1000);
-            core = Math.round(state.shape.core() * 1000);
+            // A gate carries its core as a negative number: the shader shows our world through it.
+            core = state.gate ? -Math.round(state.shape.core() * 1000) - 1 : Math.round(state.shape.core() * 1000);
             // The shaders read the size from the low 11 bits and how far it has cooled from the bits above.
             sizeCm = Math.min(2047, Math.round(state.size * 100)) | Math.round(Mth.clamp(state.calm, 0, 1) * 15) << 11;
             reveal = state.reveal;

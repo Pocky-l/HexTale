@@ -1,0 +1,18 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "GMG",
+    "MHM",
+    "GMG"
+  ],
+  "key": {
+    "G": "#c:glass_blocks/colorless",
+    "M": "hextale:void_membrane",
+    "H": "hextale:hollow_crystal"
+  },
+  "result": {
+    "id": "hextale:void_glass",
+    "count": 8
+  },
+  "charge": 2
+}

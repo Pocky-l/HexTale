@@ -1,0 +1,16 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:void_sac",
+  "parents": [
+    "rift_ore"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "nursery_hatched"
+  },
+  "pos": [
+    480,
+    1230
+  ]
+}

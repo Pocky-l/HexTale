@@ -1,0 +1,17 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:void_lens",
+  "parents": [
+    "hollow_crystal",
+    "void_chitin"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:void_lens"
+  },
+  "pos": [
+    800,
+    1170
+  ]
+}

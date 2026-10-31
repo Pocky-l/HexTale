@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "hextale:block/sinew_willow_slab"
+    },
+    "type=double": {
+      "model": "hextale:block/sinew_willow_planks"
+    },
+    "type=top": {
+      "model": "hextale:block/sinew_willow_slab_top"
+    }
+  }
+}

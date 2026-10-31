@@ -4,6 +4,10 @@
     "hextale:rusted_plating_stairs",
     "hextale:fire_brick_stairs",
     "hextale:void_rock_brick_stairs",
-    "hextale:scorched_calcite_brick_stairs"
+    "hextale:scorched_calcite_brick_stairs",
+    "hextale:husk_chitin_stairs",
+    "hextale:gnawed_stone_stairs",
+    "hextale:polished_husk_chitin_stairs",
+    "hextale:husk_chitin_tiles_stairs"
   ]
 }

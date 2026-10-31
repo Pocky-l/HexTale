@@ -1,0 +1,212 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/pearl_sac_skin",
+    "skin": "hextale:block/pearl_sac_skin",
+    "pearl": "hextale:block/pearl_sac_pearl",
+    "stalk": "hextale:block/void_sac_stalk"
+  },
+  "elements": [
+    {
+      "name": "stalk",
+      "from": [
+        7,
+        0,
+        7
+      ],
+      "to": [
+        9,
+        2,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            14,
+            9,
+            16
+          ],
+          "texture": "#stalk"
+        },
+        "east": {
+          "uv": [
+            7,
+            14,
+            9,
+            16
+          ],
+          "texture": "#stalk"
+        },
+        "south": {
+          "uv": [
+            7,
+            14,
+            9,
+            16
+          ],
+          "texture": "#stalk"
+        },
+        "west": {
+          "uv": [
+            7,
+            14,
+            9,
+            16
+          ],
+          "texture": "#stalk"
+        },
+        "down": {
+          "uv": [
+            7,
+            7,
+            9,
+            9
+          ],
+          "texture": "#stalk",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "pearl",
+      "from": [
+        6,
+        3,
+        6
+      ],
+      "to": [
+        10,
+        7,
+        10
+      ],
+      "light_emission": 5,
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#pearl"
+        },
+        "east": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#pearl"
+        },
+        "south": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#pearl"
+        },
+        "west": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#pearl"
+        },
+        "up": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#pearl"
+        },
+        "down": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#pearl"
+        }
+      }
+    },
+    {
+      "name": "skin",
+      "from": [
+        4,
+        2,
+        4
+      ],
+      "to": [
+        12,
+        9,
+        12
+      ],
+      "light_emission": 3,
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            7,
+            12,
+            14
+          ],
+          "texture": "#skin"
+        },
+        "east": {
+          "uv": [
+            4,
+            7,
+            12,
+            14
+          ],
+          "texture": "#skin"
+        },
+        "south": {
+          "uv": [
+            4,
+            7,
+            12,
+            14
+          ],
+          "texture": "#skin"
+        },
+        "west": {
+          "uv": [
+            4,
+            7,
+            12,
+            14
+          ],
+          "texture": "#skin"
+        },
+        "up": {
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ],
+          "texture": "#skin"
+        },
+        "down": {
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ],
+          "texture": "#skin"
+        }
+      }
+    }
+  ]
+}

@@ -225,6 +225,44 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> VOID_MITE_STEP = register("void_mite.step");
     public static final DeferredHolder<SoundEvent, SoundEvent> VOID_MITE_LATCH = register("void_mite.latch");
     public static final DeferredHolder<SoundEvent, SoundEvent> VOID_MITE_SHAKE = register("void_mite.shake");
+    /** Husk crust cracking under a weight (dry ticks, one per crack) and falling in. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> HUSK_CRUST_CRACK = register("husk_crust.crack");
+    public static final DeferredHolder<SoundEvent, SoundEvent> HUSK_CRUST_COLLAPSE = register("husk_crust.collapse");
+    /** Worn skin of the Void: the wet stretch under a weight, then the tear. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> WORN_MEMBRANE_STRETCH = register("worn_membrane.stretch");
+    public static final DeferredHolder<SoundEvent, SoundEvent> WORN_MEMBRANE_TEAR = register("worn_membrane.tear");
+    /** The Void's sacs: one bursting, a mimic twitching. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOID_SAC_BURST = register("void_sac.burst");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOID_SAC_TWITCH = register("void_sac.twitch");
+    /** A current of the Void: the whoosh of riding one (loop), its falling whine before it breaks; a fog bank rolling in. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOID_CURRENT = register("void_current.loop");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOID_CURRENT_BREAK = register("void_current.break");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOID_FOG_BANK = register("void_fog.bank");
+    /** Passing through a breach or a gate: the pull drawing one in (a rising rush), the arrival on the other side. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOID_PASSAGE_PULL = register("void_passage.pull");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOID_PASSAGE_ARRIVE = register("void_passage.arrive");
+    /** The Void's Rib Crawler: voice, steps, the dry clicking before it lets go, the drop, the landing, the bite. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> RIB_CRAWLER_AMBIENT = register("rib_crawler.ambient");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RIB_CRAWLER_HURT = register("rib_crawler.hurt");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RIB_CRAWLER_DEATH = register("rib_crawler.death");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RIB_CRAWLER_STEP = register("rib_crawler.step");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RIB_CRAWLER_CLICK = register("rib_crawler.click");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RIB_CRAWLER_DROP = register("rib_crawler.drop");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RIB_CRAWLER_LAND = register("rib_crawler.land");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RIB_CRAWLER_BITE = register("rib_crawler.bite");
+    /** The Void's Pit Maw: tearing open, the pull of its throat, the bite, folding shut, hurt, death. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> PIT_MAW_OPEN = register("pit_maw.open");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PIT_MAW_PULL = register("pit_maw.pull");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PIT_MAW_BITE = register("pit_maw.bite");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PIT_MAW_CLOSE = register("pit_maw.close");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PIT_MAW_HURT = register("pit_maw.hurt");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PIT_MAW_DEATH = register("pit_maw.death");
+    /** The Void's Seer: its drifting hum, opening its petals, the mark, hurt, death. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> SEER_AMBIENT = register("seer.ambient");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SEER_OPEN = register("seer.open");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SEER_MARK = register("seer.mark");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SEER_HURT = register("seer.hurt");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SEER_DEATH = register("seer.death");
     /** A melt settling in the Hex Furnace or the Hex Foundry, and the foundry catching fire when it is built. */
     public static final DeferredHolder<SoundEvent, SoundEvent> FORGE_MELT = register("forge.melt");
     public static final DeferredHolder<SoundEvent, SoundEvent> FORGE_CATCH = register("forge.catch");

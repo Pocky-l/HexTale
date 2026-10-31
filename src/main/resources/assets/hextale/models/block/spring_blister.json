@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "hextale:block/spring_blister_top",
+    "side": "hextale:block/spring_blister_side",
+    "bottom": "hextale:block/void_rock"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": "hextale:husk_chitin"
+  },
+  "result": {
+    "id": "hextale:husk_chitin_wall",
+    "count": 6
+  }
+}
