@@ -57,8 +57,11 @@ public final class VoidSky implements CustomSkyboxRenderer {
             .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false))
             .withCull(false)
             .build();
-    /** Half the box's side: small enough that its corners never pass the far plane at short render distances. */
-    private static final float SIZE = 8;
+    /**
+     * Half the box's side: far enough that the view bobbing's small sideways shift of the camera does not slide the
+     * painted sky against the world. The shaders pin the box onto the far plane, so it is never clipped there.
+     */
+    private static final float SIZE = 512;
     /** Set when drawing failed once: the plain sky is left for the rest of the session. */
     private static boolean broken;
 
