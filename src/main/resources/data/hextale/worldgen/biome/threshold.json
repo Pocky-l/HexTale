@@ -2,8 +2,8 @@
   "attributes": {
     "minecraft:visual/fog_color": "#6c5a84",
     "minecraft:visual/sky_color": "#6c5a84",
-    "minecraft:visual/fog_start_distance": 12.0,
-    "minecraft:visual/fog_end_distance": 140.0,
+    "minecraft:visual/fog_start_distance": 32.0,
+    "minecraft:visual/fog_end_distance": 190.0,
     "minecraft:visual/ambient_particles": {
       "argument": [
         {

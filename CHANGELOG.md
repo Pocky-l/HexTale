@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Void is dangerous and does not warn twice: the abyss below kills, and worn patches of skin - a shade paler, the
   veins nearly gone - hold a moment under your weight and then tear.
 - Its zones: the Threshold, the Ribcage Reach, the Swallowed Shoals, the Husk Drift and the Vortex.
+- Its plates are alive with detail: veins of light running across them like rivers, thickets of thin curved spines,
+  bladders of skin with crystals in their bottoms, pores through to the abyss ringed with light, outcrops of Void
+  crystal, banded edges of chitin and flesh, tendrils hanging from their undersides with glowing tips, bladders
+  drifting in the gaps. The great ribs glow at their joints. Voidlings and Void Mites come out of its dark.
 - New blocks: Husk Chitin and its lit ridge, Void Membrane (plain, veined, worn), Gnawed Stone, Rift Ore and Hollow
   Crystal clusters.
 - Raw Riftmetal, broken out of the husks' walls deep in the Void (it wants a radiant pickaxe), and Hollow Crystals -

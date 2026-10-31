@@ -638,7 +638,10 @@ public final class VoidShapes {
                         }
                         best[idx] = (float) s;
                         byte kind;
-                        if (i >= rib.glowFrom() || s > -1.05 && qy > 0.8 * d) {
+                        // Joints: every third segment of a thick rib a ring of light runs round it, like the seams of
+                        // a beetle's leg.
+                        boolean joint = r > 2.2 && i % 3 == 0 && t < 0.3 && s > -1.3;
+                        if (i >= rib.glowFrom() || joint || s > -1.05 && qy > 0.8 * d) {
                             kind = RIDGE;
                         } else if (s < -2.6 && r > 3.6) {
                             kind = FLESH;
@@ -765,14 +768,26 @@ public final class VoidShapes {
                     best[idx] = s;
                     byte kind;
                     if (y == top) {
-                        kind = pore > 0.76 ? RIDGE : lip > 1.2 ? CHITIN : noise(x / 6.0, 2, z / 6.0, plate.salt()) > 0.64 ? FLESH : SOIL;
+                        // Veins of light run across the plates like rivers; flesh and soil lie in broad patches.
+                        double vein = Math.abs(noise(x / 17.0, 4, z / 17.0, plate.salt() + 11) - 0.5)
+                                + Math.abs(noise(x / 5.0, 5, z / 5.0, plate.salt() + 13) - 0.5) * 0.08;
+                        if (pore > 0.76) {
+                            kind = RIDGE;
+                        } else if (lip > 1.2) {
+                            kind = CHITIN;
+                        } else if (vein < 0.035) {
+                            kind = VEINED;
+                        } else {
+                            kind = noise(x / 11.0, 2, z / 11.0, plate.salt()) > 0.56 ? FLESH : SOIL;
+                        }
                     } else if (top - y <= 2 && lip <= 1.2) {
                         kind = FLESH;
                     } else if (y == bottom && hash(x, y, z, plate.salt()) < 0.14) {
                         // Seams of light on the underside, seen from below over the abyss.
                         kind = RIDGE;
                     } else {
-                        kind = CHITIN;
+                        // Strata: bands of dark flesh through the chitin, showing on the plate's edges.
+                        kind = noise(x / 23.0, y / 2.5, z / 23.0, plate.salt() + 17) > 0.62 ? FLESH : CHITIN;
                     }
                     kinds[idx] = kind;
                 }
