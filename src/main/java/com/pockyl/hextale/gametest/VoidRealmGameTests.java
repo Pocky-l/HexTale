@@ -76,6 +76,58 @@ public final class VoidRealmGameTests {
         helper.succeed();
     }
 
+    /** A default world with the Void added is as stable as one without it (1.21.1 counted any fourth dimension). */
+    @HexTest
+    public static void aWorldWithTheVoidIsStable(GameTestHelper helper) {
+        var server = helper.getLevel().getServer();
+        var ops = net.minecraft.resources.RegistryOps.create(com.mojang.serialization.JsonOps.INSTANCE, server.registryAccess());
+        var resource = server.getResourceManager().getResource(Hextale.id("dimension/the_void.json"));
+        helper.assertTrue(resource.isPresent(), "the dimension file");
+        try (var reader = resource.get().openAsReader()) {
+            var stem = net.minecraft.world.level.dimension.LevelStem.CODEC.parse(ops, com.google.gson.JsonParser.parseReader(reader)).getOrThrow();
+            var dimensions = new java.util.LinkedHashMap<>(server.registryAccess().registryOrThrow(Registries.WORLD_PRESET)
+                    .getOrThrow(net.minecraft.world.level.levelgen.presets.WorldPresets.NORMAL).createWorldDimensions().dimensions());
+            var plain = new net.minecraft.world.level.levelgen.WorldDimensions(java.util.Map.copyOf(dimensions)).bake(emptyStems()).lifecycle();
+            helper.assertTrue(plain == com.mojang.serialization.Lifecycle.stable(), "the vanilla world is stable, not " + plain);
+            dimensions.put(ResourceKey.create(Registries.LEVEL_STEM, Hextale.id("the_void")), stem);
+            var withVoid = new net.minecraft.world.level.levelgen.WorldDimensions(dimensions).bake(emptyStems()).lifecycle();
+            helper.assertTrue(withVoid == com.mojang.serialization.Lifecycle.stable(), "with the Void it is stable too, not " + withVoid);
+        } catch (java.io.IOException e) {
+            throw new IllegalStateException(e);
+        }
+        helper.succeed();
+    }
+
+    private static net.minecraft.core.Registry<net.minecraft.world.level.dimension.LevelStem> emptyStems() {
+        return new net.minecraft.core.MappedRegistry<>(Registries.LEVEL_STEM, com.mojang.serialization.Lifecycle.stable()).freeze();
+    }
+
+    /**
+     * Nothing of ours makes a world "experimental": every entry the mod's data adds to a data-driven registry (damage
+     * types, biomes, features, the Void's dimension type...) counts as stable, as vanilla's own do.
+     */
+    @HexTest
+    public static void ourDataIsNotExperimental(GameTestHelper helper) {
+        List<String> experimental = new java.util.ArrayList<>();
+        List<String> seen = new java.util.ArrayList<>();
+        helper.getLevel().getServer().registryAccess().registries().forEach(entry -> experimentalOf(entry.value(), experimental, seen));
+        helper.assertTrue(seen.contains("ResourceKey[minecraft:worldgen/biome / hextale:threshold]"), "our data is there");
+        helper.assertTrue(experimental.isEmpty(), "experimental entries: " + experimental);
+        helper.succeed();
+    }
+
+    private static <T> void experimentalOf(net.minecraft.core.Registry<T> registry, List<String> out, List<String> seen) {
+        for (ResourceKey<T> key : registry.registryKeySet()) {
+            if (key.location().getNamespace().equals(Hextale.MOD_ID)) {
+                seen.add(key.toString());
+            }
+            if (key.location().getNamespace().equals(Hextale.MOD_ID)
+                    && registry.registrationInfo(key).map(info -> info.lifecycle() != com.mojang.serialization.Lifecycle.stable()).orElse(false)) {
+                out.add(key.toString());
+            }
+        }
+    }
+
     /** Over a stretch of the Void: ribs with lit crests, skin with veins and worn patches, flesh - and nothing low down. */
     @HexTest(maxTicks = 200)
     public static void theVoidIsBuiltOfRibsAndSkin(GameTestHelper helper) {
