@@ -42,5 +42,8 @@ enumExtensions="META-INF/enumextensions.json"
     ordering="NONE"
     side="CLIENT"
 
+[[mixins]]
+config="${mod_id}.mixins.json"
+
 [[accessTransformers]]
     file="META-INF/accesstransformer.cfg"
