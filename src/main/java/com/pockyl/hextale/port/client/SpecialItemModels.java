@@ -297,10 +297,24 @@ public final class SpecialItemModels {
         }
     }
 
-    /** Ticks the local player has held this very stack in use (26.x: the holder's use duration), else 0. */
+    /** The living entity being drawn right now (its held items are drawn inside), null outside a living renderer. */
+    private static net.minecraft.world.entity.@Nullable LivingEntity rendered;
+
+    /** Called from the client set-up: tracks the living entity being drawn, for the use-duration stages. */
+    public static void registerRenderTracking() {
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(
+                (net.neoforged.neoforge.client.event.RenderLivingEvent.Pre<?, ?> event) -> rendered = event.getEntity());
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(
+                (net.neoforged.neoforge.client.event.RenderLivingEvent.Post<?, ?> event) -> rendered = null);
+    }
+
+    /**
+     * Ticks the holder has held this very stack in use (26.x: the holder's use duration), else 0: the living entity
+     * being drawn, or the local player (first person).
+     */
     private static float used(ItemStack stack) {
-        net.minecraft.client.player.LocalPlayer player = Minecraft.getInstance().player;
-        return player != null && player.isUsingItem() && player.getUseItem() == stack ? player.getTicksUsingItem() : 0;
+        net.minecraft.world.entity.LivingEntity holder = rendered != null ? rendered : Minecraft.getInstance().player;
+        return holder != null && holder.isUsingItem() && holder.getUseItem() == stack ? holder.getTicksUsingItem() : 0;
     }
 
     private static List<SpecialModelRenderer<?>> bake(Entry entry) {

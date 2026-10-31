@@ -4,6 +4,21 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0+1.21.1] - 2026-10-31
+### Changed
+- Everything of 1.7.0 for Minecraft 26.3 is included: the Arsenal - Refined, Radiant and Riftforged tools with their
+  own models, rune places that grow with the level, Bulwark armour in four levels with its crystal heart, the Tendril
+  Dagger, the Strike Gauntlet worn on the forearm, the level materials (Charged Hexsteel, Engraved Diamond, Gemstone
+  Dust, Radiant Alloy, Riftmetal, Void Crystals, Sealed Void Crystal, Void Carapace) and their building blocks, the
+  lightning and abyss auras of radiant and riftforged gear; the weapon runes Shockwave, Blink, Detonator, Whirlpool and
+  Whirlwind, the blade runes Backstab and Bleeding, the gear runes Wavewalk, Static, Mirage, Flamethrower, Sunlight Cell
+  and Beam, and the reworked Chain Lightning; the rune strength picked by hand on the stele; the reworked recipes at
+  every bench, the JEI Notes tab and the diary scenes in the Rune Circle; the new textures, the faster diary map and
+  rune icons, the wisp's magic flame and every fix of the release. Where 1.21.1 differs:
+  - the new light drawn in the world (weapon rune effects, the auras on tools and Bulwark armour worn, the wisp's
+    flame, the dagger's tendril) is drawn after the particles without Minecraft's newer transparency sorting, like the
+    other glowing things on 1.21.1, so where it overlaps glass or water it may sort a little differently.
+
 ## [1.6.1+1.21.1] - 2026-10-30
 ### Fixed
 - Recipes that asked for iron bars (Lapidary, Foundry, Chem Still, Miasma Vent, Pink Brazier, Spawner Cage) showed an
