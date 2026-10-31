@@ -4,6 +4,17 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0+26.1.2] - 2026-10-31
+### Changed
+- Ported to Minecraft 26.1.2 ([NeoForge](https://neoforged.net/) 26.1.2). Everything of 1.7.0 for Minecraft 26.3
+  ([full changelog](https://github.com/Pocky-l/HexTale/blob/main/CHANGELOG.md)) is included: the Arsenal (refined,
+  radiant and riftforged tools, the Tendril Dagger, the Strike Gauntlet, Bulwark armour with its crystal heart, the new
+  materials and their blocks), the five weapon runes and the six new clothes and device runes, the lightning and abyss
+  auras, the star picker of the Rune Stele, the reworked recipes at every bench, the Notes tab in JEI, the faster
+  Researcher's Diary and rune icons, the new Eternal Flame wisps and the new looks. As before on 26.1.2, poplar saplings
+  are not Magic Tree catalysts and overlapping translucent effects (the new tool and armour auras, the weapon runes'
+  waves, sweeps and beams and the wisps' flames too) may sort a little differently.
+
 ## [1.7.0] - 2026-10-31
 ### Added
 - Radiant tools are wrapped in quiet lightning from pommel to tip - short arcs snapping here and there, a few sparks
