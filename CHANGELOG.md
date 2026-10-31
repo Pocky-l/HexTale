@@ -4,7 +4,7 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.7.0] - Unreleased
+## [1.7.0] - 2026-10-31
 ### Added
 - Radiant tools are wrapped in quiet lightning from pommel to tip - short arcs snapping here and there, a few sparks
   winding round, and now and then a discharge running the whole length. The abyss seeps out of riftforged tools:
