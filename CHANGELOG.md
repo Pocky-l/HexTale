@@ -25,7 +25,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A breach opened with a Void Shard is held by a ring of anchors and lets a player through like any other (it still
   does not feed on the land or send voidlings out).
 
+- Holding a Void Anchor or a crystal near a breach shows where its ring goes: six marks on the ground round it, a
+  missing side pulsing magenta with sparks rising, a held side glowing cold. Placing anchors tells you how many of the
+  six sides the ring holds.
+
 ### Changed
+- A closed ring of anchors no longer wears its crystals just by holding: they cloud only while the ring is still open,
+  with what the breach eats and with every passage through it. A breach once held stays held.
 - Riftmetal is no longer forged by throwing Radiant Alloy into a held breach: Raw Riftmetal from the Void is alloyed
   with Radiant Alloy in the furnace. Void Crystals no longer grow round a held breach; they grow on the geodes where the
   Void's skin sags lowest.

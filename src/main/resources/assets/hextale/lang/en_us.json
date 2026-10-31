@@ -2665,5 +2665,7 @@
   "quest.hextale.step_through.desc": "The ring holds, and the breach no longer throws me back. It pulls. On the other side there is no ground - only bones of something vast, and skin stretched between them over a light that is not warm. Behind me the door still shows home. It stays open. I hope.",
   "quest.hextale.rift_ore": "Rift Ore",
   "quest.hextale.rift_ore.goal": "break Raw Riftmetal out of a husk's wall",
-  "quest.hextale.rift_ore.desc": "Deep in, where the husks drift, black metal has grown into their walls. My old picks only scratch it. What would it take to work it - and what would it make?"
+  "quest.hextale.rift_ore.desc": "Deep in, where the husks drift, black metal has grown into their walls. My old picks only scratch it. What would it take to work it - and what would it make?",
+  "entity.hextale.the_void.ring": "The ring holds %s of %s sides",
+  "entity.hextale.the_void.ring_closed": "The ring is closed: the breach is held"
 }

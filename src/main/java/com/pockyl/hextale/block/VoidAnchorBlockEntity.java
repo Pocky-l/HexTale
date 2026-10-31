@@ -54,8 +54,9 @@ import org.jspecify.annotations.Nullable;
 /**
  * A Void Anchor's state. Its hextech crystal holds a breach: a breach counts the anchors around it ({@link TheVoid}) and
  * ties a thread of light to every one that holds a fresh crystal; six of them on every side close the ring and hold it.
- * Holding wears the crystal - it clouds a little with every moment ({@link #strain}), twice as fast while the breach
- * still fights, and with every mB the held breach eats - until it is a Clouded Crystal and the thread snaps. Swap it.
+ * A ring still open wears the crystals - they cloud a little with every moment ({@link #strain}) while the breach
+ * fights; a closed ring holds without wearing, and only every mB the held breach eats and every researcher passing
+ * through cloud them - until it is a Clouded Crystal and the thread snaps. Swap it.
  *
  * <p>A held breach eats through its anchors: an anchor takes the unknown essence out of the jars around it (the waste no
  * one wants) and whatever siphons bring it, and passes it along its thread into the breach.

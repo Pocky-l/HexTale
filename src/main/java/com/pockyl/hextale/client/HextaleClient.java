@@ -146,6 +146,7 @@ public final class HextaleClient {
         VoidAtmosphere.register(modBus);
         BreachCinematic.register(modBus);
         VoidTransitionScreen.register(modBus);
+        RingGuide.register();
         SilenceHush.register();
         ClientGrapple.register();
         LevitationHum.register();

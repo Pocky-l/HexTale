@@ -79,9 +79,13 @@ public final class VoidRoadGameTests {
                 helper.assertTrue(false, "the sixth anchor gets its crystal");
             }
             helper.assertTrue(breach.subdued(), "the closed ring subdues it, sides " + breach.heldSides());
-            for (VoidAnchorBlockEntity anchor : anchors) {
-                helper.assertTrue(anchor.tied() && anchor.subdued() && anchor.clouding() > 0, "every anchor holds it and wears");
+            for (int i = 0; i < anchors.size(); i++) {
+                VoidAnchorBlockEntity anchor = anchors.get(i);
+                helper.assertTrue(anchor.tied() && anchor.subdued(), "every anchor holds it");
+                // The five that fought the open ring wore; the sixth came into a closed ring, which holds without wearing.
+                helper.assertTrue(i < 5 ? anchor.clouding() > 0 : anchor.clouding() == 0, "anchor " + i + " wears only while the ring is open");
             }
+            helper.assertTrue(breach.heldMask() == 0b111111, "all six sides are marked held");
             breach.discard();
             Thinning.setAround(level, centre, 1, 0);
             clearRing(helper);

@@ -128,6 +128,8 @@ public class TheVoid extends Entity {
     private static final EntityDataAccessor<Long> DATA_FOLD_AT = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.LONG);
     /** A gate: this breach seen from inside the Void, the way back out (see {@link com.pockyl.hextale.thevoid.realm.VoidPassage}). */
     private static final EntityDataAccessor<Boolean> DATA_GATE = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.BOOLEAN);
+    /** Which sixths of the circle round it an anchor holds (bit per side, see {@link #side}). */
+    private static final EntityDataAccessor<Integer> DATA_SIDES = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.INT);
 
     private boolean burstShown;
     private boolean foldShown;
@@ -214,6 +216,18 @@ public class TheVoid extends Entity {
         builder.define(DATA_ATE, -1000L);
         builder.define(DATA_FOLD_AT, -1L);
         builder.define(DATA_GATE, false);
+        builder.define(DATA_SIDES, 0);
+    }
+
+    /** The sixths of the circle an anchor holds, a bit per side. */
+    public int heldMask() {
+        return entityData.get(DATA_SIDES);
+    }
+
+    /** The sixth of the circle round a breach at (bx, bz) that (x, z) lies in, 0-5; side k is centred on k * 60 degrees. */
+    public static int side(double bx, double bz, double x, double z) {
+        double angle = Math.toDegrees(Math.atan2(z - bz, x - bx)) + 360 + 180.0 / SIDES;
+        return (int) (angle / (360.0 / SIDES)) % SIDES;
     }
 
     /** A gate inside the Void (the way out), not a breach in the world. */
@@ -539,22 +553,37 @@ public class TheVoid extends Entity {
             if (dx * dx + dz * dz < ANCHOR_NEAREST * ANCHOR_NEAREST) {
                 continue;
             }
-            double angle = Math.toDegrees(Math.atan2(dz, dx)) + 360 + 180.0 / SIDES;
-            sides[(int) (angle / (360.0 / SIDES)) % SIDES] = true;
+            sides[side(getX(), getZ(), at.x, at.z)] = true;
             holding.add(anchor);
         }
         int held = 0;
-        for (boolean side : sides) {
-            held += side ? 1 : 0;
+        int mask = 0;
+        for (int i = 0; i < SIDES; i++) {
+            if (sides[i]) {
+                held++;
+                mask |= 1 << i;
+            }
         }
+        entityData.set(DATA_SIDES, mask);
         boolean was = subdued();
         int before = heldSides();
         entityData.set(DATA_HELD, held);
         anchors.clear();
         boolean nowHeld = held >= SIDES;
         for (com.pockyl.hextale.block.VoidAnchorBlockEntity anchor : holding) {
-            anchor.tie(level, this, nowHeld, ANCHOR_TICKS * (nowHeld ? 1 : 2));
+            // A closed ring holds without wearing (only what the breach eats and who passes through wear it); a ring
+            // still open fights the breach and clouds its crystals.
+            anchor.tie(level, this, nowHeld, nowHeld ? 0 : ANCHOR_TICKS * 2);
             anchors.add(anchor.getBlockPos());
+        }
+        if (held != before && (held > 0 || before > 0)) {
+            // Those building the ring see how far it has come.
+            net.minecraft.network.chat.Component status = held >= SIDES
+                    ? net.minecraft.network.chat.Component.translatable("entity.hextale.the_void.ring_closed")
+                    : net.minecraft.network.chat.Component.translatable("entity.hextale.the_void.ring", held, SIDES);
+            for (net.minecraft.server.level.ServerPlayer player : level.getPlayers(p -> p.distanceToSqr(this) < 24 * 24)) {
+                player.sendOverlayMessage(status);
+            }
         }
         if (nowHeld) {
             com.pockyl.hextale.thevoid.realm.VoidPassage.noteBreach(level, this);
