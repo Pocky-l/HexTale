@@ -1,7 +1,12 @@
 {
   "variants": {
-    "": {
-      "model": "hextale:block/void_membrane"
-    }
+    "": [
+      { "model": "hextale:block/void_membrane" },
+      { "model": "hextale:block/void_membrane", "y": 90 },
+      { "model": "hextale:block/void_membrane", "y": 180 },
+      { "model": "hextale:block/void_membrane", "y": 270 },
+      { "model": "hextale:block/void_membrane", "x": 180 },
+      { "model": "hextale:block/void_membrane", "x": 180, "y": 90 }
+    ]
   }
 }
