@@ -4,7 +4,7 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.8.1] - Unreleased
+## [1.8.1] - 2026-10-31
 ### Fixed
 - The Void's sky no longer jumps while you walk or run: it was painted on a box only a few blocks round the camera,
   so the bobbing of the view slid it against the world. It now hangs as far away as a sky should.
