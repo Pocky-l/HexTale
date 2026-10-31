@@ -562,6 +562,20 @@ public final class ResearchGameTests {
         });
     }
 
+    /** Magma under a separator heats it slowly with no blaze powder at all: the Nether is no hidden wall before the burner. */
+    @HexTest(maxTicks = 400)
+    public static void magmaHeatsTheSeparatorSlowly(GameTestHelper helper) {
+        BlockPos at = new BlockPos(1, 2, 1);
+        helper.setBlock(at.below(), Blocks.MAGMA_BLOCK);
+        helper.setBlock(at, ModBlocks.SEPARATOR.get().defaultBlockState());
+        SeparatorBlockEntity separator = helper.<SeparatorBlockEntity>getBlockEntity(at);
+        separator.setItem(SeparatorBlockEntity.POUR, EssenceFlaskItem.filled(EssenceMix.of(java.util.Map.of(Essence.LIFE, 8, Essence.EARTH, 8))));
+        separator.choose(Essence.EARTH);
+        separator.setItem(SeparatorBlockEntity.SUPPLY, new ItemStack(Items.GLASS_BOTTLE, 2));
+        helper.succeedWhen(() -> helper.assertTrue(EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.EXTRACT_OUT))
+                .equals(EssenceMix.pure(Essence.EARTH, 8)), "the earth is drawn out without any powder"));
+    }
+
     /** Choosing the unknown essence filters it out: the rest comes out clean, with no new unknown essence on top. */
     @HexTest(maxTicks = 300)
     public static void theUnknownEssenceIsFilteredOut(GameTestHelper helper) {

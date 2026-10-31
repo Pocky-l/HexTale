@@ -36,6 +36,8 @@ public final class BulwarkHeart {
     public static final int PER_CRYSTAL = 25;
     /** Share of a blow the heart soaks, by level (1-4). */
     public static final float[] SOAK = {0.3F, 0.4F, 0.5F, 0.6F};
+    /** The most one blow can lose to the heart, by level (1-4): a buffer against blows, never a wall against the worst. */
+    public static final float[] MAX_SOAK = {4, 6, 8, 10};
     /** Crystal shards thrown out when the heart cracks. */
     private static final int SHARDS = 10;
     /** Reach and push of the flash when the heart cracks. */
@@ -107,7 +109,8 @@ public final class BulwarkHeart {
         if (!charge.shields()) {
             return;
         }
-        float soak = Math.min(event.getAmount() * SOAK[RuneTier.tier(chest) - 1], charge.charge());
+        int tier = RuneTier.tier(chest) - 1;
+        float soak = Math.min(Math.min(event.getAmount() * SOAK[tier], MAX_SOAK[tier]), charge.charge());
         int cost = Math.max(1, Mth.ceil(soak));
         event.setAmount(event.getAmount() - soak);
         int left = Math.max(0, charge.charge() - cost);

@@ -150,6 +150,12 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> RAW_ZINC_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.RAW_ZINC_BLOCK);
     public static final DeferredItem<BlockItem> ZINC_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.ZINC_BLOCK);
     public static final DeferredItem<BlockItem> HEXSTEEL_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.HEXSTEEL_BLOCK);
+    public static final DeferredItem<BlockItem> CHARGED_HEXSTEEL_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.CHARGED_HEXSTEEL_BLOCK);
+    public static final DeferredItem<BlockItem> HEXSTEEL_PLATING = ITEMS.registerSimpleBlockItem(ModBlocks.HEXSTEEL_PLATING);
+    public static final DeferredItem<BlockItem> RADIANT_ALLOY_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.RADIANT_ALLOY_BLOCK);
+    public static final DeferredItem<BlockItem> RADIANT_TRIM = ITEMS.registerSimpleBlockItem(ModBlocks.RADIANT_TRIM);
+    public static final DeferredItem<BlockItem> RIFTMETAL_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.RIFTMETAL_BLOCK, properties -> properties.fireResistant());
+    public static final DeferredItem<BlockItem> VOID_CARAPACE_TILES = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_CARAPACE_TILES);
     public static final DeferredItem<Item> RAW_ZINC = ITEMS.registerSimpleItem("raw_zinc");
     public static final DeferredItem<Item> ZINC_INGOT = ITEMS.registerSimpleItem("zinc_ingot");
     public static final DeferredItem<Item> ZINC_NUGGET = ITEMS.registerSimpleItem("zinc_nugget");
@@ -301,12 +307,12 @@ public final class ModItems {
     public static final DeferredItem<ResearchersDiaryItem> RESEARCHERS_DIARY = ITEMS.registerItem("researchers_diary",
             properties -> new ResearchersDiaryItem(properties.stacksTo(1)));
 
-    /** Hextech pickaxe materials by tier: iron, diamond, netherite strength; repaired with brass. */
+    /** Tool materials by level: iron, diamond, netherite, beyond; each level mends with its own metal (brass, charged hexsteel, radiant alloy, riftmetal). */
     private static final ToolMaterial[] PICKAXE_MATERIALS = {
             new ToolMaterial(BlockTags.INCORRECT_FOR_IRON_TOOL, 750, 7.0F, 2.0F, 14, ModTags.HEXTECH_TOOL_MATERIALS),
-            new ToolMaterial(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 1800, 9.0F, 3.0F, 12, ModTags.HEXTECH_TOOL_MATERIALS),
-            new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 2800, 10.5F, 4.0F, 16, ModTags.HEXTECH_TOOL_MATERIALS),
-            new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 4000, 12.0F, 5.0F, 18, ModTags.HEXTECH_TOOL_MATERIALS)};
+            new ToolMaterial(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 1800, 9.0F, 3.0F, 12, ModTags.REPAIRS_CHARGED_HEXSTEEL),
+            new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 2800, 10.5F, 4.0F, 16, ModTags.REPAIRS_RADIANT_ALLOY),
+            new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 4000, 12.0F, 5.0F, 18, ModTags.REPAIRS_RIFTMETAL)};
     /** The three hextech pickaxes; runes are burned into them at the altar. */
     public static final Map<HextechPickaxe, DeferredItem<HextechPickaxeItem>> PICKAXES = new EnumMap<>(HextechPickaxe.class);
 
@@ -410,13 +416,13 @@ public final class ModItems {
     // (the hexsteel equipment asset) until its worn models are wired in.
     private static final ArmorMaterial[] BULWARK_ARMOR = {
             new ArmorMaterial(20, Map.of(ArmorType.BOOTS, 2, ArmorType.LEGGINGS, 5, ArmorType.CHESTPLATE, 6, ArmorType.HELMET, 2, ArmorType.BODY, 5),
-                    14, SoundEvents.ARMOR_EQUIP_IRON, 0.0F, 0.0F, ModTags.REPAIRS_HEXSTEEL, HEXSTEEL_ASSET),
+                    14, SoundEvents.ARMOR_EQUIP_IRON, 0.0F, 0.0F, ModTags.HEXTECH_TOOL_MATERIALS, HEXSTEEL_ASSET),
             new ArmorMaterial(33, Map.of(ArmorType.BOOTS, 3, ArmorType.LEGGINGS, 6, ArmorType.CHESTPLATE, 8, ArmorType.HELMET, 3, ArmorType.BODY, 11),
-                    12, SoundEvents.ARMOR_EQUIP_DIAMOND, 2.0F, 0.0F, ModTags.REPAIRS_HEXSTEEL, HEXSTEEL_ASSET),
+                    12, SoundEvents.ARMOR_EQUIP_DIAMOND, 2.0F, 0.0F, ModTags.REPAIRS_CHARGED_HEXSTEEL, HEXSTEEL_ASSET),
             new ArmorMaterial(37, Map.of(ArmorType.BOOTS, 3, ArmorType.LEGGINGS, 6, ArmorType.CHESTPLATE, 8, ArmorType.HELMET, 3, ArmorType.BODY, 11),
-                    16, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.1F, ModTags.REPAIRS_HEXSTEEL, HEXSTEEL_ASSET),
+                    16, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.1F, ModTags.REPAIRS_RADIANT_ALLOY, HEXSTEEL_ASSET),
             new ArmorMaterial(42, Map.of(ArmorType.BOOTS, 3, ArmorType.LEGGINGS, 7, ArmorType.CHESTPLATE, 9, ArmorType.HELMET, 3, ArmorType.BODY, 13),
-                    18, SoundEvents.ARMOR_EQUIP_NETHERITE, 4.0F, 0.15F, ModTags.REPAIRS_HEXSTEEL, HEXSTEEL_ASSET)};
+                    18, SoundEvents.ARMOR_EQUIP_NETHERITE, 4.0F, 0.15F, ModTags.REPAIRS_RIFTMETAL, HEXSTEEL_ASSET)};
     public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> BULWARK_HELMET = ITEMS.registerItem("bulwark_helmet",
             properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(BULWARK_ARMOR[0].holder(), ArmorType.HELMET,
                     BULWARK_ARMOR[0].properties(properties, ArmorType.HELMET)));

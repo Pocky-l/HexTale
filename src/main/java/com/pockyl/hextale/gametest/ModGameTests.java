@@ -118,6 +118,35 @@ public final class ModGameTests {
         helper.succeed();
     }
 
+    /**
+     * Items a survival player can never hold (creative tab only) are never asked for by a recipe: the riftforged tools
+     * once wanted the creative Void Shard and could not be made at all.
+     */
+    @HexTest
+    public static void recipesNeverWantCreativeOnlyItems(GameTestHelper helper) {
+        Set<String> creativeOnly = Set.of("hextale:void_shard", "hextale:creative_essence_tank",
+                "hextale:scroll_of_omniscience", "hextale:scroll_of_oblivion");
+        List<String> wanting = new java.util.ArrayList<>();
+        var resources = helper.getLevel().getServer().getResourceManager();
+        for (String folder : List.of("recipe", "hextale_alloying", "hextale_brew", "hextale_crafting", "hextale_crucible",
+                "hextale_experiment", "hextale_infusion")) {
+            resources.listResources(folder, id -> id.getNamespace().equals(Hextale.MOD_ID) && id.getPath().endsWith(".json"))
+                    .forEach((id, resource) -> {
+                        try (var reader = resource.openAsReader()) {
+                            com.google.gson.JsonObject json = com.google.gson.JsonParser.parseReader(reader).getAsJsonObject();
+                            json.remove("result");
+                            String text = json.toString();
+                            creativeOnly.stream().filter(item -> text.contains('"' + item + '"'))
+                                    .forEach(item -> wanting.add(id.getPath() + " -> " + item));
+                        } catch (java.io.IOException e) {
+                            throw new IllegalStateException(id.toString(), e);
+                        }
+                    });
+        }
+        helper.assertTrue(wanting.isEmpty(), "recipes wanting creative-only items: " + wanting);
+        helper.succeed();
+    }
+
     /** Item tags an ingredient names: "#ns:path" strings (26.x) or {"tag": "ns:path"} objects (1.21.1). */
     private static void collectTags(com.google.gson.JsonElement json, Set<String> out) {
         if (json.isJsonPrimitive() && json.getAsJsonPrimitive().isString() && json.getAsString().matches("#[a-z0-9_.-]+:[a-z0-9_./-]+")) {

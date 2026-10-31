@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "hextale:riftmetal_ingot"
+    }
+  },
+  "result": {
+    "id": "hextale:riftmetal_block"
+  }
+}

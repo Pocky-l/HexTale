@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "##",
+    "##"
+  ],
+  "key": {
+    "#": {
+      "item": "hextale:void_carapace"
+    }
+  },
+  "result": {
+    "id": "hextale:void_carapace_tiles",
+    "count": 4
+  }
+}

@@ -95,10 +95,14 @@ public interface QuestGoal {
         }
     }
 
-    /** At least this many items studied at the table. */
-    record Studied(int items) implements QuestGoal {
+    /**
+     * At least this many items studied at the table - or, with {@code item}, that very item: a strange find has to be
+     * looked at under the loupe before the diary knows what to do with it.
+     */
+    record Studied(int items, java.util.Optional<net.minecraft.resources.ResourceLocation> item) implements QuestGoal {
         static final MapCodec<Studied> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-                Codec.INT.optionalFieldOf("items", 1).forGetter(Studied::items)).apply(i, Studied::new));
+                Codec.INT.optionalFieldOf("items", 1).forGetter(Studied::items),
+                net.minecraft.resources.ResourceLocation.CODEC.optionalFieldOf("item").forGetter(Studied::item)).apply(i, Studied::new));
 
         @Override
         public String type() {
@@ -107,7 +111,7 @@ public interface QuestGoal {
 
         @Override
         public boolean isMet(ServerPlayer player) {
-            return Research.of(player).studied().size() >= items;
+            return item.map(id -> Research.of(player).hasStudied(id)).orElseGet(() -> Research.of(player).studied().size() >= items);
         }
     }
 

@@ -1,0 +1,13 @@
+{
+  "kind": "wip",
+  "region": "void",
+  "stage": "mid",
+  "icon": "hextale:clouded_crystal",
+  "parents": [
+    "clouded_crystal"
+  ],
+  "pos": [
+    -35,
+    430
+  ]
+}

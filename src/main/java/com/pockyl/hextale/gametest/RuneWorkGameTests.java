@@ -468,7 +468,7 @@ public final class RuneWorkGameTests {
     public static void onlyAHexcoreForgesWithTheVoid(GameTestHelper helper) {
         ItemStack radiant = pickaxe(HextechPickaxe.RADIANT, PickaxeRune.SMELTING);
         List<ItemStack> items = List.of(new ItemStack(ModItems.RIFTMETAL_INGOT.get()), new ItemStack(ModItems.RIFTMETAL_INGOT.get()),
-                new ItemStack(ModItems.SEALED_VOID_CRYSTAL.get()), new ItemStack(ModItems.VOID_SHARD.get()));
+                new ItemStack(ModItems.SEALED_VOID_CRYSTAL.get()), new ItemStack(ModItems.VOID_CRYSTAL.get()));
         circle(helper, radiant, items, EssenceMix.EMPTY);
         Ritual.Circle altar = scan(helper);
         helper.assertTrue(Ritual.plan(radiant, altar, false) == null, "a plain altar cannot forge with the Void");

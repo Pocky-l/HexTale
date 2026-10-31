@@ -505,16 +505,49 @@
       }
     },
     {
-      "name": "glow_shank",
+      "name": "parts_ring",
       "from": [
-        6.98,
-        3.98,
-        6.98
+        6,
+        13,
+        8
       ],
       "to": [
-        9.02,
-        13.02,
-        9.02
+        10,
+        16,
+        8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            0,
+            10,
+            3
+          ],
+          "texture": "#world_anchor_parts"
+        },
+        "south": {
+          "uv": [
+            6,
+            0,
+            10,
+            3
+          ],
+          "texture": "#world_anchor_parts"
+        }
+      }
+    },
+    {
+      "name": "glow_shank",
+      "from": [
+        6.9,
+        3.9,
+        6.9
+      ],
+      "to": [
+        9.1,
+        13.1,
+        9.1
       ],
       "light_emission": 15,
       "faces": {
@@ -553,39 +586,6 @@
             12
           ],
           "texture": "#world_anchor_glow"
-        }
-      }
-    },
-    {
-      "name": "parts_ring",
-      "from": [
-        6,
-        13,
-        8
-      ],
-      "to": [
-        10,
-        16,
-        8
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            6,
-            0,
-            10,
-            3
-          ],
-          "texture": "#world_anchor_parts"
-        },
-        "south": {
-          "uv": [
-            6,
-            0,
-            10,
-            3
-          ],
-          "texture": "#world_anchor_parts"
         }
       }
     }

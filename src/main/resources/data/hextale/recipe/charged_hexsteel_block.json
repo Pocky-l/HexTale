@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "hextale:charged_hexsteel_ingot"
+    }
+  },
+  "result": {
+    "id": "hextale:charged_hexsteel_block"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "kind": "wip",
+  "region": "void",
+  "stage": "mid",
+  "icon": "minecraft:flower_pot",
+  "parents": [
+    "void_flora"
+  ],
+  "pos": [
+    405,
+    590
+  ]
+}
