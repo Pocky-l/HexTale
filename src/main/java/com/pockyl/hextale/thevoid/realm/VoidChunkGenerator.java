@@ -99,38 +99,107 @@ public class VoidChunkGenerator extends ChunkGenerator {
     private static final byte FLORA = 40;
     private static final byte HOLLOW = 41;
     private static final byte CRYSTAL_UP = 42;
+    private static final byte CILIA = 50;
+    private static final byte TALL_LOW = 51;
+    private static final byte TALL_HIGH = 52;
+    private static final byte SPORE = 53;
+    private static final byte TENDRIL_BODY = 54;
+    private static final byte TENDRIL_HEAD = 55;
+    private static final byte SINEW = 56;
+    private static final byte BLISTER = 57;
 
     /**
      * Plants on open flesh, hollow crystals on open swallowed stone, Void crystals kept only where something holds them.
      * One pass over the column, looking only up.
      */
     private static void decorate(byte[] kinds, int x0, int z0) {
-        for (int y = 0; y < VoidShapes.HEIGHT - 1; y++) {
+        for (int y = 1; y < VoidShapes.HEIGHT - 2; y++) {
             for (int z = 0; z < 16; z++) {
                 for (int x = 0; x < 16; x++) {
                     int i = VoidShapes.index(x, y, z);
                     byte kind = kinds[i];
-                    int above = VoidShapes.index(x, y + 1, z);
                     if (kind == VoidShapes.CRYSTAL) {
-                        byte below = y > 0 ? kinds[VoidShapes.index(x, y - 1, z)] : VoidShapes.AIR;
-                        kinds[i] = solid(below) ? CRYSTAL_UP : VoidShapes.AIR;
+                        kinds[i] = solid(kinds[VoidShapes.index(x, y - 1, z)]) ? CRYSTAL_UP : VoidShapes.AIR;
                         continue;
                     }
+                    if (kind == VoidShapes.AIR) {
+                        curtain(kinds, x, y, z, x0, z0);
+                        continue;
+                    }
+                    int below = VoidShapes.index(x, y - 1, z);
+                    if (kinds[below] == VoidShapes.AIR && (kind == VoidShapes.CHITIN || kind == VoidShapes.RIDGE || kind == VoidShapes.FLESH)
+                            && VoidShapes.hash(x0 + x, y, z0 + z, 0xF1D0) < 0.05) {
+                        hang(kinds, x, y, z, x0, z0);
+                    }
+                    int above = VoidShapes.index(x, y + 1, z);
                     if (kinds[above] != VoidShapes.AIR) {
                         continue;
                     }
+                    boolean room = kinds[VoidShapes.index(x, y + 2, z)] == VoidShapes.AIR;
                     double roll = VoidShapes.hash(x0 + x, y, z0 + z, 0xF10A);
-                    if (kind == VoidShapes.FLESH && roll < 0.012) {
-                        // Outcrops of Void crystal on open flesh.
-                        kinds[above] = CRYSTAL_UP;
-                    } else if (kind == VoidShapes.FLESH && roll < 0.16 || kind == VoidShapes.SOIL && roll < 0.12) {
-                        kinds[above] = FLORA;
+                    if (kind == VoidShapes.SOIL) {
+                        // The plates' own carpet: cilia everywhere, tall ones in places, puffballs and the Void's plants.
+                        if (roll < 0.004) {
+                            kinds[i] = BLISTER;
+                        } else if (roll < 0.3) {
+                            kinds[above] = CILIA;
+                        } else if (roll < 0.36 && room) {
+                            kinds[above] = TALL_LOW;
+                            kinds[VoidShapes.index(x, y + 2, z)] = TALL_HIGH;
+                        } else if (roll < 0.38) {
+                            kinds[above] = SPORE;
+                        } else if (roll < 0.47) {
+                            kinds[above] = FLORA;
+                        }
+                    } else if (kind == VoidShapes.FLESH) {
+                        if (roll < 0.012) {
+                            // Outcrops of Void crystal on open flesh.
+                            kinds[above] = CRYSTAL_UP;
+                        } else if (roll < 0.16) {
+                            kinds[above] = FLORA;
+                        } else if (roll < 0.2) {
+                            kinds[above] = SPORE;
+                        } else if (roll < 0.4) {
+                            kinds[above] = CILIA;
+                        }
                     } else if (kind == VoidShapes.GNAWED && roll < 0.03) {
                         kinds[above] = HOLLOW;
                     }
                 }
             }
         }
+    }
+
+    /** A strand of tendrils hanging from the underside of what is at (x, y, z), down through the air below it. */
+    private static void hang(byte[] kinds, int x, int y, int z, int x0, int z0) {
+        int length = 2 + (int) (VoidShapes.hash(x0 + x, y, z0 + z, 0xF1D1) * 9);
+        int end = y - 1;
+        for (int k = 1; k <= length && y - k >= 0; k++) {
+            if (kinds[VoidShapes.index(x, y - k, z)] != VoidShapes.AIR) {
+                break;
+            }
+            kinds[VoidShapes.index(x, y - k, z)] = TENDRIL_BODY;
+            end = y - k;
+        }
+        if (end < y) {
+            kinds[VoidShapes.index(x, end, z)] = TENDRIL_HEAD;
+        }
+    }
+
+    /** Sinews stretched across a narrow gap of air between two pieces of chitin (spines of a thicket, a rib's crotch). */
+    private static void curtain(byte[] kinds, int x, int y, int z, int x0, int z0) {
+        if (x == 0 || x == 15 || z == 0 || z == 15) {
+            return;
+        }
+        boolean acrossX = shell(kinds[VoidShapes.index(x - 1, y, z)]) && shell(kinds[VoidShapes.index(x + 1, y, z)]);
+        boolean acrossZ = shell(kinds[VoidShapes.index(x, y, z - 1)]) && shell(kinds[VoidShapes.index(x, y, z + 1)]);
+        if ((acrossX || acrossZ) && VoidShapes.hash(x0 + x, y, z0 + z, 0xF1D2) < 0.45) {
+            kinds[VoidShapes.index(x, y, z)] = SINEW;
+        }
+    }
+
+    private static boolean shell(byte kind) {
+        return kind == VoidShapes.CHITIN || kind == VoidShapes.RIDGE;
     }
 
     private static boolean solid(byte kind) {
@@ -148,6 +217,17 @@ public class VoidChunkGenerator extends ChunkGenerator {
             case VoidShapes.VEINED -> ModBlocks.VEINED_VOID_MEMBRANE.get().defaultBlockState();
             case VoidShapes.RIFT_ORE -> ModBlocks.RIFT_ORE.get().defaultBlockState();
             case VoidShapes.GNAWED -> ModBlocks.GNAWED_STONE.get().defaultBlockState();
+            case VoidShapes.ICHOR -> ModBlocks.VOID_ICHOR.get().defaultBlockState();
+            case CILIA -> ModBlocks.VOID_CILIA.get().defaultBlockState();
+            case TALL_LOW -> ModBlocks.TALL_VOID_CILIA.get().defaultBlockState()
+                    .setValue(net.minecraft.world.level.block.DoublePlantBlock.HALF, net.minecraft.world.level.block.state.properties.DoubleBlockHalf.LOWER);
+            case TALL_HIGH -> ModBlocks.TALL_VOID_CILIA.get().defaultBlockState()
+                    .setValue(net.minecraft.world.level.block.DoublePlantBlock.HALF, net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER);
+            case SPORE -> ModBlocks.SPORE_PUFF.get().defaultBlockState();
+            case TENDRIL_BODY -> ModBlocks.VOID_TENDRILS_PLANT.get().defaultBlockState();
+            case TENDRIL_HEAD -> ModBlocks.VOID_TENDRILS.get().defaultBlockState();
+            case SINEW -> ModBlocks.SINEW_CURTAIN.get().defaultBlockState();
+            case BLISTER -> ModBlocks.SPRING_BLISTER.get().defaultBlockState();
             case FLORA -> {
                 double pick = VoidShapes.hash(x, y, z, 0xF20B);
                 yield (pick < 0.45 ? ModBlocks.VOID_ROOTS : pick < 0.8 ? ModBlocks.VOID_CORAL : ModBlocks.VOID_BULB).get().defaultBlockState();

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "ripe=true": {
+      "model": "hextale:block/spore_puff"
+    },
+    "ripe=false": {
+      "model": "hextale:block/spore_puff"
+    }
+  }
+}

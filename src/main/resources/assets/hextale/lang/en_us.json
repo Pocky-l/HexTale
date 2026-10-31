@@ -2667,5 +2667,14 @@
   "quest.hextale.rift_ore.goal": "break Raw Riftmetal out of a husk's wall",
   "quest.hextale.rift_ore.desc": "Deep in, where the husks drift, black metal has grown into their walls. My old picks only scratch it. What would it take to work it - and what would it make?",
   "entity.hextale.the_void.ring": "The ring holds %s of %s sides",
-  "entity.hextale.the_void.ring_closed": "The ring is closed: the breach is held"
+  "entity.hextale.the_void.ring_closed": "The ring is closed: the breach is held",
+  "block.hextale.void_cilia": "Void Cilia",
+  "block.hextale.tall_void_cilia": "Tall Void Cilia",
+  "block.hextale.void_tendrils": "Void Tendrils",
+  "block.hextale.void_tendrils_plant": "Void Tendrils Plant",
+  "block.hextale.spore_puff": "Spore Puff",
+  "block.hextale.sinew_curtain": "Sinew Curtain",
+  "block.hextale.spring_blister": "Spring Blister",
+  "block.hextale.void_ichor": "Void Ichor",
+  "item.hextale.void_ichor_bucket": "Bucket of Void Ichor"
 }

@@ -350,6 +350,13 @@ public final class Hextale {
         output.accept(ModItems.GNAWED_STONE);
         output.accept(ModItems.RIFT_ORE);
         output.accept(ModItems.HOLLOW_CRYSTAL_CLUSTER);
+        output.accept(ModItems.VOID_CILIA);
+        output.accept(ModItems.TALL_VOID_CILIA);
+        output.accept(ModItems.VOID_TENDRILS);
+        output.accept(ModItems.SPORE_PUFF);
+        output.accept(ModItems.SINEW_CURTAIN);
+        output.accept(ModItems.SPRING_BLISTER);
+        output.accept(ModItems.VOID_ICHOR_BUCKET);
 
         // Bottles of the primals and of unknown essence, then every essence as an item in catalogue order
         // (primals, pairs, deeper compounds), then every brew.

@@ -1,0 +1,82 @@
+{
+  "variants": {
+    "age=0": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=1": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=2": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=3": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=4": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=5": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=6": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=7": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=8": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=9": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=10": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=11": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=12": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=13": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=14": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=15": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=16": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=17": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=18": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=19": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=20": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=21": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=22": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=23": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=24": {
+      "model": "hextale:block/void_tendrils"
+    },
+    "age=25": {
+      "model": "hextale:block/void_tendrils"
+    }
+  }
+}

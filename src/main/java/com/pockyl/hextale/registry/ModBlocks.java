@@ -608,6 +608,36 @@ public final class ModBlocks {
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).forceSolidOn().noOcclusion().strength(1.5F)
                     .requiresCorrectToolForDrops().sound(SoundType.AMETHYST_CLUSTER).pushReaction(PushReaction.POPPED));
 
+    // The Void's growth and the blocks of its plates that do something to those who walk on them.
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.VoidFloraBlock> VOID_CILIA = BLOCKS.registerBlock("void_cilia",
+            properties -> new com.pockyl.hextale.thevoid.VoidFloraBlock(false, properties), () -> voidFloraProperties(0));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.VoidGrowth.TallCilia> TALL_VOID_CILIA = BLOCKS.registerBlock(
+            "tall_void_cilia", com.pockyl.hextale.thevoid.realm.VoidGrowth.TallCilia::new, () -> voidFloraProperties(0));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.VoidGrowth.Tendrils> VOID_TENDRILS = BLOCKS.registerBlock("void_tendrils",
+            com.pockyl.hextale.thevoid.realm.VoidGrowth.Tendrils::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).randomTicks().noCollision().instabreak()
+                    .sound(SoundType.WEEPING_VINES).lightLevel(state -> 7).pushReaction(PushReaction.POPPED));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.VoidGrowth.TendrilsPlant> VOID_TENDRILS_PLANT = BLOCKS.registerBlock(
+            "void_tendrils_plant", com.pockyl.hextale.thevoid.realm.VoidGrowth.TendrilsPlant::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).noCollision().instabreak()
+                    .sound(SoundType.WEEPING_VINES).pushReaction(PushReaction.POPPED));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.VoidGrowth.SporePuff> SPORE_PUFF = BLOCKS.registerBlock("spore_puff",
+            com.pockyl.hextale.thevoid.realm.VoidGrowth.SporePuff::new,
+            () -> voidFloraProperties(5).lightLevel(state -> state.getValue(com.pockyl.hextale.thevoid.realm.VoidGrowth.SporePuff.RIPE) ? 6 : 2));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.VoidGrowth.SinewCurtain> SINEW_CURTAIN = BLOCKS.registerBlock(
+            "sinew_curtain", com.pockyl.hextale.thevoid.realm.VoidGrowth.SinewCurtain::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).forceSolidOn().noCollision().strength(2.0F)
+                    .sound(SoundType.WEEPING_VINES).pushReaction(PushReaction.POPPED));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.VoidGrowth.SpringBlister> SPRING_BLISTER = BLOCKS.registerBlock(
+            "spring_blister", com.pockyl.hextale.thevoid.realm.VoidGrowth.SpringBlister::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).strength(0.8F).sound(SoundType.SLIME_BLOCK)
+                    .lightLevel(state -> 5));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.realm.VoidIchor.Block> VOID_ICHOR = BLOCKS.registerBlock("void_ichor",
+            properties -> new com.pockyl.hextale.thevoid.realm.VoidIchor.Block(ModFluids.VOID_ICHOR.get(), properties),
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).replaceable().noCollision().strength(100.0F)
+                    .lightLevel(state -> 10).pushReaction(PushReaction.POPPED).noLootTable().liquid()
+                    .sound(SoundType.EMPTY));
+
     private static BlockBehaviour.Properties huskChitinProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_YELLOW).instrument(NoteBlockInstrument.BASEDRUM)
                 .requiresCorrectToolForDrops().strength(2.5F, 7.0F).sound(SoundType.BONE_BLOCK);

@@ -2667,5 +2667,14 @@
   "quest.hextale.rift_ore.goal": "выбить сырой разломный металл из стенки кокона",
   "quest.hextale.rift_ore.desc": "Глубже, там, где дрейфуют коконы, в их стенки врос чёрный металл. Старые кирки его только царапают. Чем его взять - и что из него выйдет?",
   "entity.hextale.the_void.ring": "Кольцо держит %s из %s сторон",
-  "entity.hextale.the_void.ring_closed": "Кольцо замкнуто: разлом удержан"
+  "entity.hextale.the_void.ring_closed": "Кольцо замкнуто: разлом удержан",
+  "block.hextale.void_cilia": "Реснички Пустоты",
+  "block.hextale.tall_void_cilia": "Высокие реснички Пустоты",
+  "block.hextale.void_tendrils": "Щупальца Пустоты",
+  "block.hextale.void_tendrils_plant": "Стебель щупалец Пустоты",
+  "block.hextale.spore_puff": "Споровик",
+  "block.hextale.sinew_curtain": "Жильная завеса",
+  "block.hextale.spring_blister": "Пружинящий волдырь",
+  "block.hextale.void_ichor": "Ихор Пустоты",
+  "item.hextale.void_ichor_bucket": "Ведро ихора Пустоты"
 }

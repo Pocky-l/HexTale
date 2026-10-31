@@ -37,6 +37,8 @@ public final class VoidShapes {
     public static final byte SOIL = 8;
     public static final byte GNAWED = 12;
     public static final byte CRYSTAL = 13;
+    /** Void Ichor, pooled in the hollows of the plates. */
+    public static final byte ICHOR = 14;
 
     private static final int CACHE_LIMIT = 512;
 
@@ -62,6 +64,10 @@ public final class VoidShapes {
         Rib glowingFrom(int from) {
             return new Rib(x, y, z, r, minX, minY, minZ, maxX, maxY, maxZ, from);
         }
+    }
+
+    /** A pool of ichor in a hollow of a plate: its middle, radius and the height its surface stands at. */
+    record Pool(double x, double z, double radius, int level) {
     }
 
     /** A bladder of skin: a hollow sphere of membrane with a lump of flesh and crystals in its bottom. */
@@ -102,6 +108,7 @@ public final class VoidShapes {
         final List<Shoal> shoals = new ArrayList<>();
         final List<Plate> plates = new ArrayList<>();
         final List<Bladder> bladders = new ArrayList<>();
+        final Map<Plate, List<Pool>> pools = new java.util.HashMap<>();
         /** Packed membrane blocks by chunk ({@link #chunkKey}): {@code lx | lz << 4 | y << 8 | kind << 20}. */
         final Map<Long, int[]> raster = new java.util.HashMap<>();
     }
@@ -172,6 +179,14 @@ public final class VoidShapes {
             int tendrils = 1 + random.nextInt(3);
             for (int t = 0; t < tendrils; t++) {
                 tendril(region, plate, random);
+            }
+            if (random.nextDouble() < 0.45) {
+                // A hollow full of ichor.
+                double[] at = onPlate(plate, random, 0.5);
+                if (!Double.isNaN(at[1])) {
+                    region.pools.computeIfAbsent(plate, key -> new ArrayList<>())
+                            .add(new Pool(at[0], at[2], 4 + random.nextDouble() * 7, floor(at[1])));
+                }
             }
             if (random.nextDouble() < 0.35) {
                 // A bladder half sunk into the plate.
@@ -595,7 +610,7 @@ public final class VoidShapes {
                 shoal(shoal, x0, z0, kinds, best);
             }
             for (Plate plate : region.plates) {
-                plate(plate, x0, z0, kinds, best);
+                plate(plate, region.pools.getOrDefault(plate, List.of()), x0, z0, kinds, best);
             }
             for (Bladder bladder : region.bladders) {
                 bladder(bladder, x0, z0, kinds, best);
@@ -729,7 +744,7 @@ public final class VoidShapes {
         }
     }
 
-    private void plate(Plate plate, int x0, int z0, byte[] kinds, float[] best) {
+    private void plate(Plate plate, List<Pool> pools, int x0, int z0, byte[] kinds, float[] best) {
         double reach = plate.reach();
         int minX = Math.max(x0, floor(plate.x() - reach));
         int maxX = Math.min(x0 + 15, floor(plate.x() + reach));
@@ -750,7 +765,16 @@ public final class VoidShapes {
                 }
                 double e = Math.sqrt(e2);
                 // Pores: holes through the plate down to the abyss, ringed with a glowing rim.
-                double pore = e < 0.78 ? noise(x / 7.0, 3, z / 7.0, plate.salt() + 5) : 0;
+                Pool pool = null;
+                double inPool = 2;
+                for (Pool each : pools) {
+                    double d = Math.sqrt(sq(x + 0.5 - each.x()) + sq(z + 0.5 - each.z())) / each.radius();
+                    if (d < inPool) {
+                        inPool = d;
+                        pool = each;
+                    }
+                }
+                double pore = e < 0.78 && inPool > 1.3 ? noise(x / 7.0, 3, z / 7.0, plate.salt() + 5) : 0;
                 if (pore > 0.82) {
                     continue;
                 }
@@ -759,6 +783,29 @@ public final class VoidShapes {
                 double lip = e > 0.84 ? (e - 0.84) / 0.16 * plate.lip() : 0;
                 int top = floor(base + lip);
                 int bottom = floor(base - plate.thick() * Math.sqrt(1 - e2) - 1.5);
+                if (pool != null && inPool < 1.2) {
+                    // The hollow: ichor down to its depth; round it a rim of flesh up to the surface, so nothing spills.
+                    int depth = inPool < 1 ? 1 + (int) (2.6 * (1 - inPool * inPool)) : 0;
+                    int floorY = pool.level() - depth;
+                    for (int y = Math.max(MIN_Y, Math.min(bottom, floorY)); y <= Math.min(MIN_Y + HEIGHT - 1, Math.max(top, pool.level())); y++) {
+                        int idx = index(x - x0, y - MIN_Y, z - z0);
+                        if (inPool < 1 && y > floorY && y <= pool.level()) {
+                            best[idx] = -50;
+                            kinds[idx] = ICHOR;
+                        } else if (y > pool.level() && inPool < 1) {
+                            continue;
+                        } else if (y >= bottom && y <= top) {
+                            if (-1 < best[idx]) {
+                                best[idx] = -1;
+                                kinds[idx] = y == top && inPool >= 1 ? FLESH : CHITIN;
+                            }
+                        } else if (y == floorY || y > top && y <= pool.level()) {
+                            best[idx] = -2;
+                            kinds[idx] = FLESH;
+                        }
+                    }
+                    continue;
+                }
                 for (int y = Math.max(MIN_Y, bottom); y <= Math.min(MIN_Y + HEIGHT - 1, top); y++) {
                     float s = (float) -(Math.min(top - y, y - bottom) + 0.5);
                     int idx = index(x - x0, y - MIN_Y, z - z0);

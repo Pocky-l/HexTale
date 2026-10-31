@@ -503,6 +503,15 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> GNAWED_STONE = ITEMS.registerSimpleBlockItem(ModBlocks.GNAWED_STONE);
     public static final DeferredItem<BlockItem> RIFT_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.RIFT_ORE);
     public static final DeferredItem<BlockItem> HOLLOW_CRYSTAL_CLUSTER = ITEMS.registerSimpleBlockItem(ModBlocks.HOLLOW_CRYSTAL_CLUSTER);
+    public static final DeferredItem<BlockItem> VOID_CILIA = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_CILIA);
+    public static final DeferredItem<net.minecraft.world.item.DoubleHighBlockItem> TALL_VOID_CILIA = ITEMS.registerItem("tall_void_cilia",
+            properties -> new net.minecraft.world.item.DoubleHighBlockItem(ModBlocks.TALL_VOID_CILIA.get(), properties.useBlockDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> VOID_TENDRILS = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_TENDRILS);
+    public static final DeferredItem<BlockItem> SPORE_PUFF = ITEMS.registerSimpleBlockItem(ModBlocks.SPORE_PUFF);
+    public static final DeferredItem<BlockItem> SINEW_CURTAIN = ITEMS.registerSimpleBlockItem(ModBlocks.SINEW_CURTAIN);
+    public static final DeferredItem<BlockItem> SPRING_BLISTER = ITEMS.registerSimpleBlockItem(ModBlocks.SPRING_BLISTER);
+    public static final DeferredItem<net.minecraft.world.item.BucketItem> VOID_ICHOR_BUCKET = ITEMS.registerItem("void_ichor_bucket",
+            properties -> new net.minecraft.world.item.BucketItem(ModFluids.VOID_ICHOR.get(), properties.craftRemainder(net.minecraft.world.item.Items.BUCKET).stacksTo(1)));
     public static final DeferredItem<BlockItem> VOID_ROCK_BRICK_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK_BRICK_STAIRS);
     public static final DeferredItem<BlockItem> VOID_ROCK_BRICK_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK_BRICK_SLAB);
     public static final DeferredItem<BlockItem> VOID_ROCK_BRICK_WALL = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK_BRICK_WALL);
