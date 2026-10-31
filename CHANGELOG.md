@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   pack, the gates' columns of light too) may sort a little differently. A bed used in the Void simply refuses to work
   instead of falling apart (26.1.2 beds cannot be set to break on use).
 
+### Fixed
+- The Void's sky no longer jumps while you walk or run.
+- A world no longer asks for a backup of its "experimental settings" when it opens: HexTale's dimensions count as
+  stable now.
+
 ## [1.8.0] - 2026-10-31
 ### Added
 - The Void is a place now. A breach held by six anchors no longer throws a researcher back: walk into it and it pulls
