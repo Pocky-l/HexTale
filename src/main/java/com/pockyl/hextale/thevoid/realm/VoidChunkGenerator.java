@@ -88,6 +88,10 @@ public class VoidChunkGenerator extends ChunkGenerator {
                         section = chunk.getSection(chunk.getSectionIndex(worldY));
                     }
                     section.setBlockState(x, worldY & 15, z, state(kind, (chunkX << 4) + x, worldY, (chunkZ << 4) + z), false);
+                    if (kind == SPRING) {
+                        // Wakes when the chunk is done, so the ichor starts to pour.
+                        chunk.markPosForPostProcessing(new net.minecraft.core.BlockPos((chunkX << 4) + x, worldY, (chunkZ << 4) + z));
+                    }
                 }
             }
         }
@@ -107,6 +111,10 @@ public class VoidChunkGenerator extends ChunkGenerator {
     private static final byte TENDRIL_HEAD = 55;
     private static final byte SINEW = 56;
     private static final byte BLISTER = 57;
+    /** A spring of ichor at a plate's lip: it pours over the edge into the abyss as a glowing fall. */
+    private static final byte SPRING = 58;
+    /** The fall of ichor pouring from a spring down into the abyss. */
+    private static final byte FALL = 59;
 
     /**
      * Plants on open flesh, hollow crystals on open swallowed stone, Void crystals kept only where something holds them.
@@ -137,6 +145,16 @@ public class VoidChunkGenerator extends ChunkGenerator {
                     }
                     boolean room = kinds[VoidShapes.index(x, y + 2, z)] == VoidShapes.AIR;
                     double roll = VoidShapes.hash(x0 + x, y, z0 + z, 0xF10A);
+                    int lip = (kind == VoidShapes.SOIL || kind == VoidShapes.FLESH) && roll > 0.9994 ? overLip(kinds, x, y, z) : -1;
+                    if (lip >= 0) {
+                        kinds[i] = SPRING;
+                        int fx = x + LIP_SIDES[lip][0];
+                        int fz = z + LIP_SIDES[lip][1];
+                        for (int fy = y; fy >= 1 && kinds[VoidShapes.index(fx, fy, fz)] == VoidShapes.AIR; fy--) {
+                            kinds[VoidShapes.index(fx, fy, fz)] = FALL;
+                        }
+                        continue;
+                    }
                     if (kind == VoidShapes.SOIL) {
                         // The plates' own carpet: cilia everywhere, tall ones in places, puffballs and the Void's plants.
                         if (roll < 0.004 && inland(kinds, x, y, z)) {
@@ -168,6 +186,25 @@ public class VoidChunkGenerator extends ChunkGenerator {
                 }
             }
         }
+    }
+
+    private static final int[][] LIP_SIDES = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+
+    /** The side (index into {@link #LIP_SIDES}) on which ground at (x, y, z) stands at a lip over a long drop, or -1. */
+    private static int overLip(byte[] kinds, int x, int y, int z) {
+        if (x < 1 || x > 14 || z < 1 || z > 14 || y < 12) {
+            return -1;
+        }
+        for (int s = 0; s < LIP_SIDES.length; s++) {
+            boolean drop = true;
+            for (int dy = 0; dy >= -10 && drop; dy--) {
+                drop = kinds[VoidShapes.index(x + LIP_SIDES[s][0], y + dy, z + LIP_SIDES[s][1])] == VoidShapes.AIR;
+            }
+            if (drop) {
+                return s;
+            }
+        }
+        return -1;
     }
 
     /** Whether the ground at (x, y, z) has ground all round it two blocks out (a blister there throws no one off a ledge). */
@@ -232,7 +269,8 @@ public class VoidChunkGenerator extends ChunkGenerator {
             case VoidShapes.VEINED -> ModBlocks.VEINED_VOID_MEMBRANE.get().defaultBlockState();
             case VoidShapes.RIFT_ORE -> ModBlocks.RIFT_ORE.get().defaultBlockState();
             case VoidShapes.GNAWED -> ModBlocks.GNAWED_STONE.get().defaultBlockState();
-            case VoidShapes.ICHOR -> ModBlocks.VOID_ICHOR.get().defaultBlockState();
+            case VoidShapes.ICHOR, SPRING -> ModBlocks.VOID_ICHOR.get().defaultBlockState();
+            case FALL -> com.pockyl.hextale.registry.ModFluids.FLOWING_VOID_ICHOR.get().getFlowing(8, true).createLegacyBlock();
             case CILIA -> ModBlocks.VOID_CILIA.get().defaultBlockState();
             case TALL_LOW -> ModBlocks.TALL_VOID_CILIA.get().defaultBlockState()
                     .setValue(net.minecraft.world.level.block.DoublePlantBlock.HALF, net.minecraft.world.level.block.state.properties.DoubleBlockHalf.LOWER);

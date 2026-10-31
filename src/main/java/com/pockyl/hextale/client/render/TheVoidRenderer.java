@@ -153,14 +153,15 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
         for (int k = 0; k <= segments; k++) {
             float t = k / (float) segments;
             points[k] = new net.minecraft.world.phys.Vec3(0, bottom + (BEACON_HEIGHT - bottom) * t, 0);
-            light[k] = (1 - t) * (1 - t) * Math.min(1, k * 0.6F);
+            light[k] = (1 - t) * Math.min(1, k * 0.6F);
         }
         org.joml.Vector3f eye = new org.joml.Vector3f((float) (camera.pos.x - state.x), (float) (camera.pos.y - state.y),
                 (float) (camera.pos.z - state.z));
         float breath = (0.8F + 0.2F * Mth.sin(state.ageInTicks * 0.05F)) * state.reveal;
         collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> {
-            JarStreamFx.strip(consumer, pose, points, light, eye, 2.6F, BEACON, 0.16F * breath);
-            JarStreamFx.strip(consumer, pose, points, light, eye, 0.55F, BEACON, 0.32F * breath);
+            JarStreamFx.strip(consumer, pose, points, light, eye, 4.0F, BEACON, 0.22F * breath);
+            JarStreamFx.strip(consumer, pose, points, light, eye, 1.4F, BEACON, 0.4F * breath);
+            JarStreamFx.strip(consumer, pose, points, light, eye, 0.4F, 0xFFE8C0, 0.6F * breath);
         });
     }
 

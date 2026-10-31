@@ -879,7 +879,10 @@ public final class VoidShapes {
                     byte kind;
                     if (y == top) {
                         // Veins of light run across the plates like rivers; flesh and soil lie in broad patches.
-                        double vein = Math.abs(noise(x / 17.0, 4, z / 17.0, plate.salt() + 11) - 0.5)
+                        // Warped, so they wander instead of running straight like roads.
+                        double wx = x / 17.0 + (noise(x / 9.0, 6, z / 9.0, plate.salt() + 19) - 0.5) * 1.6;
+                        double wz = z / 17.0 + (noise(x / 9.0, 7, z / 9.0, plate.salt() + 23) - 0.5) * 1.6;
+                        double vein = Math.abs(noise(wx, 4, wz, plate.salt() + 11) - 0.5)
                                 + Math.abs(noise(x / 5.0, 5, z / 5.0, plate.salt() + 13) - 0.5) * 0.08;
                         if (pore > 0.76) {
                             kind = RIDGE;
@@ -896,8 +899,9 @@ public final class VoidShapes {
                         // Seams of light on the underside, seen from below over the abyss.
                         kind = RIDGE;
                     } else {
-                        // Strata: bands of dark flesh through the chitin, showing on the plate's edges.
-                        kind = noise(x / 23.0, y / 2.5, z / 23.0, plate.salt() + 17) > 0.62 ? FLESH : CHITIN;
+                        // Strata: bands of dark flesh through the chitin, showing on the plate's edges; they run
+                        // with the plate's own curve (by depth under its top), not level like a layered cake.
+                        kind = noise(x / 23.0, (top - y) / 2.5, z / 23.0, plate.salt() + 17) > 0.62 ? FLESH : CHITIN;
                     }
                     kinds[idx] = kind;
                 }
