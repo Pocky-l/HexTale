@@ -4,6 +4,34 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.3+1.21.1] - Unreleased
+### Fixed
+- Servers lag less with big essence stores: jars on one pipe network no longer check every other jar of it each time
+  they pour, rest while nothing takes their essence, and tell the players about their contents at most twice a second.
+  Four hundred jars on one network used to cost a tick of 50 ms every quarter of a second.
+- A World Anchor with a Reach of three let go of only part of its chunks when broken: the outer ring stayed loaded
+  until the server restarted.
+- A dry Rift Gate holding an item loaded its partner's chunk every tick; gates now pay first and wait for the partner's
+  chunk in the background, and a flow that nothing takes tries less and less often instead of keeping the far chunk
+  loaded.
+- Entering the Void or crossing it no longer stalls the server for a moment: the regions round a player are worked out
+  in the background, and the Void forgets the regions nobody uses instead of all of them at once.
+- The Foundry, the Crystal Battery, the Null Lantern and research boards cost less while a world runs; Rib Crawlers
+  clinging under ceilings despawn like other creatures instead of piling up.
+- Rune steles, the lab bench's vent and the research table's loupe can no longer be made to play their sounds over and
+  over by a client sending the same thing again and again.
+- A Shockwave cannot be struck by a dead player, and striking anything ends the protection of a breach being watched.
+- The Void's currents and a half-made pylon link are forgotten when leaving a world.
+- Pylons, the Greedy Funnel, Rift Gates and the Levitation Plate crashed the server when they put items into a
+  Crucible or a Crystal Battery (and again after every restart while the pylon's cargo was in flight).
+- Glowing parts of blocks and items (lamps, runes, pylon crystals, glowing veins, the glow of tools) were dark at night
+  and underground.
+- Void creatures showed the insides of their models from behind, and their glowing parts were overbright.
+- Void Mite hearts and the shimmer veins of a drinker never showed.
+- Chem vials are no longer used up in creative, and dead creatures stop walking.
+
+Note: on Minecraft 1.21.1 HexTale's settings are kept per world, in `<world>/serverconfig/hextale-server.toml`.
+
 ## [1.8.2+1.21.1] - 2026-11-01
 ### Fixed
 - A Rift Gate that had run dry kept saying so after its jars were filled again - even beside a Creative Essence Jar -
