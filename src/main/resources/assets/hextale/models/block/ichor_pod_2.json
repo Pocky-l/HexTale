@@ -28,7 +28,6 @@
         "rescale": true
       },
       "shade": false,
-      "light_emission": 14,
       "faces": {
         "north": {
           "uv": [
@@ -48,6 +47,9 @@
           ],
           "texture": "#cross"
         }
+      },
+      "neoforge_data": {
+        "block_light": 14
       }
     },
     {
@@ -72,7 +74,6 @@
         "rescale": true
       },
       "shade": false,
-      "light_emission": 14,
       "faces": {
         "west": {
           "uv": [
@@ -92,6 +93,9 @@
           ],
           "texture": "#cross"
         }
+      },
+      "neoforge_data": {
+        "block_light": 14
       }
     }
   ],

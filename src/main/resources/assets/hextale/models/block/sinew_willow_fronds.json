@@ -93,7 +93,6 @@
         16,
         16
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -155,6 +154,9 @@
           "texture": "#sinew_willow_fronds_glow",
           "cullface": "down"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     }
   ],

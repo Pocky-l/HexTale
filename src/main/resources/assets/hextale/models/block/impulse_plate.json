@@ -443,7 +443,6 @@
         1.02,
         13.02
       ],
-      "light_emission": 12,
       "faces": {
         "up": {
           "uv": [
@@ -454,6 +453,9 @@
           ],
           "texture": "#impulse_plate_coil"
         }
+      },
+      "neoforge_data": {
+        "block_light": 12
       }
     }
   ],

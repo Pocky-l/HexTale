@@ -16,7 +16,6 @@
         16,
         0.1
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -36,6 +35,9 @@
           ],
           "texture": "#glow"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     }
   ],

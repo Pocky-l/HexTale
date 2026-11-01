@@ -549,7 +549,6 @@
         13.1,
         9.1
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -587,6 +586,9 @@
           ],
           "texture": "#world_anchor_glow"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     }
   ],

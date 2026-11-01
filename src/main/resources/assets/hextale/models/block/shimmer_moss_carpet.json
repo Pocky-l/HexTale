@@ -92,7 +92,6 @@
         1,
         16
       ],
-      "light_emission": 15,
       "faces": {
         "up": {
           "uv": [
@@ -103,6 +102,9 @@
           ],
           "texture": "#shimmer_moss_glow"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     }
   ],

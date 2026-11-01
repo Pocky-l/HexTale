@@ -249,7 +249,9 @@
           "texture": "#sheet"
         }
       },
-      "light_emission": 15
+      "neoforge_data": {
+        "block_light": 15
+      }
     },
     {
       "name": "brass_knuckle_1",
@@ -319,7 +321,9 @@
           "texture": "#sheet"
         }
       },
-      "light_emission": 15
+      "neoforge_data": {
+        "block_light": 15
+      }
     },
     {
       "name": "brass_knuckle_2",
@@ -389,7 +393,9 @@
           "texture": "#sheet"
         }
       },
-      "light_emission": 15
+      "neoforge_data": {
+        "block_light": 15
+      }
     },
     {
       "name": "brass_back",
@@ -505,7 +511,6 @@
         10.5,
         7
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -552,6 +557,9 @@
           ],
           "texture": "#sheet"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {
@@ -1066,7 +1074,9 @@
           "texture": "#sheet"
         }
       },
-      "light_emission": 10
+      "neoforge_data": {
+        "block_light": 10
+      }
     }
   ],
   "display": {

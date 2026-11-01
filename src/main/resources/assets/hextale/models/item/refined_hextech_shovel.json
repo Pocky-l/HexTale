@@ -26,7 +26,6 @@
           8
         ]
       },
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -88,6 +87,9 @@
           "texture": "#sheet",
           "tintindex": 0
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {
@@ -558,7 +560,6 @@
         19.7,
         9.7
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -580,6 +581,9 @@
           "texture": "#sheet",
           "tintindex": 0
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {
@@ -858,7 +862,6 @@
         31.03,
         8.03
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -880,6 +883,9 @@
           "texture": "#sheet",
           "tintindex": 0
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {

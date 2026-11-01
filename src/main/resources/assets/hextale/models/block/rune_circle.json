@@ -43,7 +43,6 @@
         1.03,
         30.03
       ],
-      "light_emission": 15,
       "faces": {
         "up": {
           "uv": [
@@ -54,6 +53,9 @@
           ],
           "texture": "#rune_circle_glow"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {

@@ -147,7 +147,6 @@
         11,
         12
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -185,6 +184,9 @@
           ],
           "texture": "#crystal_battery_lit"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {

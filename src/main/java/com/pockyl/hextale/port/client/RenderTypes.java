@@ -28,8 +28,9 @@ public final class RenderTypes {
         return RenderType.itemEntityTranslucentCull(texture);
     }
 
+    /** Painted over with the texture's alpha, as 26.x does (1.21.1's own eyes type adds its colour). */
     public static RenderType eyes(ResourceLocation texture) {
-        return RenderType.eyes(texture);
+        return EyesRenderType.of(texture);
     }
 
     public static RenderType entitySolid(ResourceLocation texture) {

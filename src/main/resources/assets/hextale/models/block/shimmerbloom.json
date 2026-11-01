@@ -29,7 +29,6 @@
         ],
         "rescale": true
       },
-      "shade_direction_override": "up",
       "faces": {
         "north": {
           "uv": [
@@ -49,7 +48,8 @@
           ],
           "texture": "#shimmerbloom"
         }
-      }
+      },
+      "shade": false
     },
     {
       "name": "bloom_b",
@@ -73,7 +73,6 @@
         ],
         "rescale": true
       },
-      "shade_direction_override": "up",
       "faces": {
         "east": {
           "uv": [
@@ -93,7 +92,8 @@
           ],
           "texture": "#shimmerbloom"
         }
-      }
+      },
+      "shade": false
     },
     {
       "name": "glow_bloom_a",
@@ -117,8 +117,6 @@
         ],
         "rescale": true
       },
-      "light_emission": 15,
-      "shade_direction_override": "up",
       "faces": {
         "north": {
           "uv": [
@@ -138,7 +136,11 @@
           ],
           "texture": "#shimmerbloom_glow"
         }
-      }
+      },
+      "neoforge_data": {
+        "block_light": 15
+      },
+      "shade": false
     },
     {
       "name": "glow_bloom_b",
@@ -162,8 +164,6 @@
         ],
         "rescale": true
       },
-      "light_emission": 15,
-      "shade_direction_override": "up",
       "faces": {
         "east": {
           "uv": [
@@ -183,7 +183,11 @@
           ],
           "texture": "#shimmerbloom_glow"
         }
-      }
+      },
+      "neoforge_data": {
+        "block_light": 15
+      },
+      "shade": false
     }
   ],
   "render_type": "minecraft:cutout"

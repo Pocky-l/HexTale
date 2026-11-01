@@ -656,7 +656,6 @@
           1
         ]
       },
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -704,6 +703,9 @@
           ],
           "texture": "#hextech_gem"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {

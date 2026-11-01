@@ -47,7 +47,8 @@ public final class SubmitNodeCollector {
     public <S> void submitModel(EntityModel<S> model, S state, PoseStack poseStack, net.minecraft.resources.ResourceLocation texture,
                                 int lightCoords, int overlayCoords, int outlineColor) {
         model.setupAnim(state);
-        model.renderToBuffer(poseStack, buffers.getBuffer(RenderType.entityCutoutNoCull(texture)), lightCoords, overlayCoords, -1);
+        // 26.x draws an entity model culled (its EntityModel default): back faces of planes stay hidden.
+        model.renderToBuffer(poseStack, buffers.getBuffer(RenderType.entityCutout(texture)), lightCoords, overlayCoords, -1);
     }
 
     /** Like vanilla's falling block renderer: the block's model in its own render types, lit by the client level. */

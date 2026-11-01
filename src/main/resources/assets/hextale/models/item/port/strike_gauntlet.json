@@ -502,7 +502,6 @@
         10.5,
         7
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -549,6 +548,9 @@
           ],
           "texture": "#sheet"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {

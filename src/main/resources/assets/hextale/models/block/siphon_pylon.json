@@ -852,7 +852,9 @@
           ]
         }
       },
-      "light_emission": 15
+      "neoforge_data": {
+        "block_light": 15
+      }
     }
   ],
   "render_type": "minecraft:cutout"

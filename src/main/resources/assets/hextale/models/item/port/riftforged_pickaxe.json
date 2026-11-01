@@ -17,7 +17,6 @@
         -6.7,
         9.3
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -69,6 +68,9 @@
           "texture": "#sheet",
           "tintindex": 0
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {
@@ -587,7 +589,6 @@
         19.5,
         10.5
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -625,6 +626,9 @@
           ],
           "texture": "#sheet"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {
@@ -639,7 +643,6 @@
         29,
         8
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -659,6 +662,9 @@
           ],
           "texture": "#sheet"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {
@@ -673,7 +679,6 @@
         27,
         11
       ],
-      "light_emission": 15,
       "faces": {
         "east": {
           "uv": [
@@ -693,6 +698,9 @@
           ],
           "texture": "#sheet"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {

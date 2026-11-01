@@ -82,7 +82,6 @@
         4,
         15
       ],
-      "light_emission": 6,
       "faces": {
         "north": {
           "uv": [
@@ -129,6 +128,9 @@
           ],
           "texture": "#miasma_vent_top"
         }
+      },
+      "neoforge_data": {
+        "block_light": 6
       }
     },
     {
@@ -332,7 +334,6 @@
         14,
         9
       ],
-      "light_emission": 12,
       "faces": {
         "north": {
           "uv": [
@@ -370,6 +371,9 @@
           ],
           "texture": "#miasma_vent_mouth"
         }
+      },
+      "neoforge_data": {
+        "block_light": 12
       }
     },
     {

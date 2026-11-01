@@ -111,6 +111,8 @@ public abstract class MobRenderer<T extends Mob, S extends LivingEntityRenderSta
         MobRenderer<T, S, ?> renderer;
 
         Adapter(EntityModel<S> model) {
+            // Culled like 26.x's EntityModel default (vanilla 1.21.1's default draws back faces).
+            super(net.minecraft.client.renderer.RenderType::entityCutout);
             this.model = model;
         }
 

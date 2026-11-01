@@ -608,7 +608,6 @@
         11.03,
         10.03
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -646,6 +645,9 @@
           ],
           "texture": "#pedestal_shaft_glow"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {

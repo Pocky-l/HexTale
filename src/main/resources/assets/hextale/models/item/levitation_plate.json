@@ -278,7 +278,6 @@
         3.04,
         12.04
       ],
-      "light_emission": 15,
       "faces": {
         "up": {
           "uv": [
@@ -289,6 +288,9 @@
           ],
           "texture": "#levitation_plate_glow"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {
@@ -588,7 +590,6 @@
           8
         ]
       },
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -608,6 +609,9 @@
           ],
           "texture": "#levitation_plate_glow"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {
@@ -631,7 +635,6 @@
           8
         ]
       },
-      "light_emission": 15,
       "faces": {
         "east": {
           "uv": [
@@ -651,6 +654,9 @@
           ],
           "texture": "#levitation_plate_glow"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {
@@ -674,7 +680,6 @@
           8
         ]
       },
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -694,6 +699,9 @@
           ],
           "texture": "#levitation_plate_glow"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {
@@ -717,7 +725,6 @@
           8
         ]
       },
-      "light_emission": 15,
       "faces": {
         "east": {
           "uv": [
@@ -737,6 +744,9 @@
           ],
           "texture": "#levitation_plate_glow"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {
@@ -760,7 +770,6 @@
           8
         ]
       },
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -780,6 +789,9 @@
           ],
           "texture": "#levitation_plate_glow"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {
@@ -803,7 +815,6 @@
           8
         ]
       },
-      "light_emission": 15,
       "faces": {
         "east": {
           "uv": [
@@ -823,6 +834,9 @@
           ],
           "texture": "#levitation_plate_glow"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {
@@ -846,7 +860,6 @@
           8
         ]
       },
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -866,6 +879,9 @@
           ],
           "texture": "#levitation_plate_glow"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {
@@ -889,7 +905,6 @@
           8
         ]
       },
-      "light_emission": 15,
       "faces": {
         "east": {
           "uv": [
@@ -909,6 +924,9 @@
           ],
           "texture": "#levitation_plate_glow"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     }
   ],

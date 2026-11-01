@@ -357,7 +357,6 @@
         11,
         2
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -404,6 +403,9 @@
           ],
           "texture": "#hextech_glow"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {
@@ -538,7 +540,6 @@
         7,
         11
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -585,6 +586,9 @@
           ],
           "texture": "#hextech_glow"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {

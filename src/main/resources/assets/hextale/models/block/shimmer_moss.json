@@ -93,7 +93,6 @@
         16,
         16
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -155,6 +154,9 @@
           "texture": "#shimmer_moss_glow",
           "cullface": "down"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     }
   ],

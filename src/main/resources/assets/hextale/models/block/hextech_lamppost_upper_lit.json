@@ -405,7 +405,6 @@
         13.0,
         12
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -443,6 +442,9 @@
           ],
           "texture": "#hextech_lamppost_glass"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {
@@ -716,7 +718,6 @@
           8
         ]
       },
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -772,6 +773,9 @@
           ],
           "texture": "#hextech_gem"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     }
   ],

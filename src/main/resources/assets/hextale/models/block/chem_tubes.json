@@ -95,7 +95,6 @@
         16,
         16
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -157,6 +156,9 @@
           "texture": "#end_glow",
           "cullface": "down"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     }
   ],

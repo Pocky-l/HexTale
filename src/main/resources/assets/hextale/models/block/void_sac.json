@@ -149,7 +149,6 @@
         11,
         11
       ],
-      "light_emission": 10,
       "faces": {
         "north": {
           "uv": [
@@ -205,6 +204,9 @@
           ],
           "texture": "#core"
         }
+      },
+      "neoforge_data": {
+        "block_light": 10
       }
     },
     {
@@ -219,7 +221,6 @@
         13,
         13
       ],
-      "light_emission": 4,
       "faces": {
         "north": {
           "uv": [
@@ -275,6 +276,9 @@
           ],
           "texture": "#skin"
         }
+      },
+      "neoforge_data": {
+        "block_light": 4
       }
     }
   ],

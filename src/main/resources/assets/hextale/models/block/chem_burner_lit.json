@@ -548,7 +548,6 @@
         10,
         3
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -559,6 +558,9 @@
           ],
           "texture": "#chem_burner_window_lit"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     }
   ],

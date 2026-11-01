@@ -258,7 +258,6 @@
         7,
         12
       ],
-      "light_emission": 15,
       "faces": {
         "up": {
           "uv": [
@@ -269,6 +268,9 @@
           ],
           "texture": "#disintegrator_acid"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {
@@ -778,7 +780,6 @@
         5.03,
         2.03
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -789,6 +790,9 @@
           ],
           "texture": "#disintegrator_acid"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {

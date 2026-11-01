@@ -371,7 +371,6 @@
         5,
         12
       ],
-      "light_emission": 12,
       "faces": {
         "north": {
           "uv": [
@@ -418,6 +417,9 @@
           ],
           "texture": "#pink_brazier_coals_lit"
         }
+      },
+      "neoforge_data": {
+        "block_light": 12
       }
     },
     {
@@ -768,7 +770,6 @@
         1,
         5
       ],
-      "light_emission": 9,
       "faces": {
         "north": {
           "uv": [
@@ -826,6 +827,9 @@
           "texture": "#pink_brazier_rod_hot",
           "cullface": "down"
         }
+      },
+      "neoforge_data": {
+        "block_light": 9
       }
     },
     {
@@ -840,7 +844,6 @@
         1,
         16
       ],
-      "light_emission": 9,
       "faces": {
         "north": {
           "uv": [
@@ -898,6 +901,9 @@
           "texture": "#pink_brazier_rod_hot",
           "cullface": "down"
         }
+      },
+      "neoforge_data": {
+        "block_light": 9
       }
     },
     {
@@ -912,7 +918,6 @@
         1,
         9
       ],
-      "light_emission": 9,
       "faces": {
         "north": {
           "uv": [
@@ -970,6 +975,9 @@
           "texture": "#pink_brazier_rod_hot",
           "cullface": "down"
         }
+      },
+      "neoforge_data": {
+        "block_light": 9
       }
     },
     {
@@ -984,7 +992,6 @@
         1,
         9
       ],
-      "light_emission": 9,
       "faces": {
         "north": {
           "uv": [
@@ -1042,6 +1049,9 @@
           "texture": "#pink_brazier_rod_hot",
           "cullface": "down"
         }
+      },
+      "neoforge_data": {
+        "block_light": 9
       }
     },
     {
@@ -1065,7 +1075,6 @@
           8
         ]
       },
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -1085,6 +1094,9 @@
           ],
           "texture": "#pink_brazier_fire"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {
@@ -1108,7 +1120,6 @@
           8
         ]
       },
-      "light_emission": 15,
       "faces": {
         "east": {
           "uv": [
@@ -1128,6 +1139,9 @@
           ],
           "texture": "#pink_brazier_fire"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     }
   ],

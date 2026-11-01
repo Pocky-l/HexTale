@@ -973,7 +973,6 @@
           8
         ]
       },
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -1011,6 +1010,9 @@
           ],
           "texture": "#hextech_altar"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {
@@ -1658,7 +1660,6 @@
         19.03,
         10.03
       ],
-      "light_emission": 15,
       "faces": {
         "up": {
           "uv": [
@@ -1669,6 +1670,9 @@
           ],
           "texture": "#hextech_altar"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {

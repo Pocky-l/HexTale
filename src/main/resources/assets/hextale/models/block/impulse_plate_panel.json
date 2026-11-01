@@ -87,7 +87,6 @@
         2.02,
         14.02
       ],
-      "light_emission": 15,
       "faces": {
         "up": {
           "uv": [
@@ -98,6 +97,9 @@
           ],
           "texture": "#impulse_plate_glow"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {

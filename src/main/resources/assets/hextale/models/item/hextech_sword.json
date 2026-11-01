@@ -623,7 +623,6 @@
         8.07,
         10.07
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -645,6 +644,9 @@
           "texture": "#sheet",
           "tintindex": 0
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {
@@ -899,7 +901,6 @@
         25.03,
         8.53
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
@@ -948,6 +949,9 @@
           ],
           "texture": "#sheet"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     },
     {
