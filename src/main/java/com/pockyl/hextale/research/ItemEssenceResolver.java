@@ -75,24 +75,24 @@ public final class ItemEssenceResolver {
         ContextMap context = ContextMap.builder().set(SlotDisplayContext.REGISTRIES, registries).buildAndValidate(SlotDisplayContext.CONTEXT);
         Map<Item, List<Made>> makers = new HashMap<>();
         for (RecipeHolder<?> holder : recipes.getRecipes()) {
-            Recipe<?> recipe = holder.value();
-            if (recipe.placementInfo().isImpossibleToPlace() || recipe.display().isEmpty()) {
-                continue;
-            }
-            ItemStack result;
+            // Another mod's broken recipe must not stop the whole table (this runs on server start and /reload).
             try {
+                Recipe<?> recipe = holder.value();
+                if (recipe.placementInfo().isImpossibleToPlace() || recipe.display().isEmpty()) {
+                    continue;
+                }
                 RecipeDisplay display = recipe.display().getFirst();
-                result = display.result().resolveForFirstStack(context);
+                ItemStack result = display.result().resolveForFirstStack(context);
+                if (result.isEmpty()) {
+                    continue;
+                }
+                List<Ingredient> ingredients = recipe.placementInfo().ingredients().stream().filter(i -> !i.isEmpty()).toList();
+                if (!ingredients.isEmpty()) {
+                    makers.computeIfAbsent(result.getItem(), k -> new ArrayList<>())
+                            .add(new Made(ingredients, result.getCount(), recipe instanceof AbstractCookingRecipe));
+                }
             } catch (RuntimeException e) {
-                continue;
-            }
-            if (result.isEmpty()) {
-                continue;
-            }
-            List<Ingredient> ingredients = recipe.placementInfo().ingredients().stream().filter(i -> !i.isEmpty()).toList();
-            if (!ingredients.isEmpty()) {
-                makers.computeIfAbsent(result.getItem(), k -> new ArrayList<>())
-                        .add(new Made(ingredients, result.getCount(), recipe instanceof AbstractCookingRecipe));
+                com.pockyl.hextale.Hextale.LOGGER.debug("Skipped recipe {} while working out essences", holder.id(), e);
             }
         }
 

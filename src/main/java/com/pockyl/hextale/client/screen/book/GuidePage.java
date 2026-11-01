@@ -457,9 +457,16 @@ final class GuidePage {
     private record Link(int[][] path, int[][] runs, long fingerprint) {
     }
 
-    private static final Map<Quest, Map<Quest, Link>> LINKS = new java.util.WeakHashMap<>();
+    private static final Map<Quest, Map<Quest, Link>> LINKS = new java.util.HashMap<>();
+    /** The guide the links were traced for: a new one (login, /reload) lets the old steps and their paths go. */
+    private static com.pockyl.hextale.quest.@org.jspecify.annotations.Nullable Guide linksOf;
 
     private static Link link(Quest from, Quest to) {
+        com.pockyl.hextale.quest.Guide guide = com.pockyl.hextale.quest.Guide.client();
+        if (guide != linksOf) {
+            LINKS.clear();
+            linksOf = guide;
+        }
         long fingerprint = ((long) from.x() * 31 + from.y()) * 961 + ((long) to.x() * 31 + to.y()) * 29791
                 + Float.floatToIntBits(to.bow()) * 7L + size(from) * 3L + size(to) + (from == to.parent() ? 1 : 0);
         Map<Quest, Link> byParent = LINKS.computeIfAbsent(to, key -> new HashMap<>());
@@ -1633,7 +1640,7 @@ final class GuidePage {
     @Nullable
     private List<FormattedCharSequence> renderHexCrafting(GuiGraphicsExtractor graphics, QuestDisplay display, int x, int y, int mouseX,
                                                           int mouseY, long now) {
-        com.pockyl.hextale.crafting.HexCraftingRecipe recipe = com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.named(Identifier.parse(display.result()), true);
+        com.pockyl.hextale.crafting.HexCraftingRecipe recipe = com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.named(safeId(display.result()), true);
         int centre = x + innerWidth() / 2;
         if (recipe == null) {
             PixelArt.flush(graphics);
@@ -1662,7 +1669,7 @@ final class GuidePage {
     @Nullable
     private List<FormattedCharSequence> renderAlloy(GuiGraphicsExtractor graphics, QuestDisplay display, int x, int y, int mouseX,
                                                     int mouseY, long now) {
-        com.pockyl.hextale.crafting.AlloyRecipe recipe = com.pockyl.hextale.crafting.AlloyRecipe.ALL.named(Identifier.parse(display.result()), true);
+        com.pockyl.hextale.crafting.AlloyRecipe recipe = com.pockyl.hextale.crafting.AlloyRecipe.ALL.named(safeId(display.result()), true);
         int centre = x + innerWidth() / 2;
         if (recipe == null) {
             PixelArt.flush(graphics);
@@ -1800,7 +1807,7 @@ final class GuidePage {
     }
 
     private static int infusionHeight(QuestDisplay display) {
-        InfusionRecipe recipe = InfusionRecipes.ALL.named(Identifier.parse(display.result()), true);
+        InfusionRecipe recipe = InfusionRecipes.ALL.named(safeId(display.result()), true);
         if (recipe == null) {
             return INFUSION_RING * 2 + SLOT + 16;
         }
@@ -1817,7 +1824,7 @@ final class GuidePage {
     @Nullable
     private List<FormattedCharSequence> renderInfusion(GuiGraphicsExtractor graphics, QuestDisplay display, int x, int y, int mouseX, int mouseY,
                                                        long now) {
-        InfusionRecipe recipe = InfusionRecipes.ALL.named(Identifier.parse(display.result()), true);
+        InfusionRecipe recipe = InfusionRecipes.ALL.named(safeId(display.result()), true);
         if (recipe == null) {
             PixelArt.flush(graphics);
             graphics.centeredText(font, Component.translatable("book.hextale.quest.infusion.missing"), x + innerWidth() / 2, y + 30, MUTED);
@@ -2159,12 +2166,12 @@ final class GuidePage {
             return ItemStack.EMPTY;
         }
         if (id.startsWith("#")) {
-            TagKey<Item> tag = TagKey.create(Registries.ITEM, Identifier.parse(id.substring(1)));
+            TagKey<Item> tag = TagKey.create(Registries.ITEM, safeId(id.substring(1)));
             List<Holder<Item>> items = new ArrayList<>();
             BuiltInRegistries.ITEM.getTagOrEmpty(tag).forEach(items::add);
             return items.isEmpty() ? ItemStack.EMPTY : new ItemStack(items.get((int) ((now / 1000 + phase) % items.size())));
         }
-        return new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.parse(id)));
+        return new ItemStack(BuiltInRegistries.ITEM.getValue(safeId(id)));
     }
 
     // ---- Input ----------------------------------------------------------------------------------------------------
@@ -2204,5 +2211,11 @@ final class GuidePage {
         if (scroll < 0) {
             scroll = 0;
         }
+    }
+
+    /** An id from the guide's data; a malformed one (a pack's typo) names nothing instead of throwing every frame. */
+    private static Identifier safeId(String id) {
+        Identifier parsed = Identifier.tryParse(id);
+        return parsed != null ? parsed : Identifier.fromNamespaceAndPath("hextale", "missing");
     }
 }

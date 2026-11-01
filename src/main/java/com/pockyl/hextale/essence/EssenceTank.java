@@ -28,7 +28,7 @@ public final class EssenceTank {
     }
 
     public int space() {
-        return capacity - contents.total();
+        return Math.max(0, capacity - contents.total()); // never negative, even for a tank set (or saved) over full
     }
 
     public boolean isEmpty() {

@@ -112,7 +112,7 @@ public class WhirlReaperBlockEntity extends BlockEntity {
                 Codec.LONG.fieldOf("arrive").forGetter(Pending::arrive),
                 Codec.LONG.fieldOf("done").forGetter(Pending::done),
                 Codec.BOOL.optionalFieldOf("lifted", false).forGetter(Pending::lifted),
-                BlockState.CODEC.listOf().optionalFieldOf("taken", List.of()).forGetter(Pending::taken)
+                com.pockyl.hextale.world.SafeCodecs.lenientList(BlockState.CODEC).optionalFieldOf("taken", List.of()).forGetter(Pending::taken)
         ).apply(instance, Pending::new));
     }
 
@@ -501,7 +501,7 @@ public class WhirlReaperBlockEntity extends BlockEntity {
         charges = input.getIntOr("charges", 0);
         becalmed = input.getBooleanOr("becalmed", false);
         pending.clear();
-        input.read("pending", Pending.CODEC.listOf()).ifPresent(pending::addAll);
+        input.listOrEmpty("pending", Pending.CODEC).forEach(pending::add);
         drewFrom = input.read("drew_from", BlockPos.CODEC).orElse(null);
         drewAt = input.getLongOr("drew_at", -1000);
     }

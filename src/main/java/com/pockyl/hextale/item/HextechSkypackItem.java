@@ -158,13 +158,21 @@ public class HextechSkypackItem extends Item {
     }
 
     /** Sneaking on the ground with the pack on, near jars: it sips air out of the nearest one that has some. */
+    /** Own jars and jars nobody is known to have placed always; another player's only where the wearer may break it. */
+    private static boolean mayDrink(ServerLevel level, EssenceTankBlockEntity jar, Player player) {
+        java.util.UUID placer = com.pockyl.hextale.world.WorldEdits.placer(jar);
+        return placer == null || placer.equals(player.getUUID())
+                || com.pockyl.hextale.world.WorldEdits.mayBreak(level, jar.getBlockPos(), player);
+    }
+
     public static void sip(ServerLevel level, Player player, ItemStack pack) {
         if (air(pack) >= CAPACITY) {
             return;
         }
         Vec3 back = player.position().add(0, 1.1, 0).subtract(player.getLookAngle().multiply(1, 0, 1).normalize().scale(0.3));
         for (EssenceTankBlockEntity jar : JarReach.around(level, BlockPos.containing(player.position().add(0, 1, 0)))) {
-            if (fillFrom(level, jar, pack, back, SIP_MB)) {
+            // Only jars the wearer could take anyway: not another's in a claim.
+            if (mayDrink(level, jar, player) && fillFrom(level, jar, pack, back, SIP_MB)) {
                 return;
             }
         }

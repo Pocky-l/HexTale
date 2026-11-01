@@ -42,6 +42,33 @@ public final class ModGameTests {
     }
 
     /**
+     * A saved list holding an item the game no longer knows (a removed mod) loses only that entry: the crucible's
+     * rising items, the funnel's catch and the pylons' cargo used to read as empty as a whole.
+     */
+    @HexTest
+    public static void savedListsSurviveUnknownItems(GameTestHelper helper) {
+        var registries = helper.getLevel().registryAccess();
+        var ops = net.minecraft.resources.RegistryOps.create(net.minecraft.nbt.NbtOps.INSTANCE, registries);
+        net.minecraft.nbt.ListTag list = new net.minecraft.nbt.ListTag();
+        list.add(ItemStack.CODEC.encodeStart(ops, new ItemStack(Items.IRON_INGOT, 3)).getOrThrow());
+        net.minecraft.nbt.CompoundTag unknown = new net.minecraft.nbt.CompoundTag();
+        unknown.putString("id", "removed_mod:lost_thing");
+        unknown.putInt("count", 1);
+        list.add(unknown);
+        list.add(ItemStack.CODEC.encodeStart(ops, new ItemStack(Items.GOLD_INGOT)).getOrThrow());
+        net.minecraft.nbt.CompoundTag saved = new net.minecraft.nbt.CompoundTag();
+        saved.put("rising", list);
+
+        List<ItemStack> read = new java.util.ArrayList<>();
+        net.minecraft.world.level.storage.TagValueInput.create(net.minecraft.util.ProblemReporter.DISCARDING, registries, saved).listOrEmpty("rising", ItemStack.CODEC).forEach(read::add);
+        helper.assertTrue(read.size() == 2 && read.get(0).is(Items.IRON_INGOT) && read.get(0).getCount() == 3
+                && read.get(1).is(Items.GOLD_INGOT), "the readable entries survive: " + read);
+        List<ItemStack> nested = com.pockyl.hextale.world.SafeCodecs.lenientList(ItemStack.CODEC).parse(ops, list).getOrThrow();
+        helper.assertTrue(nested.size() == 2, "a lenient list keeps the readable entries: " + nested);
+        helper.succeed();
+    }
+
+    /**
      * A device whose model spreads past its cell gets stand-ins in the empty cells it reaches: they outline the device,
      * take a click and the mining to it and go together with it.
      */

@@ -156,7 +156,11 @@ public final class MachineLoops {
             PLAYING.clear();
             return;
         }
-        PLAYING.values().removeIf(Loop::isStopped);
+        // A loop the sound engine never took (Blocks volume at 0, no free channel) never ticks and never stops: it would
+        // hold its place for the rest of the session.
+        long now = level.getGameTime();
+        PLAYING.values().removeIf(loop -> loop.isStopped()
+                || now - loop.startedAt > 20 && !minecraft.getSoundManager().isActive(loop));
         if (level.getGameTime() % SCAN_TICKS != 0) {
             return;
         }
@@ -194,7 +198,7 @@ public final class MachineLoops {
             if (kind == Kind.PYLON && pylons >= MAX_PYLONS) {
                 continue;
             }
-            Loop loop = new Loop(kind, entity);
+            Loop loop = new Loop(kind, entity, level.getGameTime());
             PLAYING.put(entity.getBlockPos().immutable(), loop);
             minecraft.getSoundManager().play(loop);
             if (kind == Kind.PYLON) {
@@ -207,11 +211,13 @@ public final class MachineLoops {
     private static final class Loop extends AbstractTickableSoundInstance {
         private final Kind kind;
         private final BlockEntity entity;
+        private final long startedAt;
 
-        Loop(Kind kind, BlockEntity entity) {
+        Loop(Kind kind, BlockEntity entity, long startedAt) {
             super(kind.sound.get(), SoundSource.BLOCKS, RandomSource.create());
             this.kind = kind;
             this.entity = entity;
+            this.startedAt = startedAt;
             looping = true;
             delay = 0;
             volume = 0.01F;

@@ -47,6 +47,12 @@ public final class RuneFx {
     private static final List<Sign> SIGNS = new ArrayList<>();
     private static @Nullable ClientLevel level;
 
+    /** The world was left: let go of it and of what was shown in it. */
+    public static void forget() {
+        SIGNS.clear();
+        level = null;
+    }
+
     record Sign(RuneFxPayload payload, long start, float phase) {
         int length() {
             return switch (payload.kind()) {
