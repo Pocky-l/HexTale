@@ -74,6 +74,18 @@ public final class JarReach {
         return jars;
     }
 
+    /** Whether the jars around {@code center} hold at least {@code amount} mB of one essence between them (nothing is drawn). */
+    public static boolean holds(Level level, BlockPos center, Essence essence, int amount) {
+        int held = 0;
+        for (EssenceTankBlockEntity jar : around(level, center)) {
+            held += jar.tank().contents().get(essence);
+            if (held >= amount) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * A device's running cost: {@code amount} mB of one essence out of the jars around {@code center} (nearest first, from
      * several jars if one holds too little) - all of it or nothing. Motes of the essence fly from each jar it drew from to
