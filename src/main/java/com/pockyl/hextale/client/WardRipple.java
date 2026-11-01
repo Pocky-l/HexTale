@@ -48,7 +48,11 @@ public final class WardRipple {
             return;
         }
         long now = minecraft.level.getGameTime();
-        if (now % CREATURE_EVERY == 0) {
+        if (now % 40 == 0 || now < glassCheckedAt) {
+            glassCheckedAt = now;
+            glassNear = glassNear(minecraft.level, player.blockPosition());
+        }
+        if (glassNear && now % CREATURE_EVERY == 0) {
             creatures(minecraft.level, player, now);
         }
         if (!player.horizontalCollision || now < next) {
@@ -71,6 +75,31 @@ public final class WardRipple {
                 }
             }
         }
+    }
+
+    /** Whether any ward glass may stand within reach: looked up every two seconds in the sections' palettes only. */
+    private static boolean glassNear;
+    private static long glassCheckedAt;
+
+    private static boolean glassNear(net.minecraft.world.level.Level level, BlockPos at) {
+        int reach = (int) Math.ceil(CREATURE_RANGE) + 2;
+        int minSy = Math.max(level.getMinSectionY(), net.minecraft.core.SectionPos.blockToSectionCoord(at.getY() - reach));
+        int maxSy = Math.min(level.getMaxSectionY(), net.minecraft.core.SectionPos.blockToSectionCoord(at.getY() + reach));
+        for (int cx = (at.getX() - reach) >> 4; cx <= (at.getX() + reach) >> 4; cx++) {
+            for (int cz = (at.getZ() - reach) >> 4; cz <= (at.getZ() + reach) >> 4; cz++) {
+                if (!level.hasChunk(cx, cz)) {
+                    continue;
+                }
+                var chunk = level.getChunk(cx, cz);
+                for (int sy = minSy; sy <= maxSy; sy++) {
+                    var section = chunk.getSection(level.getSectionIndexFromSectionY(sy));
+                    if (!section.hasOnlyAir() && section.maybeHas(state -> state.getBlock() instanceof SieveGlassBlock)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /** Creatures and other players near the local one touching, and facing, glass that stops them. */
