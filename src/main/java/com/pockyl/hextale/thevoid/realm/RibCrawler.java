@@ -285,7 +285,8 @@ public class RibCrawler extends Monster {
 
     @Override
     public boolean removeWhenFarAway(double distSqr) {
-        return !isClinging() && super.removeWhenFarAway(distSqr);
+        // Clinging or not: one that never let go stayed for good, and they filled the creature cap of the Void.
+        return super.removeWhenFarAway(distSqr);
     }
 
     @Override

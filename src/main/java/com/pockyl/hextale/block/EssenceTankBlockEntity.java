@@ -157,6 +157,9 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, EssenceTankBlockEntity tank) {
+        if (tank.syncDue && level.getGameTime() - tank.syncedAt >= SYNC_TICKS) {
+            tank.sync(level.getGameTime());
+        }
         if (tank.isCreative()) {
             // Every essence, always full; it pours nothing into pipes (machines and the table draw what they need).
             if (!tank.tank.contents().equals(CREATIVE)) {
@@ -165,7 +168,10 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
             }
             return;
         }
-        if (level.getGameTime() % FLOW_EVERY != 0 || tank.tank.isEmpty()
+        long now = level.getGameTime();
+        // Each jar pours on its own beat (jars of one wall would all walk their network in the same tick) and rests
+        // longer after every pour nothing took, up to IDLE_MAX_SHIFT doublings.
+        if (Math.floorMod(now + pos.hashCode(), FLOW_EVERY) != 0 || now < tank.restUntil || tank.tank.isEmpty()
                 || BrassPipeBlock.side(level.getBlockState(pos.below()), Direction.UP) == PipeSide.OUT) {
             // A pipe below that pumps the jar out does the pouring itself.
             return;
@@ -181,8 +187,19 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
         if (moved > 0) {
             tank.tank.remove(offer.part(moved));
             tank.setChanged();
+            tank.idlePours = 0;
+            tank.restUntil = 0;
+        } else {
+            tank.idlePours = Math.min(tank.idlePours + 1, IDLE_MAX_SHIFT);
+            tank.restUntil = now + ((long) FLOW_EVERY << tank.idlePours);
         }
     }
+
+    /** Pours in a row nothing took (not saved: a reloaded jar simply tries again) and the tick it may pour again. */
+    private int idlePours;
+    private long restUntil;
+    /** At most 2^4 = 16 beats (80 ticks) between tries while nothing takes. */
+    private static final int IDLE_MAX_SHIFT = 4;
 
     /** The seam round the cork, in sixteenths: the cork (6 to 10 on both axes) leaves the glass lip at y 15. */
     private static final double SEAM_Y = 15.1 / 16;
@@ -259,8 +276,25 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
     public void setChanged() {
         super.setChanged();
         if (level != null && !level.isClientSide()) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
+            long now = level.getGameTime();
+            if (now - syncedAt >= SYNC_TICKS || now < syncedAt) {
+                sync(now);
+            } else {
+                // Pipes and machines change a jar every few ticks: the clients hear of it at most twice a second.
+                syncDue = true;
+            }
         }
+    }
+
+    /** Ticks between two updates of a jar sent to the clients. */
+    private static final int SYNC_TICKS = 10;
+    private long syncedAt = Long.MIN_VALUE / 2;
+    private boolean syncDue;
+
+    private void sync(long now) {
+        syncedAt = now;
+        syncDue = false;
+        level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
     }
 
     @Override

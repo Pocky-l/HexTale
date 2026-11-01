@@ -149,7 +149,9 @@ public final class VoidShapes {
         final List<VoidTrees.Tree> trees = new ArrayList<>();
         final Map<Plate, List<Pool>> pools = new java.util.HashMap<>();
         /** Packed membrane blocks by chunk ({@link #chunkKey}): {@code lx | lz << 4 | y << 8 | kind << 20}. */
-        final Map<Long, int[]> raster = new java.util.HashMap<>();
+        final Map<Long, it.unimi.dsi.fastutil.ints.IntArrayList> raster = new java.util.HashMap<>();
+        /** When it was last asked for, by the cache's own clock (the cache lets go of the longest unused first). */
+        volatile long usedAt;
     }
 
     public static long chunkKey(int chunkX, int chunkZ) {
@@ -159,13 +161,34 @@ public final class VoidShapes {
     private Region region(int rx, int rz) {
         long key = chunkKey(rx, rz);
         Region region = regions.get(key);
-        if (region != null) {
-            return region;
+        if (region == null) {
+            if (regions.size() > CACHE_LIMIT) {
+                forgetOldest();
+            }
+            region = regions.computeIfAbsent(key, k -> build(rx, rz));
         }
-        if (regions.size() > CACHE_LIMIT) {
-            regions.clear();
+        region.usedAt = USE_CLOCK.incrementAndGet();
+        return region;
+    }
+
+    /** The cache's clock: a count of lookups, the same for every thread. */
+    private static final java.util.concurrent.atomic.AtomicLong USE_CLOCK = new java.util.concurrent.atomic.AtomicLong();
+    /** Regions being built in the background for the server thread ({@link #currentsIfBuilt}). */
+    private final java.util.Set<Long> building = ConcurrentHashMap.newKeySet();
+
+    /**
+     * Lets go of the quarter of the cache used longest ago. Dropping it all at once made every thread working round the
+     * players build again the regions it had just lost.
+     */
+    private synchronized void forgetOldest() {
+        if (regions.size() <= CACHE_LIMIT) {
+            return;
         }
-        return regions.computeIfAbsent(key, k -> build(rx, rz));
+        List<Map.Entry<Long, Region>> entries = new ArrayList<>(regions.entrySet());
+        entries.sort(java.util.Comparator.comparingLong(entry -> entry.getValue().usedAt));
+        for (int i = 0; i < entries.size() / 4; i++) {
+            regions.remove(entries.get(i).getKey());
+        }
     }
 
     // ------------------------------------------------------------------ building a region
@@ -666,11 +689,7 @@ public final class VoidShapes {
         }
         long chunk = chunkKey(x >> 4, z >> 4);
         int packed = (x & 15) | (z & 15) << 4 | (y - MIN_Y) << 8 | kind << 20;
-        region.raster.merge(chunk, new int[]{packed}, (old, add) -> {
-            int[] grown = java.util.Arrays.copyOf(old, old.length + 1);
-            grown[old.length] = add[0];
-            return grown;
-        });
+        region.raster.computeIfAbsent(chunk, k -> new it.unimi.dsi.fastutil.ints.IntArrayList()).add(packed);
     }
 
     /** The point at share {@code u} (0-1) along a rib. */
@@ -705,11 +724,12 @@ public final class VoidShapes {
         long key = chunkKey(chunkX, chunkZ);
         // Membranes first: the solid shapes take what they share with them.
         for (Region region : near) {
-            int[] membranes = region.raster.get(key);
+            it.unimi.dsi.fastutil.ints.IntArrayList membranes = region.raster.get(key);
             if (membranes == null) {
                 continue;
             }
-            for (int packed : membranes) {
+            for (int m = 0; m < membranes.size(); m++) {
+                int packed = membranes.getInt(m);
                 int i = index(packed & 15, (packed >> 8) & 0xFFF, (packed >> 4) & 15);
                 byte kind = (byte) (packed >>> 20);
                 if (kinds[i] == AIR || kind > kinds[i] || kind == FLESH) {
@@ -1213,6 +1233,29 @@ public final class VoidShapes {
     /** The currents of a region (see {@link VoidCurrents}). */
     public List<VoidCurrents.Current> currents(int rx, int rz) {
         return region(rx, rz).currents;
+    }
+
+    /**
+     * The currents of a region if it is built already; else null, and it is built in the background. For the server
+     * thread: a region takes a few milliseconds to build, the nine round an arriving player tens.
+     */
+    public @org.jspecify.annotations.Nullable List<VoidCurrents.Current> currentsIfBuilt(int rx, int rz) {
+        long key = chunkKey(rx, rz);
+        Region region = regions.get(key);
+        if (region != null) {
+            region.usedAt = USE_CLOCK.incrementAndGet();
+            return region.currents;
+        }
+        if (building.add(key)) {
+            net.minecraft.util.Util.backgroundExecutor().execute(() -> {
+                try {
+                    region(rx, rz);
+                } finally {
+                    building.remove(key);
+                }
+            });
+        }
+        return null;
     }
 
     /**

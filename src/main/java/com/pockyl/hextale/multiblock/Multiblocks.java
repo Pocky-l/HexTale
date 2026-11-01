@@ -46,6 +46,11 @@ public final class Multiblocks {
     /** Structures waking right now: the light climbs them layer by layer (server side, a few ticks each). */
     private static final List<Wave> WAVES = new ArrayList<>();
 
+    /** A wave still rising when the world closes would keep the closed level in memory. */
+    private static void onServerStopped(net.neoforged.neoforge.event.server.ServerStoppedEvent event) {
+        WAVES.clear();
+    }
+
     private record Wave(ServerLevel level, List<BlockPos> cells, int bottom, int top, long start) {
     }
 
@@ -65,6 +70,7 @@ public final class Multiblocks {
     public static void register() {
         NeoForge.EVENT_BUS.addListener(Multiblocks::onRightClickBlock);
         NeoForge.EVENT_BUS.addListener(Multiblocks::onLevelTick);
+        NeoForge.EVENT_BUS.addListener(Multiblocks::onServerStopped);
     }
 
     public static List<Multiblock> all() {

@@ -391,6 +391,10 @@ public final class Breaches {
 
     @SubscribeEvent
     public static void onDamage(LivingIncomingDamageEvent event) {
+        if (event.getSource().getEntity() instanceof ServerPlayer attacker) {
+            // Whoever strikes while the breach is shown is no longer watching it, and no longer spared.
+            WATCHING.remove(attacker.getUUID());
+        }
         if (event.getEntity() instanceof ServerPlayer player && watching(player)) {
             event.setCanceled(true);
         }

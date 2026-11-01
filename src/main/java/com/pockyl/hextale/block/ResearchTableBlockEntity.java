@@ -420,10 +420,18 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         }
         if (!looking) {
             looking = true;
-            level.playSound(player, worldPosition, ModSounds.LOUPE_LENS.get(), SoundSource.BLOCKS, 0.3F, 0.9F);
+            long now = level.getGameTime();
+            if (now - lensHeardAt >= LENS_SOUND_TICKS || now < lensHeardAt) {
+                // Picking the loupe up and putting it back in a loop would play the lens for everyone near.
+                lensHeardAt = now;
+                level.playSound(player, worldPosition, ModSounds.LOUPE_LENS.get(), SoundSource.BLOCKS, 0.3F, 0.9F);
+            }
             sync();
         }
     }
+
+    private long lensHeardAt = Long.MIN_VALUE / 2;
+    private static final int LENS_SOUND_TICKS = 6;
 
     private void lookAway() {
         loupeBy = null;
