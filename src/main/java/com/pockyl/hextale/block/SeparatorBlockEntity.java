@@ -250,7 +250,11 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         }
     }
 
+    /** Clients hear of a working machine at most twice a second. */
+    private final ClientSync clientSync = new ClientSync();
+
     public static void serverTick(Level level, BlockPos pos, BlockState state, SeparatorBlockEntity separator) {
+        separator.clientSync.tick(separator);
         boolean changed = separator.pourFlask();
         changed |= separator.separate();
         BlockState now = separator.getBlockState();
@@ -508,9 +512,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
     @Override
     public void setChanged() {
         super.setChanged();
-        if (level != null && !level.isClientSide()) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
-        }
+        clientSync.request(this);
     }
 
     @Override

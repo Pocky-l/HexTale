@@ -202,7 +202,11 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
 
     // ---- Ticking ------------------------------------------------------------------------------------------------------
 
+    /** Clients hear of a working machine at most twice a second. */
+    private final ClientSync clientSync = new ClientSync();
+
     public static void serverTick(Level level, BlockPos pos, BlockState state, HexFurnaceBlockEntity furnace) {
+        furnace.clientSync.tick(furnace);
         ServerLevel server = (ServerLevel) level;
         if (furnace.owner != null && Math.floorMod(level.getGameTime() + pos.asLong(), REFRESH_TICKS) == 0) {
             ServerPlayer player = server.getServer().getPlayerList().getPlayer(furnace.owner);
@@ -319,10 +323,45 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
         return BuiltInRegistries.ITEM.getOptional(ingot).map(ItemStack::new).orElse(ItemStack.EMPTY);
     }
 
+    /**
+     * The last answer of {@link #melt} and what it was asked about: a furnace waiting for fuel or room used to look its
+     * recipes up every tick. Asked again when the inputs or runes change, else once a second (knowledge may change).
+     */
+    private @Nullable Melt meltCache;
+    private String meltBlocked = "";
+    private List<ItemStack> meltInputs = List.of();
+    private PickaxeRunes meltRunes = PickaxeRunes.EMPTY;
+    private long meltAt = Long.MIN_VALUE / 2;
+
+    private @Nullable Melt meltCached(ServerLevel level) {
+        long now = level.getGameTime();
+        List<ItemStack> inputs = inputs();
+        boolean same = now - meltAt < 20 && now >= meltAt && runes == meltRunes && meltInputs.size() == inputs.size();
+        for (int i = 0; same && i < inputs.size(); i++) {
+            same = ItemStack.matches(inputs.get(i), meltInputs.get(i));
+        }
+        if (!same) {
+            String before = blocked;
+            meltCache = melt(level);
+            meltBlocked = blocked;
+            blocked = before;
+            meltInputs = inputs.stream().map(ItemStack::copy).toList();
+            meltRunes = runes;
+            meltAt = now;
+        }
+        if (meltCache == null) {
+            if (!meltBlocked.isEmpty()) {
+                blocked = meltBlocked;
+            }
+            return null;
+        }
+        return new Melt(meltCache.result().copy(), meltCache.time(), meltCache.experience(), meltCache.slots(), meltCache.counts(), meltCache.ores());
+    }
+
     private void work(ServerLevel level) {
         String before = blocked;
         blocked = "";
-        Melt melt = melt(level);
+        Melt melt = meltCached(level);
         if (melt == null) {
             String reason = blocked;
             blocked = before;
@@ -471,9 +510,7 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
     @Override
     public void setChanged() {
         super.setChanged();
-        if (level != null && !level.isClientSide()) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
-        }
+        clientSync.request(this);
     }
 
     @Override

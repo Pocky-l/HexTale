@@ -478,8 +478,16 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
                 }
                 level.setBlock(worldPosition, state.setValue(LINKED, linked), Block.UPDATE_ALL);
             }
-            level.sendBlockUpdated(worldPosition, state, getBlockState(), Block.UPDATE_CLIENTS);
+            // Clients see the link and the dry flag only: tell them when either changed (this runs once a second).
+            String shown = link + "/" + dry;
+            if (!shown.equals(sentState)) {
+                sentState = shown;
+                level.sendBlockUpdated(worldPosition, state, getBlockState(), Block.UPDATE_CLIENTS);
+            }
         }
+
+        /** What the clients were last told ({@link #getUpdateTag}), so the once-a-second check sends only changes. */
+        private @Nullable String sentState;
 
         public boolean dry() {
             return dry;

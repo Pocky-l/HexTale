@@ -212,7 +212,11 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         return player == null || !(level instanceof ServerLevel serverLevel) ? null : serverLevel.getServer().getPlayerList().getPlayer(player);
     }
 
+    /** Clients hear of a working machine at most twice a second. */
+    private final ClientSync clientSync = new ClientSync();
+
     public static void serverTick(Level level, BlockPos pos, BlockState state, AlembicBlockEntity alembic) {
+        alembic.clientSync.tick(alembic);
         boolean changed = alembic.boil();
         changed |= alembic.fillFlask();
         if (level.getGameTime() % EssenceTankBlockEntity.FLOW_EVERY == 0) {
@@ -305,9 +309,7 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
     @Override
     public void setChanged() {
         super.setChanged();
-        if (level != null && !level.isClientSide()) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
-        }
+        clientSync.request(this);
     }
 
     @Override

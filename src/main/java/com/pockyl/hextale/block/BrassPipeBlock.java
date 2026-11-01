@@ -122,7 +122,7 @@ public class BrassPipeBlock extends Block implements com.pockyl.hextale.port.Rem
     @Override
     protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState old, boolean movedByPiston) {
         // Called for every new state of a pipe (placed, joined, a side set by hand): networks are walked again.
-        EssenceNetwork.invalidate();
+        EssenceNetwork.invalidate(level);
         if (!old.is(this) && !level.isClientSide()) {
             // Set by a command or a structure, not by a player: join the neighbours the way placing it would.
             BlockState joined = joined(level, pos, state);
@@ -137,7 +137,7 @@ public class BrassPipeBlock extends Block implements com.pockyl.hextale.port.Rem
     }
 
     public void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
-        EssenceNetwork.invalidate();
+        EssenceNetwork.invalidate(level);
     }
 
     private static boolean pumps(BlockState state) {

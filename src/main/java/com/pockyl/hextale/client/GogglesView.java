@@ -354,8 +354,24 @@ public final class GogglesView {
         }
     }
 
+    /** The last network reading: asked every frame while the goggles look at a pipe, worked out four times a second. */
+    private static @org.jspecify.annotations.Nullable BlockPos readFor;
+    private static long readAt;
+    private static EssenceMix read = EssenceMix.EMPTY;
+
     /** Everything held by the vessels the pipes around {@code pos} reach. */
     private static EssenceMix network(Level level, BlockPos pos) {
+        long now = level.getGameTime();
+        if (pos.equals(readFor) && now - readAt < 5 && now >= readAt) {
+            return read;
+        }
+        readFor = pos.immutable();
+        readAt = now;
+        read = sumOf(level, pos);
+        return read;
+    }
+
+    private static EssenceMix sumOf(Level level, BlockPos pos) {
         Set<BlockPos> pipes = EssenceNetwork.network(level, pos);
         EssenceMix total = EssenceMix.EMPTY;
         Set<BlockPos> seen = new HashSet<>();
