@@ -654,9 +654,12 @@ public class VoidChunkGenerator extends ChunkGenerator {
             if (!level) {
                 continue;
             }
+            // Into the chunk itself: the spawn step's region refuses block changes (each one was an error in the log and
+            // the maw lay buried in the ground it should have taken away). The cut lies inside this chunk.
+            ChunkAccess own = region.getChunk(chunk.x, chunk.z);
             for (int dx = -1; dx <= 1; dx++) {
                 for (int dz = -1; dz <= 1; dz++) {
-                    region.setBlock(new BlockPos(x + dx, y, z + dz), Blocks.AIR.defaultBlockState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+                    own.setBlockState(new BlockPos(x + dx, y, z + dz), Blocks.AIR.defaultBlockState(), false);
                 }
             }
             PitMaw maw = com.pockyl.hextale.registry.ModEntities.PIT_MAW.get().create(region.getLevel());

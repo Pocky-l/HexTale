@@ -30,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Peaceful, and a Recall Charm used after dying no longer leads back to where the player died.
 - Machine sounds stay working after the Blocks volume was turned down to nothing and up again.
 - JEI lists the Research Notes of every topic instead of a single one.
+- Pit Maws in newly explored parts of the Void lie in the hollow they take out of the ground instead of being buried
+  in it, and exploring the Void no longer fills the log with errors about blocks set in far chunks.
 ### Changed
 - Less load on servers and clients: busy alembics, separators, workbenches and furnaces tell players of their work at
   most twice a second, the Hex Furnace looks its recipes up only when its contents change, a pipe change no longer makes
