@@ -122,7 +122,11 @@ public class HexWorkbenchBlockEntity extends BaseContainerBlockEntity {
     }
 
     /** Soaks one crystal from the socket into charge when there is room for it (every {@value #SOAK_TICKS} ticks). */
+    /** Clients hear of a working machine at most twice a second. */
+    private final ClientSync clientSync = new ClientSync();
+
     public static void serverTick(net.minecraft.world.level.Level level, BlockPos pos, BlockState state, HexWorkbenchBlockEntity bench) {
+        bench.clientSync.tick(bench);
         ItemStack crystal = bench.items.get(CRYSTAL);
         int value = chargeOf(crystal);
         if (value <= 0 || bench.charge + value > MAX_CHARGE || level.getGameTime() % SOAK_TICKS != 0) {
@@ -170,9 +174,7 @@ public class HexWorkbenchBlockEntity extends BaseContainerBlockEntity {
     public void setChanged() {
         revision++;
         super.setChanged();
-        if (level != null && !level.isClientSide()) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
-        }
+        clientSync.request(this);
     }
 
     @Override

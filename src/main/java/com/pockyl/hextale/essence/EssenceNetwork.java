@@ -45,10 +45,12 @@ public final class EssenceNetwork {
     /** A remembered network is walked again after this many ticks even if no pipe changed (chunks loaded meanwhile). */
     private static final int CACHE_TICKS = 100;
 
-    /** Bumped whenever a pipe or a block beside one changes: every remembered network is forgotten. */
-    private static final AtomicInteger EPOCH = new AtomicInteger();
-    /** Server side: the networks walked from each start pipe, so a jar pouring every few ticks does not walk them again. */
+    /** The networks walked from each start pipe, so a jar pouring every few ticks does not walk them again. */
     private static final Map<Level, Cache> CACHES = new WeakHashMap<>();
+    /** The same on the client (goggles on a pipe asked every frame), kept apart: two threads, a plain map each. */
+    private static final Map<Level, Cache> CLIENT_CACHES = new WeakHashMap<>();
+    /** A client cannot be told of every far pipe change: what it walked is trusted for half a second. */
+    private static final int CLIENT_CACHE_TICKS = 10;
 
     private EssenceNetwork() {
     }
@@ -65,7 +67,8 @@ public final class EssenceNetwork {
     }
 
     private static final class Cache {
-        int epoch = EPOCH.get();
+        /** A pipe of this level changed: every remembered network of it is forgotten. */
+        boolean stale;
         final Long2ObjectOpenHashMap<Entry> networks = new Long2ObjectOpenHashMap<>();
         /**
          * Whether a plain jar beside an outlet pours back into the network: it depends only on the pipe sides round the
@@ -76,9 +79,22 @@ public final class EssenceNetwork {
         long jarsSince;
     }
 
-    /** A pipe or a block beside one changed: networks must be walked again. */
-    public static void invalidate() {
-        EPOCH.incrementAndGet();
+    /** A pipe or a block beside one changed: the networks of its level must be walked again (other levels keep theirs). */
+    public static void invalidate(Level level) {
+        Cache cache = (level.isClientSide() ? CLIENT_CACHES : CACHES).get(level);
+        if (cache != null) {
+            cache.stale = true;
+        }
+    }
+
+    private static Cache cacheOf(Level level) {
+        Cache cache = (level.isClientSide() ? CLIENT_CACHES : CACHES).computeIfAbsent(level, l -> new Cache());
+        if (cache.stale) {
+            cache.stale = false;
+            cache.networks.clear();
+            cache.jarFeedsBack.clear();
+        }
+        return cache;
     }
 
     /** Something that takes essence in through some of its faces. */
@@ -300,24 +316,16 @@ public final class EssenceNetwork {
      * is no pipe (a drain valve) reaches the pipes joined to it.
      */
     public static Set<BlockPos> network(Level level, BlockPos start) {
-        return walk(level, start).pipes();
+        return cached(level, start).pipes();
     }
 
-    /** The network from {@code start}: remembered on the server until a pipe changes, walked afresh on a client. */
+    /** The network from {@code start}: remembered until a pipe of its level changes (a client: for half a second too). */
     private static Network cached(Level level, BlockPos start) {
-        if (level.isClientSide()) {
-            return walk(level, start);
-        }
-        Cache cache = CACHES.computeIfAbsent(level, l -> new Cache());
-        int epoch = EPOCH.get();
-        if (cache.epoch != epoch) {
-            cache.epoch = epoch;
-            cache.networks.clear();
-            cache.jarFeedsBack.clear();
-        }
+        Cache cache = cacheOf(level);
         long now = level.getGameTime();
+        int keep = level.isClientSide() ? CLIENT_CACHE_TICKS : CACHE_TICKS;
         Entry entry = cache.networks.get(start.asLong());
-        if (entry == null || now - entry.builtAt() > CACHE_TICKS || now < entry.builtAt()) {
+        if (entry == null || now - entry.builtAt() > keep || now < entry.builtAt()) {
             entry = new Entry(now, walk(level, start));
             cache.networks.put(start.asLong(), entry);
         }
@@ -370,13 +378,8 @@ public final class EssenceNetwork {
         if (level.isClientSide() || receiver.getClass() != EssenceTankBlockEntity.class) {
             return feedsBack(outlet.at(), receiver, pipes, side);
         }
-        Cache cache = CACHES.computeIfAbsent(level, l -> new Cache());
+        Cache cache = cacheOf(level);
         long now = level.getGameTime();
-        if (cache.epoch != EPOCH.get()) {
-            cache.epoch = EPOCH.get();
-            cache.networks.clear();
-            cache.jarFeedsBack.clear();
-        }
         if (now - cache.jarsSince > CACHE_TICKS || now < cache.jarsSince) {
             cache.jarsSince = now;
             cache.jarFeedsBack.clear();

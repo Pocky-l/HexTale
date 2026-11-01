@@ -83,10 +83,21 @@ public final class EssenceLookup {
     }
 
     /** Rebuilds the creative search trees when the studied items changed since they were last built. */
+    /** The knowledge version last found to match {@link #indexed}. */
+    private static int checkedVersion = Integer.MIN_VALUE;
+
     private static void refreshCreativeSearch() {
         Minecraft minecraft = Minecraft.getInstance();
+        int version = ClientKnowledge.version();
+        if (version == checkedVersion) {
+            return; // knowledge unchanged since it last matched the index: no need to compare whole sets every tick
+        }
         Set<String> studied = ClientKnowledge.get().studied();
-        if (studied.equals(indexed) || minecraft.getConnection() == null || minecraft.level == null) {
+        if (studied.equals(indexed)) {
+            checkedVersion = version;
+            return;
+        }
+        if (minecraft.getConnection() == null || minecraft.level == null) {
             return;
         }
         if (CreativeModeTabs.searchTab().getDisplayItems().isEmpty()) {
@@ -94,6 +105,7 @@ public final class EssenceLookup {
             return;
         }
         indexed = Set.copyOf(studied);
+        checkedVersion = version;
         var trees = minecraft.getConnection().searchTrees();
         var registries = minecraft.level.registryAccess();
         CreativeModeTabs.allTabs().stream().filter(CreativeModeTab::hasSearchBar).forEach(tab ->
