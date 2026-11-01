@@ -76,6 +76,27 @@ public final class VoidRealmGameTests {
         helper.succeed();
     }
 
+    /**
+     * Nothing of ours makes a world "experimental": every entry the mod's data adds to a data-driven registry (damage
+     * types, biomes, features, the Void's dimension type...) counts as stable, as vanilla's own do.
+     */
+    @HexTest
+    public static void ourDataIsNotExperimental(GameTestHelper helper) {
+        List<String> experimental = new java.util.ArrayList<>();
+        helper.getLevel().getServer().registryAccess().registries().forEach(entry -> experimentalOf(entry.value(), experimental));
+        helper.assertTrue(experimental.isEmpty(), "experimental entries: " + experimental);
+        helper.succeed();
+    }
+
+    private static <T> void experimentalOf(net.minecraft.core.Registry<T> registry, List<String> out) {
+        for (ResourceKey<T> key : registry.registryKeySet()) {
+            if (key.identifier().getNamespace().equals(Hextale.MOD_ID)
+                    && registry.registrationInfo(key).map(info -> info.lifecycle() != com.mojang.serialization.Lifecycle.stable()).orElse(false)) {
+                out.add(key.toString());
+            }
+        }
+    }
+
     /** Over a stretch of the Void: ribs with lit crests, skin with veins and worn patches, flesh - and nothing low down. */
     @HexTest(maxTicks = 200)
     public static void theVoidIsBuiltOfRibsAndSkin(GameTestHelper helper) {
