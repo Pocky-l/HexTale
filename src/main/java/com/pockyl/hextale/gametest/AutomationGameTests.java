@@ -169,4 +169,19 @@ public final class AutomationGameTests {
         helper.assertTrue(offered == (ExperienceOutlet.fluid() != null), "a fluid handler only with liquid experience");
         helper.succeed();
     }
+
+    /**
+     * Pylons landing their cargo, the Greedy Funnel, Rift Gates and the Levitation Plate hand items over without a
+     * transaction of their own: the battery's intake (journaled) took them only inside one, so the server crashed.
+     */
+    @HexTest
+    public static void deliveriesWithoutATransactionReachAnIntake(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(1, 1, 1);
+        helper.setBlock(pos, ModBlocks.CRYSTAL_BATTERY.get());
+        int moved = com.pockyl.hextale.transport.PylonInsert.insert(helper.getLevel(), helper.absolutePos(pos), Direction.UP,
+                ItemResource.of(new ItemStack(ModItems.UNSTABLE_HEXTECH.get())), 2, null, null);
+        CrystalBatteryBlockEntity battery = helper.<CrystalBatteryBlockEntity>getBlockEntity(pos);
+        helper.assertTrue(moved > 0 && battery.charge() > 0, "the battery took the orbs: moved " + moved + ", charge " + battery.charge());
+        helper.succeed();
+    }
 }
