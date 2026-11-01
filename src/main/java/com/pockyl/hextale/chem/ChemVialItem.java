@@ -163,6 +163,10 @@ public class ChemVialItem extends Item implements ProjectileItem {
                 ShimmerVeins.drink(player);
             }
         }
+        if (entity instanceof Player creative && creative.getAbilities().instabuild) {
+            // Creative keeps the vial, as 26.x's consumable does.
+            return stack;
+        }
         stack.shrink(1);
         if (stack.isEmpty()) {
             return new ItemStack(Items.GLASS_BOTTLE);

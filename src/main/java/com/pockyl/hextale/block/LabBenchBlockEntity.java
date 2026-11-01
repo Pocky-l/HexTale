@@ -304,9 +304,12 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
 
     /** The vent lets the pressure out with a hiss of vapour. */
     public void vent() {
-        if (!(level instanceof ServerLevel server) || flask.pressure() <= 0 && flask.isEmpty()) {
+        if (!(level instanceof ServerLevel server) || flask.pressure() <= 0 && flask.isEmpty()
+                || server.getGameTime() - ventedAt < VENT_TICKS && server.getGameTime() >= ventedAt) {
+            // A vent every few ticks at most: each one is particles and a sound for everyone near.
             return;
         }
+        ventedAt = server.getGameTime();
         flask.vent();
         Vec3 at = flaskPosition().add(0, 0.25, 0);
         server.sendParticles(ModParticles.vapour(ModParticles.STEAM), at.x, at.y, at.z, 10, 0.05, 0.05, 0.05, 0.03);
@@ -314,6 +317,10 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
         server.playSound(null, worldPosition, ModSounds.LAB_VENT.get(), SoundSource.BLOCKS, 0.6F, 1.0F);
         changed();
     }
+
+    /** The tick of the last vent, and the fewest ticks between two. */
+    private long ventedAt = Long.MIN_VALUE / 2;
+    private static final int VENT_TICKS = 6;
 
     /** Pours the flask out (into the bench's sink): everything in it is lost. */
     public void pour() {

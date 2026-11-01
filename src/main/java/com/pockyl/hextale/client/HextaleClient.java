@@ -239,6 +239,11 @@ public final class HextaleClient {
             }
         });
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> ClientKnowledge.clear());
+        // The Void's currents and a half-made pylon link belong to the world left behind.
+        NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> {
+            VoidCurrentsClient.clear();
+            com.pockyl.hextale.transport.PylonLinking.clientFrom = null;
+        });
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> com.pockyl.hextale.block.NullLanternBlockEntity.forget(true));
         ClientPylons.register();
         EssenceLookup.register();

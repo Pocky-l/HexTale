@@ -41,8 +41,10 @@ public abstract class MobRenderer<T extends Mob, S extends LivingEntityRenderSta
         state.bodyRot = Mth.rotLerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
         state.yRot = Mth.wrapDegrees(Mth.rotLerp(partialTick, entity.yHeadRotO, entity.yHeadRot) - state.bodyRot);
         state.xRot = Mth.lerp(partialTick, entity.xRotO, entity.getXRot());
-        state.walkAnimationPos = entity.walkAnimation.position(partialTick);
-        state.walkAnimationSpeed = entity.walkAnimation.speed(partialTick);
+        // 26.x: no walking while dead or riding (legs kept walking through the death roll).
+        boolean walks = entity.isAlive() && !entity.isPassenger();
+        state.walkAnimationPos = walks ? entity.walkAnimation.position(partialTick) : 0;
+        state.walkAnimationSpeed = walks ? entity.walkAnimation.speed(partialTick) : 0;
         state.scale = entity.getScale();
         state.isInvisible = entity.isInvisible();
     }

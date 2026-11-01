@@ -32,6 +32,12 @@ public final class ClientPayloads {
 
     public static void register(RegisterClientPayloadHandlersEvent event) {
         event.register(KnowledgeSyncPayload.TYPE, (payload, context) -> knowledge(payload));
+        // Synced player attachments (Void Mites, Shimmer Veins): 26.x syncs them by itself, here they come as a payload.
+        event.register(com.pockyl.hextale.port.PortSync.Payload.TYPE, (payload, context) -> {
+            if (Minecraft.getInstance().level != null) {
+                com.pockyl.hextale.port.PortSync.accept(payload, Minecraft.getInstance().level);
+            }
+        });
         event.register(ItemEssencesPayload.TYPE, (payload, context) -> itemElements(payload));
         event.register(ResearchMessagePayload.TYPE, (payload, context) -> researchMessage(payload));
         event.register(OpenDiaryPayload.TYPE, (payload, context) -> openDiary(payload));
