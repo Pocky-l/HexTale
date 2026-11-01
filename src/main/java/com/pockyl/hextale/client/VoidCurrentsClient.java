@@ -26,6 +26,11 @@ public final class VoidCurrentsClient {
     private static final int COLOUR = 0xC8BAD8;
     private static final double SIGHT = 72;
     private static List<VoidCurrents.Current> currents = List.of();
+
+    /** Forgets the currents of the world left (the next one tells its own). */
+    public static void clear() {
+        currents = List.of();
+    }
     private static VoidCurrents.Current ridden;
     private static long warned = -1;
     private static Rush rush;

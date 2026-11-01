@@ -18,6 +18,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -66,6 +67,13 @@ public final class EssenceNetwork {
     private static final class Cache {
         int epoch = EPOCH.get();
         final Long2ObjectOpenHashMap<Entry> networks = new Long2ObjectOpenHashMap<>();
+        /**
+         * Whether a plain jar beside an outlet pours back into the network: it depends only on the pipe sides round the
+         * jar, so it is remembered like the networks (until a pipe changes or {@link #CACHE_TICKS} pass). Without it,
+         * every pour asked six blocks round every jar of the network: hundreds of jars on one network lagged.
+         */
+        final Map<Outlet, Boolean> jarFeedsBack = new HashMap<>();
+        long jarsSince;
     }
 
     /** A pipe or a block beside one changed: networks must be walked again. */
@@ -160,7 +168,7 @@ public final class EssenceNetwork {
             }
             BlockEntity vessel = level.getBlockEntity(at);
             if (vessel == null || source != null && EssenceTankBlockEntity.at(level, at) == source
-                    || vessel instanceof Receiver receiver && feedsBack(at, receiver, network.pipes(), outlet.direction().getOpposite())) {
+                    || vessel instanceof Receiver receiver && feedsBack(level, outlet, receiver, network.pipes())) {
                 continue;
             }
             int taken = taker.take(vessel, outlet.direction().getOpposite());
@@ -305,6 +313,7 @@ public final class EssenceNetwork {
         if (cache.epoch != epoch) {
             cache.epoch = epoch;
             cache.networks.clear();
+            cache.jarFeedsBack.clear();
         }
         long now = level.getGameTime();
         Entry entry = cache.networks.get(start.asLong());
@@ -355,6 +364,31 @@ public final class EssenceNetwork {
      * Whether one of the receiver's outlets other than {@code side} runs into these pipes. Through the outlet itself it
      * may take (a jar fed from below through the pipe it pours into).
      */
+    /** {@link #feedsBack(BlockPos, Receiver, Set, Direction)} for the vessel beside an outlet, remembered for plain jars. */
+    private static boolean feedsBack(Level level, Outlet outlet, Receiver receiver, Set<BlockPos> pipes) {
+        Direction side = outlet.direction().getOpposite();
+        if (level.isClientSide() || receiver.getClass() != EssenceTankBlockEntity.class) {
+            return feedsBack(outlet.at(), receiver, pipes, side);
+        }
+        Cache cache = CACHES.computeIfAbsent(level, l -> new Cache());
+        long now = level.getGameTime();
+        if (cache.epoch != EPOCH.get()) {
+            cache.epoch = EPOCH.get();
+            cache.networks.clear();
+            cache.jarFeedsBack.clear();
+        }
+        if (now - cache.jarsSince > CACHE_TICKS || now < cache.jarsSince) {
+            cache.jarsSince = now;
+            cache.jarFeedsBack.clear();
+        }
+        Boolean known = cache.jarFeedsBack.get(outlet);
+        if (known == null) {
+            known = feedsBack(outlet.at(), receiver, pipes, side);
+            cache.jarFeedsBack.put(outlet, known);
+        }
+        return known;
+    }
+
     private static boolean feedsBack(BlockPos at, Receiver receiver, Set<BlockPos> pipes, Direction side) {
         for (Direction face : Direction.values()) {
             if (face != side && receiver.isOutlet(face) && pipes.contains(at.relative(face))) {

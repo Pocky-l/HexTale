@@ -83,7 +83,7 @@ public final class WeaponRunes {
     public static boolean shockwaveReady(Player player) {
         ItemStack weapon = player.getMainHandItem();
         return strength(weapon, ToolRune.SHOCKWAVE) > 0 && !player.getCooldowns().isOnCooldown(weapon)
-                && player.getAttackStrengthScale(0.5F) >= 0.85F && !player.isSpectator();
+                && player.getAttackStrengthScale(0.5F) >= 0.85F && !player.isSpectator() && player.isAlive();
     }
 
     // ---- Shockwave --------------------------------------------------------------------------------------------------

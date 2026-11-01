@@ -67,7 +67,12 @@ public record SteleRunePayload(BlockPos pos, int rune, int stars) implements Cus
         }
         // Picked stars may be fewer than the researcher knows, never more.
         int known = knowledge.stars(rune);
+        ComplexRune before = stele.rune();
+        int starsBefore = stele.stars();
         stele.choose(rune, payload.stars > 0 ? Math.min(payload.stars, known) : known, payload.stars > 0);
-        player.level().playSound(null, payload.pos, ModSounds.STELE_SET.get(), SoundSource.BLOCKS, 0.9F, 1.0F);
+        if (before != stele.rune() || starsBefore != stele.stars()) {
+            // Only a real change sounds: the same rune sent again and again would ring for everyone near.
+            player.level().playSound(null, payload.pos, ModSounds.STELE_SET.get(), SoundSource.BLOCKS, 0.9F, 1.0F);
+        }
     }
 }

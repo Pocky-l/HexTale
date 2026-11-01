@@ -332,6 +332,11 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
         public static final int FLUID_PER_TOLL = 125;
         /** Ticks a dry gate waits before it looks into its jars again. */
         private static final int DRY_RETRY = 20;
+        /** A stuck flow rests up to 5 << 6 = 320 ticks between tries (longer than a portal ticket lasts). */
+        private static final int IDLE_FLOW_MAX_SHIFT = 6;
+        /** Flows in a row that moved nothing, and the tick the next may try (not saved). */
+        private int idleFlows;
+        private long flowRestUntil;
         private final EssenceTank essence = new EssenceTank(ESSENCE_BUFFER);
         private final FluidStacksResourceHandler fluid = new FluidStacksResourceHandler(1, FLUID_BUFFER) {
             @Override
@@ -502,9 +507,11 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
 
         public static void serverTick(Level level, BlockPos pos, BlockState state, Gate gate) {
             ServerLevel server = (ServerLevel) level;
-            if (!gate.mouth.isEmpty() && state.getValue(LINKED)) {
-                Gate partner = gate.partnerGate(server);
-                if (partner != null && gate.afford(server, gate.mouth.getCount())) {
+            // Paid first, then the partner: a dry gate never reaches for the far chunk, and an unloaded partner is
+            // asked to load in the background (the item waits) instead of being loaded on the spot every tick.
+            if (!gate.mouth.isEmpty() && state.getValue(LINKED) && gate.afford(server, gate.mouth.getCount())) {
+                Gate partner = gate.partnerGate(server, false);
+                if (partner != null) {
                     gate.spend(gate.mouth.getCount());
                     ItemStack stack = gate.mouth;
                     gate.mouth = ItemStack.EMPTY;
@@ -513,18 +520,24 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
                     partner.receive(stack);
                 }
             }
-            if (level.getGameTime() % FLOW_EVERY == 0 && (!gate.essence.isEmpty() || !gate.fluid.getResource(0).isEmpty())
+            long now = level.getGameTime();
+            if (now % FLOW_EVERY == 0 && now >= gate.flowRestUntil && (!gate.essence.isEmpty() || !gate.fluid.getResource(0).isEmpty())
                     && state.getValue(LINKED)) {
-                Gate partner = gate.partnerGate(server, false);
-                int toll = partner != null && gate.afford(server, 1) ? partner.pour(gate) : 0;
+                Gate partner = gate.afford(server, 1) ? gate.partnerGate(server, false) : null;
+                int toll = partner != null ? partner.pour(gate) : 0;
                 if (toll > 0) {
                     gate.spend(toll);
-                    long now = level.getGameTime();
+                    gate.idleFlows = 0;
                     if (now - gate.flaredAt > 30) {
                         gate.flaredAt = now;
                         gate.flare();
                         partner.arrived();
                     }
+                } else {
+                    // Nothing went through (dry, the partner still loading, or nothing takes it there): try less and
+                    // less often, so a stuck flow does not keep the far chunk loaded for ever.
+                    gate.idleFlows = Math.min(gate.idleFlows + 1, IDLE_FLOW_MAX_SHIFT);
+                    gate.flowRestUntil = gate.idleFlows <= 2 ? 0 : now + ((long) FLOW_EVERY << gate.idleFlows);
                 }
             }
             if (++gate.wait >= 20) {

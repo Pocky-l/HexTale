@@ -77,9 +77,17 @@ public final class ResearchBoards {
 
     /** The board of an attempt, generated in the background if needed. */
     public static CompletableFuture<ResearchBoard> request(ResearchTopic topic, int attempt) {
-        return CACHE.computeIfAbsent(new Key(topic, Math.max(0, attempt)),
-                key -> CompletableFuture.supplyAsync(() -> generate(key.topic(), key.attempt()), EXECUTOR));
+        Key wanted = new Key(topic, Math.max(0, attempt));
+        if (CACHE.size() > CACHE_LIMIT && !CACHE.containsKey(wanted)) {
+            // Every burnt parchment asks for a new attempt's board: the finished later attempts go (they are the same
+            // board every time they are generated again), the first boards of the topics stay.
+            CACHE.entrySet().removeIf(entry -> entry.getKey().attempt() > 0 && entry.getValue().isDone());
+        }
+        return CACHE.computeIfAbsent(wanted, key -> CompletableFuture.supplyAsync(() -> generate(key.topic(), key.attempt()), EXECUTOR));
     }
+
+    /** Boards kept before the later attempts are let go. */
+    private static final int CACHE_LIMIT = 512;
 
     /** Generates every board in the background, so screens rarely wait. */
     public static void warmUp() {
