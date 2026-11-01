@@ -45,6 +45,12 @@ public final class RuneEffects {
     private static final List<Shown> SHOWN = new ArrayList<>();
     private static @Nullable ClientLevel level;
 
+    /** The world was left: let go of it and of what was shown in it. */
+    public static void forget() {
+        SHOWN.clear();
+        level = null;
+    }
+
     record Shown(RuneEffectPayload payload, long start, int seed) {
         float lasts() {
             int n = payload.blocks().size();

@@ -45,7 +45,15 @@ public class MultiblockPartBlockEntity extends BlockEntity implements EssenceNet
 
     @Nullable
     public BlockEntity core() {
-        return level == null ? null : level.getBlockEntity(controller);
+        return level == null || !controllerNear() ? null : level.getBlockEntity(controller);
+    }
+
+    /**
+     * Whether the remembered controller can be this part's at all: a part set by a command or a structure, or one whose
+     * data failed to load, points at 0,0,0 - asking there would load a far chunk on every shape and click query.
+     */
+    public boolean controllerNear() {
+        return controller.distSqr(worldPosition) <= 64;
     }
 
     /** The controller's container when its structure shares items through its blocks, else null. */

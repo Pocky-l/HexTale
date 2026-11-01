@@ -66,6 +66,15 @@ public final class VoidPassage {
     /** Players being drawn through now. */
     private static final Map<java.util.UUID, Pull> PULLS = new java.util.concurrent.ConcurrentHashMap<>();
 
+    /** Forgets the pull of a player who left, or every pull (null) when the server stops: a pull holds its breach. */
+    public static void forgetPulls(java.util.@Nullable UUID player) {
+        if (player == null) {
+            PULLS.clear();
+        } else {
+            PULLS.remove(player);
+        }
+    }
+
     /** A pull under way: into the Void through {@code breach} (touched at {@code local}), or out through gate {@code seed}. */
     private record Pull(boolean into, long start, @Nullable TheVoid breach, @Nullable Vector3f local, int seed) {
     }
@@ -328,11 +337,17 @@ public final class VoidPassage {
                     gate.size(), gate.home(), gate.homeAt(), gate.homeYaw(), true);
             ledge(realm, new BlockPos(spot[0], spot[1], spot[2]), layout);
         }
-        if (find(realm, gate) == null) {
+        // A chunk's creatures load after its blocks: asking before they are in would stand a second gate beside the
+        // saved one. Until then the safety net in onPlayerTick puts it up.
+        if (entitiesLoaded(realm, gate) && find(realm, gate) == null) {
             TheVoid entity = TheVoid.gate(realm, gate.at(), gate.yaw(), gate.voidShape(), gate.size(), gate.seed());
             realm.addFreshEntity(entity);
         }
         return gate;
+    }
+
+    private static boolean entitiesLoaded(ServerLevel realm, Gate gate) {
+        return realm.areEntitiesLoaded(net.minecraft.world.level.ChunkPos.pack(BlockPos.containing(gate.at())));
     }
 
     private static @Nullable TheVoid find(ServerLevel realm, Gate gate) {
@@ -429,6 +444,10 @@ public final class VoidPassage {
 
     /** A gate's turn: whoever of our world touches it is let out to its breach. */
     public static void gateTick(ServerLevel realm, TheVoid gate) {
+        if ((realm.getGameTime() + gate.getId()) % 100 == 0 && twinOf(realm, gate)) {
+            gate.discard();
+            return;
+        }
         if (realm.getGameTime() % 2 != 0) {
             return;
         }
@@ -450,6 +469,13 @@ public final class VoidPassage {
                 realm.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.VOID_PASSAGE_PULL.get(), SoundSource.PLAYERS, 1.0F, 1.25F);
             }
         }
+    }
+
+    /** Whether an older gate of the same seed stands here: the younger one goes (worlds saved with doubled gates). */
+    private static boolean twinOf(ServerLevel realm, TheVoid gate) {
+        AABB around = new AABB(gate.position(), gate.position()).inflate(3);
+        return !realm.getEntitiesOfClass(TheVoid.class, around,
+                other -> other != gate && other.gate() && other.seed() == gate.seed() && other.getId() < gate.getId()).isEmpty();
     }
 
     /** Out through the gate of {@code seed}: to the spot the player stepped in from, or in front of that gate's breach. */
@@ -589,7 +615,7 @@ public final class VoidPassage {
         }
         Gate gate = gates.get(back.seed());
         if (gate != null && player.level() instanceof ServerLevel realm && realm.isLoaded(BlockPos.containing(gate.at()))
-                && find(realm, gate) == null) {
+                && entitiesLoaded(realm, gate) && find(realm, gate) == null) {
             // Its gate must stand: nothing may close the way out.
             realm.addFreshEntity(TheVoid.gate(realm, gate.at(), gate.yaw(), gate.voidShape(), gate.size(), gate.seed()));
         }

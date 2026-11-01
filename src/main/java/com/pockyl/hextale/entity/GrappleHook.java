@@ -111,6 +111,23 @@ public class GrappleHook extends Projectile {
         return level.isClientSide() ? CLIENT_HOOKS : SERVER_HOOKS;
     }
 
+    /** Lets go of every hook of one side: the world they belong to was left. */
+    public static void forget(boolean client) {
+        (client ? CLIENT_HOOKS : SERVER_HOOKS).clear();
+    }
+
+    @Override
+    public void remove(RemovalReason reason) {
+        super.remove(reason);
+        hooks(level()).values().remove(this);
+    }
+
+    @Override
+    public void onClientRemoval() {
+        super.onClientRemoval();
+        CLIENT_HOOKS.values().remove(this);
+    }
+
     /** The hook {@code player} has out on this side, if any. */
     @Nullable
     public static GrappleHook of(Player player) {

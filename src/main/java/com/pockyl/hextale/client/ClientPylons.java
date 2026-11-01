@@ -37,6 +37,12 @@ public final class ClientPylons {
     private ClientPylons() {
     }
 
+    /** The world was left: its pylons are let go. */
+    public static void forget() {
+        cachedFor = null;
+        cached = List.of();
+    }
+
     public static void register() {
         PylonLinking.clientLinked = (level, pos) -> !linkingTo(level, pos).isEmpty();
         // A click into the air gives a going link up (only the client sees such clicks).
@@ -51,7 +57,8 @@ public final class ClientPylons {
     /** The pylons within reach whose links point at {@code target}. */
     public static List<HexPylonBlockEntity> linkingTo(Level level, BlockPos target) {
         long now = level.getGameTime();
-        if (target.equals(cachedFor) && now - cachedAt < CACHE_TICKS) {
+        // (a younger answer than "now" belongs to another world with a later clock)
+        if (target.equals(cachedFor) && now - cachedAt < CACHE_TICKS && now >= cachedAt) {
             return cached;
         }
         List<HexPylonBlockEntity> out = new ArrayList<>();

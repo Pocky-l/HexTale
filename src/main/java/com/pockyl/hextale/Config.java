@@ -23,7 +23,8 @@ public final class Config {
             .defineInRange("maxChain", 125, 1, 1024);
 
     public static final ModConfigSpec.BooleanValue THINNING = BUILDER
-            .comment("Whether careless magic wears the edge of the world thin: haze, sick land and at last breaches of the Void around a base.")
+            .comment("Whether careless magic wears the edge of the world thin: haze, sick land and at last breaches of the Void around a base.",
+                    "Off also closes the way into the Void and everything made from its materials.")
             .translation("hextale.configuration.thinning")
             .define("thinning", true);
     public static final ModConfigSpec.DoubleValue THINNING_RATE = BUILDER

@@ -37,7 +37,7 @@ public class MultiblockPartBlock extends BaseEntityBlock implements EssenceMachi
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        if (level.getBlockEntity(pos) instanceof MultiblockPartBlockEntity part
+        if (level.getBlockEntity(pos) instanceof MultiblockPartBlockEntity part && part.controllerNear()
                 && level.getBlockEntity(part.controller()) instanceof MultiblockCore core && core.formed() != null) {
             Multiblock multiblock = Multiblocks.byId(core.formed().multiblock());
             if (multiblock != null) {
@@ -101,7 +101,7 @@ public class MultiblockPartBlock extends BaseEntityBlock implements EssenceMachi
 
     @Nullable
     private static BlockPos controller(BlockGetter level, BlockPos pos) {
-        return level.getBlockEntity(pos) instanceof MultiblockPartBlockEntity part ? part.controller() : null;
+        return level.getBlockEntity(pos) instanceof MultiblockPartBlockEntity part && part.controllerNear() ? part.controller() : null;
     }
 
     /** Mined by a player: drops what the block was, as if that block had been mined. */

@@ -47,6 +47,9 @@ public class BindingChalkItem extends Item {
             return InteractionResult.FAIL;
         }
         if (level instanceof ServerLevel server) {
+            if (context.getPlayer() != null && !com.pockyl.hextale.world.WorldEdits.mayPlace(server, pos, line, context.getPlayer())) {
+                return InteractionResult.FAIL;
+            }
             server.setBlock(pos, line, Block.UPDATE_ALL);
             server.playSound(null, pos, ModSounds.CHALK_SCRATCH.get(), SoundSource.BLOCKS, 0.7F, 0.9F + level.getRandom().nextFloat() * 0.2F);
             server.sendParticles(ParticleTypes.WHITE_ASH, pos.getX() + 0.5, pos.getY() + 0.05, pos.getZ() + 0.5, 6, 0.25, 0.01, 0.25, 0.01);

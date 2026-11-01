@@ -38,6 +38,12 @@ public final class EssenceFx {
     private static final List<Shown> SHOWN = new ArrayList<>();
     private static @Nullable ClientLevel level;
 
+    /** The world was left: let go of it and of what was shown in it. */
+    public static void forget() {
+        SHOWN.clear();
+        level = null;
+    }
+
     /** One effect: a pulse's polyline (with its length) or a pour, from {@code start} (client game time). */
     record Shown(EssenceFxPayload payload, Vec3[] line, float length, long start, int seed) {
         float lasts() {

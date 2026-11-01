@@ -246,6 +246,15 @@ public final class HextaleClient {
             }
         });
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> ClientKnowledge.clear());
+        // Effects and caches that hold the world being left (it would stay in memory until the next world's first use).
+        NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> {
+            com.pockyl.hextale.client.render.RuneFx.forget();
+            com.pockyl.hextale.client.render.EssenceFx.forget();
+            com.pockyl.hextale.client.render.RuneEffects.forget();
+            com.pockyl.hextale.client.render.WeaponFx.forget();
+            com.pockyl.hextale.entity.GrappleHook.forget(true);
+            ClientPylons.forget();
+        });
         // The Void's currents and a half-made pylon link belong to the world left behind.
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> {
             VoidCurrentsClient.clear();

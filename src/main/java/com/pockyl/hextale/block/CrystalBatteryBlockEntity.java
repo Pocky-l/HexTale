@@ -69,7 +69,9 @@ public class CrystalBatteryBlockEntity extends BlockEntity {
 
         @Override
         public void arrive(ItemStack stack, java.util.@Nullable UUID deliverer) {
-            soak(stack, stack.getCount());
+            // Room was promised for these by their base charge; a Thrift bonus on the way may have filled the battery
+            // since, so they soak in regardless (the overflow of charge is lost, never the crystals).
+            soak(stack, stack.getCount(), true);
         }
     });
 
@@ -112,11 +114,15 @@ public class CrystalBatteryBlockEntity extends BlockEntity {
 
     /** Soaks up to {@code count} of the crystal into charge, as many as there is room for; returns how many. */
     public int soak(ItemStack crystal, int count) {
+        return soak(crystal, count, false);
+    }
+
+    private int soak(ItemStack crystal, int count, boolean promised) {
         int value = HexWorkbenchBlockEntity.chargeOf(crystal);
         int dam = strength(BatteryRune.DAM);
         int soaked = 0;
         boolean bonus = false;
-        while (soaked < count && value > 0 && charge + value <= capacity()) {
+        while (soaked < count && value > 0 && (promised || charge + value <= capacity())) {
             boolean lucky = dam > 0 && level != null && level.getRandom().nextFloat() < HolderRune.at(BatteryRune.BONUS, dam);
             charge = Math.min(capacity(), charge + value + (lucky ? (value + 1) / 2 : 0));
             bonus |= lucky;
