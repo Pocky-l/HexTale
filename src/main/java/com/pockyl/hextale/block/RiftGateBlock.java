@@ -478,8 +478,6 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
                 }
                 level.setBlock(worldPosition, state.setValue(LINKED, linked), Block.UPDATE_ALL);
             }
-            // Sent every time, not only on a change: the full-suite test of creatures crossing failed half of the runs
-            // without it (2026-11-01), for reasons not understood - keep it until they are.
             level.sendBlockUpdated(worldPosition, state, getBlockState(), Block.UPDATE_CLIENTS);
         }
 

@@ -58,6 +58,21 @@ public class HextaleJeiPlugin implements IModPlugin {
         com.pockyl.hextale.port.PortJei.registerFromDataComponentTypes(registration, ModItems.ESSENCE_FLASK.get(), ModDataComponents.ESSENCE.get());
         com.pockyl.hextale.port.PortJei.registerFromDataComponentTypes(registration, ModItems.ESSENCE.get(), ModDataComponents.ESSENCE_KIND.get());
         com.pockyl.hextale.port.PortJei.registerFromDataComponentTypes(registration, ModItems.CHEM_VIAL.get(), ModDataComponents.BREW.get());
+        // Research Notes differ by their topic (by its id: stable between sessions, unlike the record's own text), so
+        // JEI lists the notes of every topic instead of merging them into one.
+        registration.registerSubtypeInterpreter(ModItems.RESEARCH_NOTES.get(), new mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter<>() {
+            @Override
+            public Object getSubtypeData(net.minecraft.world.item.ItemStack stack, mezz.jei.api.ingredients.subtypes.UidContext context) {
+                var topic = stack.get(ModDataComponents.TOPIC.get());
+                return topic == null ? null : topic.id();
+            }
+
+            @Override
+            public String getLegacyStringSubtypeInfo(net.minecraft.world.item.ItemStack stack, mezz.jei.api.ingredients.subtypes.UidContext context) {
+                var topic = stack.get(ModDataComponents.TOPIC.get());
+                return topic == null ? "" : topic.id();
+            }
+        });
     }
 
     /** The essence fluid of each essence is its own ingredient. */

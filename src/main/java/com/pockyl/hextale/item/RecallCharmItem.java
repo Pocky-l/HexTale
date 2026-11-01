@@ -117,6 +117,14 @@ public class RecallCharmItem extends Item {
         TRAILS.remove(event.getEntity().getUUID());
     }
 
+    /** A recall after dying must not lead back to where the player died. */
+    @SubscribeEvent
+    public static void onDeath(net.neoforged.neoforge.event.entity.living.LivingDeathEvent event) {
+        if (event.getEntity() instanceof Player player) {
+            TRAILS.remove(player.getUUID());
+        }
+    }
+
     /** Adds the player's current place to their trail. */
     public static void mark(Player player) {
         Deque<Mark> trail = TRAILS.computeIfAbsent(player.getUUID(), id -> new ArrayDeque<>());

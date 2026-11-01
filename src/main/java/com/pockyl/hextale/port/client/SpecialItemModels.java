@@ -163,19 +163,25 @@ public final class SpecialItemModels {
         } else {
             parts.add(model);
         }
-        List<Plain> plain = new ArrayList<>();
         List<JsonObject> specials = new ArrayList<>();
         for (JsonObject part : parts) {
             if (part.get("type").getAsString().equals("minecraft:special")) {
                 specials.add(part.getAsJsonObject("model"));
-            } else {
+            }
+        }
+        if (specials.isEmpty()) {
+            return null; // no special part: the item is drawn the 1.21.1 way (model overrides), nothing to read here
+        }
+        List<Plain> plain = new ArrayList<>();
+        for (JsonObject part : parts) {
+            if (!part.get("type").getAsString().equals("minecraft:special")) {
                 Plain read = plain(id, part);
                 if (read != null) {
                     plain.add(read);
                 }
             }
         }
-        return specials.isEmpty() ? null : new Entry(plain, specials);
+        return new Entry(plain, specials);
     }
 
     private static @Nullable Plain plain(ResourceLocation id, JsonObject part) {

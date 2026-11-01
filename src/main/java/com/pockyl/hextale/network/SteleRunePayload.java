@@ -37,7 +37,8 @@ public record SteleRunePayload(BlockPos pos, int rune, int stars) implements Cus
     }
 
     public static void handle(SteleRunePayload payload, IPayloadContext context) {
-        if (!(context.player() instanceof ServerPlayer player) || player.distanceToSqr(Vec3.atCenterOf(payload.pos)) > 64
+        if (!(context.player() instanceof ServerPlayer player) || !player.isAlive() || player.isSpectator()
+                || player.distanceToSqr(Vec3.atCenterOf(payload.pos)) > 64
                 || !(player.level().getBlockEntity(payload.pos) instanceof RuneSteleBlockEntity stele)) {
             return;
         }

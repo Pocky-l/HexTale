@@ -174,6 +174,7 @@ public final class VoidMites {
     static void spawnAround(ServerPlayer player) {
         ServerLevel level = player.serverLevel();
         if (!com.pockyl.hextale.Config.VOID_MITES_SPAWN.get() || player.isCreative() || player.isSpectator()
+                || level.getDifficulty() == net.minecraft.world.Difficulty.PEACEFUL
                 || Thinning.get(level, player.blockPosition()) < Thinning.Stage.BLIGHT.from * 0.9F) {
             return;
         }
