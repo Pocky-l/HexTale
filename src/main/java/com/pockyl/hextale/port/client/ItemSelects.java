@@ -92,17 +92,30 @@ public final class ItemSelects {
             }
             cases.add(values);
         }
+        // Asked for every such item drawn, every frame: the answer per component value is remembered (values are records).
+        java.util.Map<Object, Float> answers = new java.util.concurrent.ConcurrentHashMap<>();
         ItemProperties.register(item, PROPERTY, (stack, level, entity, seed) -> {
-            JsonElement value = encode(stack, component);
-            if (value == null) {
+            Object key = stack.get(component);
+            if (key == null) {
                 return 0;
             }
-            for (int i = 0; i < cases.size(); i++) {
+            Float known = answers.get(key);
+            if (known != null) {
+                return known;
+            }
+            float answer = 0;
+            JsonElement value = encode(stack, component);
+            for (int i = 0; value != null && i < cases.size(); i++) {
                 if (cases.get(i).contains(value)) {
-                    return (i + 1) / 100F;
+                    answer = (i + 1) / 100F;
+                    break;
                 }
             }
-            return 0;
+            if (answers.size() > 4096) {
+                answers.clear();
+            }
+            answers.put(key, answer);
+            return answer;
         });
     }
 

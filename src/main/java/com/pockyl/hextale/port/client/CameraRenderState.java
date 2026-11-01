@@ -20,9 +20,20 @@ public class CameraRenderState {
     public boolean isFirstPerson;
     public Quaternionf orientation = new Quaternionf();
 
+    /** The last {@link #current()}: every block entity and creature drawn in one frame shares it (read only). */
+    private static CameraRenderState shared;
+
     /** The state of the main camera this frame. */
     public static CameraRenderState current() {
-        return of(Minecraft.getInstance().gameRenderer.getMainCamera());
+        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+        CameraRenderState last = shared;
+        // The camera takes a new position vector every frame it is set up: the same one = the same frame.
+        if (last != null && last.pos == camera.getPosition() && last.xRot == camera.getXRot() && last.yRot == camera.getYRot()
+                && last.isFirstPerson == !camera.isDetached()) {
+            return last;
+        }
+        shared = of(camera);
+        return shared;
     }
 
     public static CameraRenderState of(Camera camera) {

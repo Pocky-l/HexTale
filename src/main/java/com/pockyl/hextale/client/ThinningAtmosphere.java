@@ -68,6 +68,22 @@ public final class ThinningAtmosphere {
         return Mth.clamp((Thinning.felt(value) - Thinning.Stage.HAZE.felt * 0.5F) / (Thinning.WORST - Thinning.Stage.HAZE.felt * 0.5F), 0, 1);
     }
 
+    /**
+     * Hazes spawned in each of the last ticks a haze can live: their sum is about how many hang in the air, kept under a
+     * budget by the particles option (deep blight used to pile up thousands of wide translucent quads).
+     */
+    private static final int[] HAZES = new int[220];
+    private static int hazeTick;
+    private static int hazeLive;
+
+    private static int hazeBudget(Minecraft minecraft) {
+        return switch (minecraft.options.particles().get()) {
+            case ALL -> 700;
+            case DECREASED -> 300;
+            case MINIMAL -> 80;
+        };
+    }
+
     private static void tick() {
         previous = local;
         Minecraft minecraft = Minecraft.getInstance();
@@ -83,6 +99,10 @@ public final class ThinningAtmosphere {
             return;
         }
         RandomSource random = level.getRandom();
+        hazeTick = (hazeTick + 1) % HAZES.length;
+        hazeLive -= HAZES[hazeTick];
+        HAZES[hazeTick] = 0;
+        int budget = hazeBudget(minecraft);
         int tries = 6 + Math.round(depth(local) * 18);
         for (int i = 0; i < tries; i++) {
             double x = player.getX() + (random.nextDouble() * 2 - 1) * REACH;
@@ -97,7 +117,9 @@ public final class ThinningAtmosphere {
                 // The light of a lamppost keeps its ground clear of the haze.
                 continue;
             }
-            if (random.nextFloat() < 0.35F + d * 0.6F) {
+            if (hazeLive < budget && random.nextFloat() < 0.35F + d * 0.6F) {
+                HAZES[hazeTick]++;
+                hazeLive++;
                 double y = ground + 0.1 + random.nextDouble() * (0.5 + d * 1.6);
                 level.addParticle(ModParticles.haze(HAZE, d), x, y, z, (random.nextDouble() - 0.5) * 0.012, 0,
                         (random.nextDouble() - 0.5) * 0.012);

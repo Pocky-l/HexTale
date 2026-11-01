@@ -27,7 +27,12 @@ public interface BlockEntityRenderer<T extends BlockEntity, S extends BlockEntit
     default void render(T blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource buffers, int light, int overlay) {
         CameraRenderState camera = CameraRenderState.current();
         S state = createRenderState();
-        extractRenderState(blockEntity, state, partialTick, camera.pos, null);
+        BlockEntityRenderState.LIGHT_GIVEN = true;
+        try {
+            extractRenderState(blockEntity, state, partialTick, camera.pos, null);
+        } finally {
+            BlockEntityRenderState.LIGHT_GIVEN = false;
+        }
         state.lightCoords = light;
         submit(state, poseStack, new SubmitNodeCollector(buffers), camera);
     }

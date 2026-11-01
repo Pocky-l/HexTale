@@ -166,7 +166,7 @@ public final class HextaleClient {
         ShapeHits.register();
         ThinningAtmosphere.register(modBus);
         modBus.addListener(ThinningTint::register);
-        ThinningTint.fadeWater();
+        ThinningTint.fadeResolvers();
         VoidHearts.register(modBus);
         modBus.addListener((RegisterClientTooltipComponentFactoriesEvent event) ->
                 event.register(EssencesTooltip.class, ClientEssencesTooltip::new));

@@ -21,12 +21,16 @@ public class BlockEntityRenderState {
     public int lightCoords;
     public ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress;
 
+    /** Set (render thread) while a 1.21.1 render call extracts: the light it was given replaces the extracted one. */
+    static boolean LIGHT_GIVEN;
+
     public static void extractBase(BlockEntity blockEntity, BlockEntityRenderState state,
                                    ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
         state.blockPos = blockEntity.getBlockPos();
         state.blockState = blockEntity.getBlockState();
         state.blockEntityType = blockEntity.getType();
-        state.lightCoords = blockEntity.getLevel() != null
+        // A 1.21.1 renderer is handed the light: no need to look it up only to be overwritten.
+        state.lightCoords = LIGHT_GIVEN ? state.lightCoords : blockEntity.getLevel() != null
                 ? LevelRenderer.getLightColor(blockEntity.getLevel(), blockEntity.getBlockPos()) : LightTexture.FULL_BRIGHT;
         state.breakProgress = breakProgress;
     }

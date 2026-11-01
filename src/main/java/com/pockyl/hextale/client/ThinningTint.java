@@ -20,11 +20,12 @@ import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
  * colour resolver, which is wrapped once at start-up. 1.21.1 has no bush, wildflowers or leaf litter.
  */
 public final class ThinningTint {
-    private static final Block[] PLANTS = {
-            Blocks.GRASS_BLOCK, Blocks.SHORT_GRASS, Blocks.FERN, Blocks.TALL_GRASS, Blocks.LARGE_FERN,
-            Blocks.POTTED_FERN, Blocks.PINK_PETALS, Blocks.OAK_LEAVES, Blocks.JUNGLE_LEAVES,
-            Blocks.ACACIA_LEAVES, Blocks.DARK_OAK_LEAVES, Blocks.MANGROVE_LEAVES, Blocks.SPRUCE_LEAVES, Blocks.BIRCH_LEAVES,
-            Blocks.VINE, Blocks.SUGAR_CANE};
+    /**
+     * Plants with a fixed colour: their block colours are wrapped. Grass, ferns, petals, cane, vines and the biome-tinted
+     * leaves fade through the grass and foliage colour resolvers instead ({@link #fadeResolvers}): wrapping their block
+     * colours made Sodium give up blending biome colours for them in every world.
+     */
+    private static final Block[] PLANTS = {Blocks.MANGROVE_LEAVES, Blocks.SPRUCE_LEAVES, Blocks.BIRCH_LEAVES};
     /** Keep in step with the tintable model copies in {@code assets/minecraft/models/block}. */
     private static final Block[] GROUND = {
             Blocks.STONE, Blocks.COBBLESTONE, Blocks.ANDESITE, Blocks.DIORITE, Blocks.GRANITE, Blocks.SAND, Blocks.RED_SAND,
@@ -85,13 +86,23 @@ public final class ThinningTint {
      * resolver is wrapped before the first client level makes its tint cache, so water darkens to murk where the world
      * wears thin.
      */
-    public static void fadeWater() {
-        ColorResolver water = BiomeColors.WATER_COLOR_RESOLVER;
-        BiomeColors.WATER_COLOR_RESOLVER = (biome, x, z) -> fade(water.getColor(biome, x, z),
-                ClientThinning.tint(ClientThinning.at(x + 0.5, z + 0.5)), Kind.WATER);
+    public static void fadeResolvers() {
+        BiomeColors.WATER_COLOR_RESOLVER = faded(BiomeColors.WATER_COLOR_RESOLVER, Kind.WATER);
+        BiomeColors.GRASS_COLOR_RESOLVER = faded(BiomeColors.GRASS_COLOR_RESOLVER, Kind.PLANT);
+        BiomeColors.FOLIAGE_COLOR_RESOLVER = faded(BiomeColors.FOLIAGE_COLOR_RESOLVER, Kind.PLANT);
+    }
+
+    private static ColorResolver faded(ColorResolver inner, Kind kind) {
+        return (biome, x, z) -> {
+            int color = inner.getColor(biome, x, z);
+            return ClientThinning.any() ? fade(color, ClientThinning.tint(ClientThinning.at(x + 0.5, z + 0.5)), kind) : color;
+        };
     }
 
     private static int faded(int color, BlockPos pos, Kind kind) {
+        if (!ClientThinning.any()) {
+            return color; // no thinning land known: every stone and dirt face is asked while chunks are built
+        }
         return fade(color, ClientThinning.tint(ClientThinning.at(pos.getX() + 0.5, pos.getZ() + 0.5)), kind);
     }
 }
