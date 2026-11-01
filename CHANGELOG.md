@@ -4,6 +4,41 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.4+1.21.1] - Unreleased
+### Fixed
+- Devices no longer lose everything they hold when one of the items in them cannot be read any more (for example an
+  item of a mod taken out of the pack): the Crucible, the Greedy Funnel, pylon cargo, the Whirl Sawmill and the Whirl
+  Reaper now lose only that one item. Saved Void gates and breaches that cannot be read are kept in the file instead of
+  being overwritten.
+- Going into the Void no longer leaves a second gate standing beside the first one on almost every trip; worlds that
+  already have doubled gates lose the extra ones by themselves.
+- Riding a horse, a boat or a minecart through a breach, a Void gate or a Rift Gate no longer leaves the player stuck to
+  a mount in the world behind.
+- A Crystal Battery with Thrift no longer swallows crystals without charge when several arrive at once.
+- A dry or lonely Rift Gate no longer loads its partner's chunk on every tick while something stands in it.
+- The fog of thinning land and the gloom around a breach show again outside the Void, and the Void's fog banks and the
+  Void Lens change the fog again.
+- Fluid containers of other mods with several tanks are no longer counted twice when poured into a device, and items
+  another mod's storage refuses at the last moment drop at the block instead of vanishing.
+- A modpack recipe with an empty result, a broken recipe of another mod, an empty rune chapter in a loot change or a
+  mistyped id in the diary data no longer crash the game or the server.
+- Leaving a world no longer keeps it in memory through grapple hooks, rune and weapon effects, pylon look-ups or the
+  diary map; Mirage cloaks and chalk roots no longer carry over into another world.
+- Breach Hearts, Binding Chalk, Rune Chalk and the Pollen boots respect claimed land, and the Skypack drinks only from
+  jars its wearer may take from.
+- The Lab Bench's flame cannot be used to spam its sound, spectators cannot set stele runes, no Void Mites crawl up on
+  Peaceful, and a Recall Charm used after dying no longer leads back to where the player died.
+- Machine sounds stay working after the Blocks volume was turned down to nothing and up again.
+- JEI lists the Research Notes of every topic instead of a single one.
+### Changed
+- Less load on servers and clients: busy alembics, separators, workbenches and furnaces tell players of their work at
+  most twice a second, the Hex Furnace looks its recipes up only when its contents change, a pipe change no longer makes
+  every pipe network of every dimension be worked out again, goggles on a pipe, essence item icons, ward glass and the
+  creative search do less work every frame, and the haze of deep blight keeps to a budget set by the Particles option.
+- Grass and leaves fade in thinning land through their biome colours, so Sodium keeps blending biome colours of grass
+  and leaves.
+- Turning `thinning` off in the settings now says that it also closes the way into the Void.
+
 ## [1.8.3+1.21.1] - 2026-11-01
 ### Fixed
 - Servers lag less with big essence stores: jars on one pipe network no longer check every other jar of it each time
