@@ -92,6 +92,9 @@ public final class RuneScrollLoot extends LootModifier {
             return ItemStack.EMPTY;
         }
         List<ComplexRune> runes = ResearchBook.findable(chapter);
+        if (runes.isEmpty()) {
+            return ItemStack.EMPTY; // a pack's weight for a chapter with no findable runes
+        }
         ComplexRune rune = runes.get(random.nextInt(runes.size()));
         return RuneScrollItem.of(rune, Math.max(0, pick(random, stars)) + 1, ModItems.RUNE_SCROLL.get());
     }

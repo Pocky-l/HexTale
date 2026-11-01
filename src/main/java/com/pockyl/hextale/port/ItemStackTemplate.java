@@ -25,7 +25,10 @@ import org.jspecify.annotations.Nullable;
  * <p>port-of: net.minecraft.world.item.ItemStackTemplate
  */
 public record ItemStackTemplate(Holder<Item> item, int count, DataComponentPatch components) {
-    private static final Codec<Holder<Item>> ITEM_CODEC = BuiltInRegistries.ITEM.holderByNameCodec();
+    // Air is refused as a decode error (a pack's "remove this recipe" result), never thrown out of the constructor.
+    private static final Codec<Holder<Item>> ITEM_CODEC = BuiltInRegistries.ITEM.holderByNameCodec().validate(item ->
+            item.is(Items.AIR.builtInRegistryHolder()) ? com.mojang.serialization.DataResult.error(() -> "Item must not be minecraft:air")
+                    : com.mojang.serialization.DataResult.success(item));
     public static final MapCodec<ItemStackTemplate> MAP_CODEC = RecordCodecBuilder.mapCodec(
             i -> i.group(
                             ITEM_CODEC.fieldOf("id").forGetter(ItemStackTemplate::item),

@@ -38,7 +38,8 @@ public final class VoidAtmosphere {
                 event.registerAbove(VanillaGuiLayers.CAMERA_OVERLAYS, Hextale.id("the_void_vignette"), (portGraphics, portDelta) -> VoidAtmosphere.vignette(com.pockyl.hextale.port.client.GuiGraphicsExtractor.of(portGraphics), portDelta)));
         NeoForge.EVENT_BUS.addListener((ClientTickEvent.Post event) -> tick());
         NeoForge.EVENT_BUS.addListener(VoidAtmosphere::fogColour);
-        NeoForge.EVENT_BUS.addListener(VoidAtmosphere::fog);
+        // Also when VoidSky (HIGH) has already set the Void's fog: it cancels the event, the only way 21.1 applies fog.
+        NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.NORMAL, true, ViewportEvent.RenderFog.class, VoidAtmosphere::fog);
     }
 
     private static void tick() {
@@ -91,6 +92,8 @@ public final class VoidAtmosphere {
         }
         event.setFarPlaneDistance(Mth.lerp(s, event.getFarPlaneDistance(), Math.min(event.getFarPlaneDistance(), 36)));
         event.setNearPlaneDistance(Mth.lerp(s, event.getNearPlaneDistance(), Math.min(event.getNearPlaneDistance(), 2)));
+        // NeoForge 21.1 applies changed fog distances only from a cancelled event.
+        event.setCanceled(true);
     }
 
     private static void vignette(GuiGraphicsExtractor graphics, DeltaTracker delta) {

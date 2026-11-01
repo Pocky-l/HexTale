@@ -79,7 +79,7 @@ public interface ResourceHandler<T> {
     /** {@code level.getCapability(Capabilities.Item.BLOCK, pos, side)} of 26.x. */
     static @Nullable ResourceHandler<ItemResource> ofBlock(Level level, BlockPos pos, @Nullable Direction side) {
         IItemHandler items = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, side);
-        return items == null ? null : of(items);
+        return items == null ? null : items instanceof Handed<?> ? of(items) : new ItemHandlerResources(items, level, pos);
     }
 
     /** A capability that is one of the mod's own handlers handed over: the handler itself (transactions reach it whole). */

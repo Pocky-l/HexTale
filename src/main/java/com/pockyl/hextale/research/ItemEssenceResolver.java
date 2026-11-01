@@ -70,23 +70,26 @@ public final class ItemEssenceResolver {
         // What each item can be made from.
         Map<Item, List<Made>> makers = new HashMap<>();
         for (RecipeHolder<?> holder : recipes.getRecipes()) {
-            Recipe<?> recipe = holder.value();
-            if (recipe.isSpecial() || recipe.isIncomplete()) {
-                continue;
-            }
-            ItemStack result;
+            // Another mod's broken recipe must not stop the whole table (this runs on server start and /reload).
             try {
-                result = com.pockyl.hextale.port.PortIngredients.result(recipe, registries);
+                Recipe<?> recipe = holder.value();
+                if (recipe.isSpecial() || recipe.isIncomplete()) {
+                    continue;
+                }
+                ItemStack result = com.pockyl.hextale.port.PortIngredients.result(recipe, registries);
+                if (result.isEmpty()) {
+                    continue;
+                }
+                List<Ingredient> ingredients = com.pockyl.hextale.port.PortIngredients.ingredients(recipe);
+                if (!ingredients.isEmpty()) {
+                    for (Ingredient ingredient : ingredients) {
+                        ingredient.getItems(); // resolve now: a broken one throws here, inside the guard
+                    }
+                    makers.computeIfAbsent(result.getItem(), k -> new ArrayList<>())
+                            .add(new Made(ingredients, result.getCount(), recipe instanceof AbstractCookingRecipe));
+                }
             } catch (RuntimeException e) {
-                continue;
-            }
-            if (result.isEmpty()) {
-                continue;
-            }
-            List<Ingredient> ingredients = com.pockyl.hextale.port.PortIngredients.ingredients(recipe);
-            if (!ingredients.isEmpty()) {
-                makers.computeIfAbsent(result.getItem(), k -> new ArrayList<>())
-                        .add(new Made(ingredients, result.getCount(), recipe instanceof AbstractCookingRecipe));
+                com.pockyl.hextale.Hextale.LOGGER.debug("Skipped recipe {} while working out essences", holder.id(), e);
             }
         }
 

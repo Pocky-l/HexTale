@@ -42,6 +42,73 @@ public final class ModGameTests {
     }
 
     /**
+     * Another mod's two-tank water container: draining it tank by tank in one transaction counts every drop once (each
+     * tank's call used to simulate against the untouched container and count its water again).
+     */
+    @HexTest
+    public static void multiTankContainersAreNotCountedTwice(GameTestHelper helper) {
+        var first = new net.neoforged.neoforge.fluids.capability.templates.FluidTank(250);
+        var second = new net.neoforged.neoforge.fluids.capability.templates.FluidTank(250);
+        first.fill(new net.neoforged.neoforge.fluids.FluidStack(net.minecraft.world.level.material.Fluids.WATER, 250),
+                net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.EXECUTE);
+        second.fill(new net.neoforged.neoforge.fluids.FluidStack(net.minecraft.world.level.material.Fluids.WATER, 250),
+                net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.EXECUTE);
+        var both = new net.neoforged.neoforge.fluids.capability.IFluidHandler() {
+            private net.neoforged.neoforge.fluids.capability.templates.FluidTank tank(int index) {
+                return index == 0 ? first : second;
+            }
+
+            @Override
+            public int getTanks() {
+                return 2;
+            }
+
+            @Override
+            public net.neoforged.neoforge.fluids.FluidStack getFluidInTank(int index) {
+                return tank(index).getFluid();
+            }
+
+            @Override
+            public int getTankCapacity(int index) {
+                return 250;
+            }
+
+            @Override
+            public boolean isFluidValid(int index, net.neoforged.neoforge.fluids.FluidStack stack) {
+                return true;
+            }
+
+            @Override
+            public int fill(net.neoforged.neoforge.fluids.FluidStack resource, FluidAction action) {
+                return 0;
+            }
+
+            @Override
+            public net.neoforged.neoforge.fluids.FluidStack drain(net.neoforged.neoforge.fluids.FluidStack resource, FluidAction action) {
+                var out = first.drain(resource, action);
+                var more = second.drain(resource.copyWithAmount(resource.getAmount() - out.getAmount()), action);
+                return resource.copyWithAmount(out.getAmount() + more.getAmount());
+            }
+
+            @Override
+            public net.neoforged.neoforge.fluids.FluidStack drain(int max, FluidAction action) {
+                return drain(new net.neoforged.neoforge.fluids.FluidStack(net.minecraft.world.level.material.Fluids.WATER, max), action);
+            }
+        };
+        var handler = com.pockyl.hextale.port.ResourceHandler.of(both);
+        int counted = 0;
+        try (var transaction = com.pockyl.hextale.port.Transaction.openRoot()) {
+            for (int index = 0; index < handler.size(); index++) {
+                counted += handler.extract(index, handler.getResource(index), 1000 - counted, transaction);
+            }
+            transaction.commit();
+        }
+        helper.assertTrue(counted == 500, "every drop counted once: " + counted);
+        helper.assertTrue(first.isEmpty() && second.isEmpty(), "and all of it drained");
+        helper.succeed();
+    }
+
+    /**
      * A saved list holding an item the game no longer knows (a removed mod) loses only that entry: the crucible's
      * rising items, the funnel's catch and the pylons' cargo used to read as empty as a whole.
      */

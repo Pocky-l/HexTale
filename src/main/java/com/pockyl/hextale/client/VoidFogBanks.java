@@ -27,7 +27,8 @@ public final class VoidFogBanks {
 
     public static void register() {
         NeoForge.EVENT_BUS.addListener((ClientTickEvent.Post event) -> tick());
-        NeoForge.EVENT_BUS.addListener(VoidFogBanks::fog);
+        // Also when VoidSky (HIGH) has already set the Void's fog: it cancels the event, the only way 21.1 applies fog.
+        NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.NORMAL, true, ViewportEvent.RenderFog.class, VoidFogBanks::fog);
         NeoForge.EVENT_BUS.addListener(VoidFogBanks::fogColour);
     }
 

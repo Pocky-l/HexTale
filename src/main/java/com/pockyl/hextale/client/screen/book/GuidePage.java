@@ -1633,7 +1633,7 @@ final class GuidePage {
     @Nullable
     private List<FormattedCharSequence> renderHexCrafting(GuiGraphicsExtractor graphics, QuestDisplay display, int x, int y, int mouseX,
                                                           int mouseY, long now) {
-        com.pockyl.hextale.crafting.HexCraftingRecipe recipe = com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.named(ResourceLocation.parse(display.result()), true);
+        com.pockyl.hextale.crafting.HexCraftingRecipe recipe = com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.named(safeId(display.result()), true);
         int centre = x + innerWidth() / 2;
         if (recipe == null) {
             PixelArt.flush(graphics);
@@ -1662,7 +1662,7 @@ final class GuidePage {
     @Nullable
     private List<FormattedCharSequence> renderAlloy(GuiGraphicsExtractor graphics, QuestDisplay display, int x, int y, int mouseX,
                                                     int mouseY, long now) {
-        com.pockyl.hextale.crafting.AlloyRecipe recipe = com.pockyl.hextale.crafting.AlloyRecipe.ALL.named(ResourceLocation.parse(display.result()), true);
+        com.pockyl.hextale.crafting.AlloyRecipe recipe = com.pockyl.hextale.crafting.AlloyRecipe.ALL.named(safeId(display.result()), true);
         int centre = x + innerWidth() / 2;
         if (recipe == null) {
             PixelArt.flush(graphics);
@@ -1800,7 +1800,7 @@ final class GuidePage {
     }
 
     private static int infusionHeight(QuestDisplay display) {
-        InfusionRecipe recipe = InfusionRecipes.ALL.named(ResourceLocation.parse(display.result()), true);
+        InfusionRecipe recipe = InfusionRecipes.ALL.named(safeId(display.result()), true);
         if (recipe == null) {
             return INFUSION_RING * 2 + SLOT + 16;
         }
@@ -1817,7 +1817,7 @@ final class GuidePage {
     @Nullable
     private List<FormattedCharSequence> renderInfusion(GuiGraphicsExtractor graphics, QuestDisplay display, int x, int y, int mouseX, int mouseY,
                                                        long now) {
-        InfusionRecipe recipe = InfusionRecipes.ALL.named(ResourceLocation.parse(display.result()), true);
+        InfusionRecipe recipe = InfusionRecipes.ALL.named(safeId(display.result()), true);
         if (recipe == null) {
             PixelArt.flush(graphics);
             graphics.centeredText(font, Component.translatable("book.hextale.quest.infusion.missing"), x + innerWidth() / 2, y + 30, MUTED);
@@ -2159,12 +2159,12 @@ final class GuidePage {
             return ItemStack.EMPTY;
         }
         if (id.startsWith("#")) {
-            TagKey<Item> tag = TagKey.create(Registries.ITEM, ResourceLocation.parse(id.substring(1)));
+            TagKey<Item> tag = TagKey.create(Registries.ITEM, safeId(id.substring(1)));
             List<Holder<Item>> items = new ArrayList<>();
             BuiltInRegistries.ITEM.getTagOrEmpty(tag).forEach(items::add);
             return items.isEmpty() ? ItemStack.EMPTY : new ItemStack(items.get((int) ((now / 1000 + phase) % items.size())));
         }
-        return new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(id)));
+        return new ItemStack(BuiltInRegistries.ITEM.get(safeId(id)));
     }
 
     // ---- Input ----------------------------------------------------------------------------------------------------
@@ -2204,5 +2204,11 @@ final class GuidePage {
         if (scroll < 0) {
             scroll = 0;
         }
+    }
+
+    /** An id from the guide's data; a malformed one (a pack's typo) names nothing instead of throwing every frame. */
+    private static ResourceLocation safeId(String id) {
+        ResourceLocation parsed = ResourceLocation.tryParse(id);
+        return parsed != null ? parsed : ResourceLocation.fromNamespaceAndPath("hextale", "missing");
     }
 }

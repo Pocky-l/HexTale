@@ -7,7 +7,9 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * A 1.21.1 {@link IFluidHandler} as a 26.x fluid resource handler. A null transaction changes the handler at once;
- * inside a {@link Transaction} the call simulates and the change waits for the commit.
+ * inside a {@link Transaction} the call simulates and the change waits for the commit. What earlier calls of the same
+ * transaction promised to or from the handler is counted in ({@link TransactionContext#promised()}): 1.21.1 handlers
+ * fill and drain as a whole, so a loop over the tanks of a multi-tank container never counts the same fluid twice.
  */
 public final class FluidHandlerResources implements ResourceHandler<FluidResource> {
     private final IFluidHandler fluids;
@@ -56,9 +58,14 @@ public final class FluidHandlerResources implements ResourceHandler<FluidResourc
         if (resource.isEmpty() || amount <= 0) {
             return 0;
         }
-        int moved = fluids.fill(resource.toStack(amount), IFluidHandler.FluidAction.SIMULATE);
+        Key key = new Key(fluids, true);
+        int before = transaction == null ? 0 : transaction.promised().getOrDefault(key, 0);
+        int moved = Math.max(0, fluids.fill(resource.toStack(amount + before), IFluidHandler.FluidAction.SIMULATE) - before);
         if (moved > 0) {
-            change(transaction, () -> fluids.fill(resource.toStack(moved), IFluidHandler.FluidAction.EXECUTE));
+            if (transaction != null) {
+                transaction.promised().merge(key, moved, Integer::sum);
+            }
+            change(transaction, () -> fill(resource.toStack(moved)));
         }
         return moved;
     }
@@ -73,12 +80,42 @@ public final class FluidHandlerResources implements ResourceHandler<FluidResourc
         if (resource.isEmpty() || amount <= 0) {
             return 0;
         }
-        FluidStack drained = fluids.drain(resource.toStack(amount), IFluidHandler.FluidAction.SIMULATE);
-        int moved = drained.getAmount();
+        if (transaction == null) {
+            return fluids.drain(resource.toStack(amount), IFluidHandler.FluidAction.EXECUTE).getAmount();
+        }
+        Key key = new Key(fluids, false);
+        int before = transaction.promised().getOrDefault(key, 0);
+        int moved = Math.max(0, fluids.drain(resource.toStack(amount + before), IFluidHandler.FluidAction.SIMULATE).getAmount() - before);
         if (moved > 0) {
-            change(transaction, () -> fluids.drain(resource.toStack(moved), IFluidHandler.FluidAction.EXECUTE));
+            transaction.promised().merge(key, moved, Integer::sum);
+            transaction.onCommit(() -> {
+                int drained = fluids.drain(resource.toStack(moved), IFluidHandler.FluidAction.EXECUTE).getAmount();
+                if (drained < moved) {
+                    com.pockyl.hextale.Hextale.LOGGER.warn("A fluid storage gave {} of {} mB it promised", drained, moved);
+                }
+            });
         }
         return moved;
+    }
+
+    /** One handler, one way, compared by identity. */
+    private record Key(IFluidHandler handler, boolean in) {
+        @Override
+        public boolean equals(Object other) {
+            return other instanceof Key key && key.handler == handler && key.in == in;
+        }
+
+        @Override
+        public int hashCode() {
+            return System.identityHashCode(handler) * 2 + (in ? 1 : 0);
+        }
+    }
+
+    private void fill(FluidStack stack) {
+        int filled = fluids.fill(stack, IFluidHandler.FluidAction.EXECUTE);
+        if (filled < stack.getAmount()) {
+            com.pockyl.hextale.Hextale.LOGGER.warn("A fluid storage took {} of {} mB it had room for", filled, stack.getAmount());
+        }
     }
 
     private static void change(@Nullable TransactionContext transaction, Runnable change) {

@@ -13,6 +13,7 @@ import java.util.List;
 public final class Transaction implements TransactionContext, AutoCloseable {
     private final List<Runnable> changes = new ArrayList<>();
     private final List<Runnable> aborts = new ArrayList<>();
+    private final java.util.Map<Object, Integer> promised = new java.util.HashMap<>();
     private boolean committed;
 
     private Transaction() {
@@ -25,6 +26,11 @@ public final class Transaction implements TransactionContext, AutoCloseable {
     @Override
     public void onCommit(Runnable change) {
         changes.add(change);
+    }
+
+    @Override
+    public java.util.Map<Object, Integer> promised() {
+        return promised;
     }
 
     @Override

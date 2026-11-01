@@ -2,6 +2,7 @@ package com.pockyl.hextale.port;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 
@@ -20,9 +21,17 @@ public record SavedDataType<T extends SavedData>(ResourceLocation id, Supplier<T
             data.codec(codec);
             return data;
         }, (tag, registries) -> {
-            T data = codec.parse(registries.createSerializationContext(NbtOps.INSTANCE), tag.get("data"))
-                    .resultOrPartial().orElseGet(constructor);
+            net.minecraft.nbt.Tag saved = tag.get("data");
+            java.util.Optional<T> read = saved == null ? java.util.Optional.empty()
+                    : codec.parse(registries.createSerializationContext(NbtOps.INSTANCE), saved).resultOrPartial(error ->
+                            com.pockyl.hextale.Hextale.LOGGER.error("Could not read all of the saved data {}: {}", name(), error));
+            T data = read.orElseGet(constructor);
             data.codec(codec);
+            // Nothing readable: the old data rides along in the file, so a fixed version can still get it back.
+            Tag unreadable = read.isEmpty() && saved != null ? saved : tag.get(SavedData.UNREADABLE);
+            if (unreadable != null) {
+                data.unreadable(unreadable.copy());
+            }
             return data;
         }, null);
     }

@@ -59,7 +59,8 @@ public final class ThinningAtmosphere {
             com.pockyl.hextale.thevoid.Wards.clearClient();
         });
         NeoForge.EVENT_BUS.addListener(ThinningAtmosphere::fogColour);
-        NeoForge.EVENT_BUS.addListener(ThinningAtmosphere::fog);
+        // Also when VoidSky (HIGH) has already set the Void's fog: it cancels the event, the only way 21.1 applies fog.
+        NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.NORMAL, true, ViewportEvent.RenderFog.class, ThinningAtmosphere::fog);
     }
 
     /** 0 at the first haze, 1 at a breach. */
@@ -161,6 +162,8 @@ public final class ThinningAtmosphere {
         float far = Mth.lerp(s, 96, 28);
         event.setFarPlaneDistance(Mth.lerp(k, event.getFarPlaneDistance(), Math.min(event.getFarPlaneDistance(), far)));
         event.setNearPlaneDistance(Mth.lerp(k, event.getNearPlaneDistance(), Math.min(event.getNearPlaneDistance(), far * 0.1F)));
+        // NeoForge 21.1 applies changed fog distances only from a cancelled event.
+        event.setCanceled(true);
     }
 
     /** From the miasma on, the edges of sight darken towards violet. */

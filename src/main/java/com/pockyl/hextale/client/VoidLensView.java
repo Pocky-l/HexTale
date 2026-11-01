@@ -32,7 +32,8 @@ public final class VoidLensView {
 
     public static void register() {
         NeoForge.EVENT_BUS.addListener((ClientTickEvent.Post event) -> tick());
-        NeoForge.EVENT_BUS.addListener(VoidLensView::fog);
+        // Also when VoidSky (HIGH) has already set the Void's fog: it cancels the event, the only way 21.1 applies fog.
+        NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.NORMAL, true, ViewportEvent.RenderFog.class, VoidLensView::fog);
     }
 
     private static void tick() {
@@ -77,6 +78,7 @@ public final class VoidLensView {
         if (far < CLEAR) {
             event.setFarPlaneDistance(Mth.lerp(s, far, CLEAR));
             event.setNearPlaneDistance(Mth.lerp(s, event.getNearPlaneDistance(), CLEAR * 0.6F));
+            event.setCanceled(true);
         }
     }
 }
