@@ -189,6 +189,7 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof Gate gate) {
             GlobalPos partner = gate.partner();
+            gate.lookIntoJars();
             Component status;
             if (partner != null && gate.dry) {
                 status = Component.translatable("block.hextale.rift_gate.dry");
@@ -540,6 +541,15 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
                     }
                 }
                 gate.check();
+                // A dry gate notices filled jars by itself, not only when something tries to pass.
+                gate.lookIntoJars();
+            }
+        }
+
+        /** A dry gate whose jars hold rift essence again is no longer dry (nothing is drawn until something passes). */
+        private void lookIntoJars() {
+            if (dry && level != null && JarReach.holds(level, worldPosition, Essence.RIFT, 1)) {
+                setDry(false);
             }
         }
 
