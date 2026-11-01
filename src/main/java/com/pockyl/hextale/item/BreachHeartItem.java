@@ -74,6 +74,9 @@ public class BreachHeartItem extends Item {
             return InteractionResult.FAIL;
         }
         Vec3 centre = centreOver(ground, heart);
+        if (!com.pockyl.hextale.world.WorldEdits.mayPlace(level, ground.above(), level.getBlockState(ground.above()), player)) {
+            return InteractionResult.FAIL; // claimed land: the claim mod tells the player why
+        }
         if (!roomAbove(level, ground, heart.layout())) {
             player.displayClientMessage(Component.translatable("item.hextale.breach_heart.no_room"), true);
             return InteractionResult.FAIL;
@@ -157,6 +160,11 @@ public class BreachHeartItem extends Item {
         }
         BreachHeart heart = heart(stack);
         if (age < LOOSE_TICKS || heart == null) {
+            return false;
+        }
+        // Thrown over a claim's border it keeps beating and asks again now and then, as its thrower would be asked.
+        if ((age - LOOSE_TICKS) % 20 != 0 || !com.pockyl.hextale.world.WorldEdits.mayPlace(level, entity.blockPosition(),
+                level.getBlockState(entity.blockPosition()), com.pockyl.hextale.world.WorldEdits.actor(level, entity.getOwner(), null))) {
             return false;
         }
         unfoldLoose(level, entity, heart);

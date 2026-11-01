@@ -291,11 +291,16 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
         changed();
     }
 
+    /** When the burner last made its ignite sound: turning it on and off as fast as packets go is heard once a second. */
+    private long ignitedAt = Long.MIN_VALUE / 2;
+
     public void setFlame(int flame) {
+        flame = Math.clamp(flame, 0, com.pockyl.hextale.chem.Flask.FLAMES - 1);
         if (flame != flask.flame()) {
             boolean lighting = flask.flame() == 0 && flame > 0;
             flask.setFlame(flame);
-            if (lighting && level != null) {
+            if (lighting && level != null && level.getGameTime() - ignitedAt >= 20) {
+                ignitedAt = level.getGameTime();
                 level.playSound(null, worldPosition, ModSounds.CHEM_BURNER_IGNITE.get(), SoundSource.BLOCKS, 0.4F, 1.3F);
             }
             changed();

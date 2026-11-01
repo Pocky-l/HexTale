@@ -44,7 +44,10 @@ public class RuneChalkItem extends Item {
         if (!level.getBlockState(pos).canBeReplaced() || !mark.canSurvive(level, pos)) {
             return InteractionResult.FAIL;
         }
-        if (!level.isClientSide()) {
+        if (level instanceof net.minecraft.server.level.ServerLevel server) {
+            if (context.getPlayer() != null && !com.pockyl.hextale.world.WorldEdits.mayPlace(server, pos, mark, context.getPlayer())) {
+                return InteractionResult.FAIL;
+            }
             level.setBlock(pos, mark, Block.UPDATE_ALL);
             level.playSound(null, pos, ModSounds.BRUSH_STROKE.get(), SoundSource.BLOCKS, 0.7F, 0.95F + level.getRandom().nextFloat() * 0.15F);
             Player player = context.getPlayer();

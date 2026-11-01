@@ -141,7 +141,7 @@ public final class ClothesEffects {
         if (pollen > 0 && player.tickCount % POLLEN_TICKS == 0) {
             Vec3 last = LAST_STEP.put(player, player.position());
             if (last != null && last.distanceToSqr(player.position()) > 1 && random.nextFloat() < HolderRune.at(ClothesRune.POLLEN, pollen)) {
-                grow(level, player.blockPosition(), random);
+                grow(level, player.blockPosition(), random, player);
             }
         }
     }
@@ -190,7 +190,7 @@ public final class ClothesEffects {
     }
 
     /** Bone meal on the nearest crop or sapling by the path that can still grow. */
-    static void grow(ServerLevel level, BlockPos around, RandomSource random) {
+    static void grow(ServerLevel level, BlockPos around, RandomSource random, Player player) {
         java.util.List<BlockPos> near = new java.util.ArrayList<>();
         for (BlockPos pos : BlockPos.betweenClosed(around.offset(-POLLEN_RADIUS, -1, -POLLEN_RADIUS), around.offset(POLLEN_RADIUS, 1, POLLEN_RADIUS))) {
             near.add(pos.immutable());
@@ -201,7 +201,9 @@ public final class ClothesEffects {
         for (BlockPos pos : near) {
             BlockState state = level.getBlockState(pos);
             if ((state.is(BlockTags.CROPS) || state.is(BlockTags.SAPLINGS)) && state.getBlock() instanceof BonemealableBlock plant
-                    && plant.isValidBonemealTarget(level, pos, state)) {
+                    && plant.isValidBonemealTarget(level, pos, state)
+                    && com.pockyl.hextale.world.WorldEdits.mayPlace(level, pos, state, player)) {
+                // (a field in someone's claim is not the wearer's to grow: a sapling may become a whole tree)
                 plant.performBonemeal(level, random, pos, state);
                 level.levelEvent(1505, pos, 15);
                 ToolEffects.puff(level, Vec3.atCenterOf(pos), ClothesRune.BOOTS_POLLEN.rune(), 8, 0.4);
