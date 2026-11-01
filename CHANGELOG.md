@@ -4,7 +4,7 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.8.4] - Unreleased
+## [1.8.4] - 2026-11-01
 ### Fixed
 - Devices no longer lose everything they hold when one of the items in them cannot be read any more (for example an
   item of a mod taken out of the pack): the Crucible, the Greedy Funnel, pylon cargo, the Whirl Sawmill and the Whirl
