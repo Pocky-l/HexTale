@@ -4,6 +4,12 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Fixed
+- Leaving the game in the middle of a passage through a breach or a gate no longer sinks the player into the ground
+  (or below the world) on the next visit, and the passage no longer carries the player a dozen blocks off the spot
+  they arrive at while its screen is still up.
+
 ## [1.8.4+1.21.1] - 2026-11-01
 ### Fixed
 - Devices no longer lose everything they hold when one of the items in them cannot be read any more (for example an
