@@ -13,6 +13,7 @@ import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.block.ArcSpireBlockEntity;
 import com.pockyl.hextale.block.GreedyFunnelBlockEntity;
+import com.pockyl.hextale.block.RiftGateBlock;
 import com.pockyl.hextale.registry.ModAttachments;
 import com.pockyl.hextale.registry.ModBlocks;
 
@@ -56,6 +57,42 @@ public final class CreativeJarGameTests {
                 helper.assertTrue(held.hasData(ModAttachments.SHACKLE), "a binding figure holds with shadow from the creative jar");
                 helper.succeed();
             });
+        });
+    }
+
+    /**
+     * GitHub issue #5: a gate that went dry noticed filled jars only when something tried to pass, so it kept saying
+     * "dry" beside a Creative Essence Jar; a hungry funnel likewise until the next death. Both look again by themselves.
+     */
+    @HexTest(maxTicks = 200)
+    public static void dryDevicesWakeBesideACreativeJar(GameTestHelper helper) {
+        for (int x = -5; x <= 5; x++) {
+            for (int z = -5; z <= 5; z++) {
+                helper.setBlock(BASE.offset(x, -1, z), Blocks.STONE);
+                for (int y = 0; y <= 4; y++) {
+                    helper.setBlock(BASE.offset(x, y, z), Blocks.AIR);
+                }
+            }
+        }
+        BlockPos gatePos = BASE.offset(-3, 0, -3);
+        helper.setBlock(gatePos, ModBlocks.RIFT_GATE.get());
+        helper.setBlock(BASE, Blocks.CHEST);
+        helper.setBlock(BASE.above(), ModBlocks.GREEDY_FUNNEL.get());
+        RiftGateBlock.Gate gate = helper.<RiftGateBlock.Gate>getBlockEntity(gatePos);
+        GreedyFunnelBlockEntity funnel = helper.<GreedyFunnelBlockEntity>getBlockEntity(BASE.above());
+        helper.runAfterDelay(5, () -> {
+            helper.assertTrue(!gate.afford(helper.getLevel(), RiftGateBlock.Gate.TOLL_PER_MB) && gate.dry(),
+                    "with no rift essence the gate is dry");
+            Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+            Sheep sheep = helper.spawnWithNoFreeWill(EntityType.SHEEP, BASE.offset(2, 0, 2));
+            sheep.hurt(helper.getLevel().damageSources().playerAttack(player), 1000);
+            helper.assertTrue(funnel.hungry(), "with no decay the funnel is hungry");
+            helper.setBlock(BASE.offset(-2, 0, 0), ModBlocks.CREATIVE_ESSENCE_TANK.get());
+        });
+        helper.runAfterDelay(50, () -> {
+            helper.assertTrue(!gate.dry(), "the gate saw the creative jar by itself");
+            helper.assertTrue(!funnel.hungry(), "the funnel saw the creative jar by itself");
+            helper.succeed();
         });
     }
 }

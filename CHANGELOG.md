@@ -4,6 +4,21 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.2+1.21.1] - 2026-11-01
+### Fixed
+- A Rift Gate that had run dry kept saying so after its jars were filled again - even beside a Creative Essence Jar -
+  until something tried to pass. It now looks into its jars by itself
+  ([#5](https://github.com/Pocky-l/HexTale/issues/5)). A hungry Greedy Funnel does the same instead of waiting for the
+  next death.
+- The funnel's Sponge rune poured into any jar around it: a labelled jar now takes only its own essence, a Creative
+  Essence Jar nothing.
+- In the diary, the icons of the steps on the map showed through the window of an opened step
+  ([#6](https://github.com/Pocky-l/HexTale/issues/6)); items drawn on HexTale's screens no longer show through what is
+  opened over them.
+- With [Spatial GUI](https://modrinth.com/mod/spatial-gui) the diary's map had see-through circles around the steps and
+  a half-transparent sky ([#7](https://github.com/Pocky-l/HexTale/issues/7)): HexTale's screens left the picture
+  partly transparent, which only mods that show screens in the world could see.
+
 ## [1.8.0+1.21.1] - 2026-10-31
 ### Added
 - The Void is a place now. A breach held by six anchors no longer throws a researcher back: walk into it and it pulls

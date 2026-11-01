@@ -286,7 +286,8 @@ public class GreedyFunnelBlockEntity extends BlockEntity implements com.pockyl.h
             return 0;
         }
         for (com.pockyl.hextale.block.EssenceTankBlockEntity jar : JarReach.around(level, worldPosition)) {
-            int soaked = jar.tank().fill(mix, false);
+            // Through the jar's own mouth: a creative jar takes nothing, a labelled one only its essence.
+            int soaked = jar.receive(Direction.UP, mix, false);
             if (soaked > 0) {
                 jar.setChanged();
                 com.pockyl.hextale.thevoid.Thinning.add(level, worldPosition, soaked * com.pockyl.hextale.thevoid.Thinning.BOILED,
@@ -390,6 +391,10 @@ public class GreedyFunnelBlockEntity extends BlockEntity implements com.pockyl.h
 
     /** Only while it holds something: now and then it tries to pass it down again. */
     public static void serverTick(Level level, BlockPos pos, BlockState state, GreedyFunnelBlockEntity funnel) {
+        // A hungry funnel notices decay in its jars by itself, not only at the next death.
+        if (funnel.hungry && level.getGameTime() % 20 == 0 && JarReach.holds(level, pos, Essence.DECAY, 1)) {
+            funnel.setHungry(false);
+        }
         if (funnel.held.isEmpty() || --funnel.wait > 0) {
             return;
         }

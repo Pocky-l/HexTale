@@ -13,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
+import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,9 +62,18 @@ public final class GuiGraphicsExtractor {
         return pose;
     }
 
-    /** 26.x starts a new layer above everything drawn so far; 1.21.1 draws in order, so the batch is just flushed. */
+    /**
+     * 26.x starts a new layer above everything drawn so far. 1.21.1 draws in order but with a depth test, and items sit
+     * at z 150 and more: the batch is flushed and the depth forgotten, so what comes next covers them.
+     */
     public void nextStratum() {
         graphics.flush();
+        forgetDepth();
+    }
+
+    /** Clears the depth buffer (only inside the current scissor, where anything could have been drawn). */
+    private static void forgetDepth() {
+        RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
     }
 
     /** Flushes first: what was drawn before must not be clipped by the new scissor (1.21.1 clips at draw time). */
@@ -195,15 +205,28 @@ public final class GuiGraphicsExtractor {
         end(pipeline);
     }
 
+    /**
+     * Items are drawn in 3D at z 150 and more with a depth test: on 26.x what is drawn after an item covers it, so the
+     * depth they left is forgotten here (a plate opened over the diary's map must hide the steps' icons).
+     */
+    private void afterItem() {
+        graphics.flush();
+        forgetDepth();
+    }
+
     private void begin(RenderPipeline pipeline, int color) {
         RenderSystem.enableBlend();
         if (pipeline == RenderPipelines.VIGNETTE) {
             RenderSystem.disableDepthTest();
             RenderSystem.depthMask(false);
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR,
-                    GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                    GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
         } else {
-            RenderSystem.defaultBlendFunc();
+            // The GUI's own blending (26.x GUI pipelines, 1.21.1 RenderType.gui()): alpha builds up instead of being
+            // replaced. defaultBlendFunc() wrote the texture's alpha straight into the frame: a faint haze left the
+            // frame nearly transparent there, which shows wherever the GUI is composited (Spatial GUI).
+            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                    GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         }
         if (color != -1) {
             graphics.setColor((color >> 16 & 0xFF) / 255F, (color >> 8 & 0xFF) / 255F, (color & 0xFF) / 255F, (color >>> 24) / 255F);
@@ -215,29 +238,34 @@ public final class GuiGraphicsExtractor {
         if (pipeline == RenderPipelines.VIGNETTE) {
             RenderSystem.depthMask(true);
             RenderSystem.enableDepthTest();
-            RenderSystem.defaultBlendFunc();
         }
+        RenderSystem.defaultBlendFunc();
         RenderSystem.disableBlend();
     }
 
     public void item(ItemStack stack, int x, int y) {
         graphics.renderItem(stack, x, y);
+        afterItem();
     }
 
     public void item(ItemStack stack, int x, int y, int seed) {
         graphics.renderItem(stack, x, y, seed);
+        afterItem();
     }
 
     public void fakeItem(ItemStack stack, int x, int y) {
         graphics.renderFakeItem(stack, x, y);
+        afterItem();
     }
 
     public void itemDecorations(Font font, ItemStack stack, int x, int y) {
         graphics.renderItemDecorations(font, stack, x, y);
+        afterItem();
     }
 
     public void itemDecorations(Font font, ItemStack stack, int x, int y, @Nullable String countText) {
         graphics.renderItemDecorations(font, stack, x, y, countText);
+        afterItem();
     }
 
     public void setTooltipForNextFrame(Font font, Component text, int x, int y) {
