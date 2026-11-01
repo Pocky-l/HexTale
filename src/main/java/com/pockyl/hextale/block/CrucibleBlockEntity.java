@@ -870,7 +870,7 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
         brew = input.read("brew", Brew.CODEC).orElse(null);
         doses = brew == null ? 0 : Mth.clamp(input.getIntOr("doses", 0), 0, MAX_DOSES);
         rising.clear();
-        rising.addAll(input.read("rising", ItemStack.CODEC.listOf()).orElse(List.of()));
+        input.listOrEmpty("rising", ItemStack.CODEC).forEach(rising::add);
         pouredAt = input.getLongOr("poured_at", -1000);
         pouredColor = input.getIntOr("poured_color", 0);
         sankAt = input.getLongOr("sank_at", -1000);

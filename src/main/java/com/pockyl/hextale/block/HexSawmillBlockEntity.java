@@ -104,7 +104,7 @@ public class HexSawmillBlockEntity extends BlockEntity implements com.pockyl.hex
                 Codec.LONG.fieldOf("cut").forGetter(Pending::cut),
                 Codec.LONG.fieldOf("done").forGetter(Pending::done),
                 Codec.BOOL.optionalFieldOf("felled", false).forGetter(Pending::felled),
-                ItemStack.CODEC.listOf().optionalFieldOf("drops", List.of()).forGetter(Pending::drops)
+                com.pockyl.hextale.world.SafeCodecs.lenientList(ItemStack.CODEC).optionalFieldOf("drops", List.of()).forGetter(Pending::drops)
         ).apply(instance, Pending::new));
 
         Felling.Tree tree() {
@@ -484,7 +484,7 @@ public class HexSawmillBlockEntity extends BlockEntity implements com.pockyl.hex
         wind = input.getIntOr("wind", 0);
         becalmed = input.getBooleanOr("becalmed", false);
         pending.clear();
-        input.read("pending", Pending.CODEC.listOf()).ifPresent(pending::addAll);
+        input.listOrEmpty("pending", Pending.CODEC).forEach(pending::add);
         drewFrom = input.read("drew_from", BlockPos.CODEC).orElse(null);
         drewAt = input.getLongOr("drew_at", -1000);
     }

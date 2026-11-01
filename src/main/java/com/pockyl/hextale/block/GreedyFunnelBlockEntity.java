@@ -516,7 +516,7 @@ public class GreedyFunnelBlockEntity extends BlockEntity implements com.pockyl.h
         hungry = input.getBooleanOr("hungry", false);
         experience = input.getIntOr("experience", 0);
         held.clear();
-        input.read("held", ItemStack.CODEC.listOf()).ifPresent(held::addAll);
+        input.listOrEmpty("held", ItemStack.CODEC).forEach(held::add);
         heldCount = input.getIntOr("held_count", held.size());
         drewFrom = input.read("drew_from", BlockPos.CODEC).orElse(null);
         drewAt = input.getLongOr("drew_at", -1000);

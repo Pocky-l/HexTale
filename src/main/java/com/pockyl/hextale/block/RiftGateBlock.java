@@ -230,10 +230,6 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
         if (!travels(entity)) {
             return;
         }
-        Gate partner = gate.partnerGate(server);
-        if (partner == null) {
-            return;
-        }
         int toll = entity instanceof ItemEntity item ? item.getItem().getCount() : Gate.TOLL_PER_MB;
         if (!gate.afford(server, toll)) {
             // A dry ring: a thing is spat back out of its front; whoever stands in it goes through as soon as the jars
@@ -245,6 +241,12 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
             if (entity instanceof Player player && now % 40 == 0) {
                 player.displayClientMessage(Component.translatable("block.hextale.rift_gate.dry"), true);
             }
+            return;
+        }
+        // Never loaded on the spot: whoever stands in the ring waits the moment the partner's chunk takes to come in
+        // (a dry or broken partner used to load it from disk on every tick someone stood there).
+        Gate partner = gate.partnerGate(server, false);
+        if (partner == null) {
             return;
         }
         gate.spend(toll);
@@ -684,6 +686,7 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
             Vec3 to = server.noCollision(entity, entity.getBoundingBox().move(ahead.subtract(entity.position()))) ? ahead : inRing;
             cool(entity, level.getGameTime() + COOLDOWN, level.getGameTime());
             Vec3 push = new Vec3(front.getStepX() * 0.15, 0.05, front.getStepZ() * 0.15);
+            entity.stopRiding(); // a player keeps riding a mount left in the old level otherwise
             Entity moved = entity.changeDimension(new DimensionTransition(server, to, push, front.toYRot(), entity.getXRot(),
                     DimensionTransition.PLACE_PORTAL_TICKET));
             if (moved != null) {

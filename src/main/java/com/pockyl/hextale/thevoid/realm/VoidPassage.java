@@ -205,6 +205,7 @@ public final class VoidPassage {
         level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.THE_VOID_EAT.get(), SoundSource.PLAYERS, 0.9F, 0.6F);
         // They arrive with the gate at their back, looking out into the Void.
         Vec3 arrival = arrival(gate);
+        player.stopRiding(); // changeDimension leaves a rider on its mount in the old level
         player.changeDimension(new DimensionTransition(realm, arrival, Vec3.ZERO, gate.yaw(), 0, DimensionTransition.DO_NOTHING));
         player.setPortalCooldown(REST_TICKS);
         player.resetFallDistance();
@@ -328,11 +329,17 @@ public final class VoidPassage {
                     gate.size(), gate.home(), gate.homeAt(), gate.homeYaw(), true);
             ledge(realm, new BlockPos(spot[0], spot[1], spot[2]), layout);
         }
-        if (find(realm, gate) == null) {
+        // A chunk's creatures load after its blocks: asking before they are in would stand a second gate beside the
+        // saved one. Until then the safety net in onPlayerTick puts it up.
+        if (entitiesLoaded(realm, gate) && find(realm, gate) == null) {
             TheVoid entity = TheVoid.gate(realm, gate.at(), gate.yaw(), gate.voidShape(), gate.size(), gate.seed());
             realm.addFreshEntity(entity);
         }
         return gate;
+    }
+
+    private static boolean entitiesLoaded(ServerLevel realm, Gate gate) {
+        return realm.areEntitiesLoaded(net.minecraft.world.level.ChunkPos.asLong(BlockPos.containing(gate.at())));
     }
 
     private static @Nullable TheVoid find(ServerLevel realm, Gate gate) {
@@ -421,6 +428,7 @@ public final class VoidPassage {
         gates(server).put(gate);
         player.setData(ModAttachments.VOID_RETURN, new Return(seed, player.level().dimension(), player.position(), player.getYRot()));
         Vec3 arrival = arrival(gate);
+        player.stopRiding(); // changeDimension leaves a rider on its mount in the old level
         player.changeDimension(new DimensionTransition(realm, arrival, Vec3.ZERO, gate.yaw(), 0, DimensionTransition.DO_NOTHING));
         player.setPortalCooldown(REST_TICKS);
     }
@@ -429,6 +437,10 @@ public final class VoidPassage {
 
     /** A gate's turn: whoever of our world touches it is let out to its breach. */
     public static void gateTick(ServerLevel realm, TheVoid gate) {
+        if ((realm.getGameTime() + gate.getId()) % 100 == 0 && twinOf(realm, gate)) {
+            gate.discard();
+            return;
+        }
         if (realm.getGameTime() % 2 != 0) {
             return;
         }
@@ -450,6 +462,13 @@ public final class VoidPassage {
                 realm.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.VOID_PASSAGE_PULL.get(), SoundSource.PLAYERS, 1.0F, 1.25F);
             }
         }
+    }
+
+    /** Whether an older gate of the same seed stands here: the younger one goes (worlds saved with doubled gates). */
+    private static boolean twinOf(ServerLevel realm, TheVoid gate) {
+        AABB around = new AABB(gate.position(), gate.position()).inflate(3);
+        return !realm.getEntitiesOfClass(TheVoid.class, around,
+                other -> other != gate && other.gate() && other.seed() == gate.seed() && other.getId() < gate.getId()).isEmpty();
     }
 
     /** Out through the gate of {@code seed}: to the spot the player stepped in from, or in front of that gate's breach. */
@@ -487,6 +506,7 @@ public final class VoidPassage {
             STILL_IN.put(player.getUUID(), back.seed());
         }
         player.setData(ModAttachments.VOID_RETURN, Return.NONE);
+        player.stopRiding(); // changeDimension leaves a rider on its mount in the old level
         player.changeDimension(new DimensionTransition(home, to, Vec3.ZERO, yaw, player.getXRot(), DimensionTransition.DO_NOTHING));
         player.setPortalCooldown(REST_TICKS);
         player.resetFallDistance();
@@ -589,7 +609,7 @@ public final class VoidPassage {
         }
         Gate gate = gates.get(back.seed());
         if (gate != null && player.level() instanceof ServerLevel realm && realm.isLoaded(BlockPos.containing(gate.at()))
-                && find(realm, gate) == null) {
+                && entitiesLoaded(realm, gate) && find(realm, gate) == null) {
             // Its gate must stand: nothing may close the way out.
             realm.addFreshEntity(TheVoid.gate(realm, gate.at(), gate.yaw(), gate.voidShape(), gate.size(), gate.seed()));
         }

@@ -1127,11 +1127,11 @@ public class HexPylonBlockEntity extends BlockEntity implements com.pockyl.hexta
         ownerName = input.getStringOr("owner_name", "");
         runes = input.read("runes", PickaxeRunes.CODEC).orElse(PickaxeRunes.EMPTY);
         links.clear();
-        input.read("links", PylonLink.CODEC.listOf()).ifPresent(links::addAll);
+        input.listOrEmpty("links", PylonLink.CODEC).forEach(links::add);
         filterItem = input.read("filter", ItemStack.CODEC).orElse(ItemStack.EMPTY);
         sticker = Essence.byId(input.getStringOr("sticker", ""));
         cargo.clear();
-        input.read("cargo", Cargo.CODEC.listOf()).ifPresent(cargo::addAll);
+        input.listOrEmpty("cargo", Cargo.CODEC).forEach(cargo::add);
     }
 
     @Override
