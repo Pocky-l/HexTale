@@ -9,10 +9,13 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
@@ -39,6 +42,8 @@ public final class VoidPassageFx {
     private static final Identifier VIGNETTE = Identifier.withDefaultNamespace("textures/misc/vignette.png");
     private static final Map<Identifier, Boolean> PRESENT = new HashMap<>();
     private static Vec3 centre;
+    /** The level the pull started in: its centre means nothing anywhere else. */
+    private static ResourceKey<Level> centreLevel;
     private static boolean into;
     private static long pullStart = -1;
     private static float pullSeconds = 1.7F;
@@ -53,6 +58,18 @@ public final class VoidPassageFx {
         NeoForge.EVENT_BUS.addListener((ClientTickEvent.Pre event) -> tick());
         NeoForge.EVENT_BUS.addListener(VoidPassageFx::fov);
         NeoForge.EVENT_BUS.addListener(VoidPassageFx::angles);
+        // Through to the other side (a new player in a new level): the pull is spent, nothing draws them on any more.
+        NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.Clone event) -> centre = null);
+        NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> forget());
+    }
+
+    /** A world left halfway through a passage: nothing of it may play on in the next world or the next visit. */
+    private static void forget() {
+        centre = null;
+        centreLevel = null;
+        pullStart = -1;
+        cancelAt = -1;
+        arriveStart = -1;
     }
 
     public static void registerLayer(IEventBus modBus) {
@@ -66,6 +83,8 @@ public final class VoidPassageFx {
             return;
         }
         centre = new Vec3(payload.x(), payload.y(), payload.z());
+        Minecraft minecraft = Minecraft.getInstance();
+        centreLevel = minecraft.level != null ? minecraft.level.dimension() : null;
         into = payload.into();
         pullStart = Util.getMillis();
         pullSeconds = payload.ticks() / 20F;
@@ -123,7 +142,9 @@ public final class VoidPassageFx {
         Minecraft minecraft = Minecraft.getInstance();
         LocalPlayer player = minecraft.player;
         float t = pulled();
-        if (player == null || t <= 0 || centre == null || cancelAt >= 0) {
+        if (player == null || t <= 0 || centre == null || cancelAt >= 0 || !player.level().dimension().equals(centreLevel)) {
+            // Never drawn toward a point of another level: the crossing put the player there, the tunnel screen may
+            // still be up, and the player already moves on the other side.
             return;
         }
         // Drawn in along a tightening spiral, faster and faster.
