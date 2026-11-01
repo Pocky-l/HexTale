@@ -54,8 +54,11 @@ public enum AnchorWorldRune implements HolderRune {
 
     /** Chunks held every way around its own, by Shift's strength (0 = only its own): one more ring per star. */
     public static int radius(int strength) {
-        return Mth.clamp(strength, 0, 3);
+        return Mth.clamp(strength, 0, MAX_RADIUS);
     }
+
+    /** The widest ring an anchor can hold. */
+    public static final int MAX_RADIUS = 3;
 
     @Override
     public String amountText(int strength) {

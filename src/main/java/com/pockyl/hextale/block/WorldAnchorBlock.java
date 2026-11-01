@@ -85,7 +85,8 @@ public class WorldAnchorBlock extends BaseEntityBlock implements com.pockyl.hext
     }
 
     public void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
-        hold(level, pos, 2, false);
+        // Whatever ring it held (Reach reaches three): letting go of chunks it never held does nothing.
+        hold(level, pos, AnchorWorldRune.MAX_RADIUS, false);
     }
 
     /** Holds (or lets go of) the chunks within {@code radius} chunks of the anchor at {@code pos}. */
