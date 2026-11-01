@@ -157,6 +157,9 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, EssenceTankBlockEntity tank) {
+        if (tank.syncDue && level.getGameTime() - tank.syncedAt >= SYNC_TICKS) {
+            tank.sync(level.getGameTime());
+        }
         if (tank.isCreative()) {
             // Every essence, always full; it pours nothing into pipes (machines and the table draw what they need).
             if (!tank.tank.contents().equals(CREATIVE)) {
@@ -273,8 +276,25 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
     public void setChanged() {
         super.setChanged();
         if (level != null && !level.isClientSide()) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
+            long now = level.getGameTime();
+            if (now - syncedAt >= SYNC_TICKS || now < syncedAt) {
+                sync(now);
+            } else {
+                // Pipes and machines change a jar every few ticks: the clients hear of it at most twice a second.
+                syncDue = true;
+            }
         }
+    }
+
+    /** Ticks between two updates of a jar sent to the clients. */
+    private static final int SYNC_TICKS = 10;
+    private long syncedAt = Long.MIN_VALUE / 2;
+    private boolean syncDue;
+
+    private void sync(long now) {
+        syncedAt = now;
+        syncDue = false;
+        level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
     }
 
     @Override

@@ -206,6 +206,31 @@ public class CrystalBatteryBlockEntity extends BlockEntity {
         }
     }
 
+    /**
+     * The workbenches within {@code reach} (two blocks up and down), nearest first: the block entities of the few chunks
+     * the reach touches, never every block of it (up to 3125 lookups every second, as {@code JarReach} does it).
+     */
+    private static java.util.List<HexWorkbenchBlockEntity> benchesNear(Level level, BlockPos pos, int reach) {
+        java.util.List<HexWorkbenchBlockEntity> benches = new java.util.ArrayList<>();
+        for (int cx = (pos.getX() - reach) >> 4; cx <= (pos.getX() + reach) >> 4; cx++) {
+            for (int cz = (pos.getZ() - reach) >> 4; cz <= (pos.getZ() + reach) >> 4; cz++) {
+                if (!level.hasChunk(cx, cz)) {
+                    continue;
+                }
+                for (net.minecraft.world.level.block.entity.BlockEntity entity : level.getChunk(cx, cz).getBlockEntities().values()) {
+                    BlockPos at = entity.getBlockPos();
+                    if (entity instanceof HexWorkbenchBlockEntity bench && !bench.isRemoved() && Math.abs(at.getX() - pos.getX()) <= reach
+                            && Math.abs(at.getY() - pos.getY()) <= 2 && Math.abs(at.getZ() - pos.getZ()) <= reach) {
+                        benches.add(bench);
+                    }
+                }
+            }
+        }
+        benches.sort(java.util.Comparator.<HexWorkbenchBlockEntity>comparingDouble(bench -> bench.getBlockPos().distSqr(pos))
+                .thenComparingLong(bench -> bench.getBlockPos().asLong()));
+        return benches;
+    }
+
     public static void serverTick(Level level, BlockPos pos, BlockState state, CrystalBatteryBlockEntity battery) {
         if (level instanceof ServerLevel server) {
             battery.bask(server);
@@ -215,11 +240,12 @@ public class CrystalBatteryBlockEntity extends BlockEntity {
             return;
         }
         int reach = battery.reach();
-        for (BlockPos at : BlockPos.betweenClosed(pos.offset(-reach, -2, -reach), pos.offset(reach, 2, reach))) {
+        for (HexWorkbenchBlockEntity bench : benchesNear(level, pos, reach)) {
             if (battery.charge <= 0) {
                 break;
             }
-            if (level.getBlockEntity(at) instanceof HexWorkbenchBlockEntity bench) {
+            BlockPos at = bench.getBlockPos();
+            {
                 int given = bench.receive(Math.min(FEED, battery.charge));
                 if (given > 0) {
                     battery.charge -= given;

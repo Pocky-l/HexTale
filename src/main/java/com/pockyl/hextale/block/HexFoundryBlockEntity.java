@@ -273,14 +273,41 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
         return stack.isEmpty() ? null : SMELTING.getRecipeFor(new SingleRecipeInput(stack), level).orElse(null);
     }
 
+    /** The inputs the recipes below were looked up for, and what was found (looked up again only when they change). */
+    private final ItemStack[] seenInputs = new ItemStack[INPUTS];
+    @SuppressWarnings("unchecked")
+    private final RecipeHolder<SmeltingRecipe>[] seenRecipes = new RecipeHolder[INPUTS];
+    private AlloyRecipe.@Nullable Found seenAlloy;
+    private net.minecraft.world.item.crafting.@Nullable RecipeManager seenManager;
+
+    /** Looks the recipes up again when an input or the recipes changed (the search ran every tick for all nine). */
+    private void lookUp(ServerLevel level) {
+        boolean same = seenManager == level.getRecipeManager();
+        for (int slot = 0; slot < INPUTS && same; slot++) {
+            ItemStack seen = seenInputs[slot];
+            ItemStack now = items.get(slot);
+            same = seen != null && seen.getCount() == now.getCount() && ItemStack.isSameItemSameComponents(seen, now);
+        }
+        if (same) {
+            return;
+        }
+        seenManager = level.getRecipeManager();
+        seenAlloy = AlloyRecipe.findInFoundry(items.subList(0, INPUTS), false);
+        for (int slot = 0; slot < INPUTS; slot++) {
+            seenInputs[slot] = items.get(slot).copy();
+            seenRecipes[slot] = recipe(level, items.get(slot));
+        }
+    }
+
     /** One tick: burn, heat or cool, and melt every input a little. True while it burns. */
     private boolean work(ServerLevel level) {
         int active = 0;
         @SuppressWarnings("unchecked")
         RecipeHolder<SmeltingRecipe>[] recipes = new RecipeHolder[INPUTS];
         boolean full = false;
+        lookUp(level);
         // An alloy takes its slots for itself; the rest melt beside it.
-        AlloyRecipe.Found alloy = AlloyRecipe.findInFoundry(items.subList(0, INPUTS), false);
+        AlloyRecipe.Found alloy = seenAlloy;
         boolean[] alloying = new boolean[INPUTS];
         if (alloy != null && !fits(alloy.recipe().result().create())) {
             full = true;
@@ -301,7 +328,7 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
                 total[slot] = 0;
                 continue;
             }
-            RecipeHolder<SmeltingRecipe> recipe = recipe(level, stack);
+            RecipeHolder<SmeltingRecipe> recipe = seenRecipes[slot];
             if (recipe == null) {
                 progress[slot] = 0;
                 total[slot] = 0;

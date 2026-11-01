@@ -68,6 +68,10 @@ public class NullLanternBlockEntity extends BlockEntity {
     /** The same, with at least {@code stars} of the rune {@code needing}. */
     @Nullable
     public static NullLanternBlockEntity covering(Level level, Vec3 at, @Nullable NullRune needing, int stars) {
+        if (LOADED.isEmpty()) {
+            // Asked on every game event (steps, blocks changing): no lantern anywhere, no key to build.
+            return null;
+        }
         for (NullLanternBlockEntity lantern : LOADED.getOrDefault(key(level), Set.of())) {
             if (!lantern.isRemoved() && lantern.covers(at) && (needing == null || lantern.strength(needing) >= stars)) {
                 return lantern;
@@ -78,6 +82,9 @@ public class NullLanternBlockEntity extends BlockEntity {
 
     /** The share of a sound at {@code at} that the quietest lantern with Silence leaves; 1 where none hushes. */
     public static float soundLeft(Level level, Vec3 at) {
+        if (LOADED.isEmpty()) {
+            return 1;
+        }
         float left = 1;
         for (NullLanternBlockEntity lantern : LOADED.getOrDefault(key(level), Set.of())) {
             int silence = lantern.strength(NullRune.SILENCE);

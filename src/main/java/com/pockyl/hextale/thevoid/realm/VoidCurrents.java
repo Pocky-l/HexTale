@@ -154,8 +154,12 @@ public final class VoidCurrents {
         long region = VoidShapes.chunkKey(Math.floorDiv(player.getBlockX(), VoidShapes.REGION), Math.floorDiv(player.getBlockZ(), VoidShapes.REGION));
         Long sent = SENT.get(player.getUUID());
         if ((sent == null || sent != region) && player.tickCount % SEND_EVERY == 0 || sent == null) {
-            SENT.put(player.getUUID(), region);
-            ModNetwork.sendToPlayer(player, new VoidCurrentsPayload(near(level, player.getX(), player.getZ())));
+            List<Current> currents = nearIfBuilt(level, player.getX(), player.getZ());
+            if (currents != null) {
+                // Told once the regions round are built (in the background); until then it asks again next tick.
+                SENT.put(player.getUUID(), region);
+                ModNetwork.sendToPlayer(player, new VoidCurrentsPayload(currents));
+            }
         }
         if (player.tickCount % 4 == 0 && riding(level, player.position().add(0, player.getBbHeight() * 0.5, 0)) != null) {
             player.resetFallDistance();
@@ -179,9 +183,39 @@ public final class VoidCurrents {
         SENT.remove(event.getEntity().getUUID());
     }
 
-    /** The current carrying something at {@code at} now, or null. */
+    /**
+     * The currents round a point for the server thread: null while a region round it is still being built in the
+     * background (it never builds one on the spot).
+     */
+    public static @org.jspecify.annotations.Nullable List<Current> nearIfBuilt(ServerLevel level, double x, double z) {
+        if (!(level.getChunkSource().getGenerator() instanceof VoidChunkGenerator generator)) {
+            return List.of();
+        }
+        VoidShapes shapes = generator.shapes(level.getChunkSource().randomState());
+        int rx = Math.floorDiv((int) Math.floor(x), VoidShapes.REGION);
+        int rz = Math.floorDiv((int) Math.floor(z), VoidShapes.REGION);
+        List<Current> found = new ArrayList<>();
+        boolean ready = true;
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                List<Current> currents = shapes.currentsIfBuilt(rx + dx, rz + dz);
+                if (currents == null) {
+                    ready = false;
+                } else {
+                    found.addAll(currents);
+                }
+            }
+        }
+        return ready ? found : null;
+    }
+
+    /** The current carrying something at {@code at} now, or null (none while its regions are still being built). */
     public static Current riding(ServerLevel level, Vec3 at) {
-        for (Current current : near(level, at.x, at.z)) {
+        List<Current> near = nearIfBuilt(level, at.x, at.z);
+        if (near == null) {
+            return null;
+        }
+        for (Current current : near) {
             if (current.state(level.getGameTime()) < 2 && current.nearest(at, RADIUS)[0] >= 0) {
                 return current;
             }
