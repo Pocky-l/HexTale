@@ -214,12 +214,12 @@ chances. The modifiers check the queried loot table, so per-player chests (Lootr
 
 | Option | Default | What it does |
 |---|---|---|
-| `thinning` | true | Working essence wears the land around a base thin (haze, blight, Void Mites, breaches). Off = none of it. |
+| `thinning` | true | Working essence wears the land around a base thin (haze, blight, Void Mites, breaches). Off = none of it - and no way into the Void: its diary branch, the Crystal Purifier, the Warding Lamppost, the Breach Heart and everything made from Void materials stay out of reach. |
 | `thinningRate` | 1.0 | How fast it grows (0-10). |
 | `blightChangesBlocks` | true | Blighted land turns grass and stone into Void soil and rock and its plants into Void flora. |
 | `voidMitesSpawn` | true | Void Mites crawl out of blighted ground. |
 | `voidlingsSpawn` | true | Breaches send out voidlings (wild and fed). |
-| `breaches` | true | Land worn all the way thin tears open into a breach by itself (a Breach Heart still unfolds one). |
+| `breaches` | true | Land worn all the way thin tears open into a breach by itself. Off = the only breaches are those a Breach Heart unfolds (the way into the Void then starts with the Crystal Purifier). |
 | `breachCooldownMinutes` | 20 | Rest after a breach is gone before a new one may open within 1000 blocks. |
 | `minOrbs` / `maxOrbs` | 1 / 1 | Unstable hextech orbs per amethyst block a lightning wave shatters. |
 | `chainRadius` / `maxChain` | 5 / 125 | How far and how much amethyst one strike runs through. |
