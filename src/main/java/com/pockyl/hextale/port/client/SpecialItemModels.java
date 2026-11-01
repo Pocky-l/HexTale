@@ -306,6 +306,9 @@ public final class SpecialItemModels {
                 (net.neoforged.neoforge.client.event.RenderLivingEvent.Pre<?, ?> event) -> rendered = event.getEntity());
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(
                 (net.neoforged.neoforge.client.event.RenderLivingEvent.Post<?, ?> event) -> rendered = null);
+        // Another mod may cancel Pre, and then no Post comes: forget the creature with the frame at the latest.
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(
+                (net.neoforged.neoforge.client.event.RenderFrameEvent.Post event) -> rendered = null);
     }
 
     /**

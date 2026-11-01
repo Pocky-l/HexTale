@@ -70,6 +70,12 @@ public final class WeaponFx {
     private static final List<Shown> SHOWN = new ArrayList<>();
     private static @Nullable ClientLevel level;
 
+    /** The world was left: let go of it and of what was shown in it. */
+    public static void forget() {
+        SHOWN.clear();
+        level = null;
+    }
+
     private record Shown(WeaponFxPayload payload, long start, int seed) {
         float lasts() {
             return switch (payload.shape()) {

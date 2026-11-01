@@ -457,9 +457,16 @@ final class GuidePage {
     private record Link(int[][] path, int[][] runs, long fingerprint) {
     }
 
-    private static final Map<Quest, Map<Quest, Link>> LINKS = new java.util.WeakHashMap<>();
+    private static final Map<Quest, Map<Quest, Link>> LINKS = new java.util.HashMap<>();
+    /** The guide the links were traced for: a new one (login, /reload) lets the old steps and their paths go. */
+    private static com.pockyl.hextale.quest.@org.jspecify.annotations.Nullable Guide linksOf;
 
     private static Link link(Quest from, Quest to) {
+        com.pockyl.hextale.quest.Guide guide = com.pockyl.hextale.quest.Guide.client();
+        if (guide != linksOf) {
+            LINKS.clear();
+            linksOf = guide;
+        }
         long fingerprint = ((long) from.x() * 31 + from.y()) * 961 + ((long) to.x() * 31 + to.y()) * 29791
                 + Float.floatToIntBits(to.bow()) * 7L + size(from) * 3L + size(to) + (from == to.parent() ? 1 : 0);
         Map<Quest, Link> byParent = LINKS.computeIfAbsent(to, key -> new HashMap<>());

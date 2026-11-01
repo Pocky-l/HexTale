@@ -82,6 +82,11 @@ public final class ChalkFigure {
             AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
     /** Players rooted now, until when, and when they may be rooted again. */
     private static final Map<UUID, long[]> ROOTED = new ConcurrentHashMap<>();
+
+    /** Roots are kept by game time: the server stopping (another world comes next) forgets them all. */
+    public static void forgetRoots() {
+        ROOTED.clear();
+    }
     /** What each figure has paid for and how worn its chalk is, by level and first cell (not saved: a reload is a fresh start). */
     private static final Map<Level, Map<Long, Purse>> PURSES = new WeakHashMap<>();
 

@@ -65,6 +65,15 @@ public final class ClothesEffects {
     /** Server: the game tick each Mirage-cloaked player stays out of the creatures' minds until (or until they strike). */
     private static final Map<UUID, Long> CLOAKED = new java.util.HashMap<>();
 
+    /** Mirage cloaks are kept by game time: they end with the player's session or the server (another world). */
+    public static void forgetCloak(@org.jspecify.annotations.Nullable UUID player) {
+        if (player == null) {
+            CLOAKED.clear();
+        } else {
+            CLOAKED.remove(player);
+        }
+    }
+
     private ClothesEffects() {
     }
 

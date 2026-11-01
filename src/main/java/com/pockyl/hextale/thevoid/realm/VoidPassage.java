@@ -66,6 +66,15 @@ public final class VoidPassage {
     /** Players being drawn through now. */
     private static final Map<java.util.UUID, Pull> PULLS = new java.util.concurrent.ConcurrentHashMap<>();
 
+    /** Forgets the pull of a player who left, or every pull (null) when the server stops: a pull holds its breach. */
+    public static void forgetPulls(java.util.@Nullable UUID player) {
+        if (player == null) {
+            PULLS.clear();
+        } else {
+            PULLS.remove(player);
+        }
+    }
+
     /** A pull under way: into the Void through {@code breach} (touched at {@code local}), or out through gate {@code seed}. */
     private record Pull(boolean into, long start, @Nullable TheVoid breach, @Nullable Vector3f local, int seed) {
     }
