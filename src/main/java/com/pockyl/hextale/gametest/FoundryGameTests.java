@@ -104,7 +104,7 @@ public final class FoundryGameTests {
                 ingots += out.is(Items.IRON_INGOT) ? out.getCount() : 0;
             }
             helper.assertTrue(ingots == 9, "all nine melt together, got " + ingots);
-            helper.assertTrue(helper.getTick() <= 140, "hot, it melts twice as fast as a furnace");
+            helper.assertTrue(GameTests.ticksSinceStart(helper) <= 140, "hot, it melts twice as fast as a furnace");
         });
     }
 
