@@ -142,6 +142,12 @@ public final class ShimmerGameTests {
         ItemStack vial = ChemVialItem.of(Brew.REFINED_SHIMMER);
         helper.assertTrue(vial.getUseAnimation() == net.minecraft.world.item.UseAnim.DRINK, "the vial is drunk");
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        // The mock player is creative, where the vial stays (as 26.x's consumable does); in survival it is drunk.
+        helper.assertTrue(ChemVialItem.of(Brew.REFINED_SHIMMER).finishUsingItem(helper.getLevel(), player).is(vial.getItem()),
+                "creative keeps the vial");
+        player.removeAllEffects();
+        player.getPersistentData().remove("hextale_shimmer_until");
+        player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
         ItemStack left = vial.finishUsingItem(helper.getLevel(), player);
         helper.assertTrue(player.hasEffect(MobEffects.DAMAGE_BOOST) && player.hasEffect(MobEffects.REGENERATION)
                 && player.hasEffect(MobEffects.MOVEMENT_SPEED) && player.hasEffect(MobEffects.DAMAGE_RESISTANCE), "it gives its buffs");
