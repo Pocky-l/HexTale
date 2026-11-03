@@ -36,11 +36,13 @@ import java.util.Optional;
  * <p>
  * {@code icon} may list several items: the book switches between them (one step for a set of things, such as the four
  * pieces of the researcher's clothes). {@code display} may list several pictures too, one per icon: the step's plate
- * then shows the icons as a row to pick from, and the picture of the one picked.
+ * then shows the icons as a row to pick from (as many rows as they need), and the picture of the one picked. A step for
+ * many things (every transmutation of a topic) can keep one {@code sign} on the map instead of turning through them all.
  */
 public record QuestDefinition(Region region, Quest.Stage stage, List<ItemStackTemplate> icons, List<String> parents,
                               Optional<QuestGoal> goal, List<QuestDisplay> displays, Optional<ResearchTopic> research, Quest.Aura aura,
-                              boolean station, boolean landmark, boolean secret, Optional<Quest.Scene> scene, Optional<Pos> pos) {
+                              boolean station, boolean landmark, boolean secret, Optional<Quest.Scene> scene, Optional<Pos> pos,
+                              Optional<ItemStackTemplate> sign) {
     public static final Codec<QuestDefinition> CODEC = RecordCodecBuilder.create(i -> i.group(
             Region.CODEC.fieldOf("region").forGetter(QuestDefinition::region),
             Quest.Stage.CODEC.optionalFieldOf("stage", Quest.Stage.EARLY).forGetter(QuestDefinition::stage),
@@ -54,7 +56,8 @@ public record QuestDefinition(Region region, Quest.Stage stage, List<ItemStackTe
             Codec.BOOL.optionalFieldOf("landmark", false).forGetter(QuestDefinition::landmark),
             Codec.BOOL.optionalFieldOf("secret", false).forGetter(QuestDefinition::secret),
             Quest.Scene.CODEC.optionalFieldOf("scene").forGetter(QuestDefinition::scene),
-            Pos.CODEC.optionalFieldOf("pos").forGetter(QuestDefinition::pos)
+            Pos.CODEC.optionalFieldOf("pos").forGetter(QuestDefinition::pos),
+            ItemStackTemplate.CODEC.optionalFieldOf("sign").forGetter(QuestDefinition::sign)
     ).apply(i, QuestDefinition::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, QuestDefinition> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC);
@@ -74,25 +77,25 @@ public record QuestDefinition(Region region, Quest.Stage stage, List<ItemStackTe
     }
 
     public QuestDefinition withParents(List<String> next) {
-        return new QuestDefinition(region, stage, icons, List.copyOf(next), goal, displays, research, aura, station, landmark, secret, scene, pos);
+        return new QuestDefinition(region, stage, icons, List.copyOf(next), goal, displays, research, aura, station, landmark, secret, scene, pos, sign);
     }
 
     /** The first icon changed; the others stay. */
     public QuestDefinition withIcon(ItemStackTemplate next) {
         List<ItemStackTemplate> changed = new java.util.ArrayList<>(icons);
         changed.set(0, next);
-        return new QuestDefinition(region, stage, List.copyOf(changed), parents, goal, displays, research, aura, station, landmark, secret, scene, pos);
+        return new QuestDefinition(region, stage, List.copyOf(changed), parents, goal, displays, research, aura, station, landmark, secret, scene, pos, sign);
     }
 
     public QuestDefinition withAura(Quest.Aura next) {
-        return new QuestDefinition(region, stage, icons, parents, goal, displays, research, next, station, landmark, secret, scene, pos);
+        return new QuestDefinition(region, stage, icons, parents, goal, displays, research, next, station, landmark, secret, scene, pos, sign);
     }
 
     public QuestDefinition withStation(boolean next) {
-        return new QuestDefinition(region, stage, icons, parents, goal, displays, research, aura, next, landmark, secret, scene, pos);
+        return new QuestDefinition(region, stage, icons, parents, goal, displays, research, aura, next, landmark, secret, scene, pos, sign);
     }
 
     public QuestDefinition withPos(Optional<Pos> next) {
-        return new QuestDefinition(region, stage, icons, parents, goal, displays, research, aura, station, landmark, secret, scene, next);
+        return new QuestDefinition(region, stage, icons, parents, goal, displays, research, aura, station, landmark, secret, scene, next, sign);
     }
 }

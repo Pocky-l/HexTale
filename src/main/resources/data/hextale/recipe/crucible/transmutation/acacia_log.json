@@ -1,0 +1,11 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:jungle_log",
+  "essences": {
+    "fire": 2
+  },
+  "result": {
+    "id": "minecraft:acacia_log"
+  },
+  "research": "transmutation"
+}

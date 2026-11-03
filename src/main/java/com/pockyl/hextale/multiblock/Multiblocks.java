@@ -117,7 +117,7 @@ public final class Multiblocks {
                 && !(level.isClientSide() ? com.pockyl.hextale.client.ClientKnowledge.get() : Research.of(event.getEntity())).researched(topic)) {
             // Not researched: the structure stays asleep and the click does what it would do anyway.
             if (event.getEntity() instanceof ServerPlayer player) {
-                player.sendOverlayMessage(Component.translatable("research.hextale.locked",
+                player.sendOverlayMessage(Component.translatable(topic.lockedKey(),
                         Component.translatable(topic.translationKey()).withColor(topic.color())));
             }
             return;

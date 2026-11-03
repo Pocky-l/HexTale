@@ -74,6 +74,10 @@ public final class ResearchTopics {
     public static final ResearchTopic SAP_GOURD = lab("sap_gourd", 1, Essence.WATER, Essence.LIFE, ModItems.SAP_GOURD_SEEDS);
     public static final ResearchTopic CRYSTAL_CANE = lab("crystal_cane", 2, Essence.EARTH, Essence.LIGHT, ModItems.CRYSTAL_CANE);
     public static final ResearchTopic SHIMMER_BULB = lab("shimmer_bulb", 2, Essence.SHADOW, Essence.SPARK, ModItems.SHIMMER_BULB);
+    // Transmutation: the Crucible turns an item into a kindred one and back. The topics open no item of their own: their
+    // Crucible recipes name them ("research"), so plain sand or a poppy is never locked anywhere else.
+    public static final ResearchTopic TRANSMUTATION = transmutation("transmutation", 1, Essence.EARTH, Essence.METAL);
+    public static final ResearchTopic ADVANCED_TRANSMUTATION = transmutation("advanced_transmutation", 2, Essence.LIGHT, Essence.SPARK);
     public static final ResearchTopic SYNTHETIC_CRYSTAL = lab("synthetic_crystal", 2, Essence.LIGHT, Essence.EARTH, ModItems.SYNTHETIC_CRYSTAL);
     // Chemtech reactions: each brew is worked out at the Lab Bench before the Crucible brews it for the researcher.
     public static final ResearchTopic COMBUSTIBLE_MIX = brew("combustible_mix", 1, Brew.FUEL, Essence.FIRE, Essence.SHADOW);
@@ -86,12 +90,12 @@ public final class ResearchTopics {
     public static final ResearchTopic HEXTECH_TOOLS = register(new ResearchTopic("hextech_tools",
             List.<Supplier<? extends ItemLike>>of(ModItems.pickaxe(HextechPickaxe.HEXTECH), ModItems.HEXTECH_AXE, ModItems.HEXTECH_SHOVEL, ModItems.HEXTECH_SWORD,
                     ModItems.TENDRIL_DAGGER),
-            Essence.METAL, Essence.EARTH, 1, ResearchTopic.Bench.TABLE, null, "research.hextale.topic.hextech_tools"));
+            Essence.METAL, Essence.EARTH, 1, ResearchTopic.Bench.TABLE, null, "research.hextale.topic.hextech_tools", null));
     // Gadgets: the first ones (tier 1) right after the first researches, the strong ones deeper.
     public static final ResearchTopic LEVITATION_PLATE = add("levitation_plate", 1, Essence.AIR, Essence.EARTH, ModItems.LEVITATION_PLATE);
     public static final ResearchTopic IMPULSE_PLATE = add("impulse_plate", 1, Essence.SPARK, Essence.AIR, ModItems.IMPULSE_PLATE);
     public static final ResearchTopic SIEVE_GLASS = register(new ResearchTopic("sieve_glass", List.of(ModItems.WARD_GLASS, ModItems.VEIL_GLASS),
-            Essence.SHADOW, Essence.LIFE, 1, ResearchTopic.Bench.TABLE, null, "quest.hextale.sieve_glass"));
+            Essence.SHADOW, Essence.LIFE, 1, ResearchTopic.Bench.TABLE, null, "quest.hextale.sieve_glass", null));
     public static final ResearchTopic FLOATING_STONE = add("floating_stone", 1, Essence.EARTH, Essence.AIR, ModItems.FLOATING_STONE);
     public static final ResearchTopic RECALL_CHARM = add("recall_charm", 2, Essence.SHADOW, Essence.SPARK, ModItems.RECALL_CHARM);
     public static final ResearchTopic SOUL_FLASK = add("soul_flask", 2, Essence.LIFE, Essence.SHADOW, ModItems.SOUL_FLASK);
@@ -153,18 +157,27 @@ public final class ResearchTopics {
 
     @SafeVarargs
     private static ResearchTopic add(String id, int tier, Essence action, Essence target, Supplier<? extends ItemLike>... items) {
-        return register(new ResearchTopic(id, List.of(items), action, target, tier, ResearchTopic.Bench.TABLE, null, null));
+        return register(new ResearchTopic(id, List.of(items), action, target, tier, ResearchTopic.Bench.TABLE, null, null, null));
     }
 
     /** A chemtech device, worked out at the Lab Bench. */
     @SafeVarargs
     private static ResearchTopic lab(String id, int tier, Essence action, Essence target, Supplier<? extends ItemLike>... items) {
-        return register(new ResearchTopic(id, List.of(items), action, target, tier, ResearchTopic.Bench.LAB, null, null));
+        return register(new ResearchTopic(id, List.of(items), action, target, tier, ResearchTopic.Bench.LAB, null, null, null));
+    }
+
+    /**
+     * A transmutation topic, worked out at the Lab Bench: it opens the Crucible recipes that name it, never an item, and
+     * shows its own diary picture ({@code guide_mark} "{@code id}").
+     */
+    private static ResearchTopic transmutation(String id, int tier, Essence action, Essence target) {
+        return register(new ResearchTopic(id, List.of(), action, target, tier, ResearchTopic.Bench.LAB, null,
+                "research.hextale.topic." + id, id));
     }
 
     /** A chemtech reaction: brewing it in the Crucible, worked out at the Lab Bench. */
     private static ResearchTopic brew(String id, int tier, Brew brew, Essence action, Essence target) {
-        return register(new ResearchTopic(id, List.of(), action, target, tier, ResearchTopic.Bench.LAB, brew, null));
+        return register(new ResearchTopic(id, List.of(), action, target, tier, ResearchTopic.Bench.LAB, brew, null, null));
     }
 
     private static ResearchTopic register(ResearchTopic topic) {

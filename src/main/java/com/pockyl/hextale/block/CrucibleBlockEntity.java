@@ -325,7 +325,7 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
         int dissolved = dissolve(stack, count);
         if (dissolved > 0 && locked != null && researcher instanceof ServerPlayer player) {
             // The brew was right, the researcher was not ready: the item only dissolved.
-            player.sendOverlayMessage(Component.translatable("research.hextale.locked",
+            player.sendOverlayMessage(Component.translatable(locked.lockedKey(),
                     Component.translatable(locked.translationKey()).withColor(locked.color())));
         }
         return dissolved;

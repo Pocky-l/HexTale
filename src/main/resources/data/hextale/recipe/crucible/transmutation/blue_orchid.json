@@ -1,0 +1,11 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:cornflower",
+  "essences": {
+    "water": 3
+  },
+  "result": {
+    "id": "minecraft:blue_orchid"
+  },
+  "research": "transmutation"
+}

@@ -290,7 +290,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         if (topic != null && !researcherNear(serverLevel, player, topic)) {
             // Nobody here has worked this out at the table yet: the circle does not know how to make it.
             if (player != null) {
-                player.sendOverlayMessage(Component.translatable("research.hextale.locked",
+                player.sendOverlayMessage(Component.translatable(topic.lockedKey(),
                         Component.translatable(topic.translationKey()).withColor(topic.color())));
             }
             serverLevel.playSound(null, worldPosition, ModSounds.DEVICE_REFUSE.get(), SoundSource.BLOCKS, 0.8F, 0.9F);

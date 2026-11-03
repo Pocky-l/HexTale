@@ -1,0 +1,8 @@
+{
+  "type": "hextale:lab_experiment",
+  "topic": "advanced_transmutation",
+  "target": "magic",
+  "amount": 10,
+  "purity": 0.7,
+  "sample": "minecraft:quartz"
+}

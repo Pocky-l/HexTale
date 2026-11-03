@@ -1,0 +1,12 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:redstone",
+  "essences": {
+    "light": 4,
+    "magic": 2
+  },
+  "result": {
+    "id": "minecraft:glowstone_dust"
+  },
+  "research": "advanced_transmutation"
+}

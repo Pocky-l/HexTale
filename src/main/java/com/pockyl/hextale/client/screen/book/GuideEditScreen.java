@@ -226,7 +226,7 @@ final class GuideEditScreen extends Screen {
         Quest at = guide.byId(quest.id());
         QuestDefinition definition = new QuestDefinition(quest.region(), quest.stage(), List.of(new ItemStackTemplate(Items.BOOK)), List.of(quest.id()),
                 Optional.empty(), List.of(), Optional.empty(), Quest.Aura.NONE, false, false, false, Optional.empty(),
-                Optional.of(freeSpot(guide, at != null ? at : quest)));
+                Optional.of(freeSpot(guide, at != null ? at : quest)), Optional.empty());
         Map<String, @Nullable QuestDefinition> changed = new LinkedHashMap<>();
         changed.put(id, definition);
         boolean saved = GuideEditor.saveSteps(changed);

@@ -1128,8 +1128,22 @@ final class GuidePage {
         return hasVariants(quest) && variant < quest.icons().size() ? quest.icons().get(variant) : quest.icon(now);
     }
 
-    private static final int VARIANT_ROW = SLOT + 6;
     private static final int VARIANT_GAP = 4;
+
+    /** How many things of a set fit in one row of the plate. */
+    private int variantsPerRow() {
+        return Math.max(1, (innerWidth() + VARIANT_GAP) / (SLOT + VARIANT_GAP));
+    }
+
+    private static int variantCount(Quest quest) {
+        return Math.min(quest.icons().size(), quest.displays().size());
+    }
+
+    /** The rows of things a set's plate shows (a set too long for one row wraps), with the space under them. */
+    private int variantHeight(Quest quest) {
+        int rows = (variantCount(quest) + variantsPerRow() - 1) / variantsPerRow();
+        return rows * (SLOT + VARIANT_GAP) - VARIANT_GAP + 6;
+    }
 
     /** A step whose runes picture follows its other pictures (a device and the runes it takes) gets two tabs. */
     private boolean hasRunesTab(Quest quest) {
@@ -1157,7 +1171,7 @@ final class GuidePage {
     private int contentHeight(Quest quest, RuneKnowledge knowledge) {
         int h = PAD + headerHeight(quest) + statusLines(quest, knowledge).size() * 10 + 6;
         if (hasVariants(quest)) {
-            h += VARIANT_ROW;
+            h += variantHeight(quest);
         }
         if (hasRunesTab(quest)) {
             h += TAB_HEIGHT + 6;
@@ -1265,7 +1279,7 @@ final class GuidePage {
             if (hover != null) {
                 tooltip = hover;
             }
-            y += VARIANT_ROW;
+            y += variantHeight(quest);
         }
         if (hasRunesTab(quest)) {
             tabY = y;
@@ -1364,15 +1378,17 @@ final class GuidePage {
     @Nullable
     private List<FormattedCharSequence> renderVariants(GuiGraphicsExtractor graphics, Quest quest, int x, int y, int mouseX, int mouseY, long now) {
         List<FormattedCharSequence> tooltip = null;
-        int count = Math.min(quest.icons().size(), quest.displays().size());
+        int count = variantCount(quest);
+        int perRow = variantsPerRow();
         for (int i = 0; i < count; i++) {
-            int sx = x + i * (SLOT + VARIANT_GAP);
+            int sx = x + i % perRow * (SLOT + VARIANT_GAP);
+            int sy = y + i / perRow * (SLOT + VARIANT_GAP);
             if (i == variant) {
                 float glow = 0.6F + 0.4F * pulse(now, i);
-                PixelArt.fill(graphics, sx - 2, y - 2, sx + SLOT + 2, y + SLOT + 2, PixelArt.argb(StarBook.GOLD, glow));
-                PixelArt.fill(graphics, sx - 1, y - 1, sx + SLOT + 1, y + SLOT + 1, PixelArt.argb(0x2E2440, 1));
+                PixelArt.fill(graphics, sx - 2, sy - 2, sx + SLOT + 2, sy + SLOT + 2, PixelArt.argb(StarBook.GOLD, glow));
+                PixelArt.fill(graphics, sx - 1, sy - 1, sx + SLOT + 1, sy + SLOT + 1, PixelArt.argb(0x2E2440, 1));
             }
-            List<FormattedCharSequence> hover = slot(graphics, quest.icons().get(i), sx, y, mouseX, mouseY, null);
+            List<FormattedCharSequence> hover = slot(graphics, quest.icons().get(i), sx, sy, mouseX, mouseY, null);
             if (hover != null) {
                 tooltip = hover;
             }
@@ -1382,14 +1398,16 @@ final class GuidePage {
 
     /** Picks the thing under the mouse in a set's row; true when one was hit. */
     private boolean pickVariant(double mouseX, double mouseY) {
-        if (selected == null || !hasVariants(selected) || variantY == Integer.MIN_VALUE || mouseY < variantY || mouseY >= variantY + SLOT) {
+        if (selected == null || !hasVariants(selected) || variantY == Integer.MIN_VALUE || mouseY < variantY) {
             return false;
         }
         int ix = plateLeft() + PAD;
-        int count = Math.min(selected.icons().size(), selected.displays().size());
+        int count = variantCount(selected);
+        int perRow = variantsPerRow();
         for (int i = 0; i < count; i++) {
-            int sx = ix + i * (SLOT + VARIANT_GAP);
-            if (mouseX >= sx && mouseX < sx + SLOT) {
+            int sx = ix + i % perRow * (SLOT + VARIANT_GAP);
+            int sy = variantY + i / perRow * (SLOT + VARIANT_GAP);
+            if (mouseX >= sx && mouseX < sx + SLOT && mouseY >= sy && mouseY < sy + SLOT) {
                 if (i != variant) {
                     variant = i;
                     scroll = 0;

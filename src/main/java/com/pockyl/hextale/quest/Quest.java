@@ -86,6 +86,9 @@ public final class Quest {
     /** Made on first use: item components are not bound yet while data packs load. */
     @Nullable
     private List<ItemStack> icons;
+    /** The step's own sign, made on first use (empty: none). */
+    @Nullable
+    private ItemStack sign;
     final List<Quest> parents = new ArrayList<>();
     final List<Quest> children = new ArrayList<>();
     int index;
@@ -123,9 +126,12 @@ public final class Quest {
         return Collections.unmodifiableList(children);
     }
 
-    /** The step's sign: its first icon. */
+    /** The step's sign: its own {@code sign}, else its first icon. */
     public ItemStack icon() {
-        return icons().getFirst();
+        if (sign == null) {
+            sign = definition.sign().map(ItemStackTemplate::create).orElse(ItemStack.EMPTY);
+        }
+        return sign.isEmpty() ? icons().getFirst() : sign;
     }
 
     /** Every icon of the step; most have one, a step for a set of things one per thing. */
@@ -141,6 +147,9 @@ public final class Quest {
 
     /** The icon shown at this moment of the wall clock: several icons take turns. */
     public ItemStack icon(long now) {
+        if (definition.sign().isPresent()) {
+            return icon();
+        }
         List<ItemStack> all = icons();
         return all.get((int) ((now / ICON_TICK + index) % all.size()));
     }

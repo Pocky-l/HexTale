@@ -1,0 +1,11 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:carrot",
+  "essences": {
+    "earth": 2
+  },
+  "result": {
+    "id": "minecraft:potato"
+  },
+  "research": "transmutation"
+}

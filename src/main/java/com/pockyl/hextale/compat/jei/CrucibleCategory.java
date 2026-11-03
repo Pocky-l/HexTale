@@ -50,7 +50,7 @@ public class CrucibleCategory extends AbstractRecipeCategory<CrucibleCategory.Re
         builder.addInputSlot(CruciblePot.catalystX(), CruciblePot.CATALYST_Y).setStandardSlotBackground().add(recipe.recipe().catalyst())
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.crucible.catalyst")));
         ResearchNote.add(builder.addOutputSlot(StepCategory.RESULT_X, CruciblePot.middle(rows) - 8).setOutputSlotBackground().add(recipe.recipe().result()),
-                recipe.recipe().result().item().value());
+                recipe.recipe().topic());
     }
 
     @Override

@@ -1,0 +1,11 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:amethyst_shard",
+  "essences": {
+    "magma": 4
+  },
+  "result": {
+    "id": "minecraft:quartz"
+  },
+  "research": "advanced_transmutation"
+}

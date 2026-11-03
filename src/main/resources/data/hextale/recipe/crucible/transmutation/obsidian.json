@@ -1,0 +1,11 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:crying_obsidian",
+  "essences": {
+    "ash": 4
+  },
+  "result": {
+    "id": "minecraft:obsidian"
+  },
+  "research": "advanced_transmutation"
+}

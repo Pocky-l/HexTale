@@ -38,6 +38,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The first strains: Cultivated Shimmerbloom (a bulb that opens into a shimmerbloom: shimmer from a garden bed), Ember
   Wheat (smouldering grain that burns in a furnace), the Sap Gourd (a melon-like gourd full of sap) and Crystal Cane
   (glassy cane that grows crystal pods to pick).
+- Transmutation, worked out at the Lab Bench right after it is built: the Crucible turns an item into a kindred one
+  for a little essence from its water, and every change also works backwards. Sand and red sand, sandstone and red
+  sandstone, red and brown mushrooms and their blocks, seven pairs of flowers and tall flowers, carrots and potatoes,
+  beetroots and sweet berries, dirt and podzol, cod and salmon, beef and porkchops, four pairs of logs, vines and glow
+  lichen, kelp and seagrass.
+- Advanced Transmutation (Lab Bench, after the Chem Burner): rarer things change for more essence. Redstone and
+  glowstone dust, nether quartz and amethyst shards, ink sacs and glow ink sacs, slime balls and magma cream, soul sand
+  and soul soil, the crimson and warped fungi, nylium, roots, stems and vines, basalt and blackstone, prismarine shards
+  and crystals, obsidian and crying obsidian, blaze rods and breeze rods.
+- A transmutation never gives more essence than went into it: each one costs what the new item carries more than the
+  old one, plus a small fee. JEI lists every pair under the Crucible.
+- The diary steps of both transmutations show every pair: pick an item in their rows to see its change there and back.
+  No item that starts two Crucible recipes or brews asks for the same essence in both, so the water decides clearly
+  what it becomes.
 
 ### Changed
 - Devices talk less. Lines above the hotbar that only repeated what you see and hear are gone: "holds no more",
@@ -104,6 +118,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `showWipSteps`: the map shows only what is really in the game.
 
 ### Fixed
+- A Crucible or a workbench that refuses something worked out at the Lab Bench now says to research it at the Lab
+  Bench, not at the Research Table.
 - Leaving the game in the middle of a passage through a breach or a gate no longer sinks the player into the ground
   (or below the world) on the next visit, and the passage no longer carries the player a dozen blocks off the spot
   they arrive at while its screen is still up.
