@@ -82,7 +82,7 @@ public final class Quests {
         }
         Quest last = null;
         for (Quest quest : guide.all()) {
-            if (quest.kind() == Quest.Kind.ITEM && !knowledge.questDone(quest) && Guide.open(quest, knowledge) && quest.isMet(player, guide)) {
+            if (!knowledge.questDone(quest) && Guide.open(quest, knowledge) && quest.isMet(player, guide)) {
                 complete(player, knowledge, quest);
                 announce(player, quest);
                 last = quest;
@@ -127,7 +127,7 @@ public final class Quests {
      */
     public static boolean grant(ServerPlayer player, Quest quest) {
         RuneKnowledge knowledge = Research.of(player);
-        if (quest.kind() != Quest.Kind.ITEM || knowledge.questDone(quest)) {
+        if (knowledge.questDone(quest)) {
             return false;
         }
         complete(player, knowledge, quest);

@@ -16,10 +16,10 @@
     "kind": "scheme",
     "ingredients": [
       "hextale:chem_vial",
-      "hextale:chem_still",
-      "hextale:chem_burner"
+      "hextale:chem_burner",
+      "hextale:chem_still"
     ],
     "result": "hextale:chem_vial"
   },
-  "pos": [-1110, 260]
+  "pos": [-1010, 260]
 }

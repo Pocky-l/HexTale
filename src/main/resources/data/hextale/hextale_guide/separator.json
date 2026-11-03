@@ -6,5 +6,6 @@
     "kind": "hex_crafting",
     "result": "hextale:separator"
   },
+  "station": true,
   "pos": [200, 110]
 }

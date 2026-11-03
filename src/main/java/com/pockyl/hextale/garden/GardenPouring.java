@@ -52,9 +52,8 @@ public final class GardenPouring {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         if (bed.room(pour.dose()) <= 0) {
-            if (!level.isClientSide()) {
-                player.sendOverlayMessage(Component.translatable(bed.charges() > 0 && bed.dose() != pour.dose()
-                        ? "block.hextale.garden.other_dose" : "block.hextale.garden.full",
+            if (!level.isClientSide() && bed.charges() > 0 && bed.dose() != pour.dose()) {
+                player.sendOverlayMessage(Component.translatable("block.hextale.garden.other_dose",
                         Component.translatable(bed.dose().translationKey()).withColor(bed.dose().color())));
             }
             return InteractionResult.FAIL;
@@ -115,8 +114,6 @@ public final class GardenPouring {
             }
         }
         if (used <= 0) {
-            player.sendOverlayMessage(Component.translatable("block.hextale.garden.full",
-                    Component.translatable(pour.dose().translationKey()).withColor(pour.dose().color())));
             return true;
         }
         spend(stack, pour, used, player, hand);

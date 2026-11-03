@@ -180,7 +180,6 @@ public final class Multiblocks {
         int top = cells.stream().mapToInt(BlockPos::getY).max().orElse(controllerPos.getY());
         WAVES.add(new Wave(level, cells, bottom, top, level.getGameTime()));
         if (player != null) {
-            player.sendOverlayMessage(multiblock.formedMessage());
             multiblock.onFormed(player, controllerPos);
         }
     }

@@ -7,16 +7,12 @@
     "lab_bench"
   ],
   "display": {
-    "kind": "scheme",
-    "ingredients": [
-      "minecraft:glow_berries",
-      "hextale:crucible"
-    ],
+    "kind": "crucible",
     "result": "hextale:shimmer_bulb"
   },
   "research": "shimmer_bulb",
   "pos": [
-    -720,
-    350
+    -705,
+    285
   ]
 }

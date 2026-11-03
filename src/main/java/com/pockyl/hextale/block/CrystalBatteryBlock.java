@@ -61,7 +61,6 @@ public class CrystalBatteryBlock extends BaseEntityBlock {
         }
         if (!level.isClientSide()) {
             if (!battery.soak(stack.copyWithCount(1))) {
-                player.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("block.hextale.crystal_battery.full"));
                 return InteractionResult.FAIL;
             }
             if (!player.getAbilities().instabuild) {

@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "chemtech",
-  "stage": "late",
-  "icon": "minecraft:netherite_pickaxe",
-  "parents": ["chem_boiler"],
-  "pos": [-1340, -40]
-}

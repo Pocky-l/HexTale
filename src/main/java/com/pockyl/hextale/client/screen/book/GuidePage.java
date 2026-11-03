@@ -20,7 +20,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
-import com.pockyl.hextale.ClientConfig;
 import com.pockyl.hextale.client.ClientKnowledge;
 import com.pockyl.hextale.client.render.DiscStack;
 import com.pockyl.hextale.client.render.PixelArt;
@@ -60,11 +59,12 @@ import org.jspecify.annotations.Nullable;
 /**
  * The research book's quest page: the researcher's guide as a map in the dark sky, every workstation in a cog ring with
  * what it makes standing around it. What is done and what is open now can be seen, and one step beyond them, greyed out
- * ("not reachable yet"); everything further stays in the fog. Item quests sit in round brass medallions; the ones
- * researched at the Research Table always carry an ink drop (bright while the research is still to be done), devices
- * still being worked out (WIP) sit in small turning dashed rings. Only the few turning points of the path wear an aura.
- * A legend in the corner names the signs. A click opens the step's plate in the middle: the recipe or scheme for an item
- * and what it opens (on a table, a button that lays its research on the parchment), the idea behind a WIP device.
+ * ("not reachable yet"); everything further stays in the fog. The shape tells what a step asks for: a round medallion
+ * = make the thing, a hexagon = research it first (loupe badge for the Research Table, flask for the Lab Bench), a cog
+ * ring round either = a workstation where further steps are made, a great frame = the bench a whole branch starts from
+ * (Research Table, Lab Bench), the altar, the Hexcore. Only the few turning points of the path wear an aura. A click
+ * opens the step's plate in the middle: the recipe or scheme for an item and what it opens (on a table, a button that
+ * lays its research on the parchment).
  */
 final class GuidePage {
     private static final int ITEM_NODE = 24;
@@ -74,7 +74,6 @@ final class GuidePage {
     private static final int CORE_NODE = 52;
     /** A workstation's medallion, inside its cog ring. */
     private static final int STATION_NODE = 34;
-    private static final int WIP_NODE = 20;
     private static final int BIG = 6;
     /** Steps one beyond the reachable ones: grey and faint. */
     private static final int AHEAD = 0x6A6878;
@@ -89,7 +88,6 @@ final class GuidePage {
     private static final int MUTED = 0xFF9A90B8;
     private static final int DONE = 0x8FE07A;
     private static final int OPEN = 0x5CC8F2;
-    private static final int WIP = 0xB08AE0;
     /** The arcane violet of what is still to be worked out at the Research Table. */
     private static final int RESEARCH = 0xB98CFF;
     private static final int MARGIN = 90;
@@ -100,9 +98,6 @@ final class GuidePage {
     private final Font font;
     /** The dev editor shows every step, fog or not. */
     boolean revealAll;
-    /** The dev editor's switch over WIP steps; null = the client config decides. Kept until the game closes. */
-    @Nullable
-    static Boolean wipOverride;
     @Nullable
     private Quest selected;
     /** The step under the mouse while the map is drawn. */
@@ -143,7 +138,7 @@ final class GuidePage {
     }
 
     /**
-     * Where a reader should look first, in map coordinates: the middle of the steps open now (not done, not WIP) when
+     * Where a reader should look first, in map coordinates: the middle of the steps open now (not done) when
      * they fit into a view of this size, else the earliest of them with as many of its open neighbours as fit; with
      * nothing open, the middle of the done steps around the last one.
      */
@@ -152,7 +147,7 @@ final class GuidePage {
         Quest last = null;
         for (Quest quest : Guide.client().all()) {
             boolean done = Guide.done(quest, knowledge);
-            if (!done && quest.kind() != Quest.Kind.WIP && Guide.open(quest, knowledge)) {
+            if (!done && Guide.open(quest, knowledge)) {
                 open.add(quest);
             }
             if (done) {
@@ -199,7 +194,7 @@ final class GuidePage {
     }
 
     private static int size(Quest quest) {
-        return quest.landmark() ? (quest.stage() == Quest.Stage.LATE ? CORE_NODE : LANDMARK_NODE) : quest.station() ? STATION_NODE : quest.kind() == Quest.Kind.WIP ? WIP_NODE
+        return quest.landmark() ? (quest.stage() == Quest.Stage.LATE ? CORE_NODE : LANDMARK_NODE) : quest.station() ? STATION_NODE
                 : ITEM_NODE + (quest.important() ? BIG : 0);
     }
 
@@ -260,14 +255,6 @@ final class GuidePage {
         }
         for (Quest quest : shown) {
             int badge = Math.round(size(quest) * 0.36F);
-            if (quest.kind() == Quest.Kind.WIP) {
-                // Mist over a device still being worked out, and a badge with three dots waiting in turn.
-                PixelArt.disc(graphics, quest.x(), quest.y(), size(quest) - 4, PixelArt.argb(0x120E1E, 0.45F), 0);
-                if (badges) {
-                    inProgress(graphics, quest.x() + badge, quest.y() + badge, now, quest.index());
-                }
-                continue;
-            }
             if (researchStep(quest)) {
                 // Worked out at a bench: until then the item lies under a violet seal, a loupe (Research Table) or a flask
                 // (Lab Bench) on its corner.
@@ -336,8 +323,8 @@ final class GuidePage {
         if (quest.station()) {
             cogRing(graphics, quest.x(), quest.y(), size, rim, 0.7F);
         }
-        if (researchStep(quest) && !quest.station() && !quest.landmark()) {
-            hexMedallion(graphics, quest.x(), quest.y(), size, rim, 0x15141C, 0x1C1A24, 0.75F);
+        if (researchStep(quest) && !quest.landmark()) {
+            stepHex(graphics, quest, quest.x(), quest.y(), size, rim, 0x15141C, 0x1C1A24, 0.75F);
         } else {
             medallion(graphics, quest.x(), quest.y(), size, rim, 0x15141C, 0x1C1A24, 0.75F);
         }
@@ -348,12 +335,8 @@ final class GuidePage {
      * reads as a nebula of its own rather than a box.
      */
     private static void renderHaze(GuiGraphicsExtractor graphics, List<Quest> shown) {
-        // Only the branch's own steps breathe the haze (devices to come would blot it), in many faint layers so the
-        // edges melt away instead of showing rings.
+        // Many faint layers, so the edges melt away instead of showing rings.
         for (Quest quest : shown) {
-            if (quest.kind() == Quest.Kind.WIP) {
-                continue;
-            }
             if (Blight.of(quest)) {
                 Blight.haze(graphics, quest);
                 continue;
@@ -384,7 +367,7 @@ final class GuidePage {
             float pulse = pulse(now, quest.index());
             // Travelled paths settle into a quiet line of their branch's colour; the open ones keep their cyan pulse.
             int color = lit ? PixelArt.argb(PixelArt.mix(quest.region().color(), StarBook.GOLD, 0.35F), 0.32F)
-                    : quest.kind() == Quest.Kind.WIP ? PixelArt.argb(WIP, 0.4F) : PixelArt.argb(OPEN, 0.45F + 0.3F * pulse);
+                    : PixelArt.argb(OPEN, 0.45F + 0.3F * pulse);
             int[][] path = line(parent, quest);
             if (parent != quest.parent()) {
                 // Second parents: a dotted thread for the step in focus only, so cross links never criss-cross the sky.
@@ -425,7 +408,7 @@ final class GuidePage {
     /** Paths into the fog: a few fading dots from a visible step towards each hidden one, no further. */
     private void renderTrails(GuiGraphicsExtractor graphics, Quest quest, RuneKnowledge knowledge, long now) {
         for (Quest child : quest.children()) {
-            if (seen(child, knowledge) || Guide.ahead(child, knowledge) || child.parent() != quest || hiddenWip(child)) {
+            if (seen(child, knowledge) || Guide.ahead(child, knowledge) || child.parent() != quest) {
                 continue;
             }
             float dx = child.x() - quest.x();
@@ -528,14 +511,13 @@ final class GuidePage {
         int y = quest.y();
         int size = size(quest);
         boolean done = Guide.done(quest, knowledge);
-        boolean wip = quest.kind() == Quest.Kind.WIP;
         float pulse = pulse(now, quest.index());
         boolean blight = Blight.of(quest);
         if (blight) {
             // The Void's steps do not breathe evenly: they seethe and flare.
             pulse = Blight.anger(now, quest.index());
         }
-        if (!done && !wip) {
+        if (!done) {
             // An open step breathes in cyan, one waiting for its research in violet, one of the Void in an angry red.
             int breath = blight ? Blight.ANGRY : researchStep(quest) && !knowledge.researched(quest.topic()) ? RESEARCH : OPEN;
             for (int ring = 0; ring < 3; ring++) {
@@ -546,7 +528,7 @@ final class GuidePage {
         // Done steps keep the metal of their stage: brass early (tinted by the branch, key steps bright gold), blued steel in
         // the middle, white gold at the end.
         int rim = done ? stageRim(quest, quest.important() || quest.landmark() || quest.station())
-                : wip ? (blight ? 0xA0386E : WIP) : blight ? PixelArt.mix(0x7A1E48, 0xFF5A9A, pulse) : PixelArt.mix(0x2B8FB8, 0x7EF0FF, pulse);
+                : blight ? PixelArt.mix(0x7A1E48, 0xFF5A9A, pulse) : PixelArt.mix(0x2B8FB8, 0x7EF0FF, pulse);
         if (quest == selected || hovered) {
             rim = PixelArt.mix(StarBook.GOLD, 0xFFF6D6, pulse);
         }
@@ -559,46 +541,29 @@ final class GuidePage {
         } else if (quest.station()) {
             cogRing(graphics, x, y, size, rim, 1);
         }
-        switch (quest.kind()) {
-            case ITEM -> {
-                if (researchStep(quest) && !quest.landmark() && !quest.station()) {
-                    // A research step is a hexagon, like the sections of the research parchment: violet until worked
-                    // out at the table, brass once researched.
-                    boolean researched = knowledge.researched(quest.topic());
-                    int hexRim = done || quest == selected || hovered ? rim : researched ? 0xC8A050 : PixelArt.mix(0x7A4FD0, RESEARCH, pulse);
-                    int fill = done ? stageFill(quest) : researched ? 0x1E1A10 : 0x1A1030;
-                    hexMedallion(graphics, x, y, size, hexRim, fill, PixelArt.mix(fill, researched || done ? StarBook.GOLD : RESEARCH, 0.16F), 1);
-                } else if (blight) {
-                    int fill = done ? Blight.FILL : 0x1A0614;
-                    medallion(graphics, x, y, size, rim, fill, PixelArt.mix(fill, Blight.GLOW, done ? 0.1F : 0.08F + 0.12F * pulse), 1);
-                } else {
-                    int fill = done ? stageFill(quest) : 0x0C1A2A;
-                    medallion(graphics, x, y, size, rim, fill, done ? PixelArt.mix(fill, stageColor(quest.stage()), 0.18F) : PixelArt.mix(fill, OPEN, 0.12F), 1);
-                }
-            }
-            case WIP -> {
-                // A dashed ring turning slowly around a dim disc: a device still being drawn up.
-                PixelArt.disc(graphics, x, y, size, PixelArt.argb(0x120E1E, 0.9F), 0);
-                PixelArt.Circle circle = PixelArt.Circle.of(size);
-                float turn = now / 2600.0F + quest.index();
-                for (int i = 0; i < circle.pixels.length; i++) {
-                    float a = circle.angles[i] - turn;
-                    float dash = Mth.sin(a * 8);
-                    if (dash > -0.15F) {
-                        int[] p = circle.pixels[i];
-                        PixelArt.fill(graphics, x + p[0], y + p[1], x + p[0] + 1, y + p[1] + 1, PixelArt.argb(rim, 0.55F + 0.45F * dash));
-                    }
-                }
-            }
+        if (researchStep(quest) && !quest.landmark()) {
+            // A research step is a hexagon, like the sections of the research parchment: violet until worked out at the
+            // table, brass once researched. A researched workstation keeps the hexagon inside its cog ring, so the shape
+            // always tells what the step asks for.
+            boolean researched = knowledge.researched(quest.topic());
+            int hexRim = done || quest == selected || hovered ? rim : researched ? 0xC8A050 : PixelArt.mix(0x7A4FD0, RESEARCH, pulse);
+            int fill = done ? stageFill(quest) : researched ? 0x1E1A10 : 0x1A1030;
+            stepHex(graphics, quest, x, y, size, hexRim, fill, PixelArt.mix(fill, researched || done ? StarBook.GOLD : RESEARCH, 0.16F), 1);
+        } else if (blight) {
+            int fill = done ? Blight.FILL : 0x1A0614;
+            medallion(graphics, x, y, size, rim, fill, PixelArt.mix(fill, Blight.GLOW, done ? 0.1F : 0.08F + 0.12F * pulse), 1);
+        } else {
+            int fill = done ? stageFill(quest) : 0x0C1A2A;
+            medallion(graphics, x, y, size, rim, fill, done ? PixelArt.mix(fill, stageColor(quest.stage()), 0.18F) : PixelArt.mix(fill, OPEN, 0.12F), 1);
         }
-        if (blight && !wip) {
+        if (blight) {
             Blight.over(graphics, x, y, size, done, now, quest.index());
         }
         Vines.Frame frame = Vines.frame(quest);
-        if (frame != Vines.Frame.NONE && quest.kind() != Quest.Kind.WIP && !quest.station()) {
+        if (frame != Vines.Frame.NONE && !quest.station()) {
             Vines.ring(graphics, x, y, size, frame == Vines.Frame.HALF, Vines.decay(quest), now, quest.index());
         }
-        if (quest.stage() == Quest.Stage.LATE && !wip && !quest.landmark() && !blight) {
+        if (quest.stage() == Quest.Stage.LATE && !quest.landmark() && !blight) {
             // A thin violet seam around the late steps, like the gold seams on the Hexcore's tiles.
             PixelArt.discRing(graphics, x, y, size + 4, PixelArt.argb(LATE_VIOLET, 0.3F + 0.25F * pulse));
         }
@@ -725,6 +690,22 @@ final class GuidePage {
      * A hexagonal brass plate for a research step, pointy top like the parchment's sections: a dark outline, a bevelled
      * rim (a light edge on top, a dark one below) and a face glowing a little towards its centre.
      */
+    /**
+     * A research step's hexagon. Inside a workstation's cog ring it sits smaller on a dark disc, so the teeth stay visible
+     * round it and the step reads as both: researched first, then worked at.
+     */
+    private static void stepHex(GuiGraphicsExtractor graphics, Quest quest, int cx, int cy, int size, int rim, int fill, int glow, float alpha) {
+        if (quest.station()) {
+            PixelArt.disc(graphics, cx, cy, size, PixelArt.argb(0x0A0910, 0.9F * alpha), 0);
+            hexMedallion(graphics, cx, cy, size - STATION_HEX_INSET, rim, fill, glow, alpha);
+        } else {
+            hexMedallion(graphics, cx, cy, size, rim, fill, glow, alpha);
+        }
+    }
+
+    /** How much smaller a workstation's hexagon is than its medallion would be, to fit inside the cog ring. */
+    private static final int STATION_HEX_INSET = 6;
+
     private static void hexMedallion(GuiGraphicsExtractor graphics, int cx, int cy, int size, int rim, int fill, int glow, float alpha) {
         int width = size + 3;
         PixelArt.hex(graphics, cx, cy, width + 2, 0, PixelArt.argb(0x05040A, 0.85F * alpha));
@@ -789,41 +770,6 @@ final class GuidePage {
         PixelArt.flush(graphics);
     }
 
-    /** A violet badge with three dots lighting up in turn: being worked out. */
-    private static void inProgress(GuiGraphicsExtractor graphics, int cx, int cy, long now, int phase) {
-        PixelArt.disc(graphics, cx, cy, 10, PixelArt.argb(0x2A1840, 1), PixelArt.argb(WIP, 1));
-        int lit = (int) ((now / 300 + phase) % 3);
-        for (int i = 0; i < 3; i++) {
-            // Dots at -3, -1..0 and 2: symmetric around the badge's centre corner.
-            int x0 = i == 0 ? cx - 3 : i == 1 ? cx - 1 : cx + 2;
-            int x1 = i == 1 ? cx + 1 : x0 + 1;
-            PixelArt.fill(graphics, x0, cy - 1, x1, cy + 1, PixelArt.argb(i == lit ? 0xFFF0FF : 0xB89ADF, 1));
-        }
-    }
-
-    /** A small violet "WIP" ribbon with rounded ends. */
-    private void wipTag(GuiGraphicsExtractor graphics, int cx, int top) {
-        String label = Component.translatable("book.hextale.guide.wip").getString();
-        int w = font.width(label) + 6;
-        int x0 = cx - w / 2;
-        int x1 = cx + w / 2;
-        int body = PixelArt.argb(0x2A1840, 0.95F);
-        int edge = PixelArt.argb(WIP, 1);
-        PixelArt.fill(graphics, x0 + 2, top, x1 - 2, top + 1, edge);
-        PixelArt.fill(graphics, x0 + 2, top + 9, x1 - 2, top + 10, edge);
-        PixelArt.fill(graphics, x0 + 1, top + 1, x0 + 2, top + 2, edge);
-        PixelArt.fill(graphics, x1 - 2, top + 1, x1 - 1, top + 2, edge);
-        PixelArt.fill(graphics, x0 + 1, top + 8, x0 + 2, top + 9, edge);
-        PixelArt.fill(graphics, x1 - 2, top + 8, x1 - 1, top + 9, edge);
-        PixelArt.fill(graphics, x0, top + 2, x0 + 1, top + 8, edge);
-        PixelArt.fill(graphics, x1 - 1, top + 2, x1, top + 8, edge);
-        PixelArt.fill(graphics, x0 + 2, top + 1, x1 - 2, top + 9, body);
-        PixelArt.fill(graphics, x0 + 1, top + 2, x0 + 2, top + 8, body);
-        PixelArt.fill(graphics, x1 - 2, top + 2, x1 - 1, top + 8, body);
-        PixelArt.flush(graphics);
-        graphics.text(font, label, x0 + 3, top + 1, 0xFFD8C0FF, false);
-    }
-
     /**
      * The landmark's setting: a wide hexagonal plate of dark glass with a brass rim behind the medallion, a ring of sixteen
      * glowing ticks turning slowly around it and a second, finer ring turning the other way - the altar's gimbal rings
@@ -870,7 +816,7 @@ final class GuidePage {
 
     /** Whether the step is worked out at a bench - the Research Table or the Lab Bench (an item step asking for a research). */
     private static boolean researchStep(Quest quest) {
-        return quest.kind() == Quest.Kind.ITEM && quest.topic() != null;
+        return quest.topic() != null;
     }
 
     /** The research step's badge: the loupe of the Research Table, or the flask of the Lab Bench for chemtech. */
@@ -1030,7 +976,7 @@ final class GuidePage {
         }
         lines.add(title(quest).getVisualOrderText());
         lines.add(status(quest, knowledge).getVisualOrderText());
-        if (quest.topic() != null && quest.kind() == Quest.Kind.ITEM && (Guide.done(quest, knowledge) || knowledge.researched(quest.topic()))) {
+        if (quest.topic() != null && (Guide.done(quest, knowledge) || knowledge.researched(quest.topic()))) {
             lines.add(Component.translatable(researchedAt(quest)).withColor(0xC8A860).getVisualOrderText());
         }
         return lines;
@@ -1043,26 +989,17 @@ final class GuidePage {
 
     /** Whether the map shows this step to the reader (not only to the dev editor's eye): only those can be taken in. */
     boolean seenOnMap(Quest quest, RuneKnowledge knowledge) {
-        return !hiddenWip(quest) && Guide.visible(quest, knowledge);
+        return Guide.visible(quest, knowledge);
     }
 
     /** Whether the map shows a step as done or open (the dev editor shows them all). */
     private boolean seen(Quest quest, RuneKnowledge knowledge) {
-        return !hiddenWip(quest) && (revealAll || Guide.visible(quest, knowledge));
+        return revealAll || Guide.visible(quest, knowledge);
     }
 
-    /** A step beyond the reachable ones, shown in the fog; a hidden WIP step is not on the map at all. */
+    /** A step beyond the reachable ones, shown in the fog. */
     private static boolean ahead(Quest quest, RuneKnowledge knowledge) {
-        return !hiddenWip(quest) && Guide.ahead(quest, knowledge);
-    }
-
-    private static boolean hiddenWip(Quest quest) {
-        return hideWip() && quest.kind() == Quest.Kind.WIP;
-    }
-
-    /** Devices still being worked out (WIP) stay off the map unless the client config or the dev editor shows them. */
-    static boolean hideWip() {
-        return wipOverride != null ? wipOverride : !ClientConfig.SHOW_WIP_STEPS.get();
+        return Guide.ahead(quest, knowledge);
     }
 
     /** A step's name, in gold; the Void's steps in their own dark ink. */
@@ -1074,16 +1011,13 @@ final class GuidePage {
 
     private static Component status(Quest quest, RuneKnowledge knowledge) {
         boolean done = Guide.done(quest, knowledge);
-        return switch (quest.kind()) {
-            case ITEM -> done ? Component.translatable("book.hextale.quest.done").withColor(DONE)
-                    : quest.topic() != null && !knowledge.researched(quest.topic())
-                    ? Component.translatable(quest.topic().lab() ? "book.hextale.quest.lab_first" : "book.hextale.quest.research_first",
-                            Component.translatable(quest.topic().translationKey()))
-                    .withColor(0x9FE6FF)
-                    : Component.translatable("book.hextale.quest.goal", Component.translatable(quest.translationKey() + ".goal"))
-                    .withColor(Blight.of(quest) ? Blight.GLOW : OPEN);
-            case WIP -> Component.translatable("book.hextale.guide.wip_status").withColor(WIP);
-        };
+        return done ? Component.translatable("book.hextale.quest.done").withColor(DONE)
+                : quest.topic() != null && !knowledge.researched(quest.topic())
+                ? Component.translatable(quest.topic().lab() ? "book.hextale.quest.lab_first" : "book.hextale.quest.research_first",
+                        Component.translatable(quest.topic().translationKey()))
+                .withColor(0x9FE6FF)
+                : Component.translatable("book.hextale.quest.goal", Component.translatable(quest.translationKey() + ".goal"))
+                .withColor(Blight.of(quest) ? Blight.GLOW : OPEN);
     }
 
     @Nullable
@@ -1128,7 +1062,7 @@ final class GuidePage {
     }
 
     private List<FormattedCharSequence> titleLines(Quest quest) {
-        return font.split(title(quest), innerWidth() - TITLE_INDENT - (quest.kind() == Quest.Kind.WIP ? 26 : 0));
+        return font.split(title(quest), innerWidth() - TITLE_INDENT);
     }
 
     private List<FormattedCharSequence> statusLines(Quest quest, RuneKnowledge knowledge) {
@@ -1160,15 +1094,6 @@ final class GuidePage {
             list.append(Component.literal((first ? "" : ", ") + "?".repeat(Math.min(3, hidden))).withColor(0x6A6480));
         }
         return font.split(Component.translatable("book.hextale.guide.opens").withColor(StarBook.GOLD).append(" ").append(list), innerWidth());
-    }
-
-    /** "Needs:" and the steps a WIP device waits for. */
-    private List<FormattedCharSequence> needs(Quest quest) {
-        MutableComponent list = Component.empty();
-        for (int i = 0; i < quest.parents().size(); i++) {
-            list.append(Component.literal(i == 0 ? "" : ", ")).append(title(quest.parents().get(i)));
-        }
-        return font.split(Component.translatable("book.hextale.guide.needs").withColor(StarBook.GOLD).append(" ").append(list), innerWidth());
     }
 
     private int headerHeight(Quest quest) {
@@ -1249,12 +1174,8 @@ final class GuidePage {
             return h + PAD + footerHeight(quest);
         }
         h += bodyLines(quest).size() * 10;
-        if (quest.kind() == Quest.Kind.WIP) {
-            h += 4 + needs(quest).size() * 10;
-        } else {
-            List<FormattedCharSequence> opens = opens(quest, knowledge);
-            h += opens.isEmpty() ? 0 : 4 + opens.size() * 10;
-        }
+        List<FormattedCharSequence> opens = opens(quest, knowledge);
+        h += opens.isEmpty() ? 0 : 4 + opens.size() * 10;
         return h + PAD + footerHeight(quest);
     }
 
@@ -1330,9 +1251,6 @@ final class GuidePage {
             graphics.text(font, line, ix + TITLE_INDENT, ty, 0xFFFFFFFF, true);
             ty += 10;
         }
-        if (quest.kind() == Quest.Kind.WIP) {
-            wipTag(graphics, x + w - PAD - 12, y);
-        }
         y += headerHeight(quest);
         for (FormattedCharSequence line : statusLines(quest, knowledge)) {
             graphics.text(font, line, ix, y, 0xFFFFFFFF, true);
@@ -1385,10 +1303,7 @@ final class GuidePage {
             graphics.text(font, line, ix, y, TEXT, false);
             y += 10;
         }
-        List<FormattedCharSequence> extra = !about ? List.of() : switch (quest.kind()) {
-            case WIP -> needs(quest);
-            case ITEM -> opens(quest, knowledge);
-        };
+        List<FormattedCharSequence> extra = about ? opens(quest, knowledge) : List.of();
         if (!extra.isEmpty()) {
             y += 4;
             for (FormattedCharSequence line : extra) {
@@ -1526,7 +1441,7 @@ final class GuidePage {
         return switch (display.kind()) {
             case SHAPED -> SLOT * 3;
             case SHAPELESS -> SLOT * 3 + 10;
-            case SCHEME -> SLOT + captionLines(quest, display).size() * 10;
+            case SCHEME -> SchemePicture.height(display) + 2 + captionLines(quest, display).size() * 10;
             case ESSENCES -> SLOT;
             case REAGENTS -> 30;
             case INFUSION -> infusionHeight(display);
@@ -1535,7 +1450,8 @@ final class GuidePage {
             case RUNES -> optionsHeight(holderOf(display));
             case MULTIBLOCK -> multiblockHeight(display);
             case HEX_CRAFTING -> SLOT * 3 + 10;
-            case ALLOY -> SLOT + 10;
+            case ALLOY -> alloyHeight(display);
+            case CRUCIBLE, BREW -> CruciblePicture.height(display);
         };
     }
 
@@ -1545,7 +1461,8 @@ final class GuidePage {
      */
     private static String captionKey(Quest quest, QuestDisplay display) {
         String own = "book.hextale.quest.scheme." + quest.id();
-        if (display == quest.display() && Language.getInstance().has(own)) {
+        if (display == quest.display()) {
+            // The step's first picture has only its own caption (or none): the result's caption belongs to another step.
             return own;
         }
         return "book.hextale.quest.scheme." + display.result().substring(display.result().indexOf(':') + 1);
@@ -1579,24 +1496,13 @@ final class GuidePage {
                 }
             }
             case SCHEME -> {
-                int count = display.ingredients().size();
-                int width = count * SLOT + (count - 1) * 10 + 26 + SLOT;
-                int sx = centre - width / 2;
-                for (int i = 0; i < count; i++) {
-                    tooltip = orTooltip(tooltip, slot(graphics, stack(display.ingredients().get(i), now, i), sx, y, mouseX, mouseY, null));
-                    sx += SLOT;
-                    if (i < count - 1) {
-                        plus(graphics, sx + 5, y + SLOT / 2);
-                        sx += 10;
-                    }
-                }
-                arrow(graphics, sx + 4, y + SLOT / 2);
-                tooltip = orTooltip(tooltip, slot(graphics, result(quest, display), sx + 26, y, mouseX, mouseY, null));
+                tooltip = SchemePicture.render(this, graphics, display, result(quest, display), x, y, innerWidth(), mouseX, mouseY, now);
+                int top = y + SchemePicture.height(display) + 4;
                 List<FormattedCharSequence> caption = captionLines(quest, display);
                 if (!caption.isEmpty()) {
                     PixelArt.flush(graphics);
                     for (int i = 0; i < caption.size(); i++) {
-                        graphics.centeredText(font, caption.get(i), centre, y + SLOT + 2 + i * 10, MUTED);
+                        graphics.centeredText(font, caption.get(i), centre, top + i * 10, MUTED);
                     }
                 }
             }
@@ -1630,6 +1536,7 @@ final class GuidePage {
             case MULTIBLOCK -> tooltip = renderMultiblock(graphics, display, x, y, mouseX, mouseY, now);
             case HEX_CRAFTING -> tooltip = renderHexCrafting(graphics, display, x, y, mouseX, mouseY, now);
             case ALLOY -> tooltip = renderAlloy(graphics, display, x, y, mouseX, mouseY, now);
+            case CRUCIBLE, BREW -> tooltip = CruciblePicture.render(this, font, graphics, display, x, y, innerWidth(), mouseX, mouseY, now);
         }
         return tooltip;
     }
@@ -1665,7 +1572,7 @@ final class GuidePage {
         return tooltip;
     }
 
-    /** A Hex Furnace alloy: the metals with their counts, plus signs, the arrow and the ingot, the furnace named under them. */
+    /** A Hex Furnace alloy: the metals with their counts flowing into the furnace, the ingot out of it. */
     @Nullable
     private List<FormattedCharSequence> renderAlloy(GuiGraphicsExtractor graphics, QuestDisplay display, int x, int y, int mouseX,
                                                     int mouseY, long now) {
@@ -1676,25 +1583,19 @@ final class GuidePage {
             graphics.centeredText(font, Component.translatable("book.hextale.quest.infusion.missing"), centre, y + 8, MUTED);
             return null;
         }
-        List<FormattedCharSequence> tooltip = null;
-        int count = recipe.inputs().size();
-        int width = count * SLOT + (count - 1) * 10 + 26 + SLOT;
-        int sx = centre - width / 2;
-        for (int i = 0; i < count; i++) {
+        List<ItemStack> inputs = new ArrayList<>();
+        for (int i = 0; i < recipe.inputs().size(); i++) {
             var input = recipe.inputs().get(i);
-            ItemStack stack = cycle(input.ingredient(), now, i).copyWithCount(input.count());
-            tooltip = orTooltip(tooltip, slot(graphics, stack, sx, y, mouseX, mouseY, null));
-            sx += SLOT;
-            if (i < count - 1) {
-                plus(graphics, sx + 5, y + SLOT / 2);
-                sx += 10;
-            }
+            inputs.add(cycle(input.ingredient(), now, i).copyWithCount(input.count()));
         }
-        arrow(graphics, sx + 4, y + SLOT / 2);
-        tooltip = orTooltip(tooltip, slot(graphics, recipe.result().create(), sx + 26, y, mouseX, mouseY, null));
-        PixelArt.flush(graphics);
-        graphics.centeredText(font, Component.translatable("book.hextale.quest.alloy"), centre, y + SLOT + 2, 0xFFFFB060);
+        List<FormattedCharSequence> tooltip = SchemePicture.render(this, graphics, inputs, new ItemStack(ModItems.HEX_FURNACE.get()),
+                recipe.result().create(), x, y, innerWidth(), mouseX, mouseY, now);
         return tooltip;
+    }
+
+    private static int alloyHeight(QuestDisplay display) {
+        com.pockyl.hextale.crafting.AlloyRecipe recipe = com.pockyl.hextale.crafting.AlloyRecipe.ALL.named(safeId(display.result()), true);
+        return SchemePicture.height(recipe == null ? 1 : recipe.inputs().size(), true) + 2;
     }
 
     // ---- Multiblocks: a turning 3D model built layer by layer ----------------------------------------------------------
@@ -2105,7 +2006,7 @@ final class GuidePage {
 
     /** A recessed slot with an item; returns the item's tooltip when the mouse is over it. */
     @Nullable
-    private List<FormattedCharSequence> slot(GuiGraphicsExtractor graphics, ItemStack stack, int x, int y, int mouseX, int mouseY,
+    List<FormattedCharSequence> slot(GuiGraphicsExtractor graphics, ItemStack stack, int x, int y, int mouseX, int mouseY,
                                              @Nullable Component extra) {
         boolean hovered = over(mouseX, mouseY, x, y, SLOT, SLOT);
         PixelArt.fill(graphics, x, y, x + SLOT, y + SLOT, PixelArt.argb(hovered ? 0x3A3460 : 0x1A1630, 1));
@@ -2130,22 +2031,16 @@ final class GuidePage {
         return lines;
     }
 
-    private static boolean over(int mouseX, int mouseY, int x, int y, int w, int h) {
+    static boolean over(int mouseX, int mouseY, int x, int y, int w, int h) {
         return mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + h;
     }
 
-    private static void arrow(GuiGraphicsExtractor graphics, int x, int midY) {
+    static void arrow(GuiGraphicsExtractor graphics, int x, int midY) {
         int color = PixelArt.argb(StarBook.GOLD, 0.9F);
         PixelArt.fill(graphics, x, midY - 1, x + 12, midY + 1, color);
         for (int i = 0; i < 5; i++) {
             PixelArt.fill(graphics, x + 12 + i, midY - 4 + i, x + 13 + i, midY + 4 - i, color);
         }
-    }
-
-    private static void plus(GuiGraphicsExtractor graphics, int cx, int cy) {
-        int color = PixelArt.argb(StarBook.GOLD, 0.9F);
-        PixelArt.fill(graphics, cx - 3, cy - 1, cx + 3, cy + 1, color);
-        PixelArt.fill(graphics, cx - 1, cy - 3, cx + 1, cy + 3, color);
     }
 
     /** The result shows the quest's own icon when it is the same item (a filled bottle, not an empty one). */
@@ -2161,7 +2056,7 @@ final class GuidePage {
     }
 
     /** An item id, or a tag cycling through its items once a second. */
-    private static ItemStack stack(String id, long now, int phase) {
+    static ItemStack stack(String id, long now, int phase) {
         if (id.isEmpty()) {
             return ItemStack.EMPTY;
         }

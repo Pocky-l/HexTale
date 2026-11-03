@@ -176,7 +176,6 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
             if (!player.getInventory().add(crystal)) {
                 player.drop(crystal, false, net.minecraft.util.Prediction.SERVER_ONLY);
             }
-            player.sendOverlayMessage(Component.translatable("block.hextale.rift_gate.attuned"));
             server.playSound(null, pos, ModSounds.RIFT_SEND.get(), SoundSource.BLOCKS, 0.6F, 1.5F);
             Vec3 centre = Vec3.atCenterOf(pos);
             server.sendParticles(ModParticles.glint(RIFT), centre.x, centre.y, centre.z, 14, 0.25, 0.4, 0.25, 0.03);

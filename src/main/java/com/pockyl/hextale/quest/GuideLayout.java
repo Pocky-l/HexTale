@@ -33,7 +33,7 @@ final class GuideLayout {
 
     /** The room a step's own medallion needs around its centre. */
     static double body(Quest quest) {
-        return quest.landmark() ? 46 : quest.station() ? 32 : quest.kind() == Quest.Kind.WIP ? 17 : quest.important() ? 23 : 20;
+        return quest.landmark() ? 46 : quest.station() ? 32 : quest.important() ? 23 : 20;
     }
 
     /** Places every step (in the guide's order, parents first) and bows the links. */

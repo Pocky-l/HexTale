@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "chemtech",
-  "icon": "minecraft:sugar",
-  "parents": ["chem_vial"],
-  "pos": [-626, -201]
-}

@@ -279,8 +279,8 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
                                 .append(Component.translatable(rune.translationKey()).withColor(rune.color()));
                     }
                     player.sendOverlayMessage(Component.translatable("block.hextale.hextech_altar.nothing.runes_missing", names));
-                } else {
-                    player.sendOverlayMessage(Component.translatable(messageKey(center.isEmpty() ? "empty" : "nothing")));
+                } else if (!center.isEmpty()) {
+                    player.sendOverlayMessage(Component.translatable(messageKey("nothing")));
                 }
             }
             serverLevel.playSound(null, worldPosition, ModSounds.DEVICE_REFUSE.get(), SoundSource.BLOCKS, 0.8F, 0.9F);

@@ -3,14 +3,7 @@
   "icon": "hextale:magic_sapling",
   "parents": ["lab_bench", "crucible"],
   "display": {
-    "kind": "scheme",
-    "ingredients": [
-      "#hextale:magic_tree_catalysts",
-      "minecraft:lapis_lazuli",
-      "#minecraft:leaves",
-      "minecraft:honey_bottle",
-      "hextale:crucible"
-    ],
+    "kind": "crucible",
     "result": "hextale:magic_sapling"
   },
   "research": "magic_sapling",

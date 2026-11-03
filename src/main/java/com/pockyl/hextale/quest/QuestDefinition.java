@@ -28,8 +28,7 @@ import java.util.Optional;
  * }
  * }</pre>
  * {@code stage} is the part of the game the step belongs to: {@code early} (default), {@code mid} or {@code late}.
- * {@code kind} is {@code item} (default: something to make or obtain) or {@code wip} (a device still being worked out,
- * never done). The first parent is the one the step's link comes from. Without a {@code goal} an item step is done once
+ * The first parent is the one the step's link comes from. Without a {@code goal} an item step is done once
  * the player holds its (first) icon's item. {@code research} names a research topic the step's item needs first. Without
  * {@code pos} the step finds a place around its first parent by itself. A {@code secret} step stays in the fog until it
  * is done: something that happens to the researcher rather than something to aim for. Texts live in the language files:
@@ -39,11 +38,10 @@ import java.util.Optional;
  * pieces of the researcher's clothes). {@code display} may list several pictures too, one per icon: the step's plate
  * then shows the icons as a row to pick from, and the picture of the one picked.
  */
-public record QuestDefinition(Quest.Kind kind, Region region, Quest.Stage stage, List<ItemStackTemplate> icons, List<String> parents,
+public record QuestDefinition(Region region, Quest.Stage stage, List<ItemStackTemplate> icons, List<String> parents,
                               Optional<QuestGoal> goal, List<QuestDisplay> displays, Optional<ResearchTopic> research, Quest.Aura aura,
                               boolean station, boolean landmark, boolean secret, Optional<Quest.Scene> scene, Optional<Pos> pos) {
     public static final Codec<QuestDefinition> CODEC = RecordCodecBuilder.create(i -> i.group(
-            Quest.Kind.CODEC.optionalFieldOf("kind", Quest.Kind.ITEM).forGetter(QuestDefinition::kind),
             Region.CODEC.fieldOf("region").forGetter(QuestDefinition::region),
             Quest.Stage.CODEC.optionalFieldOf("stage", Quest.Stage.EARLY).forGetter(QuestDefinition::stage),
             oneOrMany(ItemStackTemplate.CODEC).fieldOf("icon").forGetter(QuestDefinition::icons),
@@ -76,25 +74,25 @@ public record QuestDefinition(Quest.Kind kind, Region region, Quest.Stage stage,
     }
 
     public QuestDefinition withParents(List<String> next) {
-        return new QuestDefinition(kind, region, stage, icons, List.copyOf(next), goal, displays, research, aura, station, landmark, secret, scene, pos);
+        return new QuestDefinition(region, stage, icons, List.copyOf(next), goal, displays, research, aura, station, landmark, secret, scene, pos);
     }
 
     /** The first icon changed; the others stay. */
     public QuestDefinition withIcon(ItemStackTemplate next) {
         List<ItemStackTemplate> changed = new java.util.ArrayList<>(icons);
         changed.set(0, next);
-        return new QuestDefinition(kind, region, stage, List.copyOf(changed), parents, goal, displays, research, aura, station, landmark, secret, scene, pos);
+        return new QuestDefinition(region, stage, List.copyOf(changed), parents, goal, displays, research, aura, station, landmark, secret, scene, pos);
     }
 
     public QuestDefinition withAura(Quest.Aura next) {
-        return new QuestDefinition(kind, region, stage, icons, parents, goal, displays, research, next, station, landmark, secret, scene, pos);
+        return new QuestDefinition(region, stage, icons, parents, goal, displays, research, next, station, landmark, secret, scene, pos);
     }
 
     public QuestDefinition withStation(boolean next) {
-        return new QuestDefinition(kind, region, stage, icons, parents, goal, displays, research, aura, next, landmark, secret, scene, pos);
+        return new QuestDefinition(region, stage, icons, parents, goal, displays, research, aura, next, landmark, secret, scene, pos);
     }
 
     public QuestDefinition withPos(Optional<Pos> next) {
-        return new QuestDefinition(kind, region, stage, icons, parents, goal, displays, research, aura, station, landmark, secret, scene, next);
+        return new QuestDefinition(region, stage, icons, parents, goal, displays, research, aura, station, landmark, secret, scene, next);
     }
 }

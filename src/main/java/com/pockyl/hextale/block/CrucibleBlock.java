@@ -80,7 +80,7 @@ public class CrucibleBlock extends BaseEntityBlock {
         boolean creative = player.getAbilities().instabuild;
         if (stack.is(Items.WATER_BUCKET)) {
             if (crucible.fillWater(CrucibleBlockEntity.BUCKET, true) == 0) {
-                return say(level, player, "full");
+                return InteractionResult.FAIL;
             }
             if (!level.isClientSide()) {
                 crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
@@ -105,7 +105,7 @@ public class CrucibleBlock extends BaseEntityBlock {
         }
         if (isWaterBottle(stack)) {
             if (crucible.fillWater(CrucibleBlockEntity.WATER_BOTTLE, true) == 0) {
-                return say(level, player, "full");
+                return InteractionResult.FAIL;
             }
             if (!level.isClientSide()) {
                 crucible.fillWater(CrucibleBlockEntity.WATER_BOTTLE, false);
@@ -155,7 +155,7 @@ public class CrucibleBlock extends BaseEntityBlock {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         if (CrucibleBlockEntity.refuses(stack)) {
-            return say(level, player, "refuses");
+            return InteractionResult.FAIL;
         }
         if (!level.isClientSide()) {
             if (crucible.take(stack, 1, true, player) == 0) {
@@ -178,7 +178,7 @@ public class CrucibleBlock extends BaseEntityBlock {
         int poured = WaterInlet.pourFromHeld(player, hand, CrucibleBlockEntity.BUCKET, true);
         if (poured > 0) {
             if (crucible.fillWater(poured, true) == 0) {
-                return say(level, player, "full");
+                return InteractionResult.FAIL;
             }
             if (!level.isClientSide() && WaterInlet.pourFromHeld(player, hand, poured, false) == poured) {
                 crucible.fillWater(poured, false);
@@ -214,8 +214,8 @@ public class CrucibleBlock extends BaseEntityBlock {
             if (player instanceof net.minecraft.server.level.ServerPlayer server) {
                 crucible.sneakUse(server);
             }
-        } else if (!crucible.fishOut(player)) {
-            player.sendOverlayMessage(status(crucible));
+        } else {
+            crucible.fishOut(player);
         }
         return InteractionResult.SUCCESS;
     }

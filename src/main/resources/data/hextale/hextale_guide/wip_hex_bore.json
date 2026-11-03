@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "forge",
-  "stage": "late",
-  "icon": "minecraft:diamond_pickaxe",
-  "parents": ["radiant_pickaxe"],
-  "pos": [1458, 203]
-}

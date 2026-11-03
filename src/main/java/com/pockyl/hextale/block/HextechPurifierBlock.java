@@ -60,9 +60,7 @@ public class HextechPurifierBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof HextechPurifierBlockEntity purifier) {
-            if (purifier.crystal().isEmpty()) {
-                player.sendOverlayMessage(status(purifier));
-            } else {
+            if (!purifier.crystal().isEmpty()) {
                 player.getInventory().placeItemBackInInventory(purifier.take(), Prediction.SERVER_ONLY);
                 level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_BREAK, SoundSource.BLOCKS, 0.7F, 1.2F);
             }

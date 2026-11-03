@@ -65,21 +65,12 @@ public class PinkBrazierBlock extends BaseEntityBlock {
         if (!level.isClientSide()) {
             int taken = brazier.feed(stack);
             if (taken <= 0) {
-                player.sendOverlayMessage(Component.translatable("block.hextale.pink_brazier.say.full"));
                 return InteractionResult.FAIL;
             }
             if (!player.getAbilities().instabuild) {
                 stack.shrink(taken);
             }
             level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 0.6F, 1.1F);
-        }
-        return InteractionResult.SUCCESS;
-    }
-
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof PinkBrazierBlockEntity brazier) {
-            player.sendOverlayMessage(brazier.status());
         }
         return InteractionResult.SUCCESS;
     }

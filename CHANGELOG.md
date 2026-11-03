@@ -40,6 +40,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (glassy cane that grows crystal pods to pick).
 
 ### Changed
+- Devices talk less. Lines above the hotbar that only repeated what you see and hear are gone: "holds no more",
+  "valve open", "sticker set", "linked", "the plate is aimed" and the like, status lines on an empty-hand click where
+  the Researcher's Goggles show the same, and the altar's hint on an empty click. Lines that tell you why something
+  did not work, or a number you cannot see elsewhere, stay.
+- Every description in the mod was rewritten to be clear, in English and Russian. Rune descriptions, tooltips,
+  hints and JEI pages now say plainly what a thing does and how to use it; the Researcher's Diary keeps its voice but
+  says what each step is about and what to do next. Several texts that disagreed with how things actually work were
+  corrected along the way.
+- The diary draws its recipes as what happens instead of "this plus that". A Crucible step shows the pot over its
+  fire, the essences its water must hold (sign, name and mB), what is thrown in and what rises; a brew also names the
+  heat it needs and the bottles that scoop its doses. Dust on a block, the lapidary, the still, the tank and the
+  Awakened Furnace's alloys show the inputs flowing into the device, drawn large, and the result coming out.
+- JEI shows them the same way: the Crucible and Crucible Brewing pages draw the pot with its essences, the catalyst
+  falling in, the fire and the heat it needs; hextech working, the still, the tank, the drain valve, rune writing and
+  the Lab Bench show their inputs flowing into the device instead of plus signs.
+- Labels that only repeated an icon are gone: the Crucible's "any fire" and the Chem Burner's heat (the icon says it,
+  a cooler brew only adds "or hotter"), the catalyst's and the bottle's captions, the diary's notes under the furnace,
+  the workbench, the bush, the alembic and the tank, the Lab Bench's Seal label, JEI's "Hexcore only" and "charge", the
+  research's "Goals" word; the words stay in the tooltips.
+- The Researcher's Diary map is tidier: the riftmetal tools, the Hexcore's steps and the deep side of the Void sit
+  closer to where they come from, the pylons and farm devices have room around them, and the chemtech garden fans out
+  under its soil instead of trailing far below.
+- A step's shape on the diary map always says what it asks for: a hexagon means it must be researched first, also for
+  a workstation (the Chem Burner, Chem Still, Axolotl Tank, Lapidary and Rune Circle now show their hexagon inside the
+  cog ring), and only devices where further steps are made wear the cog ring (the Disintegrator and the Foundry no
+  longer do, the Separator and the Rune Circle now do). The Lab Bench, where all chemtech starts, gets a great frame
+  like the Research Table.
+- The Russian name of the Nursery step no longer repeats the Incubator's.
 - Bottles of essence stack up to 16 when they hold the same liquid (a separator pours a stack one whole bottle at a time).
 - Every item of the mod carries the essences it is made of instead of a guess: wisps are pure light, devices carry
   what they work with (the alembic steam, the arc spire lightning), metals, crystals, gear, plants and the Void's things
@@ -70,6 +98,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Hoppers and pipes feeding the Crucible now work for the researcher who woke it or last used it by hand, so brews
   and researched transmutations start from them too; a catalyst for full doses stays in the hopper.
 - A Chem Burner under a Crucible that has been boiling idle for half a minute burns its fuel four times slower.
+
+### Removed
+- The "ideas in the margins" (WIP steps) are gone from the diary for good, and with them the client option
+  `showWipSteps`: the map shows only what is really in the game.
 
 ### Fixed
 - Leaving the game in the middle of a passage through a breach or a gate no longer sinks the player into the ground

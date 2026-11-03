@@ -191,10 +191,7 @@ public class BrassPipeBlock extends Block {
         BlockPos neighbourPos = pos.relative(direction);
         BlockState neighbour = level.getBlockState(neighbourPos);
         if (current == PipeSide.NONE && !connects(neighbour, direction)) {
-            if (!level.isClientSide()) {
-                player.sendOverlayMessage(Component.translatable("block.hextale.brass_pipe.nothing"));
-            }
-            return InteractionResult.SUCCESS;
+            return InteractionResult.PASS;
         }
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
@@ -212,8 +209,6 @@ public class BrassPipeBlock extends Block {
         }
         level.playSound(null, pos, next == PipeSide.CLOSED ? SoundEvents.COPPER_TRAPDOOR_CLOSE : SoundEvents.COPPER_TRAPDOOR_OPEN,
                 SoundSource.BLOCKS, 0.6F, 1.3F);
-        player.sendOverlayMessage(Component.translatable("block.hextale.brass_pipe.side." + next.getSerializedName()
-                + (towardsPipe ? ".pipe" : ""), neighbour.getBlock().getName()));
         return InteractionResult.SUCCESS;
     }
 

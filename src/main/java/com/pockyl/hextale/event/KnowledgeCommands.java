@@ -43,7 +43,7 @@ public final class KnowledgeCommands {
             SharedSuggestionProvider.suggest(Stream.concat(Stream.of(ALL), ResearchTopics.all().stream().map(ResearchTopic::id)), builder);
     private static final SuggestionProvider<CommandSourceStack> STEPS = (context, builder) ->
             SharedSuggestionProvider.suggest(Stream.concat(Stream.of(ALL),
-                    Guide.server().all().stream().filter(quest -> quest.kind() == Quest.Kind.ITEM).map(Quest::id)), builder);
+                    Guide.server().all().stream().map(Quest::id)), builder);
 
     private KnowledgeCommands() {
     }
@@ -91,7 +91,7 @@ public final class KnowledgeCommands {
 
     private static Quest step(String id) throws CommandSyntaxException {
         Quest quest = Guide.server().byId(id);
-        if (quest == null || quest.kind() != Quest.Kind.ITEM) {
+        if (quest == null) {
             throw UNKNOWN_STEP.create(id);
         }
         return quest;
@@ -134,7 +134,7 @@ public final class KnowledgeCommands {
                 }
             }
         }
-        return guide.all().stream().filter(wanted::contains).filter(quest -> quest.kind() == Quest.Kind.ITEM).toList();
+        return guide.all().stream().filter(wanted::contains).toList();
     }
 
     public static int grantSteps(CommandSourceStack source, Collection<ServerPlayer> targets, String id) throws CommandSyntaxException {

@@ -50,7 +50,14 @@ public record QuestDisplay(Kind kind, List<String> ingredients, String result, i
         /** A Hex Workbench recipe; {@code result} is its id, drawn from the recipes the server sent. */
         HEX_CRAFTING,
         /** A Hex Furnace alloy; {@code result} is its id, drawn from the recipes the server sent. */
-        ALLOY;
+        ALLOY,
+        /**
+         * A Crucible transmutation drawn as the pot: the essences in its water, the catalyst thrown in and what rises.
+         * {@code result} is the recipe's id (or its result's), drawn from the recipes the server sent.
+         */
+        CRUCIBLE,
+        /** A Crucible brew, drawn like {@link #CRUCIBLE} with the heat it needs and the bottles; {@code result} is its id. */
+        BREW;
 
         static final Codec<Kind> CODEC = StringRepresentable.fromEnum(Kind::values);
 

@@ -20,48 +20,49 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Crucible transmutations: the essences the water must hold (a column of essence items with their mB), the catalyst
- * thrown in, and what rises out.
+ * Crucible transmutations, drawn as the pot ({@link CruciblePot}): the essences the water must hold, the catalyst thrown
+ * in from above, what rises out, and the heat under it.
  */
 public class CrucibleCategory extends AbstractRecipeCategory<CrucibleCategory.Recipe> {
     public static final IRecipeType<Recipe> TYPE = IRecipeType.create(Hextale.MOD_ID, "crucible", Recipe.class);
 
     public record Recipe(Identifier id, CrucibleRecipe recipe) {
         List<Map.Entry<Essence, Integer>> essences() {
-            return EssenceColumn.entries(recipe.essences().asMap());
+            return CruciblePot.entries(recipe.essences().asMap());
         }
     }
 
     private final int rows;
 
     public CrucibleCategory(IGuiHelper guiHelper) {
-        this(guiHelper, EssenceColumn.rows(CrucibleRecipe.ALL.get(true).values().stream().map(recipe -> recipe.essences().asMap()).toList()));
+        this(guiHelper, CruciblePot.rows(CrucibleRecipe.ALL.get(true).values().stream().map(recipe -> recipe.essences().asMap()).toList()));
     }
 
     private CrucibleCategory(IGuiHelper guiHelper, int rows) {
         super(TYPE, Component.translatable("block.hextale.crucible"), guiHelper.createDrawableItemLike(ModItems.CRUCIBLE.get()),
-                StepCategory.WIDTH, EssenceColumn.height(rows) + 2);
+                StepCategory.WIDTH, CruciblePot.height(rows));
         this.rows = rows;
     }
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, Recipe recipe, IFocusGroup focuses) {
-        EssenceColumn.addEssences(builder, recipe.essences(), rows);
-        int y = EssenceColumn.middle(rows);
-        builder.addInputSlot(EssenceColumn.CATALYST_X, y).setStandardSlotBackground().add(recipe.recipe().catalyst())
+        CruciblePot.addEssences(builder, recipe.essences());
+        builder.addInputSlot(CruciblePot.catalystX(), CruciblePot.CATALYST_Y).setStandardSlotBackground().add(recipe.recipe().catalyst())
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.crucible.catalyst")));
-        ResearchNote.add(builder.addOutputSlot(StepCategory.RESULT_X, y).setOutputSlotBackground().add(recipe.recipe().result()),
+        ResearchNote.add(builder.addOutputSlot(StepCategory.RESULT_X, CruciblePot.middle(rows) - 8).setOutputSlotBackground().add(recipe.recipe().result()),
                 recipe.recipe().result().item().value());
     }
 
     @Override
     public void createRecipeExtras(IRecipeExtrasBuilder builder, Recipe recipe, IFocusGroup focuses) {
-        EssenceColumn.addArrows(builder, rows);
+        builder.addRecipeArrowWidget().setPosition(CruciblePot.ARROW_X, CruciblePot.middle(rows) - 8);
     }
 
     @Override
     public void draw(Recipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
-        EssenceColumn.drawAmounts(graphics, recipe.essences(), rows);
+        CruciblePot.draw(graphics, recipe.essences(), rows, 1);
+        // Any fire will do: the campfire's icon says it.
+        CruciblePot.drawHeat(graphics, rows, 1, null);
     }
 
     @Override

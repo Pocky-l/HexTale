@@ -88,8 +88,7 @@ public final class QuestHookGameTests {
     public static void guideCommandsAndTheirTrigger(GameTestHelper helper) throws CommandSyntaxException {
         Guide guide = Guide.server();
         Quest step = guide.all().stream()
-                .filter(quest -> quest.kind() == Quest.Kind.ITEM && quest.topic() == null && !quest.parents().isEmpty()
-                        && quest.parents().getFirst().kind() == Quest.Kind.ITEM)
+                .filter(quest -> quest.topic() == null && !quest.parents().isEmpty())
                 .findFirst().orElseThrow();
         Quest parent = step.parents().getFirst();
         ServerPlayer player = helper.makeMockServerPlayerInLevel();

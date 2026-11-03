@@ -5,15 +5,11 @@
     "crucible"
   ],
   "display": {
-    "kind": "scheme",
-    "ingredients": [
-      "minecraft:torch",
-      "hextale:crucible"
-    ],
+    "kind": "crucible",
     "result": "hextale:hex_wisp"
   },
   "pos": [
-    -345,
-    -125
+    -326,
+    -102
   ]
 }

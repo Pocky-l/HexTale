@@ -443,9 +443,6 @@ public final class StarBook {
         if (tab == Tab.RUNES) {
             return true;
         }
-        if (guide.selected() == null && editor.clickWipSwitch(mouseX, mouseY)) {
-            return true;
-        }
         RuneKnowledge knowledge = ClientKnowledge.get();
         if (guide.selected() != null) {
             // The plate is a window over the map: a click inside works it, a click beside it goes back to the map.

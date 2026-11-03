@@ -265,8 +265,7 @@ chances. The modifiers check the queried loot table, so per-player chests (Lootr
 | `minOrbs` / `maxOrbs` | 1 / 1 | Unstable hextech orbs per amethyst block a lightning wave shatters. |
 | `chainRadius` / `maxChain` | 5 / 125 | How far and how much amethyst one strike runs through. |
 
-`hextale-client.toml`: `breachCinematic` (the camera flight when a breach opens near you), `showWipSteps` (ideas
-in the diary that are not in the game yet).
+`hextale-client.toml`: `breachCinematic` (the camera flight when a breach opens near you).
 
 What wears the land thin, by source, shows `/hextale void sources [radius]` (the Chem Boiler's cracking counts as
 `fumes`). A lit Warding Lamppost burns off a share (35-65% with runes) of every gain within its reach (8-16 blocks)

@@ -91,6 +91,49 @@ public final class QuestGameTests {
         helper.succeed();
     }
 
+    /**
+     * Writes the laid-out diary map (places, bows, parents and looks of every step) as JSON to the file named by the
+     * run's {@code hextale.guideMap} property ({@code -PguideMap=<file>}), so the whole map can be looked at outside the
+     * game. Without the property it does nothing.
+     */
+    @HexTest
+    public static void guideMapExport(GameTestHelper helper) throws java.io.IOException {
+        String file = System.getProperty("hextale.guideMap");
+        if (file == null) {
+            helper.succeed();
+            return;
+        }
+        com.google.gson.JsonArray steps = new com.google.gson.JsonArray();
+        for (Quest quest : Guide.server().all()) {
+            com.google.gson.JsonObject step = new com.google.gson.JsonObject();
+            step.addProperty("id", quest.id());
+            step.addProperty("x", quest.x());
+            step.addProperty("y", quest.y());
+            step.addProperty("bow", quest.bow());
+            step.addProperty("region", quest.region().name().toLowerCase(java.util.Locale.ROOT));
+            step.addProperty("stage", quest.stage().getSerializedName());
+            step.addProperty("station", quest.station());
+            step.addProperty("landmark", quest.landmark());
+            step.addProperty("important", quest.important());
+            step.addProperty("secret", quest.secret());
+            step.addProperty("aura", quest.aura().getSerializedName());
+            step.addProperty("placed", quest.definition().pos().isPresent());
+            if (quest.topic() != null) {
+                step.addProperty("topic", quest.topic().id());
+                step.addProperty("lab", quest.topic().lab());
+            }
+            com.google.gson.JsonArray icons = new com.google.gson.JsonArray();
+            quest.icons().forEach(icon -> icons.add(BuiltInRegistries.ITEM.getKey(icon.getItem()).toString()));
+            step.add("icons", icons);
+            com.google.gson.JsonArray parents = new com.google.gson.JsonArray();
+            quest.parents().forEach(parent -> parents.add(parent.id()));
+            step.add("parents", parents);
+            steps.add(step);
+        }
+        java.nio.file.Files.writeString(java.nio.file.Path.of(file), new com.google.gson.GsonBuilder().setPrettyPrinting().create().toJson(steps));
+        helper.succeed();
+    }
+
     /** Every step has its own spot, its parents come before it, every research topic has a step. */
     @HexTest
     public static void guideIsLaidOut(GameTestHelper helper) {
@@ -212,6 +255,13 @@ public final class QuestGameTests {
                         out.add(BuiltInRegistries.ITEM.getKey(recipe.result().item().value()));
                     }
                 }
+                case CRUCIBLE -> {
+                    var recipe = com.pockyl.hextale.crafting.CrucibleRecipe.ALL.named(id, false);
+                    if (recipe != null) {
+                        out.add(BuiltInRegistries.ITEM.getKey(recipe.result().item().value()));
+                    }
+                }
+                case BREW -> out.add(BuiltInRegistries.ITEM.getKey(ModItems.CHEM_VIAL.get()));
                 default -> {
                     if (id != null) {
                         out.add(id);
@@ -279,6 +329,15 @@ public final class QuestGameTests {
                     for (var cell : recipe.grid()) {
                         cell.flatMap(part -> part.items().findFirst()).ifPresent(item -> needed.add(BuiltInRegistries.ITEM.getKey(item.value())));
                     }
+                }
+                case CRUCIBLE, BREW -> {
+                    Identifier id = Identifier.parse(display.result());
+                    Ingredient catalyst = display.kind() == QuestDisplay.Kind.BREW
+                            ? java.util.Optional.ofNullable(com.pockyl.hextale.crafting.BrewRecipe.ALL.named(id, false)).map(r -> r.catalyst()).orElse(null)
+                            : java.util.Optional.ofNullable(com.pockyl.hextale.crafting.CrucibleRecipe.ALL.named(id, false)).map(r -> r.catalyst()).orElse(null);
+                    helper.assertTrue(catalyst != null, quest.id() + ": crucible recipe " + display.result() + " exists");
+                    helper.assertTrue(before.contains(step("crucible")), quest.id() + " comes after the Crucible");
+                    catalyst.items().findFirst().ifPresent(item -> needed.add(BuiltInRegistries.ITEM.getKey(item.value())));
                 }
                 case ALLOY -> {
                     var recipe = com.pockyl.hextale.crafting.AlloyRecipe.ALL.named(Identifier.parse(display.result()), false);

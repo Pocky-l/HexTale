@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "circle",
-  "stage": "mid",
-  "icon": "minecraft:end_crystal",
-  "parents": ["hextech_lamp"],
-  "pos": [614, -238]
-}

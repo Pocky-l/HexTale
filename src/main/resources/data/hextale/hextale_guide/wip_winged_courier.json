@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "pylons",
-  "stage": "mid",
-  "icon": "minecraft:feather",
-  "parents": ["sending_pylon"],
-  "pos": [1018, -284]
-}

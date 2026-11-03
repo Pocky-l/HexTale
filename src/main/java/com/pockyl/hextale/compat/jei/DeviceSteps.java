@@ -50,7 +50,8 @@ public final class DeviceSteps {
     public static List<StepCategory.Step> still() {
         return List.of(new StepCategory.Step(
                 List.of(StepCategory.Input.of(ChemVialItem.of(Brew.RAW_SHIMMER, ChemStillBlockEntity.RAW_PER_REFINED))),
-                ChemVialItem.of(Brew.REFINED_SHIMMER),
+                StepCategory.Input.of(new ItemStack(ModItems.CHEM_STILL.get())),
+                StepCategory.Input.of(ChemVialItem.of(Brew.REFINED_SHIMMER)),
                 Component.translatable("jei.hextale.chem_still.note", seconds(ChemStillBlockEntity.REFINE_TICKS))));
     }
 
@@ -66,7 +67,8 @@ public final class DeviceSteps {
         return List.of(new StepCategory.Step(
                 List.of(StepCategory.Input.of(new ItemStack(Items.AXOLOTL_BUCKET)),
                         StepCategory.Input.of(food, Component.translatable("jei.hextale.axolotl_tank.food", AxolotlTankBlockEntity.BUCKET_MEALS))),
-                new ItemStack(ModItems.REGENERATIVE_SLIME.get()),
+                StepCategory.Input.of(new ItemStack(ModItems.AXOLOTL_TANK.get())),
+                StepCategory.Input.of(new ItemStack(ModItems.REGENERATIVE_SLIME.get())),
                 Component.translatable("jei.hextale.axolotl_tank.note", seconds(AxolotlTankBlockEntity.SHED_TICKS))));
     }
 
@@ -82,7 +84,8 @@ public final class DeviceSteps {
                 List.of(StepCategory.Input.of(List.of(new ItemStack(ModItems.ESSENCE_FLASK.get())),
                                 Component.translatable("jei.hextale.soaking.essence", DrainValveBlockEntity.ESSENCE_PER_STONE)),
                         new StepCategory.Input(stones, null)),
-                new ItemStack(ModItems.MAGIC_STONE.get()),
+                StepCategory.Input.of(new ItemStack(ModItems.DRAIN_VALVE.get())),
+                StepCategory.Input.of(new ItemStack(ModItems.MAGIC_STONE.get())),
                 Component.translatable("jei.hextale.soaking.note", DrainValveBlockEntity.ESSENCE_PER_STONE)));
     }
 
@@ -94,6 +97,7 @@ public final class DeviceSteps {
         }
         return List.of(new StepCategory.Step(
                 List.of(StepCategory.Input.of(new ItemStack(ModItems.BLANK_SCROLL.get()))),
+                StepCategory.Input.of(new ItemStack(ModItems.RUNE_CIRCLE.get())),
                 new StepCategory.Input(scrolls, null),
                 Component.translatable("jei.hextale.rune_writing.note")));
     }

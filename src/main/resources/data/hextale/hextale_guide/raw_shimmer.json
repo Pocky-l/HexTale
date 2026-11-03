@@ -13,16 +13,10 @@
     "brew": "raw_shimmer"
   },
   "display": {
-    "kind": "scheme",
-    "ingredients": [
-      "hextale:shimmerbloom",
-      "hextale:regenerative_slime",
-      "hextale:crucible",
-      "minecraft:glass_bottle"
-    ],
-    "result": "hextale:chem_vial"
+    "kind": "brew",
+    "result": "hextale:raw_shimmer"
   },
   "research": "raw_shimmer",
   "aura": "gold",
-  "pos": [-980, 260]
+  "pos": [-880, 260]
 }

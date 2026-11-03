@@ -8,14 +8,9 @@
   },
   "parents": ["chem_vial", "lab_bench"],
   "display": {
-    "kind": "scheme",
-    "ingredients": [
-      "minecraft:snowball",
-      "hextale:crucible",
-      "minecraft:glass_bottle"
-    ],
-    "result": "hextale:chem_vial"
+    "kind": "brew",
+    "result": "hextale:coolant"
   },
   "research": "coolant",
-  "pos": [-685, -123]
+  "pos": [-703, -171]
 }

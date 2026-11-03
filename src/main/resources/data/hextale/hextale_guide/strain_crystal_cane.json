@@ -7,16 +7,12 @@
     "lab_bench"
   ],
   "display": {
-    "kind": "scheme",
-    "ingredients": [
-      "minecraft:sugar_cane",
-      "hextale:crucible"
-    ],
+    "kind": "crucible",
     "result": "hextale:crystal_cane"
   },
   "research": "crystal_cane",
   "pos": [
-    -660,
-    395
+    -640,
+    315
   ]
 }
