@@ -41,6 +41,24 @@ public final class ModGameTests {
         helper.succeed();
     }
 
+    /** Every creature of the Void has a spawn egg, and the egg names that creature (spawners and pick-block use it). */
+    @HexTest
+    public static void voidCreaturesHaveSpawnEggs(GameTestHelper helper) {
+        var eggs = java.util.Map.of(
+                ModItems.VOID_MITE_SPAWN_EGG, com.pockyl.hextale.registry.ModEntities.VOID_MITE,
+                ModItems.VOIDLING_SPAWN_EGG, com.pockyl.hextale.registry.ModEntities.VOIDLING,
+                ModItems.RIB_CRAWLER_SPAWN_EGG, com.pockyl.hextale.registry.ModEntities.RIB_CRAWLER,
+                ModItems.PIT_MAW_SPAWN_EGG, com.pockyl.hextale.registry.ModEntities.PIT_MAW,
+                ModItems.SEER_SPAWN_EGG, com.pockyl.hextale.registry.ModEntities.SEER);
+        eggs.forEach((egg, type) -> {
+            helper.assertTrue(net.minecraft.world.item.SpawnEggItem.getType(new ItemStack(egg.get())) == type.get(),
+                    egg.getId() + " does not spawn " + type.getId());
+            helper.assertTrue(net.minecraft.world.item.SpawnEggItem.byId(type.get()).map(h -> h.value() == egg.get()).orElse(false),
+                    type.getId() + " has no spawn egg");
+        });
+        helper.succeed();
+    }
+
     /**
      * A saved list holding an item the game no longer knows (a removed mod) loses only that entry: the crucible's
      * rising items, the funnel's catch and the pylons' cargo used to read as empty as a whole.

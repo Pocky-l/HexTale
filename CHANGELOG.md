@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Spawn eggs for the creatures of the Void: Void Mite, Voidling, Rib Crawler, Pit Maw and Seer (creative tab and the
+  vanilla Spawn Eggs tab).
 - Wisps can now be made: a torch thrown into the boiling Crucible with a little light and spark essence rises as two
   Wisps. Set one down by hand and it floats there as a lasting little flame; a touch puts it out at once with a soft
   puff of sparks in its colour and gives it back.

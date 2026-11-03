@@ -423,6 +423,13 @@ public final class Hextale {
         output.accept(ModItems.SCROLL_OF_OMNISCIENCE);
         output.accept(ModItems.SCROLL_OF_OBLIVION);
         output.accept(ModItems.VOID_SHARD);
+
+        // Spawn eggs of the Void's creatures.
+        output.accept(ModItems.VOID_MITE_SPAWN_EGG);
+        output.accept(ModItems.VOIDLING_SPAWN_EGG);
+        output.accept(ModItems.RIB_CRAWLER_SPAWN_EGG);
+        output.accept(ModItems.PIT_MAW_SPAWN_EGG);
+        output.accept(ModItems.SEER_SPAWN_EGG);
     }
 
     /** A scroll of "Smelting" shows players what scrolls look like; real ones come from the Research Table. */
@@ -431,7 +438,13 @@ public final class Hextale {
     }
 
     private static void addToVanillaTabs(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
+        if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
+            event.accept(ModItems.VOID_MITE_SPAWN_EGG);
+            event.accept(ModItems.VOIDLING_SPAWN_EGG);
+            event.accept(ModItems.RIB_CRAWLER_SPAWN_EGG);
+            event.accept(ModItems.PIT_MAW_SPAWN_EGG);
+            event.accept(ModItems.SEER_SPAWN_EGG);
+        } else if (event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
             event.accept(ModItems.VOID_SOIL);
             event.accept(ModItems.VOID_ROCK);
             event.accept(ModItems.VOID_CORAL);

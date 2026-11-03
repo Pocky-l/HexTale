@@ -607,6 +607,18 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> CRYSTAL_BATTERY = ITEMS.registerSimpleBlockItem(ModBlocks.CRYSTAL_BATTERY,
             properties -> properties.rarity(Rarity.UNCOMMON));
 
+    // Spawn eggs of the Void's creatures: the pre-1.21.5 egg recoloured for each mob.
+    public static final DeferredItem<net.minecraft.world.item.SpawnEggItem> VOID_MITE_SPAWN_EGG = ITEMS.registerItem("void_mite_spawn_egg",
+            properties -> new net.minecraft.world.item.SpawnEggItem(properties.spawnEgg(ModEntities.VOID_MITE.get())));
+    public static final DeferredItem<net.minecraft.world.item.SpawnEggItem> VOIDLING_SPAWN_EGG = ITEMS.registerItem("voidling_spawn_egg",
+            properties -> new net.minecraft.world.item.SpawnEggItem(properties.spawnEgg(ModEntities.VOIDLING.get())));
+    public static final DeferredItem<net.minecraft.world.item.SpawnEggItem> RIB_CRAWLER_SPAWN_EGG = ITEMS.registerItem("rib_crawler_spawn_egg",
+            properties -> new net.minecraft.world.item.SpawnEggItem(properties.spawnEgg(ModEntities.RIB_CRAWLER.get())));
+    public static final DeferredItem<net.minecraft.world.item.SpawnEggItem> PIT_MAW_SPAWN_EGG = ITEMS.registerItem("pit_maw_spawn_egg",
+            properties -> new net.minecraft.world.item.SpawnEggItem(properties.spawnEgg(ModEntities.PIT_MAW.get())));
+    public static final DeferredItem<net.minecraft.world.item.SpawnEggItem> SEER_SPAWN_EGG = ITEMS.registerItem("seer_spawn_egg",
+            properties -> new net.minecraft.world.item.SpawnEggItem(properties.spawnEgg(ModEntities.SEER.get())));
+
     private ModItems() {
     }
 
