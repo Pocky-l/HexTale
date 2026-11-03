@@ -402,9 +402,9 @@ public final class Hextale {
         output.accept(ModItems.GNAWED_GOLD_ORE);
         output.accept(ModItems.VOID_LENS);
 
-        // Bottles of the primals and of unknown essence, then every essence as an item in catalogue order
-        // (primals, pairs, deeper compounds), then every brew.
-        for (Essence essence : Essence.PRIMALS) {
+        // A concentrate of every essence and a bottle of unknown essence, then every essence as an item, both in
+        // catalogue order (primals, then compounds), then every brew.
+        for (Essence essence : Essence.values()) {
             output.accept(EssenceFlaskItem.filled(EssenceMix.pure(essence, EssenceFlaskItem.CAPACITY)));
         }
         output.accept(EssenceFlaskItem.filled(EssenceMix.unknown(EssenceFlaskItem.CAPACITY)));

@@ -34,6 +34,8 @@ final class ItemEssenceWords {
         word("granite", EARTH, 3, MAGMA, 1);
         word("diorite", EARTH, 3, CRYSTAL, 1);
         word("andesite", EARTH, 4);
+        word("sulfur", FIRE, 2, EARTH, 2);
+        word("cinnabar", EARTH, 2, MAGMA, 2);
         word("dirt", EARTH, 3, PLANT, 1);
         word("rooted", PLANT, 2);
         word("farmland", PLANT, 2, WATER, 1);
@@ -105,7 +107,7 @@ final class ItemEssenceWords {
         word("scute", BEAST, 2, METAL, 2);
         word("nautilus", WATER, 3, DECAY, 2);
         word("shell", DECAY, 2, WATER, 1);
-        word("heart", WATER, 6, MAGIC, 3);
+        word("heart", LIFE, 3, MAGIC, 1);
         word("trident", WATER, 4, METAL, 4);
         word("conduit", MAGIC, 4, WATER, 4);
         word("axolotl", LIFE, 3, SAP, 2);
@@ -289,6 +291,14 @@ final class ItemEssenceWords {
         word("sniffer", BEAST, 3, PLANT, 1);
         word("armadillo", BEAST, 3, EARTH, 1);
         word("hay", PLANT, 4, LIFE, 1);
+        word("fern", PLANT, 3);
+        word("bush", PLANT, 2, EARTH, 1);
+        word("shrub", PLANT, 2, EARTH, 1);
+        word("petal", PLANT, 2, LIFE, 1);
+        word("blossom", PLANT, 2, LIFE, 1);
+        word("root", PLANT, 2, EARTH, 1);
+        word("resin", SAP, 3, DECAY, 1);
+        word("nest", BEAST, 2, PLANT, 1);
         word("cake", SAP, 5, LIFE, 3);
         word("cookie", SAP, 3, LIFE, 1);
         word("pie", LIFE, 3, SAP, 2);

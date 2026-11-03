@@ -344,6 +344,45 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
+    @HexTest
+    public static void itemsCarryWhatTheyAre(GameTestHelper helper) {
+        var server = helper.getLevel().getServer();
+        Map<Item, ItemEssences> all = ItemEssenceResolver.resolve(server.getRecipeManager(), server.registryAccess());
+        // Wisps are light and nothing else, dyed or not.
+        List<Item> wisps = new ArrayList<>(List.of(com.pockyl.hextale.registry.ModItems.HEX_WISP.get()));
+        com.pockyl.hextale.registry.ModItems.DYED_WISPS.values().forEach(wisp -> wisps.add(wisp.get()));
+        for (Item wisp : wisps) {
+            helper.assertTrue(all.get(wisp).essences().keySet().equals(java.util.Set.of(Essence.LIGHT)), wisp + " carries only light: " + all.get(wisp));
+        }
+        // Every essence item is its own essence; a bottle is what is poured into it.
+        for (Essence essence : Essence.values()) {
+            ItemEssences carried = ResearchItems.of(com.pockyl.hextale.item.EssenceItem.of(essence));
+            helper.assertTrue(carried.essences().keySet().equals(java.util.Set.of(essence)), essence + " item carries only " + essence);
+            ItemEssences bottle = ResearchItems.of(EssenceFlaskItem.filled(EssenceMix.pure(essence, EssenceFlaskItem.CAPACITY)));
+            helper.assertTrue(bottle.essences().equals(Map.of(essence, EssenceFlaskItem.CAPACITY)), essence + " bottle carries its concentrate");
+        }
+        // No item of the mod is left to the last-resort guess by its kind (blocks earth, items metal).
+        for (Item item : BuiltInRegistries.ITEM) {
+            var key = BuiltInRegistries.ITEM.getKey(item);
+            if (key.getNamespace().equals(Hextale.MOD_ID)) {
+                helper.assertTrue(ResearchItems.canonical().containsKey(item) || !all.get(item).essences().equals(Map.of(Essence.EARTH, 2))
+                        && !all.get(item).essences().equals(Map.of(Essence.METAL, 2)), key + " has real essences, not a guess: " + all.get(item));
+            }
+        }
+        helper.succeed();
+    }
+
+    @HexTest
+    public static void concentratesStackToSixteen(GameTestHelper helper) {
+        ItemStack bottle = EssenceFlaskItem.filled(EssenceMix.pure(Essence.FIRE, EssenceFlaskItem.CAPACITY));
+        helper.assertTrue(bottle.getMaxStackSize() == 16, "a bottle of essence stacks to 16");
+        helper.assertTrue(ItemStack.isSameItemSameComponents(bottle, EssenceFlaskItem.filled(EssenceMix.pure(Essence.FIRE, EssenceFlaskItem.CAPACITY))),
+                "two fire concentrates stack");
+        helper.assertTrue(!ItemStack.isSameItemSameComponents(bottle, EssenceFlaskItem.filled(EssenceMix.pure(Essence.WATER, EssenceFlaskItem.CAPACITY))),
+                "fire and water do not");
+        helper.succeed();
+    }
+
     // ---- The loupe -------------------------------------------------------------------------------------------------
 
     @HexTest(maxTicks = 200)

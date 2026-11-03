@@ -394,6 +394,1478 @@
         "plant": 2
       },
       "tier": 1
+    },
+    "minecraft:creaking_heart": {
+      "essences": {
+        "decay": 3,
+        "plant": 2,
+        "magic": 2
+      },
+      "tier": 2
+    },
+    "minecraft:resin_clump": {
+      "essences": {
+        "sap": 3,
+        "decay": 1
+      },
+      "tier": 1
+    },
+    "minecraft:sulfur": {
+      "essences": {
+        "fire": 2,
+        "earth": 2
+      },
+      "tier": 1
+    },
+    "minecraft:potent_sulfur": {
+      "essences": {
+        "fire": 4,
+        "earth": 2
+      },
+      "tier": 2
+    },
+    "minecraft:cinnabar": {
+      "essences": {
+        "earth": 2,
+        "magma": 2
+      },
+      "tier": 1
+    },
+    "hextale:brass_ingot": {
+      "essences": {
+        "metal": 4,
+        "fire": 1
+      },
+      "tier": 1
+    },
+    "hextale:zinc_ingot": {
+      "essences": {
+        "metal": 4,
+        "earth": 1
+      },
+      "tier": 1
+    },
+    "hextale:raw_zinc": {
+      "essences": {
+        "ore": 4,
+        "metal": 1
+      },
+      "tier": 1
+    },
+    "hextale:hexsteel_ingot": {
+      "essences": {
+        "metal": 5,
+        "magic": 2
+      },
+      "tier": 2
+    },
+    "hextale:charged_hexsteel_ingot": {
+      "essences": {
+        "metal": 4,
+        "spark": 3,
+        "magic": 2
+      },
+      "tier": 2
+    },
+    "hextale:radiant_alloy_ingot": {
+      "essences": {
+        "metal": 5,
+        "light": 3,
+        "magic": 2
+      },
+      "tier": 3
+    },
+    "hextale:riftmetal_ingot": {
+      "essences": {
+        "metal": 5,
+        "rift": 4
+      },
+      "tier": 3
+    },
+    "hextale:raw_riftmetal": {
+      "essences": {
+        "rift": 4,
+        "ore": 4
+      },
+      "tier": 3
+    },
+    "hextale:hexsteel_plating": {
+      "essences": {
+        "metal": 4,
+        "magic": 1
+      },
+      "tier": 1
+    },
+    "hextale:rusted_plating": {
+      "essences": {
+        "metal": 3,
+        "decay": 2
+      },
+      "tier": 1
+    },
+    "hextale:riveted_rusted_plating": {
+      "essences": {
+        "metal": 3,
+        "decay": 2
+      },
+      "tier": 1
+    },
+    "hextale:rusted_plating_slab": {
+      "essences": {
+        "metal": 2,
+        "decay": 1
+      },
+      "tier": 1
+    },
+    "hextale:rusted_plating_stairs": {
+      "essences": {
+        "metal": 2,
+        "decay": 2
+      },
+      "tier": 1
+    },
+    "hextale:rusted_grate": {
+      "essences": {
+        "metal": 2,
+        "decay": 2,
+        "air": 1
+      },
+      "tier": 1
+    },
+    "hextale:radiant_trim": {
+      "essences": {
+        "metal": 3,
+        "light": 3
+      },
+      "tier": 1
+    },
+    "hextale:dormant_hextech": {
+      "essences": {
+        "crystal": 4,
+        "cold": 2,
+        "magic": 1
+      },
+      "tier": 1
+    },
+    "hextale:unstable_hextech": {
+      "essences": {
+        "magic": 4,
+        "spark": 3
+      },
+      "tier": 2
+    },
+    "hextale:hextech_dust": {
+      "essences": {
+        "magic": 2,
+        "spark": 1
+      },
+      "tier": 1
+    },
+    "hextale:hextech_crystal": {
+      "essences": {
+        "magic": 5,
+        "crystal": 3
+      },
+      "tier": 2
+    },
+    "hextale:hextech_gemstone": {
+      "essences": {
+        "magic": 6,
+        "crystal": 4,
+        "light": 2
+      },
+      "tier": 3
+    },
+    "hextale:hextech_cluster": {
+      "essences": {
+        "magic": 3,
+        "crystal": 3,
+        "spark": 2
+      },
+      "tier": 2
+    },
+    "hextale:small_hextech_bud": {
+      "essences": {
+        "crystal": 1,
+        "magic": 1
+      },
+      "tier": 1
+    },
+    "hextale:medium_hextech_bud": {
+      "essences": {
+        "crystal": 2,
+        "magic": 1
+      },
+      "tier": 1
+    },
+    "hextale:large_hextech_bud": {
+      "essences": {
+        "crystal": 3,
+        "magic": 2
+      },
+      "tier": 1
+    },
+    "hextale:synthetic_crystal": {
+      "essences": {
+        "crystal": 3,
+        "magic": 2
+      },
+      "tier": 1
+    },
+    "hextale:clouded_crystal": {
+      "essences": {
+        "crystal": 3,
+        "rift": 3,
+        "cold": 2
+      },
+      "tier": 2
+    },
+    "hextale:hollow_crystal": {
+      "essences": {
+        "rift": 4,
+        "crystal": 3,
+        "shadow": 2
+      },
+      "tier": 3
+    },
+    "hextale:hollow_crystal_cluster": {
+      "essences": {
+        "crystal": 2,
+        "rift": 2,
+        "shadow": 1
+      },
+      "tier": 2
+    },
+    "hextale:void_crystal": {
+      "essences": {
+        "crystal": 4,
+        "rift": 4,
+        "magic": 2
+      },
+      "tier": 3
+    },
+    "hextale:void_crystal_cluster": {
+      "essences": {
+        "crystal": 3,
+        "rift": 3,
+        "magic": 1
+      },
+      "tier": 2
+    },
+    "hextale:sealed_void_crystal": {
+      "essences": {
+        "rift": 5,
+        "crystal": 4,
+        "magic": 3
+      },
+      "tier": 3
+    },
+    "hextale:gemstone_dust": {
+      "essences": {
+        "crystal": 2,
+        "earth": 1
+      },
+      "tier": 1
+    },
+    "hextale:fulgurite": {
+      "essences": {
+        "crystal": 2,
+        "spark": 2,
+        "earth": 1
+      },
+      "tier": 1
+    },
+    "hextale:fulgurite_spike": {
+      "essences": {
+        "spark": 2,
+        "crystal": 2
+      },
+      "tier": 1
+    },
+    "hextale:fulgurite_glass": {
+      "essences": {
+        "crystal": 3,
+        "spark": 1
+      },
+      "tier": 1
+    },
+    "hextale:veil_glass": {
+      "essences": {
+        "crystal": 3,
+        "shadow": 2
+      },
+      "tier": 1
+    },
+    "hextale:ward_glass": {
+      "essences": {
+        "crystal": 3,
+        "magic": 2
+      },
+      "tier": 1
+    },
+    "hextale:void_lens": {
+      "essences": {
+        "rift": 3,
+        "crystal": 2,
+        "shadow": 1
+      },
+      "tier": 1
+    },
+    "hextale:magic_stone": {
+      "essences": {
+        "earth": 4,
+        "magic": 2
+      },
+      "tier": 1
+    },
+    "hextale:floating_stone": {
+      "essences": {
+        "earth": 3,
+        "air": 3,
+        "magic": 1
+      },
+      "tier": 1
+    },
+    "hextale:nullstone": {
+      "essences": {
+        "earth": 4,
+        "shadow": 2
+      },
+      "tier": 1
+    },
+    "hextale:magic_log": {
+      "essences": {
+        "plant": 4,
+        "magic": 2
+      },
+      "tier": 1
+    },
+    "hextale:stripped_magic_log": {
+      "essences": {
+        "plant": 4,
+        "magic": 2
+      },
+      "tier": 1
+    },
+    "hextale:magic_leaves": {
+      "essences": {
+        "plant": 2,
+        "magic": 1,
+        "air": 1
+      },
+      "tier": 1
+    },
+    "hextale:magic_sapling": {
+      "essences": {
+        "plant": 3,
+        "life": 2,
+        "magic": 2
+      },
+      "tier": 2
+    },
+    "hextale:hex_wisp": {
+      "essences": {
+        "light": 3
+      },
+      "tier": 1
+    },
+    "hextale:white_hex_wisp": {
+      "essences": {
+        "light": 3
+      },
+      "tier": 1
+    },
+    "hextale:orange_hex_wisp": {
+      "essences": {
+        "light": 3
+      },
+      "tier": 1
+    },
+    "hextale:magenta_hex_wisp": {
+      "essences": {
+        "light": 3
+      },
+      "tier": 1
+    },
+    "hextale:light_blue_hex_wisp": {
+      "essences": {
+        "light": 3
+      },
+      "tier": 1
+    },
+    "hextale:yellow_hex_wisp": {
+      "essences": {
+        "light": 3
+      },
+      "tier": 1
+    },
+    "hextale:lime_hex_wisp": {
+      "essences": {
+        "light": 3
+      },
+      "tier": 1
+    },
+    "hextale:pink_hex_wisp": {
+      "essences": {
+        "light": 3
+      },
+      "tier": 1
+    },
+    "hextale:gray_hex_wisp": {
+      "essences": {
+        "light": 3
+      },
+      "tier": 1
+    },
+    "hextale:light_gray_hex_wisp": {
+      "essences": {
+        "light": 3
+      },
+      "tier": 1
+    },
+    "hextale:cyan_hex_wisp": {
+      "essences": {
+        "light": 3
+      },
+      "tier": 1
+    },
+    "hextale:purple_hex_wisp": {
+      "essences": {
+        "light": 3
+      },
+      "tier": 1
+    },
+    "hextale:blue_hex_wisp": {
+      "essences": {
+        "light": 3
+      },
+      "tier": 1
+    },
+    "hextale:brown_hex_wisp": {
+      "essences": {
+        "light": 3
+      },
+      "tier": 1
+    },
+    "hextale:green_hex_wisp": {
+      "essences": {
+        "light": 3
+      },
+      "tier": 1
+    },
+    "hextale:red_hex_wisp": {
+      "essences": {
+        "light": 3
+      },
+      "tier": 1
+    },
+    "hextale:black_hex_wisp": {
+      "essences": {
+        "light": 3
+      },
+      "tier": 1
+    },
+    "hextale:hollowbloom": {
+      "essences": {
+        "decay": 2,
+        "rift": 2,
+        "plant": 1
+      },
+      "tier": 1
+    },
+    "hextale:shimmerbloom": {
+      "essences": {
+        "plant": 2,
+        "magic": 2,
+        "light": 1
+      },
+      "tier": 1
+    },
+    "hextale:shimmer_moss": {
+      "essences": {
+        "plant": 2,
+        "magic": 2
+      },
+      "tier": 1
+    },
+    "hextale:shimmer_moss_carpet": {
+      "essences": {
+        "plant": 1,
+        "magic": 1
+      },
+      "tier": 1
+    },
+    "hextale:ichor_pod": {
+      "essences": {
+        "rift": 3,
+        "sap": 3,
+        "plant": 1
+      },
+      "tier": 2
+    },
+    "hextale:spore_puff": {
+      "essences": {
+        "plant": 2,
+        "air": 2
+      },
+      "tier": 1
+    },
+    "hextale:spring_blister": {
+      "essences": {
+        "air": 3,
+        "beast": 2,
+        "rift": 1
+      },
+      "tier": 1
+    },
+    "hextale:pearl_sac": {
+      "essences": {
+        "rift": 3,
+        "beast": 2
+      },
+      "tier": 1
+    },
+    "hextale:mimic_sac": {
+      "essences": {
+        "rift": 3,
+        "beast": 2
+      },
+      "tier": 1
+    },
+    "hextale:void_sac": {
+      "essences": {
+        "rift": 3,
+        "life": 2,
+        "beast": 1
+      },
+      "tier": 1
+    },
+    "hextale:regenerative_slime": {
+      "essences": {
+        "sap": 4,
+        "life": 3
+      },
+      "tier": 1
+    },
+    "hextale:breach_heart": {
+      "essences": {
+        "rift": 6,
+        "cold": 3,
+        "magic": 3
+      },
+      "tier": 3
+    },
+    "hextale:arcane_cloth": {
+      "essences": {
+        "beast": 2,
+        "magic": 2
+      },
+      "tier": 1
+    },
+    "hextale:blank_scroll": {
+      "essences": {
+        "plant": 2,
+        "magic": 1
+      },
+      "tier": 1
+    },
+    "hextale:rune_scroll": {
+      "essences": {
+        "magic": 3,
+        "plant": 1
+      },
+      "tier": 2
+    },
+    "hextale:research_notes": {
+      "essences": {
+        "magic": 2,
+        "plant": 2
+      },
+      "tier": 2
+    },
+    "hextale:researchers_diary": {
+      "essences": {
+        "magic": 3,
+        "plant": 3,
+        "beast": 1
+      },
+      "tier": 2
+    },
+    "hextale:scroll_of_omniscience": {
+      "essences": {
+        "magic": 8,
+        "light": 4
+      },
+      "tier": 3
+    },
+    "hextale:scroll_of_oblivion": {
+      "essences": {
+        "magic": 8,
+        "shadow": 4
+      },
+      "tier": 3
+    },
+    "hextale:rune_chalk": {
+      "essences": {
+        "crystal": 2,
+        "magic": 2
+      },
+      "tier": 1
+    },
+    "hextale:binding_chalk": {
+      "essences": {
+        "magic": 3,
+        "crystal": 2
+      },
+      "tier": 2
+    },
+    "hextale:essence_sticker": {
+      "essences": {
+        "plant": 1,
+        "magic": 1
+      },
+      "tier": 1
+    },
+    "hextale:pylon_filter": {
+      "essences": {
+        "magic": 2,
+        "plant": 1
+      },
+      "tier": 1
+    },
+    "hextale:guide_mark": {
+      "essences": {
+        "magic": 1
+      },
+      "tier": 1
+    },
+    "hextale:essence": {
+      "essences": {
+        "magic": 1
+      },
+      "tier": 1
+    },
+    "hextale:essence_flask": {
+      "essences": {
+        "crystal": 1
+      },
+      "tier": 1
+    },
+    "hextale:chem_vial": {
+      "essences": {
+        "crystal": 2,
+        "water": 1
+      },
+      "tier": 1
+    },
+    "hextale:researcher_hood": {
+      "essences": {
+        "beast": 2,
+        "magic": 1
+      },
+      "tier": 1
+    },
+    "hextale:researcher_robe": {
+      "essences": {
+        "beast": 4,
+        "magic": 1
+      },
+      "tier": 1
+    },
+    "hextale:researcher_trousers": {
+      "essences": {
+        "beast": 3,
+        "magic": 1
+      },
+      "tier": 1
+    },
+    "hextale:researcher_boots": {
+      "essences": {
+        "beast": 2,
+        "air": 1
+      },
+      "tier": 1
+    },
+    "hextale:researchers_goggles": {
+      "essences": {
+        "crystal": 2,
+        "metal": 2,
+        "magic": 2
+      },
+      "tier": 1
+    },
+    "hextale:tuning_fork": {
+      "essences": {
+        "metal": 3,
+        "air": 2
+      },
+      "tier": 1
+    },
+    "hextale:recall_charm": {
+      "essences": {
+        "rift": 3,
+        "magic": 2
+      },
+      "tier": 2
+    },
+    "hextale:cutting_disc": {
+      "essences": {
+        "metal": 3,
+        "crystal": 2
+      },
+      "tier": 1
+    },
+    "hextale:master_cutting_disc": {
+      "essences": {
+        "metal": 4,
+        "crystal": 4,
+        "magic": 1
+      },
+      "tier": 2
+    },
+    "hextale:dust_charge": {
+      "essences": {
+        "magic": 3,
+        "air": 2,
+        "spark": 1
+      },
+      "tier": 1
+    },
+    "hextale:impulse_plate": {
+      "essences": {
+        "circuit": 3,
+        "air": 2
+      },
+      "tier": 1
+    },
+    "hextale:levitation_plate": {
+      "essences": {
+        "air": 4,
+        "magic": 2,
+        "circuit": 1
+      },
+      "tier": 1
+    },
+    "hextale:grapple_gauntlet": {
+      "essences": {
+        "metal": 4,
+        "air": 2,
+        "beast": 1
+      },
+      "tier": 2
+    },
+    "hextale:strike_gauntlet": {
+      "essences": {
+        "metal": 4,
+        "spark": 4,
+        "magic": 2
+      },
+      "tier": 3
+    },
+    "hextale:hextech_skypack": {
+      "essences": {
+        "air": 6,
+        "magic": 4,
+        "metal": 3
+      },
+      "tier": 3
+    },
+    "hextale:spawner_cage": {
+      "essences": {
+        "metal": 3,
+        "shadow": 3,
+        "magic": 2
+      },
+      "tier": 3
+    },
+    "hextale:alembic": {
+      "essences": {
+        "steam": 4,
+        "metal": 2
+      },
+      "tier": 1
+    },
+    "hextale:separator": {
+      "essences": {
+        "metal": 3,
+        "magic": 2,
+        "crystal": 2
+      },
+      "tier": 1
+    },
+    "hextale:crucible": {
+      "essences": {
+        "metal": 4,
+        "magic": 2,
+        "steam": 1
+      },
+      "tier": 1
+    },
+    "hextale:essence_tank": {
+      "essences": {
+        "crystal": 3,
+        "metal": 1
+      },
+      "tier": 1
+    },
+    "hextale:creative_essence_tank": {
+      "essences": {
+        "magic": 16,
+        "crystal": 4
+      },
+      "tier": 3
+    },
+    "hextale:brass_pipe": {
+      "essences": {
+        "metal": 2
+      },
+      "tier": 1
+    },
+    "hextale:pump": {
+      "essences": {
+        "metal": 3,
+        "air": 2,
+        "water": 1
+      },
+      "tier": 1
+    },
+    "hextale:drain_valve": {
+      "essences": {
+        "metal": 3,
+        "water": 2
+      },
+      "tier": 1
+    },
+    "hextale:research_table": {
+      "essences": {
+        "plant": 4,
+        "magic": 2,
+        "crystal": 1
+      },
+      "tier": 1
+    },
+    "hextale:lab_bench": {
+      "essences": {
+        "plant": 3,
+        "steam": 2,
+        "magic": 2
+      },
+      "tier": 2
+    },
+    "hextale:hex_workbench": {
+      "essences": {
+        "plant": 4,
+        "magic": 2
+      },
+      "tier": 1
+    },
+    "hextale:hex_furnace": {
+      "essences": {
+        "fire": 4,
+        "earth": 3,
+        "magic": 2
+      },
+      "tier": 2
+    },
+    "hextale:hex_lapidary": {
+      "essences": {
+        "earth": 3,
+        "metal": 2,
+        "crystal": 2
+      },
+      "tier": 1
+    },
+    "hextale:hex_foundry": {
+      "essences": {
+        "fire": 5,
+        "magma": 3,
+        "metal": 3
+      },
+      "tier": 2
+    },
+    "hextale:hex_sawmill": {
+      "essences": {
+        "metal": 4,
+        "plant": 3,
+        "magic": 1
+      },
+      "tier": 2
+    },
+    "hextale:chem_boiler": {
+      "essences": {
+        "steam": 4,
+        "metal": 3,
+        "fire": 1
+      },
+      "tier": 2
+    },
+    "hextale:chem_burner": {
+      "essences": {
+        "fire": 4,
+        "metal": 2
+      },
+      "tier": 2
+    },
+    "hextale:chem_still": {
+      "essences": {
+        "steam": 3,
+        "crystal": 2,
+        "metal": 2
+      },
+      "tier": 2
+    },
+    "hextale:chem_tubes": {
+      "essences": {
+        "crystal": 2,
+        "steam": 1
+      },
+      "tier": 1
+    },
+    "hextale:hextech_altar": {
+      "essences": {
+        "magic": 6,
+        "crystal": 3,
+        "earth": 2
+      },
+      "tier": 2
+    },
+    "hextale:pedestal": {
+      "essences": {
+        "earth": 3,
+        "magic": 1
+      },
+      "tier": 1
+    },
+    "hextale:rune_stele": {
+      "essences": {
+        "earth": 4,
+        "magic": 2
+      },
+      "tier": 1
+    },
+    "hextale:rune_circle": {
+      "essences": {
+        "magic": 4,
+        "earth": 3,
+        "light": 1
+      },
+      "tier": 2
+    },
+    "hextale:gathering_pylon": {
+      "essences": {
+        "magic": 3,
+        "crystal": 2,
+        "air": 2
+      },
+      "tier": 2
+    },
+    "hextale:relay_pylon": {
+      "essences": {
+        "magic": 3,
+        "crystal": 2,
+        "spark": 2
+      },
+      "tier": 2
+    },
+    "hextale:sending_pylon": {
+      "essences": {
+        "magic": 3,
+        "crystal": 2,
+        "rift": 2
+      },
+      "tier": 2
+    },
+    "hextale:siphon_pylon": {
+      "essences": {
+        "magic": 3,
+        "crystal": 2,
+        "water": 2
+      },
+      "tier": 2
+    },
+    "hextale:hextech_lamp": {
+      "essences": {
+        "light": 4,
+        "crystal": 2
+      },
+      "tier": 1
+    },
+    "hextale:hextech_lamppost": {
+      "essences": {
+        "light": 5,
+        "metal": 2,
+        "magic": 1
+      },
+      "tier": 2
+    },
+    "hextale:pink_brazier": {
+      "essences": {
+        "fire": 3,
+        "light": 3,
+        "magic": 1
+      },
+      "tier": 2
+    },
+    "hextale:null_lantern": {
+      "essences": {
+        "shadow": 3,
+        "light": 2,
+        "metal": 1
+      },
+      "tier": 2
+    },
+    "hextale:whirl_reaper": {
+      "essences": {
+        "air": 4,
+        "metal": 3,
+        "plant": 2
+      },
+      "tier": 2
+    },
+    "hextale:greedy_funnel": {
+      "essences": {
+        "rift": 3,
+        "air": 2,
+        "metal": 2
+      },
+      "tier": 2
+    },
+    "hextale:arc_spire": {
+      "essences": {
+        "spark": 6,
+        "metal": 3
+      },
+      "tier": 2
+    },
+    "hextale:hextech_purifier": {
+      "essences": {
+        "light": 4,
+        "crystal": 3,
+        "water": 1
+      },
+      "tier": 2
+    },
+    "hextale:void_anchor": {
+      "essences": {
+        "rift": 4,
+        "metal": 3,
+        "shadow": 1
+      },
+      "tier": 2
+    },
+    "hextale:xp_condenser": {
+      "essences": {
+        "magic": 5,
+        "steam": 2,
+        "crystal": 1
+      },
+      "tier": 2
+    },
+    "hextale:miasma_vent": {
+      "essences": {
+        "decay": 3,
+        "air": 2
+      },
+      "tier": 1
+    },
+    "hextale:disintegrator": {
+      "essences": {
+        "magic": 3,
+        "decay": 2,
+        "metal": 2
+      },
+      "tier": 1
+    },
+    "hextale:crystal_battery": {
+      "essences": {
+        "spark": 4,
+        "crystal": 3,
+        "magic": 2
+      },
+      "tier": 2
+    },
+    "hextale:rift_gate": {
+      "essences": {
+        "rift": 6,
+        "magic": 3,
+        "earth": 2
+      },
+      "tier": 2
+    },
+    "hextale:world_anchor": {
+      "essences": {
+        "earth": 6,
+        "magic": 4,
+        "rift": 2
+      },
+      "tier": 3
+    },
+    "hextale:hexcore": {
+      "essences": {
+        "magic": 10,
+        "spark": 6,
+        "crystal": 4
+      },
+      "tier": 3
+    },
+    "hextale:sorting_matrix": {
+      "essences": {
+        "circuit": 5,
+        "magic": 4,
+        "crystal": 2
+      },
+      "tier": 3
+    },
+    "hextale:hexsteel_sword": {
+      "essences": {
+        "metal": 4,
+        "magic": 2
+      },
+      "tier": 2
+    },
+    "hextale:hexsteel_pickaxe": {
+      "essences": {
+        "metal": 5,
+        "magic": 2,
+        "ore": 1
+      },
+      "tier": 2
+    },
+    "hextale:hexsteel_axe": {
+      "essences": {
+        "metal": 5,
+        "magic": 2,
+        "plant": 1
+      },
+      "tier": 2
+    },
+    "hextale:hexsteel_shovel": {
+      "essences": {
+        "metal": 2,
+        "magic": 1,
+        "earth": 1
+      },
+      "tier": 2
+    },
+    "hextale:hexsteel_hoe": {
+      "essences": {
+        "metal": 3,
+        "magic": 1,
+        "plant": 1
+      },
+      "tier": 2
+    },
+    "hextale:hexsteel_helmet": {
+      "essences": {
+        "metal": 5,
+        "magic": 2
+      },
+      "tier": 2
+    },
+    "hextale:hexsteel_chestplate": {
+      "essences": {
+        "metal": 8,
+        "magic": 4
+      },
+      "tier": 2
+    },
+    "hextale:hexsteel_leggings": {
+      "essences": {
+        "metal": 7,
+        "magic": 3
+      },
+      "tier": 2
+    },
+    "hextale:hexsteel_boots": {
+      "essences": {
+        "metal": 4,
+        "magic": 2,
+        "air": 1
+      },
+      "tier": 2
+    },
+    "hextale:hextech_sword": {
+      "essences": {
+        "magic": 4,
+        "crystal": 2
+      },
+      "tier": 2
+    },
+    "hextale:hextech_pickaxe": {
+      "essences": {
+        "magic": 5,
+        "crystal": 2,
+        "ore": 1
+      },
+      "tier": 2
+    },
+    "hextale:hextech_axe": {
+      "essences": {
+        "magic": 5,
+        "crystal": 2,
+        "plant": 1
+      },
+      "tier": 2
+    },
+    "hextale:hextech_shovel": {
+      "essences": {
+        "magic": 2,
+        "crystal": 1,
+        "earth": 1
+      },
+      "tier": 2
+    },
+    "hextale:refined_hextech_sword": {
+      "essences": {
+        "magic": 4,
+        "crystal": 2,
+        "light": 1
+      },
+      "tier": 3
+    },
+    "hextale:refined_hextech_pickaxe": {
+      "essences": {
+        "magic": 5,
+        "crystal": 2,
+        "light": 1
+      },
+      "tier": 3
+    },
+    "hextale:refined_hextech_axe": {
+      "essences": {
+        "magic": 5,
+        "crystal": 2,
+        "light": 1
+      },
+      "tier": 3
+    },
+    "hextale:refined_hextech_shovel": {
+      "essences": {
+        "magic": 2,
+        "crystal": 1,
+        "light": 1
+      },
+      "tier": 3
+    },
+    "hextale:radiant_hextech_sword": {
+      "essences": {
+        "light": 4,
+        "magic": 2,
+        "metal": 1
+      },
+      "tier": 3
+    },
+    "hextale:radiant_hextech_pickaxe": {
+      "essences": {
+        "light": 5,
+        "magic": 2,
+        "metal": 1
+      },
+      "tier": 3
+    },
+    "hextale:radiant_hextech_axe": {
+      "essences": {
+        "light": 5,
+        "magic": 2,
+        "metal": 1
+      },
+      "tier": 3
+    },
+    "hextale:radiant_hextech_shovel": {
+      "essences": {
+        "light": 2,
+        "magic": 1,
+        "metal": 1
+      },
+      "tier": 3
+    },
+    "hextale:riftforged_sword": {
+      "essences": {
+        "rift": 4,
+        "metal": 2
+      },
+      "tier": 3
+    },
+    "hextale:riftforged_pickaxe": {
+      "essences": {
+        "rift": 5,
+        "metal": 2,
+        "ore": 1
+      },
+      "tier": 3
+    },
+    "hextale:riftforged_axe": {
+      "essences": {
+        "rift": 5,
+        "metal": 2,
+        "plant": 1
+      },
+      "tier": 3
+    },
+    "hextale:riftforged_shovel": {
+      "essences": {
+        "rift": 2,
+        "metal": 1,
+        "earth": 1
+      },
+      "tier": 3
+    },
+    "hextale:bulwark_helmet": {
+      "essences": {
+        "metal": 5,
+        "earth": 2
+      },
+      "tier": 2
+    },
+    "hextale:bulwark_chestplate": {
+      "essences": {
+        "metal": 8,
+        "earth": 4
+      },
+      "tier": 2
+    },
+    "hextale:bulwark_leggings": {
+      "essences": {
+        "metal": 7,
+        "earth": 3
+      },
+      "tier": 2
+    },
+    "hextale:bulwark_boots": {
+      "essences": {
+        "metal": 4,
+        "earth": 2,
+        "air": 1
+      },
+      "tier": 2
+    },
+    "hextale:refined_bulwark_helmet": {
+      "essences": {
+        "metal": 5,
+        "magic": 2,
+        "earth": 1
+      },
+      "tier": 3
+    },
+    "hextale:refined_bulwark_chestplate": {
+      "essences": {
+        "metal": 8,
+        "magic": 4,
+        "earth": 2
+      },
+      "tier": 3
+    },
+    "hextale:refined_bulwark_leggings": {
+      "essences": {
+        "metal": 7,
+        "magic": 3,
+        "earth": 1
+      },
+      "tier": 3
+    },
+    "hextale:refined_bulwark_boots": {
+      "essences": {
+        "metal": 4,
+        "magic": 2,
+        "earth": 1
+      },
+      "tier": 3
+    },
+    "hextale:radiant_bulwark_helmet": {
+      "essences": {
+        "light": 5,
+        "metal": 2,
+        "magic": 1
+      },
+      "tier": 3
+    },
+    "hextale:radiant_bulwark_chestplate": {
+      "essences": {
+        "light": 8,
+        "metal": 4,
+        "magic": 2
+      },
+      "tier": 3
+    },
+    "hextale:radiant_bulwark_leggings": {
+      "essences": {
+        "light": 7,
+        "metal": 3,
+        "magic": 1
+      },
+      "tier": 3
+    },
+    "hextale:radiant_bulwark_boots": {
+      "essences": {
+        "light": 4,
+        "metal": 2,
+        "magic": 1
+      },
+      "tier": 3
+    },
+    "hextale:riftforged_bulwark_helmet": {
+      "essences": {
+        "rift": 5,
+        "metal": 2,
+        "shadow": 1
+      },
+      "tier": 3
+    },
+    "hextale:riftforged_bulwark_chestplate": {
+      "essences": {
+        "rift": 8,
+        "metal": 4,
+        "shadow": 2
+      },
+      "tier": 3
+    },
+    "hextale:riftforged_bulwark_leggings": {
+      "essences": {
+        "rift": 7,
+        "metal": 3,
+        "shadow": 1
+      },
+      "tier": 3
+    },
+    "hextale:riftforged_bulwark_boots": {
+      "essences": {
+        "rift": 4,
+        "metal": 2,
+        "shadow": 1
+      },
+      "tier": 3
+    },
+    "hextale:tendril_dagger": {
+      "essences": {
+        "rift": 3,
+        "beast": 2,
+        "metal": 1
+      },
+      "tier": 2
+    },
+    "hextale:refined_tendril_dagger": {
+      "essences": {
+        "rift": 3,
+        "magic": 3,
+        "beast": 2
+      },
+      "tier": 3
+    },
+    "hextale:radiant_tendril_dagger": {
+      "essences": {
+        "light": 3,
+        "rift": 3,
+        "magic": 2
+      },
+      "tier": 3
+    },
+    "hextale:riftforged_tendril_dagger": {
+      "essences": {
+        "rift": 6,
+        "metal": 2,
+        "shadow": 2
+      },
+      "tier": 3
     }
   }
 }

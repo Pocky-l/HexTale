@@ -11,8 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   puff of sparks in its colour and gives it back.
 - Wisps come in the hextech blue and all sixteen dye colours: mix any Wisp with a dye at the crafting table (hextech
   dust turns it blue again).
+- The creative tab has a concentrate of every one of the 22 essences, not only of the primals.
+- Modpacks and other mods can set the essences of any item, HexTale's own included, in the data map
+  `hextale:essences`; everything crafted from it follows. How: the modpack guide (`docs/modpack.md`, "Essences of items").
 
 ### Changed
+- Bottles of essence stack up to 16 when they hold the same liquid (a separator pours a stack one whole bottle at a time).
+- Every item of the mod carries the essences it is made of instead of a guess: wisps are pure light, devices carry
+  what they work with (the alembic steam, the arc spire lightning), metals, crystals, gear, plants and the Void's things
+  were all gone through; magic wood and magic stone now carry magic. The essence items carry their own essence.
+- A few vanilla items got sensible essences too: sulfur, cinnabar, resin, the creaking heart, ferns, bushes, petals and
+  roots.
 - The Crucible is a heavier cast-iron cauldron with a new model and texture.
 - Wisps the Eternal Flame rune leaves in tunnels still drop nothing, and they still give way to any block put there;
   Wisps set down by hand keep their spot.

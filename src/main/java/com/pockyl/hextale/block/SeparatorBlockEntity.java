@@ -278,9 +278,26 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         if (inside.isEmpty() || mix.space() <= 0) {
             return false;
         }
+        ItemStack supply = items.get(SUPPLY);
+        if (flask.getCount() > 1) {
+            // A stack pours one whole bottle at a time, so the rest of the stack never takes the leftover of one.
+            boolean roomForGlass = supply.isEmpty() || EssenceFlaskItem.isEmptyFlask(supply) && supply.getCount() < supply.getMaxStackSize();
+            if (mix.space() < inside.total() || !roomForGlass) {
+                return false;
+            }
+            mix.fill(inside, false);
+            flask.shrink(1);
+            if (supply.isEmpty()) {
+                items.set(SUPPLY, new ItemStack(net.minecraft.world.item.Items.GLASS_BOTTLE));
+            } else {
+                supply.grow(1);
+            }
+            lastReceived = level.getGameTime();
+            level.playSound(null, worldPosition, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 0.6F, 1.0F);
+            return true;
+        }
         int poured = mix.fill(inside, false);
         ItemStack after = EssenceFlaskItem.filled(inside.minus(inside.part(poured)));
-        ItemStack supply = items.get(SUPPLY);
         if (EssenceFlaskItem.isEmptyFlask(after) && (supply.isEmpty() || EssenceFlaskItem.isEmptyFlask(supply)
                 && supply.getCount() < supply.getMaxStackSize())) {
             // The emptied bottle joins the glass bottles, ready to carry the products away.
