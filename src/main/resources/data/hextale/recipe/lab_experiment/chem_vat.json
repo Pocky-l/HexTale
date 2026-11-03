@@ -1,0 +1,8 @@
+{
+  "type": "hextale:lab_experiment",
+  "topic": "chem_vat",
+  "target": "ore",
+  "amount": 10,
+  "purity": 0.7,
+  "sample": "minecraft:netherite_scrap"
+}

@@ -73,6 +73,25 @@ public final class GearConfig {
     /** Plain hexsteel armour: diamond protection, a little tougher. */
     public static final ArmourLevel HEXSTEEL_ARMOUR = armour("hexsteelArmour", "Hexsteel armour (no runes)", 3, 6, 8, 3, 2.5, 0.0, 35);
 
+    // Chemtech gear: no runes, never breaks, its strength comes from the fuel in the tank (ChemFuel).
+    static {
+        BUILDER.comment("Chemtech gear and its tank").push("chemtech");
+    }
+    /** How much weaker every stat of chemtech gear is with an empty tank. */
+    public static final ModConfigSpec.DoubleValue EMPTY_DIVISOR = BUILDER
+            .comment("With an empty tank every stat of chemtech tools and armour is divided by this.")
+            .defineInRange("emptyDivisor", 8.0, 1.0, 100.0);
+    /** Vials a full tank holds. */
+    public static final ModConfigSpec.IntValue TANK_VIALS = BUILDER
+            .comment("Vials of fuel a Chem Tank holds.").defineInRange("tankVials", 64, 1, 1024);
+    /** Actions (a block broken, a hit dealt, a hit taken) one vial of fuel pays for. */
+    public static final ModConfigSpec.IntValue ACTIONS_PER_VIAL = BUILDER
+            .comment("Actions one vial pays for: a block broken, a hit dealt or a hit taken by chemtech gear.")
+            .defineInRange("actionsPerVial", 160, 1, 100000);
+    static {
+        BUILDER.pop();
+    }
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private GearConfig() {

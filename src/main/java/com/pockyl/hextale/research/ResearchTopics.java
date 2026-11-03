@@ -66,6 +66,20 @@ public final class ResearchTopics {
     public static final ResearchTopic AXOLOTL_TANK = lab("axolotl_tank", 1, Essence.WATER, Essence.LIFE, ModItems.AXOLOTL_TANK);
     public static final ResearchTopic CHEM_STILL = lab("chem_still", 2, Essence.FIRE, Essence.EARTH, ModItems.CHEM_STILL);
     public static final ResearchTopic CHEM_BOILER = lab("chem_boiler", 2, Essence.FIRE, Essence.WATER, ModItems.CHEM_BOILER);
+    /** Late chemtech: the vat that tempers chem-steel, the metal of chemtech gear (its decor blocks come with it). */
+    public static final ResearchTopic CHEM_VAT = lab("chem_vat", 3, Essence.METAL, Essence.SHADOW, ModItems.CHEM_VAT, ModItems.CHEM_STEEL_INGOT,
+            ModItems.CHEM_STEEL_BLOCK, ModItems.CHEM_STEEL_PLATING, ModItems.CHEM_STEEL_PLATING_STAIRS, ModItems.CHEM_STEEL_PLATING_SLAB);
+    /** The fuel tank worn on the back that feeds chemtech gear. */
+    public static final ResearchTopic CHEM_TANK = lab("chem_tank", 3, Essence.WATER, Essence.METAL, ModItems.CHEM_TANK);
+    /** Chemtech tools: one research opens all four (owner rule: one research per tool level). */
+    public static final ResearchTopic CHEM_TOOLS = lab("chem_tools", 3, Essence.METAL, Essence.FIRE, ModItems.CHEM_STEEL_PICKAXE,
+            ModItems.CHEM_STEEL_AXE, ModItems.CHEM_STEEL_SHOVEL, ModItems.CHEM_STEEL_SWORD);
+    /** Chemtech armour: one research opens the whole set (owner rule). */
+    public static final ResearchTopic CHEM_ARMOUR = lab("chem_armour", 3, Essence.METAL, Essence.EARTH, ModItems.CHEM_STEEL_HELMET,
+            ModItems.CHEM_STEEL_CHESTPLATE, ModItems.CHEM_STEEL_LEGGINGS, ModItems.CHEM_STEEL_BOOTS);
+    /** The chestplate with a built-in tank: its own research after the armour and the tank (owner, 2026-11-02). */
+    public static final ResearchTopic TANK_CHESTPLATE = lab("tank_chestplate", 3, Essence.WATER, Essence.EARTH,
+            ModItems.CHEM_STEEL_TANK_CHESTPLATE);
     public static final ResearchTopic PINK_BRAZIER = lab("pink_brazier", 2, Essence.FIRE, Essence.SPARK, ModItems.PINK_BRAZIER);
     public static final ResearchTopic CHEM_PLANTER = lab("chem_planter", 1, Essence.EARTH, Essence.LIFE, ModItems.CHEM_PLANTER);
     public static final ResearchTopic ESSENCE_SPRINKLER = lab("essence_sprinkler", 2, Essence.WATER, Essence.LIFE, ModItems.ESSENCE_SPRINKLER);

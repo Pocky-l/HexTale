@@ -464,6 +464,25 @@ public final class ModBlocks {
     public static final DeferredBlock<TransparentBlock> RUSTED_GRATE = BLOCKS.registerBlock("rusted_grate", TransparentBlock::new,
             () -> platingProperties().sound(SoundType.COPPER_GRATE).noOcclusion().isValidSpawn((state, level, pos, type) -> false)
                     .isRedstoneConductor((state, level, pos) -> false).isSuffocating((state, level, pos) -> false));
+    /** The Chem Vat Valve: alone a riveted hatch, in a sealed Chem Vat its controller. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ChemVatBlock> CHEM_VAT = BLOCKS.registerBlock("chem_vat",
+            com.pockyl.hextale.block.ChemVatBlock::new,
+            () -> platingProperties().noOcclusion()
+                    .lightLevel(state -> state.getValue(com.pockyl.hextale.block.ChemVatBlock.LIT) ? 9 : 0));
+    /** The Chem Tank set down: a glass fuel cylinder in leather straps, filled here and pumped into the one worn. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ChemTankBlock> CHEM_TANK = BLOCKS.registerBlock("chem_tank",
+            com.pockyl.hextale.block.ChemTankBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F, 6.0F).sound(SoundType.COPPER).noOcclusion()
+                    .requiresCorrectToolForDrops());
+    /** Chem-steel: iron tempered in acid and shimmer, the metal of chemtech gear; its block and plating are decor. */
+    public static final DeferredBlock<Block> CHEM_STEEL_BLOCK = BLOCKS.registerBlock("chem_steel_block", Block::new,
+            () -> platingProperties().strength(6.0F, 12.0F).sound(SoundType.NETHERITE_BLOCK));
+    public static final DeferredBlock<Block> CHEM_STEEL_PLATING = BLOCKS.registerBlock("chem_steel_plating", Block::new,
+            () -> platingProperties().strength(5.0F, 9.0F));
+    public static final DeferredBlock<StairBlock> CHEM_STEEL_PLATING_STAIRS = BLOCKS.registerBlock("chem_steel_plating_stairs",
+            properties -> new StairBlock(CHEM_STEEL_PLATING.get().defaultBlockState(), properties), () -> platingProperties().strength(5.0F, 9.0F));
+    public static final DeferredBlock<SlabBlock> CHEM_STEEL_PLATING_SLAB = BLOCKS.registerBlock("chem_steel_plating_slab", SlabBlock::new,
+            () -> platingProperties().strength(5.0F, 9.0F));
     /** A bundle of glass tubes in iron bands with green chemistry glowing in them. */
     public static final DeferredBlock<RotatedPillarBlock> CHEM_TUBES = BLOCKS.registerBlock("chem_tubes", RotatedPillarBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GREEN).instrument(NoteBlockInstrument.IRON_XYLOPHONE)

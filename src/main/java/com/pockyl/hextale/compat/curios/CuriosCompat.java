@@ -2,6 +2,7 @@ package com.pockyl.hextale.compat.curios;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.fml.ModList;
 
 /**
@@ -20,7 +21,18 @@ public final class CuriosCompat {
         return LOADED && Api.wears(entity, item);
     }
 
+    /** The first stack worn in any Curios slot that passes the test, or empty (always empty without Curios). */
+    public static ItemStack find(LivingEntity entity, java.util.function.Predicate<ItemStack> test) {
+        return LOADED ? Api.find(entity, test) : ItemStack.EMPTY;
+    }
+
     private static final class Api {
+        static ItemStack find(LivingEntity entity, java.util.function.Predicate<ItemStack> test) {
+            return top.theillusivec4.curios.api.CuriosApi.getCuriosInventory(entity)
+                    .flatMap(curios -> curios.findFirstCurio(test)).map(top.theillusivec4.curios.api.SlotResult::stack)
+                    .orElse(ItemStack.EMPTY);
+        }
+
         static boolean wears(LivingEntity entity, Item item) {
             return top.theillusivec4.curios.api.CuriosApi.getCuriosInventory(entity)
                     .map(curios -> curios.isEquipped(item)).orElse(false);

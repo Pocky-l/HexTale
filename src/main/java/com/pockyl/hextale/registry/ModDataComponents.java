@@ -115,6 +115,11 @@ public final class ModDataComponents {
             COMPONENTS.registerComponentType("brew", builder -> builder
                     .persistent(com.pockyl.hextale.chem.Brew.CODEC).networkSynchronized(com.pockyl.hextale.chem.Brew.STREAM_CODEC));
 
+    /** The fuel in a Chem Tank (item and placed block). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.chem.TankFuel>> CHEM_TANK =
+            COMPONENTS.registerComponentType("chem_tank", builder -> builder
+                    .persistent(com.pockyl.hextale.chem.TankFuel.CODEC).networkSynchronized(com.pockyl.hextale.chem.TankFuel.STREAM_CODEC));
+
     /** The runes burned into a Chem Burner. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> BURNER_RUNES =
             COMPONENTS.registerComponentType("burner_runes", builder -> builder

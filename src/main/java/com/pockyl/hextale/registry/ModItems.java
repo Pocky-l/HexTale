@@ -101,6 +101,47 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> RIVETED_RUSTED_PLATING = ITEMS.registerSimpleBlockItem(ModBlocks.RIVETED_RUSTED_PLATING);
     public static final DeferredItem<BlockItem> RUSTED_GRATE = ITEMS.registerSimpleBlockItem(ModBlocks.RUSTED_GRATE);
     public static final DeferredItem<BlockItem> CHEM_TUBES = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_TUBES);
+    public static final DeferredItem<BlockItem> CHEM_VAT = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_VAT);
+    /** The Chem Tank: worn on the back (chest slot or the Curios back slot) it feeds chemtech gear; set down it is a block. */
+    public static final DeferredItem<com.pockyl.hextale.item.ChemTankItem> CHEM_TANK = ITEMS.registerItem("chem_tank",
+            properties -> new com.pockyl.hextale.item.ChemTankItem(ModBlocks.CHEM_TANK.get(), properties.stacksTo(1).rarity(Rarity.RARE)
+                    .useBlockDescriptionPrefix()
+                    .component(DataComponents.EQUIPPABLE, Equippable.builder(EquipmentSlot.CHEST)
+                            .setEquipSound(SoundEvents.ARMOR_EQUIP_LEATHER).setDamageOnHurt(false).build())));
+    public static final DeferredItem<Item> CHEM_STEEL_INGOT = ITEMS.registerSimpleItem("chem_steel_ingot");
+    /**
+     * Chemtech tools: registered at full strength (hextech level 4), unbreakable, as strong as the fuel in the tank on
+     * the holder's back really lets them be ({@link com.pockyl.hextale.chem.ChemGear}).
+     */
+    private static final ToolMaterial CHEM_STEEL_TOOLS = com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[3].material(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 15,
+            net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM,
+                    net.minecraft.resources.Identifier.fromNamespaceAndPath("c", "ingots/chem_steel")));
+    public static final DeferredItem<com.pockyl.hextale.item.ChemToolItem> CHEM_STEEL_PICKAXE = ITEMS.registerItem("chem_steel_pickaxe",
+            properties -> new com.pockyl.hextale.item.ChemToolItem(com.pockyl.hextale.chem.ChemGear.Kind.PICKAXE, chemTool(properties.pickaxe(CHEM_STEEL_TOOLS, com.pockyl.hextale.chem.ChemGear.Kind.PICKAXE.extra(com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[3]),
+                    com.pockyl.hextale.chem.ChemGear.Kind.PICKAXE.attackSpeed()))));
+    public static final DeferredItem<com.pockyl.hextale.item.ChemToolItem> CHEM_STEEL_AXE = ITEMS.registerItem("chem_steel_axe",
+            properties -> new com.pockyl.hextale.item.ChemToolItem(com.pockyl.hextale.chem.ChemGear.Kind.AXE, chemTool(properties.axe(CHEM_STEEL_TOOLS, com.pockyl.hextale.chem.ChemGear.Kind.AXE.extra(com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[3]),
+                    com.pockyl.hextale.chem.ChemGear.Kind.AXE.attackSpeed()))));
+    public static final DeferredItem<com.pockyl.hextale.item.ChemToolItem> CHEM_STEEL_SHOVEL = ITEMS.registerItem("chem_steel_shovel",
+            properties -> new com.pockyl.hextale.item.ChemToolItem(com.pockyl.hextale.chem.ChemGear.Kind.SHOVEL, chemTool(properties.shovel(CHEM_STEEL_TOOLS, com.pockyl.hextale.chem.ChemGear.Kind.SHOVEL.extra(com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[3]),
+                    com.pockyl.hextale.chem.ChemGear.Kind.SHOVEL.attackSpeed()))));
+    public static final DeferredItem<com.pockyl.hextale.item.ChemToolItem> CHEM_STEEL_SWORD = ITEMS.registerItem("chem_steel_sword",
+            properties -> new com.pockyl.hextale.item.ChemToolItem(com.pockyl.hextale.chem.ChemGear.Kind.SWORD, chemTool(properties.sword(CHEM_STEEL_TOOLS, com.pockyl.hextale.chem.ChemGear.Kind.SWORD.extra(com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[3]),
+                    com.pockyl.hextale.chem.ChemGear.Kind.SWORD.attackSpeed()))));
+
+    /**
+     * Chemtech gear never breaks; its bar is the tank's level. The attribute lines are hidden: they would always show the
+     * full strength, the item's own tooltip lists what the worn fuel gives.
+     */
+    private static Item.Properties chemTool(Item.Properties properties) {
+        return properties.component(DataComponents.UNBREAKABLE, net.minecraft.util.Unit.INSTANCE).rarity(Rarity.EPIC).fireResistant()
+                .component(DataComponents.TOOLTIP_DISPLAY, net.minecraft.world.item.component.TooltipDisplay.DEFAULT
+                        .withHidden(DataComponents.ATTRIBUTE_MODIFIERS, true));
+    }
+    public static final DeferredItem<BlockItem> CHEM_STEEL_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_STEEL_BLOCK);
+    public static final DeferredItem<BlockItem> CHEM_STEEL_PLATING = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_STEEL_PLATING);
+    public static final DeferredItem<BlockItem> CHEM_STEEL_PLATING_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_STEEL_PLATING_STAIRS);
+    public static final DeferredItem<BlockItem> CHEM_STEEL_PLATING_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_STEEL_PLATING_SLAB);
     public static final DeferredItem<BlockItem> SHIMMERBLOOM = ITEMS.registerSimpleBlockItem(ModBlocks.SHIMMERBLOOM);
     public static final DeferredItem<BlockItem> SHIMMER_MOSS = ITEMS.registerSimpleBlockItem(ModBlocks.SHIMMER_MOSS);
     public static final DeferredItem<BlockItem> SHIMMER_MOSS_CARPET = ITEMS.registerSimpleBlockItem(ModBlocks.SHIMMER_MOSS_CARPET);
@@ -432,6 +473,26 @@ public final class ModItems {
             properties -> new Item(properties.humanoidArmor(HEXSTEEL_ARMOR, ArmorType.LEGGINGS)));
     public static final DeferredItem<Item> HEXSTEEL_BOOTS = ITEMS.registerItem("hexsteel_boots",
             properties -> new Item(properties.humanoidArmor(HEXSTEEL_ARMOR, ArmorType.BOOTS)));
+
+    /**
+     * Chem-steel armour: registered at full strength (Bulwark level 4), unbreakable, as protective as the fuel in the tank
+     * on the wearer's back lets it be ({@link com.pockyl.hextale.chem.ChemGear}). The worn look is the hexsteel one for now.
+     */
+    private static final ArmorMaterial CHEM_STEEL_ARMOR = com.pockyl.hextale.GearConfig.BULWARK[3].material(13, 15,
+            SoundEvents.ARMOR_EQUIP_NETHERITE, net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM,
+                    net.minecraft.resources.Identifier.fromNamespaceAndPath("c", "ingots/chem_steel")), HEXSTEEL_ASSET);
+    public static final DeferredItem<com.pockyl.hextale.item.ChemArmourItem> CHEM_STEEL_HELMET = ITEMS.registerItem("chem_steel_helmet",
+            properties -> new com.pockyl.hextale.item.ChemArmourItem(ArmorType.HELMET, chemTool(properties.humanoidArmor(CHEM_STEEL_ARMOR, ArmorType.HELMET))));
+    public static final DeferredItem<com.pockyl.hextale.item.ChemArmourItem> CHEM_STEEL_CHESTPLATE = ITEMS.registerItem("chem_steel_chestplate",
+            properties -> new com.pockyl.hextale.item.ChemArmourItem(ArmorType.CHESTPLATE, chemTool(properties.humanoidArmor(CHEM_STEEL_ARMOR, ArmorType.CHESTPLATE))));
+    public static final DeferredItem<com.pockyl.hextale.item.ChemArmourItem> CHEM_STEEL_LEGGINGS = ITEMS.registerItem("chem_steel_leggings",
+            properties -> new com.pockyl.hextale.item.ChemArmourItem(ArmorType.LEGGINGS, chemTool(properties.humanoidArmor(CHEM_STEEL_ARMOR, ArmorType.LEGGINGS))));
+    /** The chem-steel chestplate with a built-in tank: armour and fuel tank in one piece. */
+    public static final DeferredItem<com.pockyl.hextale.item.ChemTankChestplateItem> CHEM_STEEL_TANK_CHESTPLATE = ITEMS.registerItem(
+            "chem_steel_tank_chestplate", properties -> new com.pockyl.hextale.item.ChemTankChestplateItem(
+                    chemTool(properties.humanoidArmor(CHEM_STEEL_ARMOR, ArmorType.CHESTPLATE))));
+    public static final DeferredItem<com.pockyl.hextale.item.ChemArmourItem> CHEM_STEEL_BOOTS = ITEMS.registerItem("chem_steel_boots",
+            properties -> new com.pockyl.hextale.item.ChemArmourItem(ArmorType.BOOTS, chemTool(properties.humanoidArmor(CHEM_STEEL_ARMOR, ArmorType.BOOTS))));
 
 
     // Bulwark armour in four levels (brass over blued steel, a crystal heart in the chestplate). The look is a placeholder

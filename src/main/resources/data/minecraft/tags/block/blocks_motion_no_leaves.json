@@ -139,6 +139,10 @@
     "hextale:garden_trellis",
     "hextale:sap_tap",
     "hextale:steeped_soil",
-    "hextale:sap_gourd"
+    "hextale:sap_gourd",
+    "hextale:chem_vat",
+    "hextale:chem_steel_block",
+    "hextale:chem_steel_plating",
+    "hextale:chem_tank"
   ]
 }

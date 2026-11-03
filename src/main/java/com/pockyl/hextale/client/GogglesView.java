@@ -229,6 +229,10 @@ public final class GogglesView {
             rows.add(Row.heading(Component.translatable(KEY + "still.refined", still.output().getCount())));
             return new Reading(name, rows);
         }
+        if (entity instanceof com.pockyl.hextale.block.ChemVatBlockEntity vat) {
+            rows.add(Row.heading(vat.status()));
+            return new Reading(name, rows);
+        }
         if (entity instanceof com.pockyl.hextale.block.PinkBrazierBlockEntity brazier) {
             rows.add(Row.heading(brazier.status()));
             if (!brazier.fuel().isEmpty()) {

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "hextale:block/chem_tank"
+    },
+    "facing=east": {
+      "model": "hextale:block/chem_tank",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "hextale:block/chem_tank",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "hextale:block/chem_tank",
+      "y": 270
+    }
+  }
+}

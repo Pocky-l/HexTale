@@ -6,6 +6,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- The Chem Still shows the Crystal Pods it holds, lying on its base behind the receiver.
+- JEI shows what the Chem Vat tempers: the metals, the vials of acid and shimmer its bath must hold, and the result.
+- Chem-steel tools and armour are 3D models, with glass in the colour of the fuel in the tank you wear (dark when it is
+  empty; shimmer glows). The armour: riveted plates over dark leather, copper hoses, a respirator with glass filters.
+- While you wear a Chem Tank, a small glass gauge beside the hotbar shows its fuel in the fuel's colour.
+- Chem-Steel Tank Chestplate (its own Lab Bench research): a chem-steel chestplate with the tank built into its back, so
+  armour and fuel take one slot. It fills, pumps and feeds the gear like a Chem Tank.
+- Chem-steel armour (one Lab Bench research for the whole set): helmet, chestplate, leggings and boots that never break
+  and take no runes. Like the tools they run on the Chem Tank: refined shimmer gives the riftforged Bulwark's protection,
+  ember oil the refined one's; with an empty tank they guard little better than leather. Every blow they take burns a
+  little fuel.
+- Chem-steel tools (late chemtech, one Lab Bench research for all four): pickaxe, axe, shovel and sword that never
+  break and take no runes. They run on the Chem Tank on your back: refined shimmer gives the full strength of the
+  riftforged tools, raw shimmer that of the radiant ones, ember oil that of the refined ones; with an empty tank they dig
+  slower than stone tools and hit barely harder than a fist. Their tooltip shows what they give with the fuel you wear,
+  their bar the tank's fuel; every block and every hit spends a little of it. The sword never breaks blocks, so a missed
+  swing cannot dig.
+- Chem Tank (late chemtech, worked out at the Lab Bench, made of chem-steel): a glass fuel tank in leather straps
+  worn on the back - in the chest slot, or in the back slot when Curios is installed. It holds one fuel at a time (ember
+  oil, raw or refined shimmer), shown through its glass on the wearer's back and as the bar of the item; fuel vials
+  clicked onto it in the inventory pour in. Set down, it is filled with vials by hand or hopper, and an empty hand on it
+  pumps its fuel into the tank you wear. It keeps its fuel when broken. Chemtech tools and armour that run on it come next.
+- Chem Vat (late chemtech, worked out at the Lab Bench): a 3x3x3 tank of rusted plating over a Chem Burner, with
+  Chem Glass in three sides, a Rusted Grate on top and the new Chem Vat Valve in front, sealed with a vial of acid. Pour
+  acid and refined shimmer into its bath, give its fire vials of combustible mix or ember oil, and drop in metal - by
+  hand, by hopper or thrown on the grate. It tempers two iron ingots and a netherite scrap into a Chem-Steel Ingot; the
+  bath shows through the glass, green with acid and violet with shimmer.
+- Chem-steel decor: Block of Chem-Steel, Chem-Steel Plating with stairs and slab.
 - Ember Oil (worked out at the Lab Bench): Ember Wheat boiled in the Crucible with magma and sap essence gives four vials
   of a thick amber fuel that burns half as long again as the combustible mix in a Chem Burner or a furnace.
 - Shimmer Bulbs brew raw shimmer: a bulb in the Crucible with sap and light essence gives six vials, twice what a

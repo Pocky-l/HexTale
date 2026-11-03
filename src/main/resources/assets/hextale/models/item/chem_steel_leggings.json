@@ -1,0 +1,6 @@
+{
+  "parent": "hextale:item/bulwark_leggings",
+  "textures": {
+    "particle": "hextale:item/chem_steel_ingot"
+  }
+}

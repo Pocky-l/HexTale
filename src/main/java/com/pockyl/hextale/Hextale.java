@@ -63,6 +63,7 @@ public final class Hextale {
         modBus.addListener((net.neoforged.neoforge.common.world.chunk.RegisterTicketControllersEvent event) ->
                 event.register(com.pockyl.hextale.block.WorldAnchorBlock.TICKETS));
         PickaxeEffects.register();
+        com.pockyl.hextale.chem.ChemGear.register();
         com.pockyl.hextale.runework.ToolEffects.register();
         com.pockyl.hextale.runework.WeaponRunes.register();
         com.pockyl.hextale.farm.FunnelEvents.register();
@@ -134,6 +135,17 @@ public final class Hextale {
         // Chemtech.
         output.accept(ModItems.CHEM_BURNER);
         output.accept(ModItems.CHEM_STILL);
+        output.accept(ModItems.CHEM_VAT);
+        output.accept(ModItems.CHEM_TANK);
+        output.accept(ModItems.CHEM_STEEL_PICKAXE);
+        output.accept(ModItems.CHEM_STEEL_AXE);
+        output.accept(ModItems.CHEM_STEEL_SHOVEL);
+        output.accept(ModItems.CHEM_STEEL_SWORD);
+        output.accept(ModItems.CHEM_STEEL_HELMET);
+        output.accept(ModItems.CHEM_STEEL_CHESTPLATE);
+        output.accept(ModItems.CHEM_STEEL_TANK_CHESTPLATE);
+        output.accept(ModItems.CHEM_STEEL_LEGGINGS);
+        output.accept(ModItems.CHEM_STEEL_BOOTS);
         output.accept(ModItems.CHEM_BOILER);
         output.accept(ModItems.AXOLOTL_TANK);
         output.accept(ModItems.PINK_BRAZIER);
@@ -335,6 +347,11 @@ public final class Hextale {
         output.accept(ModItems.RUSTED_PLATING_SLAB);
         output.accept(ModItems.RIVETED_RUSTED_PLATING);
         output.accept(ModItems.RUSTED_GRATE);
+        output.accept(ModItems.CHEM_STEEL_INGOT);
+        output.accept(ModItems.CHEM_STEEL_BLOCK);
+        output.accept(ModItems.CHEM_STEEL_PLATING);
+        output.accept(ModItems.CHEM_STEEL_PLATING_STAIRS);
+        output.accept(ModItems.CHEM_STEEL_PLATING_SLAB);
         output.accept(ModItems.CHEM_TUBES);
         output.accept(ModItems.BRASS_GRATE);
         output.accept(ModItems.CHEM_GLASS);

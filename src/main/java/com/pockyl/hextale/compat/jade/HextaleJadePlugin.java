@@ -53,6 +53,8 @@ public class HextaleJadePlugin implements IWailaPlugin {
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.ChemBurnerBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.AxolotlTankBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.ChemStillBlock.class);
+        registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.ChemVatBlock.class);
+        registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.ChemTankBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.ChemBoilerBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.HextechLamppostBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.PinkBrazierBlock.class);
@@ -130,6 +132,10 @@ public class HextaleJadePlugin implements IWailaPlugin {
                 tooltip.add(tank.status());
             } else if (entity instanceof com.pockyl.hextale.block.ChemStillBlockEntity still) {
                 tooltip.add(still.status());
+            } else if (entity instanceof com.pockyl.hextale.block.ChemVatBlockEntity vat) {
+                tooltip.add(vat.status());
+            } else if (entity instanceof com.pockyl.hextale.block.ChemTankBlockEntity tank) {
+                tooltip.add(com.pockyl.hextale.block.ChemTankBlock.status(tank.contents()));
             } else if (entity instanceof com.pockyl.hextale.block.HextechLamppostBlockEntity post) {
                 tooltip.add(post.status());
             } else if (entity instanceof com.pockyl.hextale.block.ChemBoilerBlockEntity boiler) {

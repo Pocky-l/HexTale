@@ -2,6 +2,7 @@
   "values": [
     "#c:ingots/zinc",
     "#c:ingots/brass",
-    "#c:ingots/hexsteel"
+    "#c:ingots/hexsteel",
+    "#c:ingots/chem_steel"
   ]
 }

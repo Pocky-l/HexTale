@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:chem_tank",
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "include": [
+              "hextale:chem_tank"
+            ],
+            "source": "block_entity"
+          }
+        }
+      ]
+    }
+  ],
+  "random_sequence": "hextale:blocks/chem_tank"
+}

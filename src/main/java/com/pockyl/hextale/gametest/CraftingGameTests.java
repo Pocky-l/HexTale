@@ -63,6 +63,10 @@ public final class CraftingGameTests {
         helper.assertTrue(last >= 19.0F, "level 4 instamines stone with Efficiency V");
         helper.assertTrue(new ItemStack(ModItems.RIFTFORGED_BULWARK_CHESTPLATE.get()).getMaxDamage()
                         > new ItemStack(Items.NETHERITE_CHESTPLATE).getMaxDamage(), "level 4 armour outlasts netherite");
+        // Chemtech fuels borrow levels 2-4: the best fuel gives the top level.
+        helper.assertTrue(com.pockyl.hextale.chem.ChemFuel.EMBER_OIL.tools() == com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[1]
+                && com.pockyl.hextale.chem.ChemFuel.REFINED_SHIMMER.tools() == com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[3],
+                "ember oil gives level 2, refined shimmer level 4");
         helper.succeed();
     }
 

@@ -1950,6 +1950,90 @@
         "shadow": 2
       },
       "tier": 3
+    },
+    "hextale:chem_vat": {
+      "essences": {
+        "metal": 3,
+        "decay": 2
+      },
+      "tier": 3
+    },
+    "hextale:chem_steel_ingot": {
+      "essences": {
+        "metal": 4,
+        "decay": 1
+      },
+      "tier": 3
+    },
+    "hextale:chem_tank": {
+      "essences": {
+        "metal": 3,
+        "water": 2
+      },
+      "tier": 3
+    },
+    "hextale:chem_steel_pickaxe": {
+      "essences": {
+        "metal": 4,
+        "decay": 1
+      },
+      "tier": 3
+    },
+    "hextale:chem_steel_axe": {
+      "essences": {
+        "metal": 4,
+        "decay": 1
+      },
+      "tier": 3
+    },
+    "hextale:chem_steel_shovel": {
+      "essences": {
+        "metal": 2,
+        "decay": 1
+      },
+      "tier": 3
+    },
+    "hextale:chem_steel_sword": {
+      "essences": {
+        "metal": 3,
+        "decay": 1
+      },
+      "tier": 3
+    },
+    "hextale:chem_steel_helmet": {
+      "essences": {
+        "metal": 4,
+        "decay": 1
+      },
+      "tier": 3
+    },
+    "hextale:chem_steel_chestplate": {
+      "essences": {
+        "metal": 6,
+        "decay": 1
+      },
+      "tier": 3
+    },
+    "hextale:chem_steel_leggings": {
+      "essences": {
+        "metal": 5,
+        "decay": 1
+      },
+      "tier": 3
+    },
+    "hextale:chem_steel_boots": {
+      "essences": {
+        "metal": 3,
+        "decay": 1
+      },
+      "tier": 3
+    },
+    "hextale:chem_steel_tank_chestplate": {
+      "essences": {
+        "metal": 6,
+        "water": 2
+      },
+      "tier": 3
     }
   }
 }

@@ -1,0 +1,6 @@
+{
+  "parent": "hextale:item/bulwark_boots",
+  "textures": {
+    "particle": "hextale:item/chem_steel_ingot"
+  }
+}

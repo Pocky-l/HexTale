@@ -58,6 +58,12 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.LapidaryBlockEntity>> LAPIDARY =
             BLOCK_ENTITIES.register("hex_lapidary", () -> new BlockEntityType<>(com.pockyl.hextale.block.LapidaryBlockEntity::new,
                     ModBlocks.HEX_LAPIDARY.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChemTankBlockEntity>> CHEM_TANK =
+            BLOCK_ENTITIES.register("chem_tank", () -> new BlockEntityType<>(com.pockyl.hextale.block.ChemTankBlockEntity::new,
+                    ModBlocks.CHEM_TANK.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChemVatBlockEntity>> CHEM_VAT =
+            BLOCK_ENTITIES.register("chem_vat", () -> new BlockEntityType<>(com.pockyl.hextale.block.ChemVatBlockEntity::new,
+                    ModBlocks.CHEM_VAT.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexFoundryBlockEntity>> HEX_FOUNDRY =
             BLOCK_ENTITIES.register("hex_foundry", () -> new BlockEntityType<>(com.pockyl.hextale.block.HexFoundryBlockEntity::new,
                     ModBlocks.HEX_FOUNDRY.get()));

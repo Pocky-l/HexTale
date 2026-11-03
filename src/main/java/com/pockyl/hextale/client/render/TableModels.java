@@ -77,6 +77,8 @@ public final class TableModels {
     /** The Chem Boiler's gauge needle (built pointing up from {@code ChemBoilerRenderer.NEEDLE_PIVOT}) and safety valve. */
     public static final StandaloneModelKey<BlockStateModelPart> CHEM_BOILER_NEEDLE = model("block/chem_boiler_needle");
     public static final StandaloneModelKey<BlockStateModelPart> CHEM_BOILER_VALVE = model("block/chem_boiler_valve");
+    /** The Chem Tank as worn: shoulder and chest straps, drawn on the player's back by {@link ChemTankLayer}. */
+    public static final StandaloneModelKey<BlockStateModelPart> CHEM_TANK_WORN = model("item/chem_tank_worn");
 
     private TableModels() {
     }
@@ -106,5 +108,14 @@ public final class TableModels {
     public static void submit(PoseStack poseStack, SubmitNodeCollector collector, StandaloneModelKey<BlockStateModelPart> key, int light) {
         BlockStateModelPart part = Minecraft.getInstance().getModelManager().getStandaloneModel(key);
         collector.submitMultiLayerBlockModel(poseStack, List.of(part), false, NO_TINTS, light, OverlayTexture.NO_OVERLAY, 0);
+    }
+
+    /** Draws a block state's own model (any block of the world) at the pose, untinted. */
+    public static void submitState(PoseStack poseStack, SubmitNodeCollector collector, net.minecraft.world.level.block.state.BlockState state,
+                                   int light) {
+        java.util.List<BlockStateModelPart> parts = new java.util.ArrayList<>();
+        Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(state)
+                .collectParts(net.minecraft.util.RandomSource.create(42L), parts);
+        collector.submitMultiLayerBlockModel(poseStack, parts, false, NO_TINTS, light, OverlayTexture.NO_OVERLAY, 0);
     }
 }

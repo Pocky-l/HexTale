@@ -123,6 +123,12 @@
     "hextale:chem_planter",
     "hextale:essence_sprinkler",
     "hextale:sap_tap",
-    "hextale:garden_trellis"
+    "hextale:garden_trellis",
+    "hextale:chem_vat",
+    "hextale:chem_steel_block",
+    "hextale:chem_steel_plating",
+    "hextale:chem_steel_plating_stairs",
+    "hextale:chem_steel_plating_slab",
+    "hextale:chem_tank"
   ]
 }

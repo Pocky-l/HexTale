@@ -56,6 +56,7 @@ public final class Multiblocks {
 
     public static final BigEssenceJar BIG_ESSENCE_JAR = register(new BigEssenceJar());
     public static final HexFoundry HEX_FOUNDRY = register(new HexFoundry());
+    public static final ChemVat CHEM_VAT = register(new ChemVat());
 
     private Multiblocks() {
     }

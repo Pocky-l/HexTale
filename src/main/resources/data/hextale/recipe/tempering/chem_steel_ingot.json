@@ -1,0 +1,20 @@
+{
+  "type": "hextale:tempering",
+  "inputs": [
+    {
+      "ingredient": "#c:ingots/iron",
+      "count": 2
+    },
+    {
+      "ingredient": "minecraft:netherite_scrap",
+      "count": 1
+    }
+  ],
+  "acid": 1,
+  "shimmer": 1,
+  "result": {
+    "id": "hextale:chem_steel_ingot"
+  },
+  "time": 600,
+  "thinning": 4.0
+}

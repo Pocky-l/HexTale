@@ -107,6 +107,7 @@ public class HextaleJeiPlugin implements IModPlugin {
                 new RuneBurningCategory(registration.getJeiHelpers().getGuiHelper()),
                 new HexCraftingCategory(registration.getJeiHelpers().getGuiHelper()),
                 new AlloyingCategory(registration.getJeiHelpers().getGuiHelper()),
+                new TemperingCategory(registration.getJeiHelpers().getGuiHelper()),
                 HextechWorkingCategory.create(registration.getJeiHelpers().getGuiHelper()),
                 new CrucibleCategory(registration.getJeiHelpers().getGuiHelper()),
                 new BrewingCategory(registration.getJeiHelpers().getGuiHelper()),
@@ -144,6 +145,8 @@ public class HextaleJeiPlugin implements IModPlugin {
                 .map(entry -> new HexCraftingCategory.Recipe(entry.getKey(), entry.getValue())).toList());
         registration.addRecipes(AlloyingCategory.TYPE, com.pockyl.hextale.crafting.AlloyRecipe.ALL.get(true).entrySet().stream()
                 .map(entry -> new AlloyingCategory.Recipe(entry.getKey(), entry.getValue())).toList());
+        registration.addRecipes(TemperingCategory.TYPE, com.pockyl.hextale.crafting.TemperingRecipe.ALL.get(true).entrySet().stream()
+                .map(entry -> new TemperingCategory.Recipe(entry.getKey(), entry.getValue())).toList());
         registration.addRecipes(HextechWorkingCategory.TYPE, HextechWorkingCategory.all());
         registration.addRecipes(CrucibleCategory.TYPE, com.pockyl.hextale.crafting.CrucibleRecipe.ALL.get(true).entrySet().stream()
                 .map(entry -> new CrucibleCategory.Recipe(entry.getKey(), entry.getValue())).toList());
@@ -196,6 +199,8 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.AXOLOTL_TANK.get(), "axolotl_tank");
         info(registration, ModItems.REGENERATIVE_SLIME.get(), "regenerative_slime");
         info(registration, ModItems.CHEM_STILL.get(), "chem_still");
+        info(registration, ModItems.CHEM_VAT.get(), "chem_vat");
+        info(registration, ModItems.CHEM_TANK.get(), "chem_tank");
         info(registration, ModItems.CHEM_BOILER.get(), "chem_boiler");
         info(registration, ModItems.HEXTECH_LAMPPOST.get(), "hextech_lamppost");
         info(registration, ModItems.LAB_BENCH.get(), "lab_bench");
@@ -283,6 +288,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addCraftingStation(mezz.jei.api.constants.RecipeTypes.CRAFTING, ModItems.HEX_WORKBENCH.get());
         registration.addCraftingStation(AlloyingCategory.TYPE, ModItems.HEX_FURNACE.get());
         registration.addCraftingStation(AlloyingCategory.TYPE, ModItems.HEX_FOUNDRY.get());
+        registration.addCraftingStation(TemperingCategory.TYPE, ModItems.CHEM_VAT.get(), ModItems.CHEM_BURNER.get());
         registration.addCraftingStation(mezz.jei.api.constants.RecipeTypes.SMELTING, ModItems.HEX_FURNACE.get());
         registration.addCraftingStation(mezz.jei.api.constants.RecipeTypes.SMELTING, ModItems.HEX_FOUNDRY.get());
         registration.addCraftingStation(HextechWorkingCategory.TYPE, ModItems.HEX_LAPIDARY.get());
