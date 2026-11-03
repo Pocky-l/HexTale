@@ -117,6 +117,8 @@ public final class Hextale {
         output.accept(ModItems.NULLSTONE);
         output.accept(ModItems.HEXTECH_LAMP);
         output.accept(ModItems.HEXTECH_LAMPPOST);
+        output.accept(ModItems.HEX_WISP);
+        ModItems.DYED_WISPS.values().forEach(output::accept);
 
         // Essence works.
         output.accept(ModItems.ALEMBIC);

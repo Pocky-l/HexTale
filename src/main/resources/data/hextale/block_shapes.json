@@ -34,6 +34,15 @@
   "hextale:big_essence_jar": {"mode": "all", "cases": [
     {"boxes": []}
   ]},
+  "hextale:black_hex_wisp": {"mode": "first", "cases": [
+    {"when": {}, "boxes": []}
+  ]},
+  "hextale:blue_hex_wisp": {"mode": "first", "cases": [
+    {"when": {}, "boxes": []}
+  ]},
+  "hextale:brown_hex_wisp": {"mode": "first", "cases": [
+    {"when": {}, "boxes": []}
+  ]},
   "hextale:chalk_mark": {"mode": "first", "cases": [
     {"when": {"facing": "north", "glyph": "0", "lit": "false"}, "boxes": []},
     {"when": {"facing": "north", "glyph": "0", "lit": "true"}, "boxes": []},
@@ -152,6 +161,9 @@
     {"when": {"level": "2"}, "boxes": [[2, 0, 2, 14, 13, 14]]},
     {"when": {"level": "3"}, "boxes": [[2, 0, 2, 14, 13, 14]]},
     {"when": {"level": "4"}, "boxes": [[2, 0, 2, 14, 13, 14]]}
+  ]},
+  "hextale:cyan_hex_wisp": {"mode": "first", "cases": [
+    {"when": {}, "boxes": []}
   ]},
   "hextale:drain_valve": {"mode": "all", "cases": [
     {"boxes": [[6, 0, 6, 10, 15, 10], [5, 5, 5, 11, 13, 11], [3, 13, 3, 13, 14, 13]], "when": {"open": "false"}},
@@ -299,6 +311,12 @@
     {"boxes": [[8, 0, 5, 16, 16, 11]], "when": {"east": "tall"}},
     {"boxes": [[5, 0, 8, 11, 16, 16]], "when": {"south": "tall"}},
     {"boxes": [[0, 0, 5, 8, 16, 11]], "when": {"west": "tall"}}
+  ]},
+  "hextale:gray_hex_wisp": {"mode": "first", "cases": [
+    {"when": {}, "boxes": []}
+  ]},
+  "hextale:green_hex_wisp": {"mode": "first", "cases": [
+    {"when": {}, "boxes": []}
   ]},
   "hextale:hex_furnace": {"mode": "all", "cases": [
     {"boxes": [[1, 0, 1, 15, 15, 15], [2, 0, 3, 14, 17, 13], [5, 17, 7, 11, 24, 13]], "when": {"facing": "north", "lit": "false"}},
@@ -514,6 +532,18 @@
     {"when": {"facing": "up", "waterlogged": "true"}, "boxes": []},
     {"when": {"facing": "west", "waterlogged": "false"}, "boxes": []},
     {"when": {"facing": "west", "waterlogged": "true"}, "boxes": []}
+  ]},
+  "hextale:light_blue_hex_wisp": {"mode": "first", "cases": [
+    {"when": {}, "boxes": []}
+  ]},
+  "hextale:light_gray_hex_wisp": {"mode": "first", "cases": [
+    {"when": {}, "boxes": []}
+  ]},
+  "hextale:lime_hex_wisp": {"mode": "first", "cases": [
+    {"when": {}, "boxes": []}
+  ]},
+  "hextale:magenta_hex_wisp": {"mode": "first", "cases": [
+    {"when": {}, "boxes": []}
   ]},
   "hextale:magic_brick_slab": {"mode": "first", "cases": [
     {"when": {"type": "bottom"}, "boxes": [[0, 0, 0, 16, 8, 16]]},
@@ -771,6 +801,9 @@
     {"when": {"hanging": "true", "waterlogged": "false"}, "boxes": [[5, 1, 5, 11, 10, 11]]},
     {"when": {"hanging": "true", "waterlogged": "true"}, "boxes": [[5, 1, 5, 11, 10, 11]]}
   ]},
+  "hextale:orange_hex_wisp": {"mode": "first", "cases": [
+    {"when": {}, "boxes": []}
+  ]},
   "hextale:pearl_sac": {"mode": "first", "cases": [
     {"when": {"facing": "down"}, "boxes": [[4, 7, 4, 12, 14, 12], [7, 14, 7, 9, 16, 9]]},
     {"when": {"facing": "east"}, "boxes": [[2, 4, 4, 9, 12, 12], [0, 7, 7, 9, 9, 9]]},
@@ -785,6 +818,9 @@
   "hextale:pink_brazier": {"mode": "first", "cases": [
     {"when": {"lit": "false"}, "boxes": [[0, 0, 7, 5, 1, 9], [2, 0, 2, 4, 3, 4], [2, 0, 12, 4, 3, 14], [7, 0, 0, 9, 1, 5], [7, 0, 11, 9, 1, 16], [11, 0, 7, 16, 1, 9], [12, 0, 2, 14, 3, 4], [12, 0, 12, 14, 3, 14], [3, 1, 7, 5, 4, 9], [7, 1, 3, 9, 3, 5], [7, 1, 11, 9, 3, 13], [11, 1, 7, 13, 3, 9], [3, 3, 3, 13, 5, 13], [2, 10, 2, 14, 11, 14]]},
     {"when": {"lit": "true"}, "boxes": [[0, 0, 7, 5, 1, 9], [2, 0, 2, 4, 3, 4], [2, 0, 12, 4, 3, 14], [7, 0, 0, 9, 1, 5], [7, 0, 11, 9, 1, 16], [11, 0, 7, 16, 1, 9], [12, 0, 2, 14, 3, 4], [12, 0, 12, 14, 3, 14], [3, 1, 7, 5, 4, 9], [7, 1, 3, 9, 3, 5], [7, 1, 11, 9, 3, 13], [11, 1, 7, 13, 3, 9], [3, 3, 3, 13, 5, 13], [2, 10, 2, 14, 11, 14]]}
+  ]},
+  "hextale:pink_hex_wisp": {"mode": "first", "cases": [
+    {"when": {}, "boxes": []}
   ]},
   "hextale:polished_husk_chitin_slab": {"mode": "first", "cases": [
     {"when": {"type": "bottom"}, "boxes": [[0, 0, 0, 16, 8, 16]]},
@@ -841,6 +877,12 @@
   ]},
   "hextale:pump": {"mode": "first", "cases": [
     {"when": {}, "boxes": [[2, 0, 2, 14, 1, 14], [4, 1, 4, 12, 13, 12], [3, 4, 3, 13, 11, 13], [12, 8, 11, 15, 10, 14], [13, 9, 6, 15, 11, 11], [11, 11, 4, 15, 12, 9], [14, 12, 1, 15, 14, 5], [6, 13, 6, 10, 16, 10]]}
+  ]},
+  "hextale:purple_hex_wisp": {"mode": "first", "cases": [
+    {"when": {}, "boxes": []}
+  ]},
+  "hextale:red_hex_wisp": {"mode": "first", "cases": [
+    {"when": {}, "boxes": []}
   ]},
   "hextale:relay_pylon": {"mode": "first", "cases": [
     {"when": {}, "boxes": [[3, 0, 3, 13, 1, 13], [5, 1, 5, 11, 12, 11], [4, 12, 7, 6, 15, 9], [7, 12, 4, 9, 15, 6], [7, 12, 10, 9, 15, 12], [10, 12, 7, 12, 15, 9]]}
@@ -1320,10 +1362,16 @@
   "hextale:whirl_reaper": {"mode": "first", "cases": [
     {"when": {}, "boxes": [[2, 0, 2, 14, 4, 14], [1, 4, 0, 14, 11, 13], [6, 11, 6, 10, 15, 10]]}
   ]},
+  "hextale:white_hex_wisp": {"mode": "first", "cases": [
+    {"when": {}, "boxes": []}
+  ]},
   "hextale:world_anchor": {"mode": "first", "cases": [
     {"when": {}, "boxes": [[0, 0, 0, 16, 2, 16], [1, 2, 6, 15, 5, 10], [3, 2, 3, 13, 4, 13], [1, 5, 7, 4, 7, 9], [7, 5, 7, 9, 13, 9], [12, 5, 7, 15, 9, 9], [0, 7, 7, 3, 11, 9], [14, 7, 7, 16, 11, 9]]}
   ]},
   "hextale:xp_condenser": {"mode": "first", "cases": [
     {"when": {}, "boxes": [[1, 0, 1, 15, 2, 15], [2, 2, 2, 14, 14, 14], [6, 14, 6, 10, 16, 10]]}
+  ]},
+  "hextale:yellow_hex_wisp": {"mode": "first", "cases": [
+    {"when": {}, "boxes": []}
   ]}
 }

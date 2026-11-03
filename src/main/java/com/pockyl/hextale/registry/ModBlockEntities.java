@@ -71,7 +71,7 @@ public final class ModBlockEntities {
                     ModBlocks.HEX_SAWMILL.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexWispBlock.Glow>> HEX_WISP =
             BLOCK_ENTITIES.register("hex_wisp", () -> new BlockEntityType<>(com.pockyl.hextale.block.HexWispBlock.Glow::new,
-                    ModBlocks.HEX_WISP.get()));
+                    java.util.Set.copyOf(ModBlocks.wisps())));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.DisintegratorBlock.Bowl>> DISINTEGRATOR =
             BLOCK_ENTITIES.register("disintegrator", () -> new BlockEntityType<>(com.pockyl.hextale.block.DisintegratorBlock.Bowl::new,
                     ModBlocks.DISINTEGRATOR.get()));

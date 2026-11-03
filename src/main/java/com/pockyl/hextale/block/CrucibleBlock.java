@@ -52,7 +52,8 @@ import org.jspecify.annotations.Nullable;
 public class CrucibleBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     private static final VoxelShape INSIDE = Block.box(3, 4, 3, 13, 16, 13);
-    private static final VoxelShape SHAPE = Shapes.join(Shapes.or(Block.box(1, 2, 1, 15, 15, 15), Block.box(2, 0, 2, 14, 2, 14)),
+    // Lip to bottom ring, the belly out to the block edge, the legs; hollow inside.
+    private static final VoxelShape SHAPE = Shapes.join(Shapes.or(Block.box(1, 2, 1, 15, 15, 15), Block.box(0, 5, 0, 16, 10, 16), Block.box(2, 0, 2, 14, 2, 14)),
             INSIDE, BooleanOp.ONLY_FIRST);
 
     public CrucibleBlock(Properties properties) {

@@ -5,6 +5,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Wisps can now be made: a torch thrown into the boiling Crucible with a little light and spark essence rises as two
+  Wisps. Set one down by hand and it floats there as a lasting little flame; a touch puts it out at once with a soft
+  puff of sparks in its colour and gives it back.
+- Wisps come in the hextech blue and all sixteen dye colours: mix any Wisp with a dye at the crafting table (hextech
+  dust turns it blue again).
+
+### Changed
+- The Crucible is a heavier cast-iron cauldron with a new model and texture.
+- Wisps the Eternal Flame rune leaves in tunnels still drop nothing, and they still give way to any block put there;
+  Wisps set down by hand keep their spot.
+- Wisps are drawn as round flames that look whole from every side, with twisting tongues, instead of a flat picture.
+- Wisps can be aimed at and put out with anything in hand; only a pickaxe with the Eternal Flame rune looks past them,
+  so digging on never puts out the light it leaves.
+
 ### Fixed
 - Leaving the game in the middle of a passage through a breach or a gate no longer sinks the player into the ground
   (or below the world) on the next visit, and the passage no longer carries the player a dozen blocks off the spot

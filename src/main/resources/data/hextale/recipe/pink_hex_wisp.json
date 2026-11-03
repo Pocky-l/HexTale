@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "dyed_hex_wisp",
+  "ingredients": [
+    "#hextale:hex_wisps",
+    "#c:dyes/pink"
+  ],
+  "result": {
+    "id": "hextale:pink_hex_wisp"
+  }
+}

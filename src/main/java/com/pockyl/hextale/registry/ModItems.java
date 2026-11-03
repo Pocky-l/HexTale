@@ -73,6 +73,9 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> HEXTECH_ALTAR = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_ALTAR,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> HEXTECH_LAMP = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_LAMP);
+    /** A wisp to set down by hand: the hextech blue one and the sixteen dyed ones. */
+    public static final DeferredItem<BlockItem> HEX_WISP = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_WISP);
+    public static final Map<net.minecraft.world.item.DyeColor, DeferredItem<BlockItem>> DYED_WISPS = dyedWisps();
     public static final DeferredItem<BlockItem> HEXTECH_LAMPPOST = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_LAMPPOST,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> HEX_FURNACE = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_FURNACE,
@@ -616,5 +619,11 @@ public final class ModItems {
     public static boolean isPylon(net.minecraft.world.item.ItemStack stack) {
         return stack.is(GATHERING_PYLON.get()) || stack.is(SENDING_PYLON.get()) || stack.is(RELAY_PYLON.get()) || stack.is(SIPHON_PYLON.get())
                 || stack.is(SORTING_MATRIX.get());
+    }
+
+    private static Map<net.minecraft.world.item.DyeColor, DeferredItem<BlockItem>> dyedWisps() {
+        Map<net.minecraft.world.item.DyeColor, DeferredItem<BlockItem>> wisps = new EnumMap<>(net.minecraft.world.item.DyeColor.class);
+        ModBlocks.DYED_WISPS.forEach((dye, block) -> wisps.put(dye, ITEMS.registerSimpleBlockItem(block)));
+        return java.util.Collections.unmodifiableMap(wisps);
     }
 }

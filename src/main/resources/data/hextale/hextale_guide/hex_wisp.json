@@ -1,0 +1,19 @@
+{
+  "region": "chemtech",
+  "icon": "hextale:hex_wisp",
+  "parents": [
+    "crucible"
+  ],
+  "display": {
+    "kind": "scheme",
+    "ingredients": [
+      "minecraft:torch",
+      "hextale:crucible"
+    ],
+    "result": "hextale:hex_wisp"
+  },
+  "pos": [
+    -345,
+    -125
+  ]
+}

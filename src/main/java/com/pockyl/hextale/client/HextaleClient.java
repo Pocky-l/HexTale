@@ -196,6 +196,9 @@ public final class HextaleClient {
                             .append(Component.literal(" " + "★".repeat(entry.stars())).withStyle(ChatFormatting.GOLD)));
                 }
             }
+            if (stack.getItem() instanceof net.minecraft.world.item.BlockItem wisp && wisp.getBlock() instanceof com.pockyl.hextale.block.HexWispBlock) {
+                event.getToolTip().add(Component.translatable("block.hextale.hex_wisp.hint").withStyle(ChatFormatting.GRAY));
+            }
             if (stack.is(ModItems.HEX_SAWMILL.get())) {
                 event.getToolTip().add(Component.translatable("block.hextale.hex_sawmill.hint").withStyle(ChatFormatting.GRAY));
             }

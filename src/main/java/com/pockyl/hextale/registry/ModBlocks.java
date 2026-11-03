@@ -216,10 +216,13 @@ public final class ModBlocks {
     public static final DeferredBlock<RuneCircleBlock> RUNE_CIRCLE = BLOCKS.registerBlock("rune_circle", RuneCircleBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(3.5F, 9.0F).sound(SoundType.POLISHED_DEEPSLATE)
                     .noOcclusion().requiresCorrectToolForDrops().lightLevel(state -> 4));
-    /** A mote of hextech light a pickaxe with the Eternal Flame rune leaves in the dark: no body, no drops, goes out at a touch. */
-    public static final DeferredBlock<HexWispBlock> HEX_WISP = BLOCKS.registerBlock("hex_wisp", HexWispBlock::new,
-            () -> BlockBehaviour.Properties.of().replaceable().noCollision().instabreak().noLootTable().randomTicks().lightLevel(state -> 13)
-                    .sound(SoundType.AMETHYST_CLUSTER).pushReaction(PushReaction.POPPED));
+    /**
+     * A mote of hextech light a pickaxe with the Eternal Flame rune leaves in the dark (or made in the crucible): no body,
+     * goes out at a touch, drops itself only when a player set it down.
+     */
+    public static final DeferredBlock<HexWispBlock> HEX_WISP = BLOCKS.registerBlock("hex_wisp", HexWispBlock::new, ModBlocks::wispProperties);
+    /** The same wisp in the sixteen dye colours ({@code <dye>_hex_wisp}). */
+    public static final java.util.Map<net.minecraft.world.item.DyeColor, DeferredBlock<HexWispBlock>> DYED_WISPS = dyedWisps();
     /** A refined gemstone in a brass cage: stands or hangs like a lantern, full light. */
     public static final DeferredBlock<HextechLampBlock> HEXTECH_LAMP = BLOCKS.registerBlock("hextech_lamp", HextechLampBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.5F).sound(SoundType.LANTERN)
@@ -832,5 +835,30 @@ public final class ModBlocks {
 
     public static void register(IEventBus modBus) {
         BLOCKS.register(modBus);
+    }
+    private static BlockBehaviour.Properties wispProperties() {
+        return BlockBehaviour.Properties.of().replaceable().noCollision().instabreak().randomTicks().lightLevel(state -> 13)
+                .sound(WISP_SOUND).pushReaction(PushReaction.POPPED);
+    }
+
+    /** A wisp goes out with a soft woollen puff, not a clink. */
+    private static final SoundType WISP_SOUND = new SoundType(0.6F, 1.35F, SoundEvents.WOOL_BREAK, SoundEvents.WOOL_STEP,
+            SoundEvents.WOOL_PLACE, SoundEvents.WOOL_HIT, SoundEvents.WOOL_FALL);
+
+    private static java.util.Map<net.minecraft.world.item.DyeColor, DeferredBlock<HexWispBlock>> dyedWisps() {
+        java.util.Map<net.minecraft.world.item.DyeColor, DeferredBlock<HexWispBlock>> wisps = new java.util.EnumMap<>(net.minecraft.world.item.DyeColor.class);
+        for (net.minecraft.world.item.DyeColor dye : net.minecraft.world.item.DyeColor.values()) {
+            wisps.put(dye, BLOCKS.registerBlock(dye.getSerializedName() + "_hex_wisp", properties -> new HexWispBlock(dye, properties),
+                    ModBlocks::wispProperties));
+        }
+        return java.util.Collections.unmodifiableMap(wisps);
+    }
+
+    /** Every wisp: the hextech blue one first, then the dyed ones in dye order. */
+    public static java.util.List<HexWispBlock> wisps() {
+        java.util.List<HexWispBlock> all = new java.util.ArrayList<>();
+        all.add(HEX_WISP.get());
+        DYED_WISPS.values().forEach(wisp -> all.add(wisp.get()));
+        return all;
     }
 }

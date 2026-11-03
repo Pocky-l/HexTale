@@ -177,6 +177,69 @@ public final class CrucibleGameTests {
         });
     }
 
+    /** Light and spark in the boiling water: a torch thrown in rises as two hextech wisps. */
+    @HexTest(maxTicks = 700)
+    public static void aTorchRisesAsWisps(GameTestHelper helper) {
+        helper.setBlock(AT.below(), Blocks.SOUL_CAMPFIRE.defaultBlockState().setValue(CampfireBlock.LIT, true));
+        helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
+        CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
+        crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
+        boolean[] thrown = {false};
+        helper.succeedWhen(() -> {
+            helper.assertTrue(crucible.boiling(), "the water boils");
+            if (!thrown[0]) {
+                thrown[0] = true;
+                crucible.pour(EssenceMix.pure(Essence.LIGHT, 2).plus(EssenceMix.pure(Essence.SPARK, 1)));
+                drop(helper, new ItemStack(Items.TORCH));
+            }
+            int wisps = helper.getLevel().getEntitiesOfClass(ItemEntity.class, new net.minecraft.world.phys.AABB(helper.absolutePos(AT)).inflate(3),
+                    item -> item.getItem().is(com.pockyl.hextale.registry.ModItems.HEX_WISP.get())).stream().mapToInt(item -> item.getItem().getCount()).sum();
+            helper.assertTrue(wisps == 2, "two wisps rose out, not " + wisps);
+        });
+    }
+
+    /**
+     * A wisp set down from its item drops it when put out and keeps its cell; the rune's wisp (any wisp set some other way)
+     * drops nothing and gives way to a block.
+     */
+    @HexTest(padding = 2)
+    public static void onlyAPlacedWispDropsItself(GameTestHelper helper) {
+        BlockPos placed = AT;
+        BlockPos wild = AT.offset(2, 0, 0);
+        var red = ModBlocks.DYED_WISPS.get(net.minecraft.world.item.DyeColor.RED).get();
+        helper.setBlock(placed, red.defaultBlockState().setValue(com.pockyl.hextale.block.HexWispBlock.PLACED, true));
+        helper.setBlock(wild, ModBlocks.HEX_WISP.get());
+        net.minecraft.world.phys.AABB around = new net.minecraft.world.phys.AABB(helper.absolutePos(AT)).inflate(4);
+        helper.getLevel().getEntitiesOfClass(ItemEntity.class, around).forEach(net.minecraft.world.entity.Entity::discard);
+        helper.getLevel().destroyBlock(helper.absolutePos(wild), true);
+        helper.assertTrue(helper.getLevel().getEntitiesOfClass(ItemEntity.class, around).isEmpty(), "the rune's wisp drops nothing");
+        helper.getLevel().destroyBlock(helper.absolutePos(placed), true);
+        helper.assertTrue(helper.getLevel().getEntitiesOfClass(ItemEntity.class, around,
+                item -> item.getItem().is(com.pockyl.hextale.registry.ModItems.DYED_WISPS.get(net.minecraft.world.item.DyeColor.RED).get())).size() == 1,
+                "the placed red wisp drops itself");
+        helper.succeed();
+    }
+
+    /** Only a pickaxe with the Eternal Flame rune looks past a wisp; a plain pickaxe, a block or an empty hand aim at it. */
+    @HexTest
+    public static void onlyAnEternalFlamePickaxeLooksPastAWisp(GameTestHelper helper) {
+        helper.setBlock(AT, ModBlocks.HEX_WISP.get());
+        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        BlockPos at = helper.absolutePos(AT);
+        java.util.function.Supplier<Boolean> aims = () -> !helper.getBlockState(AT)
+                .getShape(helper.getLevel(), at, net.minecraft.world.phys.shapes.CollisionContext.of(player)).isEmpty();
+        helper.assertTrue(aims.get(), "an empty hand aims at the wisp");
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(Items.COBBLESTONE));
+        helper.assertTrue(aims.get(), "so does a hand with a block");
+        ItemStack pickaxe = new ItemStack(Items.IRON_PICKAXE);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, pickaxe);
+        helper.assertTrue(aims.get(), "and a pickaxe without the rune");
+        pickaxe.set(com.pockyl.hextale.registry.ModDataComponents.PICKAXE_RUNES.get(),
+                com.pockyl.hextale.runework.PickaxeRunes.EMPTY.with(com.pockyl.hextale.runework.PickaxeRune.ETERNAL_FLAME, 1));
+        helper.assertTrue(!aims.get(), "a pickaxe with the Eternal Flame looks past it");
+        helper.succeed();
+    }
+
     /** Magic for two stones out of three: two rise as magic stone, the third dissolves like any other item. */
     @HexTest(maxTicks = 700)
     public static void aCatalystTheWaterCannotPayForDissolves(GameTestHelper helper) {

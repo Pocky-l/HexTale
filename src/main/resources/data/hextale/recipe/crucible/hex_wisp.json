@@ -1,0 +1,12 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:torch",
+  "essences": {
+    "light": 2,
+    "spark": 1
+  },
+  "result": {
+    "id": "hextale:hex_wisp",
+    "count": 2
+  }
+}
