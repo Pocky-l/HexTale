@@ -62,6 +62,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   hints and JEI pages now say plainly what a thing does and how to use it; the Researcher's Diary keeps its voice but
   says what each step is about and what to do next. Several texts that disagreed with how things actually work were
   corrected along the way.
+- Descriptions are about half as long (English and Russian). Diary steps, JEI pages, hints and tooltips say what a thing
+  does and what is not obvious, and no longer repeat recipes, amounts and costs that JEI or the screens already show.
+  One word for each thing: the Void's mark on the land is "sickness" everywhere, chemtech brews come in vials, and the
+  Arc Spire's Thrift rune names Lightning Essence.
 - The diary draws its recipes as what happens instead of "this plus that". A Crucible step shows the pot over its
   fire, the essences its water must hold (sign, name and mB), what is thrown in and what rises; a brew also names the
   heat it needs and the bottles that scoop its doses. Dust on a block, the lapidary, the still, the tank and the
@@ -118,6 +122,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `showWipSteps`: the map shows only what is really in the game.
 
 ### Fixed
+- The diary pictures say what really happens: Rusted Plating shows a vial of acid thrown at an iron block (not a
+  fermented spider eye and an empty vial), Refined Shimmer shows vials of raw shimmer going into the Chem Still, the
+  Hextech Crystal and Gemstone show the Lapidary with its disc, a Void Crystal is mined from its cluster, and Void
+  Carapace says it is made in the Crucible.
+- JEI has a "Thrown Vial" page: acid rusts iron blocks into Rusted Plating and ages copper, coolant sets lava into
+  obsidian and magma into netherrack.
 - A Crucible or a workbench that refuses something worked out at the Lab Bench now says to research it at the Lab
   Bench, not at the Research Table.
 - Leaving the game in the middle of a passage through a breach or a gate no longer sinks the player into the ground

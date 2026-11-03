@@ -32,18 +32,18 @@ final class SchemePicture {
     private SchemePicture() {
     }
 
-    private record Input(String id, int count) {
+    private record Input(QuestDisplay.Part part, int count) {
     }
 
     private static List<Input> inputs(QuestDisplay display) {
-        List<String> ingredients = display.ingredients();
+        List<QuestDisplay.Part> ingredients = display.ingredients();
         int last = ingredients.size() > 1 ? ingredients.size() - 1 : ingredients.size();
-        Map<String, Integer> counts = new LinkedHashMap<>();
+        Map<QuestDisplay.Part, Integer> counts = new LinkedHashMap<>();
         for (int i = 0; i < last; i++) {
             counts.merge(ingredients.get(i), 1, Integer::sum);
         }
         List<Input> out = new ArrayList<>();
-        counts.forEach((id, count) -> out.add(new Input(id, count)));
+        counts.forEach((part, count) -> out.add(new Input(part, count)));
         return out;
     }
 
@@ -67,7 +67,7 @@ final class SchemePicture {
         List<ItemStack> stacks = new ArrayList<>();
         List<Input> inputs = inputs(display);
         for (int i = 0; i < inputs.size(); i++) {
-            ItemStack stack = GuidePage.stack(inputs.get(i).id(), now, i).copy();
+            ItemStack stack = GuidePage.stack(inputs.get(i).part(), now, i).copy();
             if (!stack.isEmpty()) {
                 stack.setCount(inputs.get(i).count());
             }

@@ -64,7 +64,7 @@ public final class QuestGameTests {
             helper.assertTrue(result.getItem() == BuiltInRegistries.ITEM.getValue(id) && result.getCount() == display.count(),
                     quest.id() + ": the result is " + display.count() + " x " + id);
             List<Ingredient> real = recipe.placementInfo().ingredients().stream().filter(i -> !i.isEmpty()).toList();
-            List<String> shown = display.ingredients().stream().filter(i -> !i.isEmpty()).toList();
+            List<String> shown = display.ingredients().stream().filter(i -> !i.isEmpty()).map(QuestDisplay.Part::id).toList();
             helper.assertTrue(real.size() == shown.size(), quest.id() + ": " + shown.size() + " ingredients shown, recipe has " + real.size());
             for (int i = 0; i < real.size(); i++) {
                 helper.assertTrue(real.get(i).test(sample(shown.get(i))), quest.id() + ": ingredient " + i + " is " + shown.get(i));
@@ -211,6 +211,8 @@ public final class QuestGameTests {
             "brass", List.of("hextale:brass_nugget", "hextale:brass_block", "hextale:brass_grate"),
             "sphalerite", List.of("hextale:raw_zinc", "hextale:raw_zinc_block", "hextale:deepslate_sphalerite_ore"),
             "zinc", List.of("hextale:zinc_nugget", "hextale:zinc_block"),
+            // The Void's own growths are found once one stands in it.
+            "step_through", List.of("hextale:void_crystal_cluster"),
             "hexsteel", List.of("hextale:hexsteel_block"),
             // One research opens the four runed tools and the dagger together.
             "hextech_pickaxe", List.of("hextale:hextech_axe", "hextale:hextech_shovel", "hextale:hextech_sword", "hextale:tendril_dagger"),
@@ -307,7 +309,7 @@ public final class QuestGameTests {
             List<Identifier> needed = new ArrayList<>();
             for (QuestDisplay display : pictures(quest)) {
             switch (display.kind()) {
-                case SHAPED, SHAPELESS, SCHEME -> display.ingredients().stream().filter(id -> !id.isEmpty() && !id.startsWith("#"))
+                case SHAPED, SHAPELESS, SCHEME -> display.ingredients().stream().map(QuestDisplay.Part::id).filter(id -> !id.isEmpty() && !id.startsWith("#"))
                         .map(Identifier::parse).forEach(needed::add);
                 case INFUSION -> {
                     InfusionRecipe recipe = InfusionRecipes.ALL.named(Identifier.parse(display.result()), false);

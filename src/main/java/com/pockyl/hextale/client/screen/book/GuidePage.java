@@ -1502,8 +1502,8 @@ final class GuidePage {
                 int gridWidth = SLOT * 3;
                 int left = centre - (gridWidth + 26 + SLOT) / 2;
                 for (int i = 0; i < 9; i++) {
-                    String id = i < display.ingredients().size() ? display.ingredients().get(i) : "";
-                    tooltip = orTooltip(tooltip, slot(graphics, stack(id, now, i), left + i % 3 * SLOT, y + i / 3 * SLOT, mouseX, mouseY, null));
+                    QuestDisplay.Part part = i < display.ingredients().size() ? display.ingredients().get(i) : QuestDisplay.Part.of("");
+                    tooltip = orTooltip(tooltip, slot(graphics, stack(part, now, i), left + i % 3 * SLOT, y + i / 3 * SLOT, mouseX, mouseY, null));
                 }
                 int ax = left + gridWidth + 4;
                 arrow(graphics, ax, y + SLOT + SLOT / 2);
@@ -2071,6 +2071,11 @@ final class GuidePage {
         result = result.copy();
         result.setCount(Math.max(1, display.count()));
         return result;
+    }
+
+    /** An ingredient: the item with its components when it names them, else as {@link #stack(String, long, int)}. */
+    static ItemStack stack(QuestDisplay.Part part, long now, int phase) {
+        return part.item().map(net.minecraft.world.item.ItemStackTemplate::create).orElseGet(() -> stack(part.id(), now, phase));
     }
 
     /** An item id, or a tag cycling through its items once a second. */

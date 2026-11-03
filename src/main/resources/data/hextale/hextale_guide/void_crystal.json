@@ -12,7 +12,8 @@
   "display": {
     "kind": "scheme",
     "ingredients": [
-      "hextale:void_membrane"
+      "hextale:void_crystal_cluster",
+      "minecraft:iron_pickaxe"
     ],
     "result": "hextale:void_crystal"
   },

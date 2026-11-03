@@ -10,14 +10,16 @@
     "kind": "scheme",
     "ingredients": [
       "hextale:hextech_crystal",
-      "hextale:master_cutting_disc"
+      "hextale:master_cutting_disc",
+      "hextale:hex_lapidary"
     ],
     "result": "hextale:hextech_gemstone",
     "then": {
       "kind": "scheme",
       "ingredients": [
         "hextale:hextech_crystal",
-        "hextale:master_cutting_disc"
+        "hextale:master_cutting_disc",
+        "hextale:hex_lapidary"
       ],
       "result": "hextale:gemstone_dust"
     }

@@ -27,13 +27,15 @@ import java.util.List;
 
 /**
  * The devices that do one simple thing, each shown as a {@link StepCategory}: the Chem Still refines shimmer, the Axolotl
- * Tank sheds slime, an open Drain Valve soaks stone into magic stone, and the altar writes a rune onto a blank scroll.
+ * Tank sheds slime, an open Drain Valve soaks stone into magic stone, the altar writes a rune onto a blank scroll, and a
+ * thrown vial changes the blocks it splashes (acid rusts iron and ages copper, coolant sets lava and magma).
  */
 public final class DeviceSteps {
     public static final IRecipeType<StepCategory.Step> STILL = StepCategory.type("chem_still");
     public static final IRecipeType<StepCategory.Step> TANK = StepCategory.type("axolotl_tank");
     public static final IRecipeType<StepCategory.Step> SOAKING = StepCategory.type("soaking");
     public static final IRecipeType<StepCategory.Step> WRITING = StepCategory.type("rune_writing");
+    public static final IRecipeType<StepCategory.Step> SPLASH = StepCategory.type("splash");
     private static final TagKey<Item> SOAKS_ESSENCE = TagKey.create(Registries.ITEM, Hextale.id("soaks_essence"));
 
     private DeviceSteps() {
@@ -44,7 +46,9 @@ public final class DeviceSteps {
                 new StepCategory(STILL, Component.translatable("block.hextale.chem_still"), guiHelper.createDrawableItemLike(ModItems.CHEM_STILL.get()), 2),
                 new StepCategory(TANK, Component.translatable("block.hextale.axolotl_tank"), guiHelper.createDrawableItemLike(ModItems.AXOLOTL_TANK.get()), 3),
                 new StepCategory(SOAKING, Component.translatable("jei.hextale.soaking"), guiHelper.createDrawableItemLike(ModItems.DRAIN_VALVE.get()), 3),
-                new StepCategory(WRITING, Component.translatable("jei.hextale.rune_writing"), guiHelper.createDrawableItemLike(ModItems.BLANK_SCROLL.get()), 3));
+                new StepCategory(WRITING, Component.translatable("jei.hextale.rune_writing"), guiHelper.createDrawableItemLike(ModItems.BLANK_SCROLL.get()), 3),
+                new StepCategory(SPLASH, Component.translatable("jei.hextale.splash"), guiHelper.createDrawableIngredient(
+                        mezz.jei.api.constants.VanillaTypes.ITEM_STACK, ChemVialItem.of(Brew.ACID)), 2));
     }
 
     public static List<StepCategory.Step> still() {
@@ -100,6 +104,20 @@ public final class DeviceSteps {
                 StepCategory.Input.of(new ItemStack(ModItems.RUNE_CIRCLE.get())),
                 new StepCategory.Input(scrolls, null),
                 Component.translatable("jei.hextale.rune_writing.note")));
+    }
+
+    /** A vial thrown at a block changes it: the vial, the block it hits, what the block becomes. */
+    public static List<StepCategory.Step> splash() {
+        return List.of(
+                splash(Brew.ACID, Items.IRON_BLOCK, ModItems.RUSTED_PLATING.get(), "jei.hextale.splash.rust"),
+                splash(Brew.ACID, Items.COPPER_BLOCK.weathering().unaffected(), Items.COPPER_BLOCK.weathering().exposed(), "jei.hextale.splash.age"),
+                splash(Brew.COOLANT, Items.LAVA_BUCKET, Items.OBSIDIAN, "jei.hextale.splash.lava"),
+                splash(Brew.COOLANT, Items.MAGMA_BLOCK, Items.NETHERRACK, "jei.hextale.splash.cool"));
+    }
+
+    private static StepCategory.Step splash(Brew brew, Item block, Item result, String note) {
+        return new StepCategory.Step(List.of(StepCategory.Input.of(ChemVialItem.of(brew))), new ItemStack(block), new ItemStack(result),
+                Component.translatable(note));
     }
 
     static String seconds(int ticks) {

@@ -180,6 +180,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addRecipes(DeviceSteps.TANK, DeviceSteps.tank());
         registration.addRecipes(DeviceSteps.SOAKING, DeviceSteps.soaking());
         registration.addRecipes(DeviceSteps.WRITING, DeviceSteps.writing());
+        registration.addRecipes(DeviceSteps.SPLASH, DeviceSteps.splash());
         info(registration, ModItems.CRUCIBLE.get(), "crucible");
         info(registration, ModItems.CHEM_BURNER.get(), "chem_burner");
         info(registration, ModItems.CHEM_VIAL.get(), "chem_vial");

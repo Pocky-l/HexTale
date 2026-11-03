@@ -7,7 +7,9 @@
       "hextale:brew": "refined_shimmer"
     }
   },
-  "parents": ["chem_still"],
+  "parents": [
+    "chem_still"
+  ],
   "goal": {
     "type": "has_brew",
     "brew": "refined_shimmer"
@@ -15,11 +17,24 @@
   "display": {
     "kind": "scheme",
     "ingredients": [
-      "hextale:chem_vial",
-      "hextale:chem_burner",
+      {
+        "id": "hextale:chem_vial",
+        "components": {
+          "hextale:brew": "raw_shimmer"
+        }
+      },
+      {
+        "id": "hextale:chem_vial",
+        "components": {
+          "hextale:brew": "raw_shimmer"
+        }
+      },
       "hextale:chem_still"
     ],
     "result": "hextale:chem_vial"
   },
-  "pos": [-1010, 260]
+  "pos": [
+    -1010,
+    260
+  ]
 }
