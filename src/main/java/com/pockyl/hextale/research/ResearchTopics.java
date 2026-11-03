@@ -86,6 +86,7 @@ public final class ResearchTopics {
     public static final ResearchTopic GLOW_MIX = brew("glow_mix", 2, Brew.GLOW, Essence.WATER, Essence.LIFE);
     public static final ResearchTopic ACID = brew("acid", 2, Brew.ACID, Essence.SHADOW, Essence.WATER);
     public static final ResearchTopic RAW_SHIMMER = brew("raw_shimmer", 3, Brew.RAW_SHIMMER, Essence.LIGHT, Essence.LIFE);
+    public static final ResearchTopic EMBER_OIL = brew("ember_oil", 2, Brew.EMBER_OIL, Essence.FIRE, Essence.LIFE);
     /** The four basic hextech tools are worked out together, right after the first researches at the table. */
     public static final ResearchTopic HEXTECH_TOOLS = register(new ResearchTopic("hextech_tools",
             List.<Supplier<? extends ItemLike>>of(ModItems.pickaxe(HextechPickaxe.HEXTECH), ModItems.HEXTECH_AXE, ModItems.HEXTECH_SHOVEL, ModItems.HEXTECH_SWORD,

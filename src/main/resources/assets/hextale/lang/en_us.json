@@ -1974,7 +1974,7 @@
   "quest.hextale.regenerative_slime.desc": "The axolotl's slime is the catalyst for raw shimmer, so I should keep a few lumps.",
   "quest.hextale.raw_shimmer": "Raw Shimmer",
   "quest.hextale.raw_shimmer.goal": "bottle raw shimmer",
-  "quest.hextale.raw_shimmer.desc": "Raw Shimmer brews from rift and light essence with Regenerative Slime as catalyst, over soul fire or hotter. It is too rough to drink and must first be studied at the Lab Bench.",
+  "quest.hextale.raw_shimmer.desc": "Raw Shimmer brews in the Crucible over soul fire or hotter, from Regenerative Slime or, in bigger batches, from Shimmer Bulbs. Study it at the Lab Bench first.",
   "quest.hextale.chem_still": "Chem Still",
   "quest.hextale.chem_still.goal": "build a Chem Still",
   "quest.hextale.chem_still.desc": "The Chem Still is a copper still on a lit Chem Burner that refines raw shimmer. The finished vial waits in the receiver until I take it.",
@@ -2754,5 +2754,11 @@
   "jei.hextale.info.crystal_cane": "Now and then grows clear Crystal Pods on its joints, faster on Steeped Soil. (Right click: pick the pods)",
   "jei.hextale.info.sap_gourd_seeds": "Grow a stem like melon seeds, and the Sap Gourds beside it are full of sap essence.",
   "lab_rune.hextale.fertility.desc": "A plant studied cleanly sometimes gives a second cutting.",
-  "lab_rune.hextale.fertility.value": "%s"
+  "lab_rune.hextale.fertility.value": "%s",
+  "brew.hextale.ember_oil": "Ember Oil",
+  "brew.hextale.ember_oil.use": "Fuel for the Chem Burner and for furnaces. Burns half as long again as Combustible Mix.",
+  "quest.hextale.ember_oil": "Ember Oil",
+  "quest.hextale.ember_oil.goal": "work out ember oil",
+  "quest.hextale.ember_oil.desc": "Ember Wheat boils down into a thick amber oil. It burns longer than the combustible mix, and later it will be the plainest fuel for gear that runs on a tank.",
+  "block.hextale.chem_still.status.no_pod": "No Crystal Pod: the shimmer will not clear without one"
 }

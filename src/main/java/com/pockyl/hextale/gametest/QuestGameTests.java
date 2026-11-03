@@ -207,19 +207,22 @@ public final class QuestGameTests {
     }
 
     /** What else a step gives besides its own result: things crafted straight from it. */
-    private static final Map<String, List<String>> ALSO = Map.of(
-            "brass", List.of("hextale:brass_nugget", "hextale:brass_block", "hextale:brass_grate"),
-            "sphalerite", List.of("hextale:raw_zinc", "hextale:raw_zinc_block", "hextale:deepslate_sphalerite_ore"),
-            "zinc", List.of("hextale:zinc_nugget", "hextale:zinc_block"),
+    private static final Map<String, List<String>> ALSO = Map.ofEntries(
+            Map.entry("brass", List.of("hextale:brass_nugget", "hextale:brass_block", "hextale:brass_grate")),
+            Map.entry("sphalerite", List.of("hextale:raw_zinc", "hextale:raw_zinc_block", "hextale:deepslate_sphalerite_ore")),
+            Map.entry("zinc", List.of("hextale:zinc_nugget", "hextale:zinc_block")),
             // The Void's own growths are found once one stands in it.
-            "step_through", List.of("hextale:void_crystal_cluster"),
-            "hexsteel", List.of("hextale:hexsteel_block"),
+            Map.entry("step_through", List.of("hextale:void_crystal_cluster")),
+            Map.entry("hexsteel", List.of("hextale:hexsteel_block")),
+            // Grown strains bear their harvest: pods on Crystal Cane, ears on Ember Wheat.
+            Map.entry("strain_crystal_cane", List.of("hextale:crystal_pod")),
+            Map.entry("strain_ember_wheat", List.of("hextale:ember_wheat")),
             // One research opens the four runed tools and the dagger together.
-            "hextech_pickaxe", List.of("hextale:hextech_axe", "hextale:hextech_shovel", "hextale:hextech_sword", "hextale:tendril_dagger"),
-            "fire_bricks", List.of("hextale:fire_brick", "hextale:fire_bricks", "hextale:fire_brick_stairs", "hextale:fire_brick_slab",
-                    "hextale:fire_brick_wall"),
-            "magic_stone", List.of("hextale:polished_magic_stone", "hextale:magic_bricks", "hextale:magic_brick_slab",
-                    "hextale:magic_brick_stairs", "hextale:magic_brick_wall", "hextale:chiseled_magic_bricks", "hextale:magic_stone_pillar"));
+            Map.entry("hextech_pickaxe", List.of("hextale:hextech_axe", "hextale:hextech_shovel", "hextale:hextech_sword", "hextale:tendril_dagger")),
+            Map.entry("fire_bricks", List.of("hextale:fire_brick", "hextale:fire_bricks", "hextale:fire_brick_stairs", "hextale:fire_brick_slab",
+                    "hextale:fire_brick_wall")),
+            Map.entry("magic_stone", List.of("hextale:polished_magic_stone", "hextale:magic_bricks", "hextale:magic_brick_slab",
+                    "hextale:magic_brick_stairs", "hextale:magic_brick_wall", "hextale:chiseled_magic_bricks", "hextale:magic_stone_pillar")));
 
     /** Every picture of a step, the ones under the others included. */
     private static List<QuestDisplay> pictures(Quest quest) {

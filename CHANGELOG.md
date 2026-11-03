@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Ember Oil (worked out at the Lab Bench): Ember Wheat boiled in the Crucible with magma and sap essence gives four vials
+  of a thick amber fuel that burns half as long again as the combustible mix in a Chem Burner or a furnace.
+- Shimmer Bulbs brew raw shimmer: a bulb in the Crucible with sap and light essence gives six vials, twice what a
+  Regenerative Slime gives, so a bulb field becomes the real source of shimmer.
 - Spawn eggs for the creatures of the Void: Void Mite, Voidling, Rib Crawler, Pit Maw and Seer (creative tab and the
   vanilla Spawn Eggs tab).
 - Wisps can now be made: a torch thrown into the boiling Crucible with a little light and spark essence rises as two
@@ -54,6 +58,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   what it becomes.
 
 ### Changed
+- The Chem Still needs a Crystal Pod (grown on Crystal Cane) for every vial of refined shimmer it makes: drop pods in
+  by hand or by hopper from the top or the sides.
 - Hextech tools and armour are much stronger, each level a clear step: runed tools now beat diamond, refined ones beat
   netherite, radiant ones go well past it, and the riftforged tools mine stone in an instant with Efficiency V and fell
   ordinary creatures in one blow with Sharpness V (pickaxe speed 8.5 / 11 / 14 / 20, sword 7.5 / 9 / 10.5 / 14).

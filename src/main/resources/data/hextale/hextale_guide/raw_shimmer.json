@@ -1,22 +1,40 @@
 {
   "region": "chemtech",
   "stage": "mid",
-  "icon": {
-    "id": "hextale:chem_vial",
-    "components": {
-      "hextale:brew": "raw_shimmer"
-    }
-  },
-  "parents": ["regenerative_slime", "shimmerbloom", "chem_vial", "lab_bench"],
+  "icon": [
+    "hextale:regenerative_slime",
+    "hextale:shimmer_bulb"
+  ],
+  "parents": [
+    "regenerative_slime",
+    "shimmerbloom",
+    "chem_vial",
+    "lab_bench"
+  ],
   "goal": {
     "type": "has_brew",
     "brew": "raw_shimmer"
   },
-  "display": {
-    "kind": "brew",
-    "result": "hextale:raw_shimmer"
-  },
+  "display": [
+    {
+      "kind": "brew",
+      "result": "hextale:raw_shimmer"
+    },
+    {
+      "kind": "brew",
+      "result": "hextale:raw_shimmer_from_bulb"
+    }
+  ],
   "research": "raw_shimmer",
   "aura": "gold",
-  "pos": [-880, 260]
+  "pos": [
+    -880,
+    260
+  ],
+  "sign": {
+    "id": "hextale:chem_vial",
+    "components": {
+      "hextale:brew": "raw_shimmer"
+    }
+  }
 }

@@ -8,7 +8,8 @@
     }
   },
   "parents": [
-    "chem_still"
+    "chem_still",
+    "strain_crystal_cane"
   ],
   "goal": {
     "type": "has_brew",
@@ -29,6 +30,7 @@
           "hextale:brew": "raw_shimmer"
         }
       },
+      "hextale:crystal_pod",
       "hextale:chem_still"
     ],
     "result": "hextale:chem_vial"

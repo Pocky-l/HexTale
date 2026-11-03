@@ -71,7 +71,8 @@ public class ChemStillBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hitResult) {
-        if (!ChemStillBlockEntity.isRaw(stack) || !(level.getBlockEntity(pos) instanceof ChemStillBlockEntity still)) {
+        if (!ChemStillBlockEntity.isRaw(stack) && !ChemStillBlockEntity.isClarifier(stack)
+                || !(level.getBlockEntity(pos) instanceof ChemStillBlockEntity still)) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         if (!level.isClientSide()) {

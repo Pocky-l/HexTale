@@ -53,7 +53,8 @@ public final class DeviceSteps {
 
     public static List<StepCategory.Step> still() {
         return List.of(new StepCategory.Step(
-                List.of(StepCategory.Input.of(ChemVialItem.of(Brew.RAW_SHIMMER, ChemStillBlockEntity.RAW_PER_REFINED))),
+                List.of(StepCategory.Input.of(ChemVialItem.of(Brew.RAW_SHIMMER, ChemStillBlockEntity.RAW_PER_REFINED)),
+                        StepCategory.Input.of(new ItemStack(ModItems.CRYSTAL_POD.get()))),
                 StepCategory.Input.of(new ItemStack(ModItems.CHEM_STILL.get())),
                 StepCategory.Input.of(ChemVialItem.of(Brew.REFINED_SHIMMER)),
                 Component.translatable("jei.hextale.chem_still.note", seconds(ChemStillBlockEntity.REFINE_TICKS))));

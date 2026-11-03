@@ -1,0 +1,24 @@
+{
+  "region": "chemtech",
+  "stage": "mid",
+  "icon": {
+    "id": "hextale:chem_vial",
+    "components": {
+      "hextale:brew": "ember_oil"
+    }
+  },
+  "parents": [
+    "strain_ember_wheat",
+    "chem_vial",
+    "lab_bench"
+  ],
+  "display": {
+    "kind": "brew",
+    "result": "hextale:ember_oil"
+  },
+  "research": "ember_oil",
+  "pos": [
+    -570,
+    385
+  ]
+}
