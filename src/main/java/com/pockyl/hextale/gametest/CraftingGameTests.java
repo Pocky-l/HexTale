@@ -47,13 +47,32 @@ public final class CraftingGameTests {
     }
 
     /** Three brass make pipes on the workbench; the craft spends one charge, and the first one breaks an orb into five. */
-    /** Hexsteel gear matches diamond gear and opens with the hexsteel research. */
+    /** Every hextech level beats the one below it, level 1 already beats diamond and level 4 is far past netherite. */
+    @HexTest
+    public static void gearLevelsClimbPastNetherite(GameTestHelper helper) {
+        var stone = Blocks.STONE.defaultBlockState();
+        float last = new ItemStack(Items.DIAMOND_PICKAXE).getDestroySpeed(stone);
+        int wear = new ItemStack(Items.DIAMOND_PICKAXE).getMaxDamage();
+        for (com.pockyl.hextale.runework.HextechPickaxe kind : com.pockyl.hextale.runework.HextechPickaxe.values()) {
+            ItemStack pickaxe = new ItemStack(ModItems.pickaxe(kind).get());
+            helper.assertTrue(pickaxe.getDestroySpeed(stone) > last, kind + " digs faster than the level below");
+            helper.assertTrue(pickaxe.getMaxDamage() > wear, kind + " lasts longer than the level below");
+            last = pickaxe.getDestroySpeed(stone);
+            wear = pickaxe.getMaxDamage();
+        }
+        helper.assertTrue(last >= 19.0F, "level 4 instamines stone with Efficiency V");
+        helper.assertTrue(new ItemStack(ModItems.RIFTFORGED_BULWARK_CHESTPLATE.get()).getMaxDamage()
+                        > new ItemStack(Items.NETHERITE_CHESTPLATE).getMaxDamage(), "level 4 armour outlasts netherite");
+        helper.succeed();
+    }
+
+    /** Hexsteel gear is a cheap step above diamond gear and opens with the hexsteel research. */
     @HexTest
     public static void hexsteelGearIsAsGoodAsDiamond(GameTestHelper helper) {
-        helper.assertTrue(new ItemStack(ModItems.HEXSTEEL_PICKAXE.get()).getMaxDamage() == new ItemStack(Items.DIAMOND_PICKAXE).getMaxDamage(),
-                "the pickaxe wears like a diamond one");
-        helper.assertTrue(new ItemStack(ModItems.HEXSTEEL_CHESTPLATE.get()).getMaxDamage() == new ItemStack(Items.DIAMOND_CHESTPLATE).getMaxDamage(),
-                "the chestplate wears like a diamond one");
+        helper.assertTrue(new ItemStack(ModItems.HEXSTEEL_PICKAXE.get()).getMaxDamage() > new ItemStack(Items.DIAMOND_PICKAXE).getMaxDamage(),
+                "the pickaxe outlasts a diamond one");
+        helper.assertTrue(new ItemStack(ModItems.HEXSTEEL_CHESTPLATE.get()).getMaxDamage() > new ItemStack(Items.DIAMOND_CHESTPLATE).getMaxDamage(),
+                "the chestplate outlasts a diamond one");
         helper.assertTrue(new ItemStack(ModItems.HEXSTEEL_PICKAXE.get()).isCorrectToolForDrops(Blocks.OBSIDIAN.defaultBlockState()),
                 "the pickaxe mines obsidian");
         helper.assertTrue(com.pockyl.hextale.research.ResearchTopics.of(ModItems.HEXSTEEL_BOOTS.get()) == com.pockyl.hextale.research.ResearchTopics.HEXSTEEL,

@@ -41,6 +41,8 @@ public final class Hextale {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public Hextale(IEventBus modBus, ModContainer container) {
+        // First: tool and armour materials read it while the items register.
+        container.registerConfig(ModConfig.Type.STARTUP, GearConfig.SPEC);
         com.pockyl.hextale.registry.ModAliases.register();
         ModBlocks.register(modBus);
         ModItems.register(modBus);

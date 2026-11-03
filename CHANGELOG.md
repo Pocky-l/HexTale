@@ -54,6 +54,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   what it becomes.
 
 ### Changed
+- Hextech tools and armour are much stronger, each level a clear step: runed tools now beat diamond, refined ones beat
+  netherite, radiant ones go well past it, and the riftforged tools mine stone in an instant with Efficiency V and fell
+  ordinary creatures in one blow with Sharpness V (pickaxe speed 8.5 / 11 / 14 / 20, sword 7.5 / 9 / 10.5 / 14).
+  Bulwark armour climbs to 30 armour points and toughness 5 a piece at level 4. Hexsteel tools and armour wear a
+  little longer than diamond ones.
+- Every level of tools and armour can be retuned in `config/hextale-startup.toml` (speed, damage, durability,
+  protection, toughness); it is read at start-up and must match on the server and the clients.
 - Devices talk less. Lines above the hotbar that only repeated what you see and hear are gone: "holds no more",
   "valve open", "sticker set", "linked", "the plate is aimed" and the like, status lines on an empty-hand click where
   the Researcher's Goggles show the same, and the altar's hint on an empty click. Lines that tell you why something

@@ -340,12 +340,15 @@ public final class ModItems {
     public static final DeferredItem<ResearchersDiaryItem> RESEARCHERS_DIARY = ITEMS.registerItem("researchers_diary",
             properties -> new ResearchersDiaryItem(properties.stacksTo(1)));
 
-    /** Tool materials by level: iron, diamond, netherite, beyond; each level mends with its own metal (brass, charged hexsteel, radiant alloy, riftmetal). */
+    /**
+     * Tool materials by level (mining level iron, diamond, netherite, netherite); each level mends with its own metal (brass,
+     * charged hexsteel, radiant alloy, riftmetal). Speed, damage and durability come from com.pockyl.hextale.GearConfig (STARTUP config).
+     */
     private static final ToolMaterial[] PICKAXE_MATERIALS = {
-            new ToolMaterial(BlockTags.INCORRECT_FOR_IRON_TOOL, 750, 7.0F, 2.0F, 14, ModTags.HEXTECH_TOOL_MATERIALS),
-            new ToolMaterial(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 1800, 9.0F, 3.0F, 12, ModTags.REPAIRS_CHARGED_HEXSTEEL),
-            new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 2800, 10.5F, 4.0F, 16, ModTags.REPAIRS_RADIANT_ALLOY),
-            new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 4000, 12.0F, 5.0F, 18, ModTags.REPAIRS_RIFTMETAL)};
+            com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[0].material(BlockTags.INCORRECT_FOR_IRON_TOOL, 14, ModTags.HEXTECH_TOOL_MATERIALS),
+            com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[1].material(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 12, ModTags.REPAIRS_CHARGED_HEXSTEEL),
+            com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[2].material(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 16, ModTags.REPAIRS_RADIANT_ALLOY),
+            com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[3].material(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 18, ModTags.REPAIRS_RIFTMETAL)};
     /** The three hextech pickaxes; runes are burned into them at the altar. */
     public static final Map<HextechPickaxe, DeferredItem<HextechPickaxeItem>> PICKAXES = new EnumMap<>(HextechPickaxe.class);
 
@@ -369,7 +372,7 @@ public final class ModItems {
     public static final DeferredItem<HextechToolItem> HEXTECH_SHOVEL = ITEMS.registerItem("hextech_shovel",
             properties -> new HextechToolItem(properties.shovel(PICKAXE_MATERIALS[0], 1.5F, -3.0F).rarity(Rarity.UNCOMMON)));
     public static final DeferredItem<HextechToolItem> HEXTECH_SWORD = ITEMS.registerItem("hextech_sword",
-            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[0], 3.0F, -2.4F).rarity(Rarity.UNCOMMON)));
+            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[0], com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[0].sword(), -2.4F).rarity(Rarity.UNCOMMON)));
     // The refined (diamond) and radiant (netherite) axe, shovel and sword: refined at the altar like the pickaxe, runes kept.
     public static final DeferredItem<HextechToolItem> REFINED_AXE = ITEMS.registerItem("refined_hextech_axe",
             properties -> new HextechToolItem(properties.axe(PICKAXE_MATERIALS[1], 5.0F, -3.0F).rarity(Rarity.RARE)));
@@ -380,9 +383,9 @@ public final class ModItems {
     public static final DeferredItem<HextechToolItem> RADIANT_SHOVEL = ITEMS.registerItem("radiant_hextech_shovel",
             properties -> new HextechToolItem(properties.shovel(PICKAXE_MATERIALS[2], 1.5F, -3.0F).rarity(Rarity.EPIC).fireResistant()));
     public static final DeferredItem<HextechToolItem> REFINED_SWORD = ITEMS.registerItem("refined_hextech_sword",
-            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[1], 3.0F, -2.4F).rarity(Rarity.RARE)));
+            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[1], com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[1].sword(), -2.4F).rarity(Rarity.RARE)));
     public static final DeferredItem<HextechToolItem> RADIANT_SWORD = ITEMS.registerItem("radiant_hextech_sword",
-            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[2], 3.0F, -2.4F).rarity(Rarity.EPIC).fireResistant()));
+            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[2], com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[2].sword(), -2.4F).rarity(Rarity.EPIC).fireResistant()));
     // The Tendril Dagger in the four levels: quick, fits the off hand, thrown it comes back along a tendril of light.
     public static final DeferredItem<com.pockyl.hextale.runework.TendrilDaggerItem> TENDRIL_DAGGER = ITEMS.registerItem("tendril_dagger",
             properties -> new com.pockyl.hextale.runework.TendrilDaggerItem(properties.sword(PICKAXE_MATERIALS[0], 1.5F, -1.6F).rarity(Rarity.UNCOMMON)));
@@ -401,13 +404,13 @@ public final class ModItems {
     public static final DeferredItem<HextechToolItem> RIFTFORGED_SHOVEL = ITEMS.registerItem("riftforged_shovel",
             properties -> new HextechToolItem(properties.shovel(PICKAXE_MATERIALS[3], 1.5F, -3.0F).rarity(Rarity.EPIC).fireResistant()));
     public static final DeferredItem<HextechToolItem> RIFTFORGED_SWORD = ITEMS.registerItem("riftforged_sword",
-            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[3], 3.0F, -2.4F).rarity(Rarity.EPIC).fireResistant()));
+            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[3], com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[3].sword(), -2.4F).rarity(Rarity.EPIC).fireResistant()));
 
-    /** Hexsteel tools: as strong as diamond ones, repaired with hexsteel. */
-    private static final ToolMaterial HEXSTEEL_TOOLS = new ToolMaterial(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 1561, 8.0F, 3.0F, 10,
+    /** Hexsteel tools: no runes, a cheap step above diamond, repaired with hexsteel. */
+    private static final ToolMaterial HEXSTEEL_TOOLS = com.pockyl.hextale.GearConfig.HEXSTEEL_TOOLS.material(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 10,
             ModTags.REPAIRS_HEXSTEEL);
     public static final DeferredItem<Item> HEXSTEEL_SWORD = ITEMS.registerItem("hexsteel_sword",
-            properties -> new Item(properties.sword(HEXSTEEL_TOOLS, 3.0F, -2.4F)));
+            properties -> new Item(properties.sword(HEXSTEEL_TOOLS, com.pockyl.hextale.GearConfig.HEXSTEEL_TOOLS.sword(), -2.4F)));
     public static final DeferredItem<Item> HEXSTEEL_PICKAXE = ITEMS.registerItem("hexsteel_pickaxe",
             properties -> new Item(properties.pickaxe(HEXSTEEL_TOOLS, 1.0F, -2.8F)));
     public static final DeferredItem<Item> HEXSTEEL_AXE = ITEMS.registerItem("hexsteel_axe",
@@ -417,11 +420,10 @@ public final class ModItems {
     public static final DeferredItem<Item> HEXSTEEL_HOE = ITEMS.registerItem("hexsteel_hoe",
             properties -> new Item(properties.hoe(HEXSTEEL_TOOLS, -3.0F, 0.0F)));
 
-    /** Hexsteel armour: diamond protection, its own worn look. */
+    /** Hexsteel armour: diamond protection, a little tougher, its own worn look. */
     public static final ResourceKey<EquipmentAsset> HEXSTEEL_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, Hextale.id("hexsteel"));
-    private static final ArmorMaterial HEXSTEEL_ARMOR = new ArmorMaterial(33,
-            Map.of(ArmorType.BOOTS, 3, ArmorType.LEGGINGS, 6, ArmorType.CHESTPLATE, 8, ArmorType.HELMET, 3, ArmorType.BODY, 11),
-            10, SoundEvents.ARMOR_EQUIP_DIAMOND, 2.0F, 0.0F, ModTags.REPAIRS_HEXSTEEL, HEXSTEEL_ASSET);
+    private static final ArmorMaterial HEXSTEEL_ARMOR = com.pockyl.hextale.GearConfig.HEXSTEEL_ARMOUR.material(11, 10, SoundEvents.ARMOR_EQUIP_DIAMOND,
+            ModTags.REPAIRS_HEXSTEEL, HEXSTEEL_ASSET);
     public static final DeferredItem<Item> HEXSTEEL_HELMET = ITEMS.registerItem("hexsteel_helmet",
             properties -> new Item(properties.humanoidArmor(HEXSTEEL_ARMOR, ArmorType.HELMET)));
     public static final DeferredItem<Item> HEXSTEEL_CHESTPLATE = ITEMS.registerItem("hexsteel_chestplate",
@@ -434,15 +436,12 @@ public final class ModItems {
 
     // Bulwark armour in four levels (brass over blued steel, a crystal heart in the chestplate). The look is a placeholder
     // (the hexsteel equipment asset) until its worn models are wired in.
+    // Protection, toughness and durability per level come from com.pockyl.hextale.GearConfig (STARTUP config).
     private static final ArmorMaterial[] BULWARK_ARMOR = {
-            new ArmorMaterial(20, Map.of(ArmorType.BOOTS, 2, ArmorType.LEGGINGS, 5, ArmorType.CHESTPLATE, 6, ArmorType.HELMET, 2, ArmorType.BODY, 5),
-                    14, SoundEvents.ARMOR_EQUIP_IRON, 0.0F, 0.0F, ModTags.HEXTECH_TOOL_MATERIALS, HEXSTEEL_ASSET),
-            new ArmorMaterial(33, Map.of(ArmorType.BOOTS, 3, ArmorType.LEGGINGS, 6, ArmorType.CHESTPLATE, 8, ArmorType.HELMET, 3, ArmorType.BODY, 11),
-                    12, SoundEvents.ARMOR_EQUIP_DIAMOND, 2.0F, 0.0F, ModTags.REPAIRS_CHARGED_HEXSTEEL, HEXSTEEL_ASSET),
-            new ArmorMaterial(37, Map.of(ArmorType.BOOTS, 3, ArmorType.LEGGINGS, 6, ArmorType.CHESTPLATE, 8, ArmorType.HELMET, 3, ArmorType.BODY, 11),
-                    16, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.1F, ModTags.REPAIRS_RADIANT_ALLOY, HEXSTEEL_ASSET),
-            new ArmorMaterial(42, Map.of(ArmorType.BOOTS, 3, ArmorType.LEGGINGS, 7, ArmorType.CHESTPLATE, 9, ArmorType.HELMET, 3, ArmorType.BODY, 13),
-                    18, SoundEvents.ARMOR_EQUIP_NETHERITE, 4.0F, 0.15F, ModTags.REPAIRS_RIFTMETAL, HEXSTEEL_ASSET)};
+            com.pockyl.hextale.GearConfig.BULWARK[0].material(5, 14, SoundEvents.ARMOR_EQUIP_IRON, ModTags.HEXTECH_TOOL_MATERIALS, HEXSTEEL_ASSET),
+            com.pockyl.hextale.GearConfig.BULWARK[1].material(11, 12, SoundEvents.ARMOR_EQUIP_DIAMOND, ModTags.REPAIRS_CHARGED_HEXSTEEL, HEXSTEEL_ASSET),
+            com.pockyl.hextale.GearConfig.BULWARK[2].material(11, 16, SoundEvents.ARMOR_EQUIP_NETHERITE, ModTags.REPAIRS_RADIANT_ALLOY, HEXSTEEL_ASSET),
+            com.pockyl.hextale.GearConfig.BULWARK[3].material(13, 18, SoundEvents.ARMOR_EQUIP_NETHERITE, ModTags.REPAIRS_RIFTMETAL, HEXSTEEL_ASSET)};
     public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> BULWARK_HELMET = ITEMS.registerItem("bulwark_helmet",
             properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.HELMET,
                     properties.humanoidArmor(BULWARK_ARMOR[0], ArmorType.HELMET)));
