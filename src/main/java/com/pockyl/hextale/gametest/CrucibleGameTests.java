@@ -137,8 +137,7 @@ public final class CrucibleGameTests {
                 drop(helper, new ItemStack(Items.STONE));
             }
             helper.assertTrue(crucible.essence().get(Essence.MAGIC) == 0, "the stone took the magic");
-            helper.assertTrue(!helper.getLevel().getEntitiesOfClass(ItemEntity.class, new net.minecraft.world.phys.AABB(helper.absolutePos(AT)).inflate(3),
-                    item -> item.getItem().is(com.pockyl.hextale.registry.ModItems.MAGIC_STONE.get())).isEmpty(), "magic stone rose out");
+            helper.assertTrue(rose(helper, crucible, com.pockyl.hextale.registry.ModItems.MAGIC_STONE.get()) == 1, "magic stone rose up");
         });
     }
 
@@ -192,9 +191,8 @@ public final class CrucibleGameTests {
                 crucible.pour(EssenceMix.pure(Essence.LIGHT, 2).plus(EssenceMix.pure(Essence.SPARK, 1)));
                 drop(helper, new ItemStack(Items.TORCH));
             }
-            int wisps = helper.getLevel().getEntitiesOfClass(ItemEntity.class, new net.minecraft.world.phys.AABB(helper.absolutePos(AT)).inflate(3),
-                    item -> item.getItem().is(com.pockyl.hextale.registry.ModItems.HEX_WISP.get())).stream().mapToInt(item -> item.getItem().getCount()).sum();
-            helper.assertTrue(wisps == 2, "two wisps rose out, not " + wisps);
+            int wisps = rose(helper, crucible, com.pockyl.hextale.registry.ModItems.HEX_WISP.get());
+            helper.assertTrue(wisps == 2, "two wisps rose up, not " + wisps);
         });
     }
 
@@ -257,9 +255,7 @@ public final class CrucibleGameTests {
                 drop(helper, new ItemStack(Items.STONE, 3));
             }
             helper.assertTrue(crucible.essence().get(Essence.MAGIC) == 3 + stone.get(Essence.MAGIC), "two stones took six magic each, the third dissolved");
-            helper.assertTrue(!helper.getLevel().getEntitiesOfClass(ItemEntity.class, new net.minecraft.world.phys.AABB(helper.absolutePos(AT)).inflate(3),
-                    item -> item.getItem().is(com.pockyl.hextale.registry.ModItems.MAGIC_STONE.get()) && item.getItem().getCount() == 2).isEmpty(),
-                    "two magic stones rose out");
+            helper.assertTrue(rose(helper, crucible, com.pockyl.hextale.registry.ModItems.MAGIC_STONE.get()) == 2, "two magic stones rose up");
         });
     }
 
@@ -283,6 +279,97 @@ public final class CrucibleGameTests {
             helper.assertTrue(!helper.getLevel().getEntitiesOfClass(ItemEntity.class, new net.minecraft.world.phys.AABB(helper.absolutePos(AT)).inflate(3),
                     item -> item.getItem().is(com.pockyl.hextale.registry.ModItems.MAGIC_STONE.get())).isEmpty(), "the magic stone came out");
         });
+    }
+
+    /** Results of this item that rose: floating on the water or thrown out around the pot. */
+    private static int rose(GameTestHelper helper, CrucibleBlockEntity crucible, net.minecraft.world.item.Item item) {
+        int floating = crucible.floating().stream().filter(stack -> stack.is(item)).mapToInt(ItemStack::getCount).sum();
+        return floating + helper.getLevel().getEntitiesOfClass(ItemEntity.class, new net.minecraft.world.phys.AABB(helper.absolutePos(AT)).inflate(3),
+                entity -> entity.getItem().is(item)).stream().mapToInt(entity -> entity.getItem().getCount()).sum();
+    }
+
+    /** Finished results float on the water; a chest on the pot's facing side takes them over the lip. */
+    @HexTest(maxTicks = 700)
+    public static void resultsFloatAndDriftIntoAChest(GameTestHelper helper) {
+        helper.setBlock(AT.below(), Blocks.SOUL_CAMPFIRE.defaultBlockState().setValue(CampfireBlock.LIT, true));
+        helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
+        CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
+        crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
+        net.minecraft.core.Direction facing = crucible.getBlockState().getValue(com.pockyl.hextale.block.CrucibleBlock.FACING);
+        boolean[] thrown = {false};
+        boolean[] chest = {false};
+        helper.succeedWhen(() -> {
+            helper.assertTrue(crucible.boiling(), "the water boils");
+            if (!thrown[0]) {
+                thrown[0] = true;
+                crucible.pour(EssenceMix.pure(Essence.MAGIC, 6));
+                drop(helper, new ItemStack(Items.STONE));
+            }
+            if (!chest[0]) {
+                helper.assertTrue(crucible.floating().size() == 1 && crucible.floating().getFirst().is(com.pockyl.hextale.registry.ModItems.MAGIC_STONE.get()),
+                        "the magic stone floats");
+                chest[0] = true;
+                helper.setBlock(AT.relative(facing), Blocks.CHEST);
+            }
+            helper.assertTrue(crucible.floating().isEmpty(), "it drifted out");
+            var box = helper.getBlockEntity(AT.relative(facing), net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+            helper.assertTrue(box.getItem(0).is(com.pockyl.hextale.registry.ModItems.MAGIC_STONE.get()), "into the chest");
+        });
+    }
+
+    /** Named things, tools and jars are never eaten: refused when put in. */
+    @HexTest(maxTicks = 700)
+    public static void itNeverEatsNamedThingsToolsOrJars(GameTestHelper helper) {
+        helper.setBlock(AT.below(), Blocks.SOUL_CAMPFIRE.defaultBlockState().setValue(CampfireBlock.LIT, true));
+        helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
+        CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
+        crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
+        ItemStack named = new ItemStack(Items.LAPIS_LAZULI, 4);
+        named.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, net.minecraft.network.chat.Component.literal("Keep"));
+        helper.succeedWhen(() -> {
+            helper.assertTrue(crucible.boiling(), "the water boils");
+            helper.assertTrue(crucible.take(named, 4, true, null) == 0, "a named stack is refused");
+            helper.assertTrue(crucible.take(new ItemStack(Items.IRON_PICKAXE), 1, true, null) == 0, "a tool is refused");
+            helper.assertTrue(crucible.take(new ItemStack(com.pockyl.hextale.registry.ModItems.ESSENCE_TANK.get()), 1, true, null) == 0,
+                    "an empty jar is refused");
+            helper.assertTrue(crucible.essence().isEmpty(), "nothing dissolved");
+        });
+    }
+
+    /** Boiling away needs two sneak-uses, and the essence it boils off wears the land like any poured away. */
+    @HexTest(maxTicks = 700)
+    public static void boilingAwayIsTwoStepsAndWearsTheLand(GameTestHelper helper) {
+        helper.setBlock(AT.below(), Blocks.SOUL_CAMPFIRE.defaultBlockState().setValue(CampfireBlock.LIT, true));
+        helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
+        CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
+        crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
+        var chunk = helper.getLevel().getChunkAt(helper.absolutePos(AT));
+        boolean[] armed = {false};
+        helper.succeedWhen(() -> {
+            if (!armed[0]) {
+                helper.assertTrue(crucible.boiling(), "the water boils");
+                armed[0] = true;
+                crucible.pour(EssenceMix.pure(Essence.FIRE, 40));
+                com.pockyl.hextale.thevoid.Thinning.set(helper.getLevel(), chunk, 0);
+                net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+                helper.assertFalse(crucible.sneakUse(player), "the first sneak-use only readies it");
+                helper.assertTrue(crucible.essence().get(Essence.FIRE) == 40 && crucible.armed(), "nothing is lost yet");
+                helper.assertTrue(crucible.sneakUse(player), "the second boils it away");
+            }
+            helper.assertTrue(crucible.essence().isEmpty(), "the essence is gone");
+            helper.assertTrue(com.pockyl.hextale.thevoid.Thinning.get(chunk) > 0, "and wore the land");
+        });
+    }
+
+    /** Water that would push essence over the rim is refused; plain water may still brim over. */
+    @HexTest
+    public static void waterNeverPushesEssenceOverTheRim(GameTestHelper helper) {
+        helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
+        CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
+        crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
+        helper.assertTrue(crucible.fillWater(CrucibleBlockEntity.BUCKET, true) > 0, "plain water may brim over");
+        helper.assertTrue(crucible.wouldSpillEssence(0) == false, "no essence, nothing to spill");
+        helper.succeed();
     }
 
     /** Thrown over the pot, well above the water: boiling water draws it in from there. */

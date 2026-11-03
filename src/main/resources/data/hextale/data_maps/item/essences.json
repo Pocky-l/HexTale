@@ -1398,6 +1398,90 @@
       },
       "tier": 2
     },
+    "hextale:chem_planter": {
+      "essences": {
+        "metal": 2,
+        "plant": 2
+      },
+      "tier": 2
+    },
+    "hextale:essence_sprinkler": {
+      "essences": {
+        "metal": 2,
+        "water": 2,
+        "sap": 1
+      },
+      "tier": 2
+    },
+    "hextale:sap_tap": {
+      "essences": {
+        "metal": 1,
+        "sap": 2
+      },
+      "tier": 1
+    },
+    "hextale:garden_trellis": {
+      "essences": {
+        "metal": 1
+      },
+      "tier": 1
+    },
+    "hextale:shimmer_bulb": {
+      "essences": {
+        "life": 2,
+        "rift": 1
+      },
+      "tier": 2
+    },
+    "hextale:ember_wheat_seeds": {
+      "essences": {
+        "life": 1,
+        "fire": 1
+      },
+      "tier": 1
+    },
+    "hextale:ember_wheat": {
+      "essences": {
+        "plant": 1,
+        "magma": 2
+      },
+      "tier": 1
+    },
+    "hextale:sap_gourd_seeds": {
+      "essences": {
+        "life": 1,
+        "sap": 1
+      },
+      "tier": 1
+    },
+    "hextale:sap_gourd": {
+      "essences": {
+        "sap": 6,
+        "plant": 2
+      },
+      "tier": 1
+    },
+    "hextale:crystal_cane": {
+      "essences": {
+        "plant": 2,
+        "crystal": 1
+      },
+      "tier": 1
+    },
+    "hextale:crystal_pod": {
+      "essences": {
+        "crystal": 4,
+        "life": 1
+      },
+      "tier": 2
+    },
+    "hextale:steeped_soil": {
+      "essences": {
+        "earth": 2,
+        "sap": 1
+      },
+      "tier": 1
+    },
     "hextale:pink_brazier": {
       "essences": {
         "fire": 3,

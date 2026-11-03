@@ -1,0 +1,166 @@
+{
+  "parent": "minecraft:block/block",
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "hextale:block/garden_trellis",
+    "trellis": "hextale:block/garden_trellis",
+    "chem_iron": "hextale:block/chem/chem_iron"
+  },
+  "elements": [
+    {
+      "name": "trellis",
+      "from": [
+        0,
+        0,
+        15
+      ],
+      "to": [
+        16,
+        16,
+        15
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#trellis"
+        },
+        "south": {
+          "uv": [
+            16,
+            0,
+            0,
+            16
+          ],
+          "texture": "#trellis"
+        }
+      }
+    },
+    {
+      "name": "iron_stud_a",
+      "from": [
+        12,
+        11,
+        15
+      ],
+      "to": [
+        13,
+        12,
+        16
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            7,
+            7,
+            8,
+            8
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            7,
+            7,
+            8,
+            8
+          ],
+          "texture": "#chem_iron",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            7,
+            7,
+            8,
+            8
+          ],
+          "texture": "#chem_iron"
+        },
+        "up": {
+          "uv": [
+            7,
+            7,
+            8,
+            8
+          ],
+          "texture": "#chem_iron"
+        },
+        "down": {
+          "uv": [
+            7,
+            7,
+            8,
+            8
+          ],
+          "texture": "#chem_iron"
+        }
+      }
+    },
+    {
+      "name": "iron_stud_b",
+      "from": [
+        4,
+        3,
+        15
+      ],
+      "to": [
+        5,
+        4,
+        16
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            7,
+            7,
+            8,
+            8
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            7,
+            7,
+            8,
+            8
+          ],
+          "texture": "#chem_iron",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            7,
+            7,
+            8,
+            8
+          ],
+          "texture": "#chem_iron"
+        },
+        "up": {
+          "uv": [
+            7,
+            7,
+            8,
+            8
+          ],
+          "texture": "#chem_iron"
+        },
+        "down": {
+          "uv": [
+            7,
+            7,
+            8,
+            8
+          ],
+          "texture": "#chem_iron"
+        }
+      }
+    }
+  ]
+}

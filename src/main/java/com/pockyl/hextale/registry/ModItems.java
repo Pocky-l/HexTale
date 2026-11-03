@@ -114,6 +114,24 @@ public final class ModItems {
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> PINK_BRAZIER = ITEMS.registerSimpleBlockItem(ModBlocks.PINK_BRAZIER,
             properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> STEEPED_SOIL = ITEMS.registerSimpleBlockItem(ModBlocks.STEEPED_SOIL);
+    public static final DeferredItem<BlockItem> CHEM_PLANTER = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_PLANTER,
+            properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> ESSENCE_SPRINKLER = ITEMS.registerSimpleBlockItem(ModBlocks.ESSENCE_SPRINKLER,
+            properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> SAP_TAP = ITEMS.registerSimpleBlockItem(ModBlocks.SAP_TAP);
+    public static final DeferredItem<BlockItem> GARDEN_TRELLIS = ITEMS.registerSimpleBlockItem(ModBlocks.GARDEN_TRELLIS);
+    /** Strains of the garden: their seeds plant them, their harvest is a reagent. */
+    public static final DeferredItem<BlockItem> SHIMMER_BULB = ITEMS.registerItem("shimmer_bulb",
+            properties -> new BlockItem(ModBlocks.SHIMMER_BULB.get(), properties.useItemDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> EMBER_WHEAT_SEEDS = ITEMS.registerItem("ember_wheat_seeds",
+            properties -> new BlockItem(ModBlocks.EMBER_WHEAT.get(), properties.useItemDescriptionPrefix()));
+    public static final DeferredItem<Item> EMBER_WHEAT = ITEMS.registerSimpleItem("ember_wheat");
+    public static final DeferredItem<BlockItem> SAP_GOURD_SEEDS = ITEMS.registerItem("sap_gourd_seeds",
+            properties -> new BlockItem(ModBlocks.SAP_GOURD_STEM.get(), properties.useItemDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> SAP_GOURD = ITEMS.registerSimpleBlockItem(ModBlocks.SAP_GOURD);
+    public static final DeferredItem<BlockItem> CRYSTAL_CANE = ITEMS.registerSimpleBlockItem(ModBlocks.CRYSTAL_CANE);
+    public static final DeferredItem<Item> CRYSTAL_POD = ITEMS.registerSimpleItem("crystal_pod");
     /** What an axolotl in a tank sheds as it heals: the living half of shimmer. */
     public static final DeferredItem<Item> REGENERATIVE_SLIME = ITEMS.registerSimpleItem("regenerative_slime");
     /** A hextech crystal grown in refined shimmer: cheaper and weaker than a cut one. */

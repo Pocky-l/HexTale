@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "podded=false": {
+      "model": "hextale:block/crystal_cane"
+    },
+    "podded=true": {
+      "model": "hextale:block/crystal_cane_podded"
+    }
+  }
+}

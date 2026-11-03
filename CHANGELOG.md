@@ -17,6 +17,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Modpacks and other mods can set the essences of any item, HexTale's own included, in the data map
   `hextale:essences`; everything crafted from it follows. How: the modpack guide (`docs/modpack.md`, "Essences of items").
 
+- The chemtech garden begins. A vial of growth tonic or raw shimmer, or a bottle of sap, poured on farmland soaks the
+  3x3 around it into Steeped Soil: it never dries out or gets trampled, crops grow on it as on wet farmland, and while
+  its doses last a crop on it often grows a stage more and a ripe harvest sometimes comes twice (shimmer strongest, sap
+  weakest). Growth tonic splashed over farmland steeps it too.
+- Chem Planter (worked out at the Lab Bench): an iron box with green glass sides and soil on top; its tank of growth
+  tonic, raw shimmer or piped sap shows through the glass. It grows the plant on it by itself, a stage every five
+  seconds for a dose, day or night, and its dose sometimes doubles a ripe harvest. Runes: Growth (feeds sooner),
+  Fertility (a ripe harvest twice), Pollen (a neighbour grows too), Dam.
+- Essence Sprinkler (worked out at the Lab Bench): a copper riser with a turning head; water and sap come by pipe, brews
+  are poured in, and every few seconds it wets the dry farmland around it and tops up the beds and planters that run low
+  on doses, so it spends only what the plants used. Runes: Shift,
+  Dam, Fertility, Healing.
+- Sap Tap: a copper spout set on the trunk of a living tree drips sap essence into a jar or pipe under it, or gathers it
+  for a glass bottle; faster from a magic tree or a jungle trunk. Runes: Haste, Spring, Photosynthesis.
+- Garden Trellis: a rusted iron lattice to climb like a ladder.
+- Strains, each worked out at the Lab Bench and then made in the Crucible: a plain plant dropped into the boiling
+  Crucible with the right essences comes out changed - wheat seeds with magma into Ember Wheat seeds, melon seeds with
+  sap into Sap Gourd seeds, sugar cane with crystal into Crystal Cane, glow berries with rift into Shimmer Bulbs.
+- The first strains: Cultivated Shimmerbloom (a bulb that opens into a shimmerbloom: shimmer from a garden bed), Ember
+  Wheat (smouldering grain that burns in a furnace), the Sap Gourd (a melon-like gourd full of sap) and Crystal Cane
+  (glassy cane that grows crystal pods to pick).
+
 ### Changed
 - Bottles of essence stack up to 16 when they hold the same liquid (a separator pours a stack one whole bottle at a time).
 - Every item of the mod carries the essences it is made of instead of a guess: wisps are pure light, devices carry
@@ -30,6 +52,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Wisps are drawn as round flames that look whole from every side, with twisting tongues, instead of a flat picture.
 - Wisps can be aimed at and put out with anything in hand; only a pickaxe with the Eternal Flame rune looks past them,
   so digging on never puts out the light it leaves.
+- The Crucible is kinder to the hands. Things go in by hand only when aimed into the pot; aimed at its outside, a
+  torch or a block is placed as against any block. It never takes tools, armour, named or enchanted things, filled
+  shulker boxes and bundles, jars or vials: thrown in, they bob back out with a soft gloop. An empty glass bottle is
+  no longer swallowed when there is no brew to bottle.
+- Finished results no longer fly off in all directions: they float on the water until fished out with an empty hand,
+  or drift over the lip into a hopper, chest or pipe on the Crucible's front side.
+- Boiling the Crucible away takes two sneak-uses: the first makes it hiss and says what would be lost. Results still
+  soaking or floating are thrown out instead of vanishing, whichever way the pot is emptied.
+- Essence that leaves the Crucible always wears the land: boiled away, spilt over the rim or lost with the broken pot,
+  like essence poured out of a bucket.
+- A bucket or bottle of water that would push essence over the rim is refused.
+- Jade and the researcher's goggles tell what the item in hand would do in the Crucible before it is lost: what it
+  turns into, which brew it starts, what it dissolves into, or why not (more heat, research, another brew, full doses).
+  The water also stirs towards a player holding something it can take.
+- The Crucible's status names the heat under it, and a comparator reads it (fill level, or the doses of a brew).
+- Hoppers and pipes feeding the Crucible now work for the researcher who woke it or last used it by hand, so brews
+  and researched transmutations start from them too; a catalyst for full doses stays in the hopper.
+- A Chem Burner under a Crucible that has been boiling idle for half a minute burns its fuel four times slower.
 
 ### Fixed
 - Leaving the game in the middle of a passage through a breach or a gate no longer sinks the player into the ground

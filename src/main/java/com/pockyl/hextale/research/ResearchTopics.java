@@ -67,6 +67,13 @@ public final class ResearchTopics {
     public static final ResearchTopic CHEM_STILL = lab("chem_still", 2, Essence.FIRE, Essence.EARTH, ModItems.CHEM_STILL);
     public static final ResearchTopic CHEM_BOILER = lab("chem_boiler", 2, Essence.FIRE, Essence.WATER, ModItems.CHEM_BOILER);
     public static final ResearchTopic PINK_BRAZIER = lab("pink_brazier", 2, Essence.FIRE, Essence.SPARK, ModItems.PINK_BRAZIER);
+    public static final ResearchTopic CHEM_PLANTER = lab("chem_planter", 1, Essence.EARTH, Essence.LIFE, ModItems.CHEM_PLANTER);
+    public static final ResearchTopic ESSENCE_SPRINKLER = lab("essence_sprinkler", 2, Essence.WATER, Essence.LIFE, ModItems.ESSENCE_SPRINKLER);
+    // Strains: worked out at the Lab Bench, then the Crucible turns the plain plant into them.
+    public static final ResearchTopic EMBER_WHEAT = lab("ember_wheat", 1, Essence.FIRE, Essence.EARTH, ModItems.EMBER_WHEAT_SEEDS);
+    public static final ResearchTopic SAP_GOURD = lab("sap_gourd", 1, Essence.WATER, Essence.LIFE, ModItems.SAP_GOURD_SEEDS);
+    public static final ResearchTopic CRYSTAL_CANE = lab("crystal_cane", 2, Essence.EARTH, Essence.LIGHT, ModItems.CRYSTAL_CANE);
+    public static final ResearchTopic SHIMMER_BULB = lab("shimmer_bulb", 2, Essence.SHADOW, Essence.SPARK, ModItems.SHIMMER_BULB);
     public static final ResearchTopic SYNTHETIC_CRYSTAL = lab("synthetic_crystal", 2, Essence.LIGHT, Essence.EARTH, ModItems.SYNTHETIC_CRYSTAL);
     // Chemtech reactions: each brew is worked out at the Lab Bench before the Crucible brews it for the researcher.
     public static final ResearchTopic COMBUSTIBLE_MIX = brew("combustible_mix", 1, Brew.FUEL, Essence.FIRE, Essence.SHADOW);

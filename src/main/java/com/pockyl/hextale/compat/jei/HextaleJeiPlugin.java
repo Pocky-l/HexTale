@@ -199,6 +199,12 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.HEXTECH_LAMPPOST.get(), "hextech_lamppost");
         info(registration, ModItems.LAB_BENCH.get(), "lab_bench");
         info(registration, ModItems.PINK_BRAZIER.get(), "pink_brazier");
+        info(registration, ModItems.STEEPED_SOIL.get(), "steeped_soil");
+        info(registration, ModItems.CHEM_PLANTER.get(), "chem_planter");
+        info(registration, ModItems.ESSENCE_SPRINKLER.get(), "essence_sprinkler");
+        info(registration, ModItems.SAP_TAP.get(), "sap_tap");
+        info(registration, ModItems.CRYSTAL_CANE.get(), "crystal_cane");
+        info(registration, ModItems.SAP_GOURD_SEEDS.get(), "sap_gourd_seeds");
         info(registration, ModItems.SYNTHETIC_CRYSTAL.get(), "synthetic_crystal");
         info(registration, ModItems.GATHERING_PYLON.get(), "gathering_pylon");
         info(registration, ModItems.SENDING_PYLON.get(), "sending_pylon");

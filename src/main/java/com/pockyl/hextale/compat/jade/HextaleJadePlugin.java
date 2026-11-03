@@ -56,6 +56,9 @@ public class HextaleJadePlugin implements IWailaPlugin {
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.ChemBoilerBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.HextechLamppostBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.PinkBrazierBlock.class);
+        registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.garden.ChemPlanterBlock.class);
+        registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.garden.EssenceSprinklerBlock.class);
+        registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.garden.SapTapBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, DrainValveBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, PumpBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.HexFurnaceBlock.class);
@@ -107,10 +110,21 @@ public class HextaleJadePlugin implements IWailaPlugin {
                 if ("no_essence".equals(blocked) || "no_fuel".equals(blocked) || "missing".equals(blocked)) {
                     tooltip.add(Component.translatable("gui.hextale.separator." + blocked).withStyle(ChatFormatting.RED));
                 }
+            } else if (entity instanceof com.pockyl.hextale.garden.ChemPlanterBlockEntity planter) {
+                tooltip.add(planter.status());
+            } else if (entity instanceof com.pockyl.hextale.garden.EssenceSprinklerBlockEntity sprinkler) {
+                tooltip.add(sprinkler.status());
+            } else if (entity instanceof com.pockyl.hextale.garden.SapTapBlockEntity tap) {
+                tooltip.add(tap.status());
             } else if (entity instanceof com.pockyl.hextale.block.CrucibleBlockEntity crucible) {
                 tooltip.add(com.pockyl.hextale.block.CrucibleBlock.status(crucible));
                 if (!crucible.essence().isEmpty()) {
                     tooltip.add(crucible.essence().describe().withStyle(ChatFormatting.GRAY));
+                }
+                Component preview = crucible.preview(accessor.getPlayer().getMainHandItem(), accessor.getPlayer());
+                if (preview != null) {
+                    tooltip.add(Component.empty().append(accessor.getPlayer().getMainHandItem().getHoverName()).append(": ").append(preview)
+                            .withStyle(ChatFormatting.YELLOW));
                 }
             } else if (entity instanceof com.pockyl.hextale.block.AxolotlTankBlockEntity tank) {
                 tooltip.add(tank.status());

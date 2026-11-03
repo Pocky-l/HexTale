@@ -1,0 +1,22 @@
+{
+  "region": "chemtech",
+  "stage": "mid",
+  "icon": "hextale:essence_sprinkler",
+  "parents": [
+    "steeped_soil",
+    "lab_bench"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:essence_sprinkler",
+    "then": {
+      "kind": "runes",
+      "result": "sprinkler"
+    }
+  },
+  "research": "essence_sprinkler",
+  "pos": [
+    -540,
+    270
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "type": "hextale:lab_experiment",
+  "topic": "shimmer_bulb",
+  "target": "rift",
+  "amount": 6,
+  "purity": 0.6,
+  "sample": "minecraft:glow_berries"
+}

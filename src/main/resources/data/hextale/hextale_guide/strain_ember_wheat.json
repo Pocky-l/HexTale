@@ -1,0 +1,22 @@
+{
+  "region": "chemtech",
+  "stage": "mid",
+  "icon": "hextale:ember_wheat_seeds",
+  "parents": [
+    "steeped_soil",
+    "lab_bench"
+  ],
+  "display": {
+    "kind": "scheme",
+    "ingredients": [
+      "minecraft:wheat_seeds",
+      "hextale:crucible"
+    ],
+    "result": "hextale:ember_wheat_seeds"
+  },
+  "research": "ember_wheat",
+  "pos": [
+    -600,
+    405
+  ]
+}

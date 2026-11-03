@@ -135,6 +135,19 @@ public final class Hextale {
         output.accept(ModItems.CHEM_BOILER);
         output.accept(ModItems.AXOLOTL_TANK);
         output.accept(ModItems.PINK_BRAZIER);
+        // The chemtech garden.
+        output.accept(ModItems.SAP_TAP);
+        output.accept(ModItems.CHEM_PLANTER);
+        output.accept(ModItems.ESSENCE_SPRINKLER);
+        output.accept(ModItems.STEEPED_SOIL);
+        output.accept(ModItems.GARDEN_TRELLIS);
+        output.accept(ModItems.SHIMMER_BULB);
+        output.accept(ModItems.EMBER_WHEAT_SEEDS);
+        output.accept(ModItems.EMBER_WHEAT);
+        output.accept(ModItems.SAP_GOURD_SEEDS);
+        output.accept(ModItems.SAP_GOURD);
+        output.accept(ModItems.CRYSTAL_CANE);
+        output.accept(ModItems.CRYSTAL_POD);
 
         // Pylon logistics.
         output.accept(ModItems.GATHERING_PYLON);

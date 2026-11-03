@@ -1,0 +1,22 @@
+{
+  "region": "chemtech",
+  "stage": "mid",
+  "icon": "hextale:sap_gourd",
+  "parents": [
+    "steeped_soil",
+    "lab_bench"
+  ],
+  "display": {
+    "kind": "scheme",
+    "ingredients": [
+      "minecraft:melon_seeds",
+      "hextale:crucible"
+    ],
+    "result": "hextale:sap_gourd_seeds"
+  },
+  "research": "sap_gourd",
+  "pos": [
+    -545,
+    370
+  ]
+}

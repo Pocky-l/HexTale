@@ -137,6 +137,15 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> BRAZIER_RUNES =
             COMPONENTS.registerComponentType("brazier_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> PLANTER_RUNES =
+            COMPONENTS.registerComponentType("planter_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> SPRINKLER_RUNES =
+            COMPONENTS.registerComponentType("sprinkler_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> TAP_RUNES =
+            COMPONENTS.registerComponentType("tap_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> SKYPACK_RUNES =
             COMPONENTS.registerComponentType("skypack_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));

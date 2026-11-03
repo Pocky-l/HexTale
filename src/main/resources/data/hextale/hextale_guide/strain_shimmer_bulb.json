@@ -1,0 +1,22 @@
+{
+  "region": "chemtech",
+  "stage": "mid",
+  "icon": "hextale:shimmer_bulb",
+  "parents": [
+    "steeped_soil",
+    "lab_bench"
+  ],
+  "display": {
+    "kind": "scheme",
+    "ingredients": [
+      "minecraft:glow_berries",
+      "hextale:crucible"
+    ],
+    "result": "hextale:shimmer_bulb"
+  },
+  "research": "shimmer_bulb",
+  "pos": [
+    -720,
+    350
+  ]
+}

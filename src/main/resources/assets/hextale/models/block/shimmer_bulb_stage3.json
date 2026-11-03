@@ -1,0 +1,279 @@
+{
+  "parent": "minecraft:block/block",
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "hextale:block/shimmer_bulb_stage3",
+    "crop": "hextale:block/shimmer_bulb_stage3",
+    "glow": "hextale:block/shimmer_bulb_stage3_glow"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        -1,
+        0
+      ],
+      "to": [
+        4,
+        15,
+        16
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#crop"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#crop"
+        }
+      },
+      "shade": false
+    },
+    {
+      "from": [
+        12,
+        -1,
+        0
+      ],
+      "to": [
+        12,
+        15,
+        16
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#crop"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#crop"
+        }
+      },
+      "shade": false
+    },
+    {
+      "from": [
+        0,
+        -1,
+        4
+      ],
+      "to": [
+        16,
+        15,
+        4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#crop"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#crop"
+        }
+      },
+      "shade": false
+    },
+    {
+      "from": [
+        0,
+        -1,
+        12
+      ],
+      "to": [
+        16,
+        15,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#crop"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#crop"
+        }
+      },
+      "shade": false
+    },
+    {
+      "from": [
+        4,
+        -1,
+        0
+      ],
+      "to": [
+        4,
+        15,
+        16
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#glow"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#glow"
+        }
+      },
+      "light_emission": 15,
+      "shade_direction_override": "up"
+    },
+    {
+      "from": [
+        12,
+        -1,
+        0
+      ],
+      "to": [
+        12,
+        15,
+        16
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#glow"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#glow"
+        }
+      },
+      "light_emission": 15,
+      "shade_direction_override": "up"
+    },
+    {
+      "from": [
+        0,
+        -1,
+        4
+      ],
+      "to": [
+        16,
+        15,
+        4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#glow"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#glow"
+        }
+      },
+      "light_emission": 15,
+      "shade_direction_override": "up"
+    },
+    {
+      "from": [
+        0,
+        -1,
+        12
+      ],
+      "to": [
+        16,
+        15,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#glow"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#glow"
+        }
+      },
+      "light_emission": 15,
+      "shade_direction_override": "up"
+    }
+  ]
+}

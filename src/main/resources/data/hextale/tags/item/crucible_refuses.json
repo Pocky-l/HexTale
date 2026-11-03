@@ -1,0 +1,11 @@
+{
+  "values": [
+    "hextale:chem_vial",
+    "hextale:essence_tank",
+    "hextale:creative_essence_tank",
+    "hextale:essence_flask",
+    "minecraft:bucket",
+    "minecraft:water_bucket",
+    "minecraft:lava_bucket"
+  ]
+}

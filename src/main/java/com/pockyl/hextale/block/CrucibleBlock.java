@@ -137,7 +137,11 @@ public class CrucibleBlock extends BaseEntityBlock {
             }
             return InteractionResult.SUCCESS;
         }
-        if (stack.is(Items.GLASS_BOTTLE) && crucible.brew() != null) {
+        if (stack.is(Items.GLASS_BOTTLE)) {
+            if (crucible.brew() == null) {
+                // An empty bottle never sinks by hand: there is nothing to bottle.
+                return say(level, player, crucible.liquid() <= 0 ? "no_water" : "no_brew");
+            }
             if (!level.isClientSide()) {
                 ItemStack vial = crucible.bottle();
                 if (!vial.isEmpty()) {
@@ -146,14 +150,19 @@ public class CrucibleBlock extends BaseEntityBlock {
             }
             return InteractionResult.SUCCESS;
         }
-        if (crucible.liquid() <= 0) {
+        // Anything else goes in only when aimed into the pot; on its outside a block is placed as against any block.
+        if (crucible.liquid() <= 0 || hitResult.getDirection() != Direction.UP) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
+        }
+        if (CrucibleBlockEntity.refuses(stack)) {
+            return say(level, player, "refuses");
         }
         if (!level.isClientSide()) {
             if (crucible.take(stack, 1, true, player) == 0) {
                 // Neither a catalyst the water can pay for, nor anything boiling water could dissolve.
                 return say(level, player, crucible.boiling() ? "no_essences" : "not_boiling");
             }
+            crucible.setOwner(player);
             if (!creative) {
                 stack.shrink(1);
             }
@@ -188,36 +197,45 @@ public class CrucibleBlock extends BaseEntityBlock {
         return InteractionResult.SUCCESS;
     }
 
-    /** Sneaking boils the water away; otherwise the crucible says how its water stands. */
+    /**
+     * Empty hand: fishes out the results floating on the water, or says how the water stands; sneaking readies the pot
+     * to boil away and a second sneak-use boils it away. With an item in hand (aimed at the pot's outside) the use
+     * passes on, so blocks can be placed against it.
+     */
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        if (!(level.getBlockEntity(pos) instanceof CrucibleBlockEntity crucible)) {
+        if (!(level.getBlockEntity(pos) instanceof CrucibleBlockEntity crucible) || !player.getMainHandItem().isEmpty()) {
             return InteractionResult.PASS;
         }
-        if (!level.isClientSide()) {
-            if (player.isSecondaryUseActive()) {
-                crucible.boilAway();
-            } else {
-                player.sendOverlayMessage(status(crucible));
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
+        if (player.isSecondaryUseActive()) {
+            if (player instanceof net.minecraft.server.level.ServerPlayer server) {
+                crucible.sneakUse(server);
             }
+        } else if (!crucible.fishOut(player)) {
+            player.sendOverlayMessage(status(crucible));
         }
         return InteractionResult.SUCCESS;
     }
 
-    /** "Boiling - water 750 mB, essence 32 mB", or what it lacks. */
+    /** "Boiling - water 750 mB, essence 32 mB (over soul fire, 3)", or what it lacks. */
     public static Component status(CrucibleBlockEntity crucible) {
         if (crucible.liquid() <= 0) {
             return Component.translatable("block.hextale.crucible.say.no_water");
         }
         Component phase = crucible.phase().describe();
-        if (crucible.heat() <= 0 && !crucible.boiling()) {
+        int heat = crucible.heat();
+        if (heat <= 0 && !crucible.boiling()) {
             return Component.translatable("block.hextale.crucible.status.cold", phase, crucible.water());
         }
-        if (crucible.brew() != null) {
-            return Component.translatable("block.hextale.crucible.status.brew", phase,
-                    Component.translatable(crucible.brew().translationKey()).withColor(crucible.brew().color()), crucible.doses());
-        }
-        return Component.translatable("block.hextale.crucible.status", phase, crucible.water(), crucible.essence().total());
+        Component line = crucible.brew() != null
+                ? Component.translatable("block.hextale.crucible.status.brew", phase,
+                        Component.translatable(crucible.brew().translationKey()).withColor(crucible.brew().color()), crucible.doses())
+                : Component.translatable("block.hextale.crucible.status", phase, crucible.water(), crucible.essence().total());
+        return heat <= 0 ? line : Component.translatable("block.hextale.crucible.status.heat", line,
+                Component.translatable("block.hextale.crucible.heat." + heat), heat);
     }
 
     private static InteractionResult say(Level level, Player player, String key) {
@@ -239,6 +257,17 @@ public class CrucibleBlock extends BaseEntityBlock {
     public static boolean isWaterBottle(ItemStack stack) {
         PotionContents contents = stack.get(DataComponents.POTION_CONTENTS);
         return stack.is(Items.POTION) && contents != null && contents.is(Potions.WATER);
+    }
+
+    @Override
+    protected boolean hasAnalogOutputSignal(BlockState state) {
+        return true;
+    }
+
+    /** 0 dry, 1-7 by how full it is, 8-15 by the doses of a brew in it. */
+    @Override
+    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
+        return level.getBlockEntity(pos) instanceof CrucibleBlockEntity crucible ? crucible.signal() : 0;
     }
 
     @Override

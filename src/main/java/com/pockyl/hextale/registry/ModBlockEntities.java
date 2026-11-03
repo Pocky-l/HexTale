@@ -147,6 +147,16 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RuneSteleBlockEntity>> RUNE_STELE =
             BLOCK_ENTITIES.register("rune_stele", () -> new BlockEntityType<>(RuneSteleBlockEntity::new, ModBlocks.RUNE_STELE.get()));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.garden.ChemPlanterBlockEntity>> CHEM_PLANTER =
+            BLOCK_ENTITIES.register("chem_planter", () -> new BlockEntityType<>(com.pockyl.hextale.garden.ChemPlanterBlockEntity::new,
+                    ModBlocks.CHEM_PLANTER.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.garden.EssenceSprinklerBlockEntity>> ESSENCE_SPRINKLER =
+            BLOCK_ENTITIES.register("essence_sprinkler", () -> new BlockEntityType<>(com.pockyl.hextale.garden.EssenceSprinklerBlockEntity::new,
+                    ModBlocks.ESSENCE_SPRINKLER.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.garden.SapTapBlockEntity>> SAP_TAP =
+            BLOCK_ENTITIES.register("sap_tap", () -> new BlockEntityType<>(com.pockyl.hextale.garden.SapTapBlockEntity::new,
+                    ModBlocks.SAP_TAP.get()));
+
     private ModBlockEntities() {
     }
 

@@ -17,6 +17,8 @@ public final class ModTags {
     /** Blocks a lightning wave runs through: everything that awakens plus budding amethyst, which is never shattered. */
     public static final TagKey<Block> CARRIES_LIGHTNING = TagKey.create(Registries.BLOCK, Hextale.id("carries_lightning"));
     /** What repairs hextech tools. */
+    /** Items a crucible never takes in (they bob back out): vials, jars, flasks. */
+    public static final TagKey<Item> CRUCIBLE_REFUSES = TagKey.create(Registries.ITEM, Hextale.id("crucible_refuses"));
     public static final TagKey<Item> HEXTECH_TOOL_MATERIALS = TagKey.create(Registries.ITEM, Hextale.id("hextech_tool_materials"));
     /** What repairs hexsteel tools and armour. */
     public static final TagKey<Item> REPAIRS_HEXSTEEL = TagKey.create(Registries.ITEM, Hextale.id("repairs_hexsteel"));
@@ -33,6 +35,15 @@ public final class ModTags {
     public static final TagKey<Item> REPAIRS_ARCANE_CLOTH = TagKey.create(Registries.ITEM, Hextale.id("repairs_arcane_cloth"));
     /** Stone that drinks spilled essence and becomes magic stone (block tag; the item tag of the same name feeds the
      *  crafting recipe). */
+    /** Plants a garden bed (steeped soil, a Chem Planter) grows besides crops and stems. */
+    public static final TagKey<Block> GARDEN_PLANTS = TagKey.create(Registries.BLOCK, Hextale.id("garden_plants"));
+    /** What a Sap Gourd stem grows on, and where its gourds may sit. */
+    public static final TagKey<Block> SUPPORTS_SAP_GOURD_STEM = TagKey.create(Registries.BLOCK, Hextale.id("supports_sap_gourd_stem"));
+    public static final TagKey<Block> SUPPORTS_SAP_GOURD = TagKey.create(Registries.BLOCK, Hextale.id("supports_sap_gourd"));
+    /** What Crystal Cane takes root on (besides the garden's beds): grass, dirt, sand, farmland. */
+    public static final TagKey<Block> SUPPORTS_CRYSTAL_CANE = TagKey.create(Registries.BLOCK, Hextale.id("supports_crystal_cane"));
+    /** Logs of the magic tree: a Sap Tap drips faster from them. */
+    public static final TagKey<Block> MAGIC_LOGS = TagKey.create(Registries.BLOCK, Hextale.id("magic_logs"));
     public static final TagKey<Block> SOAKS_ESSENCE = TagKey.create(Registries.BLOCK, Hextale.id("soaks_essence"));
     /** Plants a Whirl Reaper reaps in place by their age, besides every crop block: nether wart, cocoa, sweet berries. */
     public static final TagKey<Block> WHIRL_CROPS = TagKey.create(Registries.BLOCK, Hextale.id("whirl_crops"));

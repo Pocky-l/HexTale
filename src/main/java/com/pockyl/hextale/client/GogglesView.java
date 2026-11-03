@@ -199,6 +199,11 @@ public final class GogglesView {
                         crucible.doses()), 0xFF000000 | crucible.brew().color()));
             }
             contents(rows, crucible.essence());
+            net.minecraft.world.entity.player.Player viewer = net.minecraft.client.Minecraft.getInstance().player;
+            Component preview = viewer == null ? null : crucible.preview(viewer.getMainHandItem(), viewer);
+            if (preview != null) {
+                rows.add(new Row(null, Component.empty().append(viewer.getMainHandItem().getHoverName()).append(": ").append(preview), 0xFFF0D890));
+            }
             return new Reading(name, rows);
         }
         if (entity instanceof com.pockyl.hextale.block.AxolotlTankBlockEntity tank) {

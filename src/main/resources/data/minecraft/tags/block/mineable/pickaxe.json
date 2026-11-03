@@ -119,6 +119,10 @@
     "hextale:husk_chitin_pillar",
     "hextale:gnawed_cobblestone",
     "hextale:gnawed_stone_bricks",
-    "hextale:gnawed_bricks"
+    "hextale:gnawed_bricks",
+    "hextale:chem_planter",
+    "hextale:essence_sprinkler",
+    "hextale:sap_tap",
+    "hextale:garden_trellis"
   ]
 }

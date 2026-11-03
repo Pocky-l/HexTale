@@ -1,0 +1,34 @@
+{
+  "region": "essences",
+  "icon": "hextale:sap_tap",
+  "parents": [
+    "essence_bottle"
+  ],
+  "goal": {
+    "type": "has_item",
+    "item": "hextale:sap_tap"
+  },
+  "display": {
+    "kind": "shaped",
+    "ingredients": [
+      "minecraft:copper_ingot",
+      "minecraft:copper_ingot",
+      "minecraft:iron_nugget",
+      "",
+      "",
+      "minecraft:copper_ingot",
+      "",
+      "",
+      ""
+    ],
+    "result": "hextale:sap_tap",
+    "then": {
+      "kind": "runes",
+      "result": "tap"
+    }
+  },
+  "pos": [
+    147,
+    166
+  ]
+}

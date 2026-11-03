@@ -52,6 +52,8 @@ public final class TableModels {
     public static final StandaloneModelKey<BlockStateModelPart> LAPIDARY_GEAR = model("block/hex_lapidary_gear");
     public static final StandaloneModelKey<BlockStateModelPart> WHIRL_REAPER_VANES = model("block/whirl_reaper_vanes");
     public static final StandaloneModelKey<BlockStateModelPart> HEX_SAW_DISC = model("block/hex_sawmill_disc");
+    /** The Essence Sprinkler's head, turned by its renderer about the riser's axis after each spray. */
+    public static final StandaloneModelKey<BlockStateModelPart> SPRINKLER_HEAD = model("block/essence_sprinkler_head");
     /** The formed Hex Foundry round its heart, facing north, and its glowing parts (drawn at full light while hot). */
     public static final StandaloneModelKey<BlockStateModelPart> HEX_FOUNDRY = model("block/hex_foundry/formed");
     public static final StandaloneModelKey<BlockStateModelPart> HEX_FOUNDRY_GLOW = model("block/hex_foundry/glow");

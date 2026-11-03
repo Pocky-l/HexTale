@@ -1,0 +1,12 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:sugar_cane",
+  "essences": {
+    "crystal": 4,
+    "water": 2
+  },
+  "result": {
+    "id": "hextale:crystal_cane",
+    "count": 2
+  }
+}

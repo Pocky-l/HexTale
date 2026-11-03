@@ -44,10 +44,20 @@ public record CrucibleRecipe(Ingredient catalyst, EssenceMix essences, ItemStack
      * its result (null when no such recipe).
      */
     public static @Nullable ResearchTopic lockedFor(ItemStack stack, EssenceMix essence, @Nullable Player researcher) {
-        return ALL.get(false).values().stream()
+        return lockedFor(stack, essence, researcher, false);
+    }
+
+    /** {@link #lockedFor(ItemStack, EssenceMix, Player)} on either side (the client knows the recipes too). */
+    public static @Nullable ResearchTopic lockedFor(ItemStack stack, EssenceMix essence, @Nullable Player researcher, boolean clientSide) {
+        return ALL.get(clientSide).values().stream()
                 .filter(recipe -> recipe.catalyst().test(stack) && essence.holds(recipe.essences()) && !recipe.mayMake(researcher))
                 .map(recipe -> ResearchTopics.of(recipe.result().item().value()))
                 .findFirst().orElse(null);
+    }
+
+    /** Whether some transmutation starts with this catalyst at all (whatever the water holds). */
+    public static boolean anyFor(ItemStack stack, boolean clientSide) {
+        return ALL.get(clientSide).values().stream().anyMatch(recipe -> recipe.catalyst().test(stack));
     }
 
     /** Whether this researcher may transmute into the result: nothing guards it, or they have researched it. */
@@ -65,7 +75,12 @@ public record CrucibleRecipe(Ingredient catalyst, EssenceMix essences, ItemStack
      * {@code researcher} (who threw or put the item in, null when nobody did) has not researched are left out.
      */
     public static @Nullable CrucibleRecipe find(ItemStack stack, EssenceMix essence, @Nullable Player researcher) {
-        return ALL.get(false).values().stream()
+        return find(stack, essence, researcher, false);
+    }
+
+    /** {@link #find(ItemStack, EssenceMix, Player)} on either side (the client knows the recipes too). */
+    public static @Nullable CrucibleRecipe find(ItemStack stack, EssenceMix essence, @Nullable Player researcher, boolean clientSide) {
+        return ALL.get(clientSide).values().stream()
                 .filter(recipe -> recipe.catalyst().test(stack) && essence.holds(recipe.essences()) && recipe.mayMake(researcher))
                 .max(Comparator.comparingInt(recipe -> recipe.essences().total()))
                 .orElse(null);
