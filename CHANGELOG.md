@@ -135,6 +135,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `showWipSteps`: the map shows only what is really in the game.
 
 ### Fixed
+- The Foundry no longer reads "Waking up" while it stands idle: with fuel or fire but nothing to melt it says it heats
+  only while something melts inside and marks its input grid. Its warnings now show on the screen as soon as they happen.
 - The diary pictures say what really happens: Rusted Plating shows a vial of acid thrown at an iron block (not a
   fermented spider eye and an empty vial), Refined Shimmer shows vials of raw shimmer going into the Chem Still, the
   Hextech Crystal and Gemstone show the Lapidary with its disc, a Void Crystal is mined from its cluster, and Void

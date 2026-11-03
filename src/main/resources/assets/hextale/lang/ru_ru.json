@@ -2310,6 +2310,7 @@
   "gui.hextale.hex_foundry.fire.hint": "Топливо печи или эссенция огня и магмы из банок рядом или по трубам",
   "gui.hextale.hex_foundry.no_fire": "Нечего жечь",
   "gui.hextale.hex_foundry.output_full": "Выход заполнен",
+  "gui.hextale.hex_foundry.nothing_to_melt": "Греется, только пока внутри что-то плавится",
   "gui.hextale.slot.hex_foundry.input": "Всё, что плавит печь",
   "gui.hextale.slot.hex_foundry.output": "Переплавленное",
   "gui.hextale.slot.hex_foundry.fuel": "Топливо",

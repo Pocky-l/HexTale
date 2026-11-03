@@ -2310,6 +2310,7 @@
   "gui.hextale.hex_foundry.fire.hint": "Furnace fuel, or fire and magma essence from jars nearby or pipes",
   "gui.hextale.hex_foundry.no_fire": "Nothing to burn",
   "gui.hextale.hex_foundry.output_full": "The output is full",
+  "gui.hextale.hex_foundry.nothing_to_melt": "Heats only while something melts inside",
   "gui.hextale.slot.hex_foundry.input": "Anything a furnace smelts",
   "gui.hextale.slot.hex_foundry.output": "Melted",
   "gui.hextale.slot.hex_foundry.fuel": "Fuel",
