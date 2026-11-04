@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   mod's tank, and pours it back into them; storage mods keep them as items. They never pour out into the world.
 - The Researcher's Diary has a search (#8): type over the map or click the field in its corner, and the steps you can
   see whose name holds the words are ringed and the map flies to the first; Enter goes to the next, Escape clears.
+- The Researcher's Diary links its pictures: click an item in a recipe or scheme to open the step that makes it (the
+  back arrow returns to the step you came from). With [JEI](https://www.curseforge.com/minecraft/mc-mods/jei), JEI's
+  own show recipe / show uses keys work on those items too.
 - The Chem Still shows the Crystal Pods it holds, lying on its base behind the receiver.
 - JEI shows what the Chem Vat tempers: the metals, the vials of acid and shimmer its bath must hold, and the result.
 - Chem-steel tools and armour are 3D models, with glass in the colour of the fuel in the tank you wear (dark when it is

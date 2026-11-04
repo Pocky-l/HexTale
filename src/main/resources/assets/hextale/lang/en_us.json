@@ -977,6 +977,7 @@
   "jei.hextale.multiblock": "Multiblocks",
   "jei.hextale.multiblock.wake": "Right-click the finished structure (one is spent)",
   "book.hextale.guide.back": "Back to the map",
+  "book.hextale.guide.back_to": "Back to %s",
   "book.hextale.guide.uses": "Uses:",
   "book.hextale.guide.use.pickaxe": "pickaxe rune - %s",
   "book.hextale.guide.use.recipe": "needed on a stele for: %s",

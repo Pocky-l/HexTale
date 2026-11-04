@@ -977,6 +977,7 @@
   "jei.hextale.multiblock": "Мультиструктуры",
   "jei.hextale.multiblock.wake": "ПКМ по готовой постройке (тратится одна)",
   "book.hextale.guide.back": "Назад к карте",
+  "book.hextale.guide.back_to": "Назад: %s",
   "book.hextale.guide.uses": "Применение:",
   "book.hextale.guide.use.pickaxe": "руна кирки - %s",
   "book.hextale.guide.use.recipe": "нужна на стеле для: %s",

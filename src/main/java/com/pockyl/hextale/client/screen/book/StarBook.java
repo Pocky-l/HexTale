@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.client.ClientKnowledge;
+import com.pockyl.hextale.client.RecipeLookup;
 import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.quest.Guide;
@@ -436,6 +437,11 @@ public final class StarBook {
         if (button == InputConstants.MOUSE_BUTTON_RIGHT && tab == Tab.QUESTS && guide.selected() == null && overSky(mouseX, mouseY)) {
             return editor.press(mouseX, mouseY);
         }
+        if (button != InputConstants.MOUSE_BUTTON_LEFT && tab == Tab.QUESTS && guide.selected() != null
+                && RecipeLookup.show(InputConstants.Type.MOUSE.getOrCreate(button), guide.pointed())) {
+            // The recipe viewer's "show recipe" / "show uses" may be bound to a mouse button.
+            return true;
+        }
         if (button != InputConstants.MOUSE_BUTTON_LEFT || !overSky(mouseX, mouseY)) {
             return false;
         }
@@ -554,6 +560,10 @@ public final class StarBook {
     public boolean keyPressed(KeyEvent event) {
         if (event.isEscape() && tab == Tab.QUESTS && guide.selected() != null) {
             guide.close();
+            return true;
+        }
+        if (tab == Tab.QUESTS && guide.selected() != null && RecipeLookup.show(InputConstants.getKey(event), guide.pointed())) {
+            // An item under the mouse in a picture: the recipe viewer's own keys show how it is made or what it is for.
             return true;
         }
         if (tab == Tab.QUESTS && guide.selected() == null && search.keyPressed(event, ClientKnowledge.get())) {

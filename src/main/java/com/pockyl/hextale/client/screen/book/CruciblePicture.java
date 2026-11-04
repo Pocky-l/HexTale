@@ -145,7 +145,7 @@ final class CruciblePicture {
             graphics.text(font, words, lineX + 18, heatY + 4, heatColor(pot.heat()), true);
         }
         if (GuidePage.over(mouseX, mouseY, lineX, heatY, lineWidth, 16)) {
-            tooltip = List.of(heater.getHoverName().getVisualOrderText(), heat.getVisualOrderText());
+            tooltip = page.pointAt(heater, heat);
         }
         return tooltip;
     }

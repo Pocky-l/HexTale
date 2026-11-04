@@ -141,10 +141,7 @@ final class SchemePicture {
         graphics.pose().scale(2, 2);
         graphics.item(stack, 0, 0);
         graphics.pose().popMatrix();
-        if (!hovered) {
-            return null;
-        }
-        return List.of(stack.getHoverName().getVisualOrderText());
+        return hovered ? page.pointAt(stack, null) : null;
     }
 
     /** A dotted gold line whose dots run toward the place. */

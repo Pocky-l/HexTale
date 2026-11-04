@@ -115,6 +115,19 @@ final class GuidePage {
     /** On the plate of a step for a set of things: the thing picked in the row of its icons, and where the row was drawn. */
     private int variant;
     private int variantY = Integer.MIN_VALUE;
+    /** The plates a reader came through by clicking an item in a picture; the back arrow walks them back. */
+    private final java.util.ArrayDeque<Target> trail = new java.util.ArrayDeque<>();
+    /** The item under the mouse on the plate in the last frame (a click opens its step, the recipe viewer's keys it). */
+    private ItemStack pointed = ItemStack.EMPTY;
+    /** Which steps make which items, built once per loaded guide. */
+    @Nullable
+    private static Map<Item, List<Target>> makers;
+    @Nullable
+    private static Guide makersOf;
+
+    /** A step's plate, on one thing of its set. */
+    private record Target(Quest quest, int variant, ItemStack stack) {
+    }
 
     GuidePage(StarBook book) {
         this.book = book;
@@ -1030,8 +1043,17 @@ final class GuidePage {
         return selected;
     }
 
-    /** @return whether the selection changed */
+    /**
+     * Opens a step's plate from the map (or closes it with null), forgetting the plates followed before.
+     *
+     * @return whether the selection changed
+     */
     boolean select(@Nullable Quest quest) {
+        trail.clear();
+        return show(quest);
+    }
+
+    private boolean show(@Nullable Quest quest) {
         if (quest == selected) {
             return false;
         }
@@ -1233,6 +1255,7 @@ final class GuidePage {
     @Nullable
     List<FormattedCharSequence> renderPlate(GuiGraphicsExtractor graphics, RuneKnowledge knowledge, int mouseX, int mouseY, long now) {
         Quest quest = selected;
+        pointed = ItemStack.EMPTY;
         if (quest == null) {
             return null;
         }
@@ -1351,7 +1374,9 @@ final class GuidePage {
         boolean back = overBack(mouseX, mouseY, knowledge);
         backArrow(graphics, x + 4, top + 4, back, now);
         if (back) {
-            tooltip = List.of(Component.translatable("book.hextale.guide.back").getVisualOrderText());
+            Target previous = trail.peek();
+            tooltip = List.of((previous == null ? Component.translatable("book.hextale.guide.back")
+                    : Component.translatable("book.hextale.guide.back_to", title(previous.quest()))).getVisualOrderText());
         }
         if (content > h) {
             // A thin scroll bar on the right rim.
@@ -2043,15 +2068,108 @@ final class GuidePage {
         PixelArt.flush(graphics);
         graphics.item(stack, x + 1, y + 1);
         graphics.itemDecorations(font, stack, x + 1, y + 1);
-        if (!hovered) {
-            return null;
-        }
+        return hovered ? pointAt(stack, extra) : null;
+    }
+
+    /**
+     * The item under the mouse in a picture: remembered for a click (its step) and the recipe viewer's keys; returns its
+     * tooltip.
+     */
+    List<FormattedCharSequence> pointAt(ItemStack stack, @Nullable Component extra) {
+        pointed = stack;
         List<FormattedCharSequence> lines = new ArrayList<>();
         lines.add(stack.getHoverName().getVisualOrderText());
         if (extra != null) {
             lines.add(extra.getVisualOrderText());
         }
         return lines;
+    }
+
+    /** The item under the mouse on the open plate, or empty. */
+    ItemStack pointed() {
+        return pointed;
+    }
+
+    /**
+     * The step the reader can see that makes this item (another one than the plate open now), or null. A thing with
+     * its own components (a vial of one brew) leads to the step of that very thing.
+     */
+    @Nullable
+    private Target maker(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return null;
+        }
+        Guide guide = Guide.client();
+        if (makers == null || makersOf != guide) {
+            makers = makers(guide);
+            makersOf = guide;
+        }
+        RuneKnowledge knowledge = ClientKnowledge.get();
+        Target exact = null;
+        Target loose = null;
+        for (Target target : makers.getOrDefault(stack.getItem(), List.of())) {
+            boolean same = ItemStack.isSameItemSameComponents(target.stack(), stack);
+            if (!same && !stack.getComponentsPatch().isEmpty() && !target.stack().getComponentsPatch().isEmpty()) {
+                // Another thing of the same item (a vial of another brew).
+                continue;
+            }
+            if (target.quest() == selected && (!hasVariants(target.quest()) || target.variant() == variant)) {
+                // The plate open now is where it is made.
+                return null;
+            }
+            if (!seen(target.quest(), knowledge)) {
+                continue;
+            }
+            if (same && exact == null) {
+                exact = target;
+            } else if (loose == null) {
+                loose = target;
+            }
+        }
+        return exact != null ? exact : loose;
+    }
+
+    /** Every step by the items it stands for (its icons), then by the results of its pictures. */
+    private static Map<Item, List<Target>> makers(Guide guide) {
+        Map<Item, List<Target>> map = new HashMap<>();
+        for (Quest quest : guide.all()) {
+            List<ItemStack> icons = quest.icons();
+            for (int i = 0; i < icons.size(); i++) {
+                if (!icons.get(i).isEmpty() && !icons.get(i).is(ModItems.GUIDE_MARK.get())) {
+                    map.computeIfAbsent(icons.get(i).getItem(), item -> new ArrayList<>()).add(new Target(quest, i, icons.get(i)));
+                }
+            }
+        }
+        for (Quest quest : guide.all()) {
+            List<QuestDisplay> displays = quest.displays();
+            for (int i = 0; i < displays.size(); i++) {
+                ItemStack made = stack(displays.get(i).result(), 0, 0);
+                if (!made.isEmpty() && !made.is(ModItems.GUIDE_MARK.get())) {
+                    int variant = i;
+                    map.computeIfAbsent(made.getItem(), item -> new ArrayList<>()).add(new Target(quest, variant, made));
+                }
+            }
+        }
+        return map;
+    }
+
+    /** Opens the plate of the step that makes the pointed item; the plate left stays on the trail for the back arrow. */
+    private boolean follow() {
+        Target target = maker(pointed);
+        Quest from = selected;
+        if (target == null || from == null) {
+            return false;
+        }
+        trail.push(new Target(from, variant, ItemStack.EMPTY));
+        open(target);
+        return true;
+    }
+
+    private void open(Target target) {
+        show(target.quest());
+        variant = Math.min(target.variant(), Math.max(0, target.quest().displays().size() - 1));
+        book.glideTo(target.quest().x(), target.quest().y());
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1.1F, 0.6F));
     }
 
     static boolean over(int mouseX, int mouseY, int x, int y, int w, int h) {
@@ -2106,10 +2224,16 @@ final class GuidePage {
             return;
         }
         if (overBack(mouseX, mouseY, knowledge)) {
-            close();
+            Target previous = trail.poll();
+            if (previous != null && Guide.client().all().contains(previous.quest())) {
+                open(previous);
+            } else {
+                close();
+            }
             return;
         }
-        if (pickVariant(mouseX, mouseY) || pickTab(mouseX, mouseY) || pickRune(mouseX, mouseY) || pickLayer(mouseX, mouseY) || !studyButton(quest)) {
+        if (pickVariant(mouseX, mouseY) || pickTab(mouseX, mouseY) || pickRune(mouseX, mouseY) || pickLayer(mouseX, mouseY) || follow()
+                || !studyButton(quest)) {
             return;
         }
         int ix = plateLeft() + PAD;

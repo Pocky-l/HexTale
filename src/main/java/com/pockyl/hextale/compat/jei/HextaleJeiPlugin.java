@@ -54,11 +54,14 @@ public class HextaleJeiPlugin implements IModPlugin {
                         net.neoforged.neoforge.fluids.FluidType.BUCKET_VOLUME)));
         // How a thing is made shows only once it is researched.
         ResearchHiding.start(runtime);
+        // The diary's pictures open JEI with the player's own recipe / uses keys.
+        JeiLookup.start(runtime);
     }
 
     @Override
     public void onRuntimeUnavailable() {
         ResearchHiding.stop();
+        JeiLookup.stop();
     }
 
     @Override
