@@ -86,6 +86,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   what it becomes.
 
 ### Changed
+- JEI shows how a researched thing is made - its recipe, its multiblock and its info page - only once you have
+  researched it; the item itself stays in the list. Lab Bench experiments stay visible.
 - The Chem Still needs a Crystal Pod (grown on Crystal Cane) for every vial of refined shimmer it makes: drop pods in
   by hand or by hopper from the top or the sides.
 - Hextech tools and armour are much stronger, each level a clear step: runed tools now beat diamond, refined ones beat

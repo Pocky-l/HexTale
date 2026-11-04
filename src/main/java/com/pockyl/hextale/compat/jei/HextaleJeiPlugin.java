@@ -51,6 +51,13 @@ public class HextaleJeiPlugin implements IModPlugin {
         runtime.getIngredientManager().removeIngredientsAtRuntime(mezz.jei.api.neoforge.NeoForgeTypes.FLUID_STACK,
                 java.util.List.of(new net.neoforged.neoforge.fluids.FluidStack(com.pockyl.hextale.registry.ModFluids.ESSENCE.get(),
                         net.neoforged.neoforge.fluids.FluidType.BUCKET_VOLUME)));
+        // How a thing is made shows only once it is researched.
+        ResearchHiding.start(runtime);
+    }
+
+    @Override
+    public void onRuntimeUnavailable() {
+        ResearchHiding.stop();
     }
 
     @Override
