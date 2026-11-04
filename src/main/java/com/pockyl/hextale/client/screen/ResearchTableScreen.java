@@ -1035,6 +1035,11 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     }
 
     @Override
+    public boolean charTyped(net.minecraft.client.input.CharacterEvent event) {
+        return tab == Tab.BOOK && book.charTyped(event) || super.charTyped(event);
+    }
+
+    @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         if (tab == Tab.BOOK && book.mouseScrolled(mouseX, mouseY, scrollY)) {
             return true;

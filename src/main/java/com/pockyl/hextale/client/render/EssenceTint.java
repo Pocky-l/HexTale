@@ -10,13 +10,17 @@ import org.jspecify.annotations.Nullable;
 
 import com.pockyl.hextale.essence.EssenceFlaskItem;
 
-/** Item tint {@code hextale:essence}: the colour of the essence in a flask, its elements mixed by their drops. */
+/**
+ * Item tint {@code hextale:essence}: the colour of the essence in a flask, its elements mixed by their drops; for an item
+ * of one essence ({@code hextale:essence_kind}, a Bucket of Essence) that essence's colour.
+ */
 public record EssenceTint() implements ItemTintSource {
     public static final MapCodec<EssenceTint> MAP_CODEC = MapCodec.unit(new EssenceTint());
 
     @Override
     public int calculate(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity owner) {
-        return ARGB.opaque(EssenceFlaskItem.contents(stack).color());
+        com.pockyl.hextale.rune.Essence kind = stack.get(com.pockyl.hextale.registry.ModDataComponents.ESSENCE_KIND.get());
+        return ARGB.opaque(kind != null ? kind.color() : EssenceFlaskItem.contents(stack).color());
     }
 
     @Override

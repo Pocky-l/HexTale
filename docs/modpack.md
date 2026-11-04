@@ -307,8 +307,10 @@ Other mods' pipes, tanks and hoppers:
 
 Essence as a fluid: `hextale:essence` with the data component `hextale:essence_kind` (the essence id, e.g. `fire`);
 1 mB of fluid = 1 mB of essence. A jar gives fluid only while it holds one essence and nothing else (mixtures are the
-mod's own business and are never split); it takes the essence fluid its sticker allows. The fluid has no bucket and no
-block, so it cannot be placed in the world.
+mod's own business and are never split); it takes the essence fluid its sticker allows. The fluid has no block, so it
+cannot be placed in the world. Its bucket is `hextale:essence_bucket` with the same `hextale:essence_kind` component
+(1000 mB, fluid item capability): an empty bucket filled with essence by any tank becomes one, and a Big Essence Jar or
+any tank empties it back. Item storage keeps the buckets as items.
 
 Research still holds: hoppers and pipes never count as a researcher, so what they bring only makes what needs no
 research. The Sorting Matrix fills any storage with an item handler; it finds chests, barrels and drawers by itself

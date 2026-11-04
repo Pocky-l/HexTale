@@ -193,6 +193,11 @@ final class GuidePage {
         return false;
     }
 
+    /** A step's size on the map (the diary's search rings it). */
+    static int nodeSize(Quest quest) {
+        return size(quest);
+    }
+
     private static int size(Quest quest) {
         return quest.landmark() ? (quest.stage() == Quest.Stage.LATE ? CORE_NODE : LANDMARK_NODE) : quest.station() ? STATION_NODE
                 : ITEM_NODE + (quest.important() ? BIG : 0);

@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Buckets of Essence (#8): an empty bucket fills with 1000 mB of one pure essence from a Big Essence Jar or another
+  mod's tank, and pours it back into them; storage mods keep them as items. They never pour out into the world.
+- The Researcher's Diary has a search (#8): type over the map or click the field in its corner, and the steps you can
+  see whose name holds the words are ringed and the map flies to the first; Enter goes to the next, Escape clears.
 - The Chem Still shows the Crystal Pods it holds, lying on its base behind the receiver.
 - JEI shows what the Chem Vat tempers: the metals, the vials of acid and shimmer its bath must hold, and the result.
 - Chem-steel tools and armour are 3D models, with glass in the colour of the fuel in the tank you wear (dark when it is

@@ -67,6 +67,9 @@ public final class ModCapabilities {
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.BIG_ESSENCE_JAR.get(), (jar, side) -> jar.fluidPort());
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.MULTIBLOCK_PART.get(), (part, side) ->
                 part.core() instanceof com.pockyl.hextale.block.EssenceTankBlockEntity jar ? jar.fluidPort() : null);
+        // A bucket of essence holds 1000 mB of it for any tank; an empty bucket filled with essence becomes one.
+        event.registerItem(Capabilities.Fluid.ITEM, (stack, access) -> new com.pockyl.hextale.item.EssenceBucketItem.Handler(access),
+                ModItems.ESSENCE_BUCKET.get());
     }
 
     /** The handler with taking out refused. */

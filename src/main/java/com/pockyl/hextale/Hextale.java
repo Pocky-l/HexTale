@@ -443,6 +443,9 @@ public final class Hextale {
         for (Essence essence : Essence.values()) {
             output.accept(com.pockyl.hextale.item.EssenceItem.of(essence));
         }
+        for (Essence essence : Essence.values()) {
+            output.accept(com.pockyl.hextale.item.EssenceBucketItem.of(essence));
+        }
         for (com.pockyl.hextale.chem.Brew brew : com.pockyl.hextale.chem.Brew.values()) {
             output.accept(com.pockyl.hextale.chem.ChemVialItem.of(brew));
         }

@@ -1045,6 +1045,12 @@
       },
       "tier": 1
     },
+    "hextale:essence_bucket": {
+      "essences": {
+        "metal": 3
+      },
+      "tier": 1
+    },
     "hextale:essence_flask": {
       "essences": {
         "crystal": 1

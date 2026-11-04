@@ -271,6 +271,9 @@ public final class ModItems {
     /** One essence as an item: what recipes ask for and what items are made of, shown in JEI and the creative tab. */
     public static final DeferredItem<com.pockyl.hextale.item.EssenceItem> ESSENCE = ITEMS.registerItem("essence",
             com.pockyl.hextale.item.EssenceItem::new);
+    /** A bucket of one pure essence, for other mods' tanks and item storage (GitHub issue #8). */
+    public static final DeferredItem<com.pockyl.hextale.item.EssenceBucketItem> ESSENCE_BUCKET = ITEMS.registerItem("essence_bucket",
+            com.pockyl.hextale.item.EssenceBucketItem::new, properties -> properties.stacksTo(1).craftRemainder(net.minecraft.world.item.Items.BUCKET));
     public static final DeferredItem<BlockItem> BRASS_GRATE = ITEMS.registerSimpleBlockItem(ModBlocks.BRASS_GRATE);
     public static final DeferredItem<BlockItem> WHIRL_REAPER = ITEMS.registerSimpleBlockItem(ModBlocks.WHIRL_REAPER,
             properties -> properties.rarity(Rarity.UNCOMMON));

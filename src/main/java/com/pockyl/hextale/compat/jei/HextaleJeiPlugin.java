@@ -46,7 +46,8 @@ public class HextaleJeiPlugin implements IModPlugin {
     public void onRuntimeAvailable(mezz.jei.api.runtime.IJeiRuntime runtime) {
         // The diary's step pictures are no items anyone can have.
         runtime.getIngredientManager().removeIngredientsAtRuntime(mezz.jei.api.constants.VanillaTypes.ITEM_STACK,
-                java.util.List.of(new net.minecraft.world.item.ItemStack(ModItems.GUIDE_MARK.get())));
+                java.util.List.of(new net.minecraft.world.item.ItemStack(ModItems.GUIDE_MARK.get()),
+                        new net.minecraft.world.item.ItemStack(ModItems.ESSENCE_BUCKET.get())));
         // The essence fluid without a kind is no essence at all: only the 22 pure ones are shown.
         runtime.getIngredientManager().removeIngredientsAtRuntime(mezz.jei.api.neoforge.NeoForgeTypes.FLUID_STACK,
                 java.util.List.of(new net.neoforged.neoforge.fluids.FluidStack(com.pockyl.hextale.registry.ModFluids.ESSENCE.get(),
@@ -64,6 +65,7 @@ public class HextaleJeiPlugin implements IModPlugin {
     public void registerItemSubtypes(ISubtypeRegistration registration) {
         registration.registerFromDataComponentTypes(ModItems.ESSENCE_FLASK.get(), ModDataComponents.ESSENCE.get());
         registration.registerFromDataComponentTypes(ModItems.ESSENCE.get(), ModDataComponents.ESSENCE_KIND.get());
+        registration.registerFromDataComponentTypes(ModItems.ESSENCE_BUCKET.get(), ModDataComponents.ESSENCE_KIND.get());
         registration.registerFromDataComponentTypes(ModItems.CHEM_VIAL.get(), ModDataComponents.BREW.get());
         // Research Notes differ by their topic (by its id: stable between sessions, unlike the record's own text), so
         // JEI lists the notes of every topic instead of merging them into one.

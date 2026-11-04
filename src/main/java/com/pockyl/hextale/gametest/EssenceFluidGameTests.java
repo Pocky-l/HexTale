@@ -198,4 +198,27 @@ public final class EssenceFluidGameTests {
         helper.assertTrue(extract(bottom, fire, 400, true) == 400 && jar.tank().amount() == 600, "the controller gives it back");
         helper.succeed();
     }
+    /** A bucket of essence: an empty bucket fills with 1000 mB of one essence and becomes its bucket, which pours it back. */
+    @HexTest
+    public static void bucketsCarryOneEssence(GameTestHelper helper) {
+        FluidResource fire = EssenceFluid.resource(Essence.FIRE);
+        // A slot, as other mods' tanks hold the bucket: the item in it may change.
+        net.minecraft.world.SimpleContainer slot = new net.minecraft.world.SimpleContainer(
+                new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.BUCKET));
+        net.neoforged.neoforge.transfer.access.ItemAccess empty = net.neoforged.neoforge.transfer.access.ItemAccess.forHandlerIndex(
+                net.neoforged.neoforge.transfer.item.VanillaContainerWrapper.of(slot), 0);
+        ResourceHandler<FluidResource> bucket = empty.getCapability(Capabilities.Fluid.ITEM);
+        helper.assertTrue(bucket != null, "an empty bucket takes fluids");
+        helper.assertTrue(insert(bucket, fire, 500, true) == 0, "half a bucket is no bucket");
+        helper.assertTrue(insert(bucket, fire, 1000, true) == 1000, "a bucketful of fire goes in");
+        net.minecraft.world.item.ItemStack filled = empty.getResource().toStack();
+        helper.assertTrue(filled.is(ModItems.ESSENCE_BUCKET.get()) && com.pockyl.hextale.item.EssenceBucketItem.essence(filled) == Essence.FIRE,
+                "it became a Bucket of Essence: Fire, got " + filled);
+        ResourceHandler<FluidResource> pour = empty.getCapability(Capabilities.Fluid.ITEM);
+        helper.assertTrue(pour.getResource(0).equals(fire) && pour.getAmountAsLong(0) == 1000, "it holds 1000 mB of fire");
+        helper.assertTrue(insert(pour, EssenceFluid.resource(Essence.WATER), 1000, true) == 0, "a full bucket takes nothing more");
+        helper.assertTrue(extract(pour, fire, 1000, true) == 1000 && slot.getItem(0).is(net.minecraft.world.item.Items.BUCKET),
+                "pouring it out leaves an empty bucket");
+        helper.succeed();
+    }
 }

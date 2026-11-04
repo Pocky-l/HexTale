@@ -112,6 +112,14 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
+        if (stack.is(net.minecraft.world.item.Items.BUCKET) || stack.is(ModItems.ESSENCE_BUCKET.get())) {
+            // A bucket takes a bucketful of one pure essence out of the jar, a Bucket of Essence pours it in.
+            if (!net.neoforged.neoforge.transfer.fluid.FluidUtil.interactWithFluidHandler(player, hand, pos, tank.fluidPort(), null)) {
+                player.sendOverlayMessage(Component.translatable(stack.is(net.minecraft.world.item.Items.BUCKET)
+                        ? "block.hextale.essence_tank.bucket_empty" : "block.hextale.essence_tank.bucket_full"));
+            }
+            return InteractionResult.SUCCESS;
+        }
         if (com.pockyl.hextale.item.HextechSkypackItem.is(stack)) {
             // A skypack drinks the air out of the jar (any jar, the creative one too).
             if (!com.pockyl.hextale.item.HextechSkypackItem.fillFrom((ServerLevel) level, tank, stack, player.position().add(0, 1.1, 0),

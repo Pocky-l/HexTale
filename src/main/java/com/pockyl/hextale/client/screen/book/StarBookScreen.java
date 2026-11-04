@@ -63,6 +63,11 @@ public class StarBookScreen extends Screen {
     }
 
     @Override
+    public boolean charTyped(net.minecraft.client.input.CharacterEvent event) {
+        return book.charTyped(event) || super.charTyped(event);
+    }
+
+    @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         return book.mouseScrolled(mouseX, mouseY, scrollY) || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }

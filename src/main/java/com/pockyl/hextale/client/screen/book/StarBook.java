@@ -86,6 +86,7 @@ public final class StarBook {
     private final RunesPage runes;
     private final GuideEditor editor;
     private final FreshMarks marks = new FreshMarks(this);
+    private final GuideSearch search = new GuideSearch();
     /** Where the sky is flying to after a click on an arrow (map coordinates), or null. */
     private float @Nullable [] glide;
     private long glideFrame;
@@ -261,18 +262,25 @@ public final class StarBook {
         graphics.pose().translate(-cameraX, -cameraY);
         // While a plate is open the map waits behind it; an arrow covers the map under it.
         boolean free = !dragging && overSky(mouseX, mouseY) && guide.selected() == null && !overTabs(mouseX, mouseY)
-                && marks.at(mouseX, mouseY) == null;
+                && marks.at(mouseX, mouseY) == null && !search.over(mouseX, mouseY);
         Quest hovered = free ? guide.questAt(mouseX, mouseY, knowledge) : null;
         if (hovered != null && guide.seenOnMap(hovered, knowledge)) {
             FreshMarks.notice(hovered, knowledge);
         }
         guide.renderMap(graphics, knowledge, now, hovered);
         PixelArt.flush(graphics);
+        search.matches(knowledge, ClientKnowledge.version());
+        search.renderRings(graphics, now);
         graphics.pose().popMatrix();
         List<FormattedCharSequence> markTip = guide.selected() == null ? marks.render(graphics, mouseX, mouseY, now) : null;
         editor.renderHint(graphics, skyLeft() + skyWidth() - 4, skyTop() + skyHeight() - 4, mouseX, mouseY);
 
         List<FormattedCharSequence> tabTip = guide.selected() == null ? renderTabs(graphics, mouseX, mouseY) : null;
+        if (guide.selected() == null) {
+            search.x = skyLeft() + skyWidth() - GuideSearch.WIDTH - 3;
+            search.y = skyTop() + 3;
+            search.render(graphics, font, mouseX, mouseY);
+        }
         List<FormattedCharSequence> tooltip = guide.renderPlate(graphics, knowledge, mouseX, mouseY, now);
         // The pixel art is batched: draw it while the scissor still clips it to the sky.
         PixelArt.flush(graphics);
@@ -443,6 +451,12 @@ public final class StarBook {
         if (tab == Tab.RUNES) {
             return true;
         }
+        if (guide.selected() == null && search.over(mouseX, mouseY)) {
+            search.focus(true);
+            GuideSearch.click();
+            return true;
+        }
+        search.focus(false);
         RuneKnowledge knowledge = ClientKnowledge.get();
         if (guide.selected() != null) {
             // The plate is a window over the map: a click inside works it, a click beside it goes back to the map.
@@ -536,13 +550,31 @@ public final class StarBook {
         return true;
     }
 
-    /** Escape closes an open plate before it closes the book. */
+    /** Escape closes an open plate before it closes the book; while the search is focused every key goes there. */
     public boolean keyPressed(KeyEvent event) {
         if (event.isEscape() && tab == Tab.QUESTS && guide.selected() != null) {
             guide.close();
             return true;
         }
+        if (tab == Tab.QUESTS && guide.selected() == null && search.keyPressed(event, ClientKnowledge.get())) {
+            if (search.flyTo != null) {
+                glideTo(search.flyTo.x(), search.flyTo.y());
+            }
+            return true;
+        }
         return tab == Tab.QUESTS && editor.keyPressed(event);
+    }
+
+    /** Letters typed over the map go into the search, which flies to the first step found. */
+    public boolean charTyped(net.minecraft.client.input.CharacterEvent event) {
+        if (tab != Tab.QUESTS || guide.selected() != null) {
+            return false;
+        }
+        Quest found = search.charTyped(event, ClientKnowledge.get());
+        if (found != null) {
+            glideTo(found.x(), found.y());
+        }
+        return search.focused();
     }
 
     private void clampCamera() {
