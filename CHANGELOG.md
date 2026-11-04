@@ -163,6 +163,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `showWipSteps`: the map shows only what is really in the game.
 
 ### Fixed
+- Claimed chunks (FTB Chunks and other claim mods) get blighted like any other land (#9): the blight is a force of
+  nature. Servers that want claims to keep it out can turn on `blightRespectsClaims`.
 - The Foundry no longer reads "Waking up" while it stands idle: with fuel or fire but nothing to melt it says it heats
   only while something melts inside and marks its input grid. Its warnings now show on the screen as soon as they happen.
 - The diary pictures say what really happens: Rusted Plating shows a vial of acid thrown at an iron block (not a

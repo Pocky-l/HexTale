@@ -279,8 +279,10 @@ and Claims, ...) protect against it:
 
 - tools and gadgets act as the player using them (area mining runes, Dust Charge, Chem Vials, Spawner Cage, ...);
 - placed devices (Whirl Sawmill, Whirl Reaper, Drain Valve, Hexcore) act as the player who placed them;
-- the Void's blight and lightning without a player act as the fake player **[HexTale]**, UUID
-  `2030168d-9eab-3b8b-b353-18a58e583390` - allow or deny it in your claim mod.
+- lightning without a player acts as the fake player **[HexTale]**, UUID
+  `2030168d-9eab-3b8b-b353-18a58e583390` - allow or deny it in your claim mod;
+- the Void's blight is a force of nature and takes claimed land too; with `blightRespectsClaims = true` in
+  `hextale-synced.toml` it asks as **[HexTale]** like lightning.
 
 Block tag `hextale:void_immune`: blocks the blight, the healing land and the Hexcore's lightning never touch.
 

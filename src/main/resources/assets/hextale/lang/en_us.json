@@ -2365,6 +2365,7 @@
   "hextale.configuration.thinning": "Thinning of the world",
   "hextale.configuration.thinningRate": "Thinning rate",
   "hextale.configuration.blightChangesBlocks": "Blight changes blocks",
+  "hextale.configuration.blightRespectsClaims": "Blight respects claims",
   "hextale.configuration.voidMitesSpawn": "Void Mites spawn",
   "hextale.configuration.voidlingsSpawn": "Voidlings spawn",
   "hextale.configuration.breaches": "Breaches open by themselves",

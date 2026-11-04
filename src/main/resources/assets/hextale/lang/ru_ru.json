@@ -2365,6 +2365,7 @@
   "hextale.configuration.thinning": "Истончение мира",
   "hextale.configuration.thinningRate": "Скорость истончения",
   "hextale.configuration.blightChangesBlocks": "Осквернение меняет блоки",
+  "hextale.configuration.blightRespectsClaims": "Осквернение уважает приваты",
   "hextale.configuration.voidMitesSpawn": "Появляются пустотные клещи",
   "hextale.configuration.voidlingsSpawn": "Появляются воидлинги",
   "hextale.configuration.breaches": "Разломы открываются сами",

@@ -481,19 +481,20 @@ public final class Thinning {
 
     /**
      * Blights one spot of ground and what grows on it. Nothing changes when the config keeps the blight off the blocks,
-     * on {@code hextale:void_immune} blocks, or where the world's protection refuses the world's own doing
-     * ({@link WorldEdits#world}: a claim the server does not open to "[HexTale]").
+     * on {@code hextale:void_immune} blocks, or, when {@link Config#BLIGHT_RESPECTS_CLAIMS} is on, where the world's
+     * protection refuses the world's own doing ({@link WorldEdits#world}: a claim the server does not open to
+     * "[HexTale]"). By default the blight takes claimed land like any other (GitHub issue #9).
      */
     private static void blightAt(ServerLevel level, BlockPos pos, RandomSource random, boolean loud) {
         if (!Config.BLIGHT_CHANGES_BLOCKS.get()) {
             return;
         }
-        net.minecraft.world.entity.player.Player actor = WorldEdits.world(level);
+        net.minecraft.world.entity.player.Player actor = Config.BLIGHT_RESPECTS_CLAIMS.get() ? WorldEdits.world(level) : null;
         BlockState ground = level.getBlockState(pos);
         BlockState blighted = ground.is(ModTags.VOID_IMMUNE) ? null
                 : ground.is(ModTags.BLIGHTS_TO_SOIL) ? ModBlocks.VOID_SOIL.get().defaultBlockState()
                 : ground.is(ModTags.BLIGHTS_TO_ROCK) ? ModBlocks.VOID_ROCK.get().defaultBlockState() : null;
-        if (blighted != null && !WorldEdits.mayChange(level, pos, blighted, actor)) {
+        if (blighted != null && actor != null && !WorldEdits.mayChange(level, pos, blighted, actor)) {
             // A protected spot keeps its ground and what grows on it.
             return;
         }
@@ -514,8 +515,10 @@ public final class Thinning {
         if (random.nextFloat() < FLORA_CHANCE) {
             float pick = random.nextFloat();
             Block flora = pick < 0.4F ? ModBlocks.VOID_ROOTS.get() : pick < 0.8F ? ModBlocks.VOID_CORAL.get() : ModBlocks.VOID_BULB.get();
-            WorldEdits.change(level, above, flora.defaultBlockState(), Block.UPDATE_ALL, actor);
-        } else if (!plant.isAir() && WorldEdits.mayBreak(level, above, actor)) {
+            if (actor == null || WorldEdits.mayChange(level, above, flora.defaultBlockState(), actor)) {
+                level.setBlock(above, flora.defaultBlockState(), Block.UPDATE_ALL);
+            }
+        } else if (!plant.isAir() && (actor == null || WorldEdits.mayBreak(level, above, actor))) {
             level.destroyBlock(above, false);
         }
     }
