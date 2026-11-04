@@ -222,7 +222,7 @@ public final class CrucibleGameTests {
     @HexTest
     public static void onlyAnEternalFlamePickaxeLooksPastAWisp(GameTestHelper helper) {
         helper.setBlock(AT, ModBlocks.HEX_WISP.get());
-        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        net.minecraft.server.level.ServerPlayer player = MockPlayers.inLevel(helper);
         BlockPos at = helper.absolutePos(AT);
         java.util.function.Supplier<Boolean> aims = () -> !helper.getBlockState(AT)
                 .getShape(helper.getLevel(), at, net.minecraft.world.phys.shapes.CollisionContext.of(player)).isEmpty();
@@ -351,7 +351,7 @@ public final class CrucibleGameTests {
                 armed[0] = true;
                 crucible.pour(EssenceMix.pure(Essence.FIRE, 40));
                 com.pockyl.hextale.thevoid.Thinning.set(helper.getLevel(), chunk, 0);
-                net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+                net.minecraft.server.level.ServerPlayer player = MockPlayers.inLevel(helper);
                 helper.assertFalse(crucible.sneakUse(player), "the first sneak-use only readies it");
                 helper.assertTrue(crucible.essence().get(Essence.FIRE) == 40 && crucible.armed(), "nothing is lost yet");
                 helper.assertTrue(crucible.sneakUse(player), "the second boils it away");

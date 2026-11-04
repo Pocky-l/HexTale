@@ -186,7 +186,7 @@ public final class CraftingGameTests {
     public static void hexsteelWaitsForItsResearch(GameTestHelper helper) {
         helper.setBlock(AT, ModBlocks.HEX_FURNACE.get());
         HexFurnaceBlockEntity furnace = helper.getBlockEntity(AT, HexFurnaceBlockEntity.class);
-        ServerPlayer owner = helper.makeMockServerPlayerInLevel();
+        ServerPlayer owner = MockPlayers.inLevel(helper);
         owner.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
         furnace.setOwner(owner);
         furnace.setItem(0, new ItemStack(Items.IRON_INGOT));
@@ -231,7 +231,7 @@ public final class CraftingGameTests {
         LapidaryBlockEntity lapidary = helper.getBlockEntity(AT, LapidaryBlockEntity.class);
         lapidary.setItem(LapidaryBlockEntity.DISC, new ItemStack(ModItems.CUTTING_DISC.get()));
         lapidary.setItem(LapidaryBlockEntity.INPUT, new ItemStack(ModItems.UNSTABLE_HEXTECH.get()));
-        ServerPlayer worker = helper.makeMockServerPlayerInLevel();
+        ServerPlayer worker = MockPlayers.inLevel(helper);
         Cleavage.Cut cut = lapidary.cut();
         helper.assertTrue(cut != null && cut.grade == Cleavage.Grade.FIRST, "a raw orb on a cutting disc is a first cut");
         // A stroke per plane, with time to cool between them (the server measures the rest on its own clock).
@@ -256,7 +256,7 @@ public final class CraftingGameTests {
         LapidaryBlockEntity lapidary = helper.getBlockEntity(AT, LapidaryBlockEntity.class);
         lapidary.setItem(LapidaryBlockEntity.DISC, new ItemStack(ModItems.MASTER_CUTTING_DISC.get()));
         lapidary.setItem(LapidaryBlockEntity.INPUT, new ItemStack(net.minecraft.world.item.Items.DIAMOND));
-        ServerPlayer worker = helper.makeMockServerPlayerInLevel();
+        ServerPlayer worker = MockPlayers.inLevel(helper);
         Cleavage.Cut cut = lapidary.cut();
         helper.assertTrue(cut != null && cut.grade == Cleavage.Grade.ENGRAVE, "a diamond on the master disc is an engraving");
         for (int i = 0; i < cut.planes.length; i++) {

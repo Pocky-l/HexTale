@@ -154,7 +154,7 @@ public final class TransmutationGameTests {
         helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
         CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
         crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         boolean[] done = {false};
         helper.succeedWhen(() -> {
             helper.assertTrue(crucible.boiling(), "the water boils");

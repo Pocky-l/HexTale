@@ -57,7 +57,7 @@ public class TemperingCategory extends AbstractRecipeCategory<TemperingCategory.
     @Override
     public void createRecipeExtras(IRecipeExtrasBuilder builder, Recipe recipe, IFocusGroup focuses) {
         builder.addAnimatedRecipeArrowWidget(recipe.recipe().time()).setPosition(StepCategory.ARROW_X, StepCategory.ROW_Y);
-        builder.addAnimatedRecipeFlame(300).setPosition(1, StepCategory.ROW_Y + 22);
+        builder.addAnimatedRecipeFlameWidget(300).setPosition(1, StepCategory.ROW_Y + 22);
     }
 
     @Override

@@ -133,7 +133,7 @@ public final class PylonGameTests {
         helper.setBlock(alembicPos, ModBlocks.ALEMBIC.get());
         Container from = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
         from.setItem(0, new ItemStack(Items.COAL, 4));
-        ServerPlayer owner = helper.makeMockServerPlayerInLevel();
+        ServerPlayer owner = MockPlayers.inLevel(helper);
         owner.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
         com.pockyl.hextale.knowledge.Research.of(owner).study(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(Items.COAL));
         HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
@@ -307,7 +307,7 @@ public final class PylonGameTests {
         BlockPos furnacePos = BASE.offset(2, 0, 0);
         helper.setBlock(furnacePos, Blocks.FURNACE);
         HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         PylonLinking.start(player, pylon);
         helper.assertTrue(PylonLinking.linking(player), "linking started");
         PylonLinking.link(player, helper.absolutePos(furnacePos), Direction.EAST);
@@ -350,7 +350,7 @@ public final class PylonGameTests {
         HexPylonBlockEntity two = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.offset(0, 1, 2));
         one.toggleLink(link(helper, target, Direction.UP));
         two.toggleLink(link(helper, target, Direction.UP));
-        PylonLinking.untie(helper.makeMockServerPlayerInLevel(), helper.absolutePos(target));
+        PylonLinking.untie(MockPlayers.inLevel(helper), helper.absolutePos(target));
         helper.assertTrue(one.links().isEmpty() && two.links().isEmpty(), "both pylons let go of it");
         helper.succeed();
     }
@@ -363,7 +363,7 @@ public final class PylonGameTests {
         BlockPos stone = BASE.offset(2, 0, 0);
         helper.setBlock(stone, Blocks.STONE);
         HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         PylonLinking.start(player, pylon);
         helper.assertFalse(PylonLinking.linkable(helper.getLevel(), helper.absolutePos(stone), Direction.UP), "stone takes no items");
         PylonLinking.giveUp(player);
@@ -684,7 +684,7 @@ public final class PylonGameTests {
         Container source = chest(helper, BASE.offset(-3, 0, 0));
         source.setItem(0, new ItemStack(Items.STICK, 6));
         HexPylonBlockEntity sender = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.offset(-3, 1, 0));
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         PylonLinking.start(player, sender);
         PylonLinking.link(player, helper.absolutePos(BASE.above()), Direction.UP);
         helper.assertTrue(sender.links().size() == 1 && sender.links().getFirst().pos().equals(helper.absolutePos(BASE)),

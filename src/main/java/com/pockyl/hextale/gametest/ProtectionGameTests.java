@@ -90,7 +90,7 @@ public final class ProtectionGameTests {
         BlockPos free = centre.west();
         level.setBlockAndUpdate(claimed, Blocks.STONE.defaultBlockState());
         level.setBlockAndUpdate(free, Blocks.STONE.defaultBlockState());
-        ServerPlayer thrower = helper.makeMockServerPlayerInLevel();
+        ServerPlayer thrower = MockPlayers.inLevel(helper);
         DustCharge charge = new DustCharge(ModEntities.DUST_CHARGE.get(), level);
         List<BlockPos> cracked = new ArrayList<>();
         protecting(List.of(claimed), () -> cracked.addAll(DustCharge.burst(level, Vec3.atCenterOf(centre), charge, thrower)));
@@ -112,7 +112,7 @@ public final class ProtectionGameTests {
         }
         BlockPos claimedA = new BlockPos(0, 1, 0);
         BlockPos claimedB = new BlockPos(2, 1, 1);
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         protecting(List.of(helper.absolutePos(claimedA), helper.absolutePos(claimedB)),
                 () -> mine(helper, player, pickaxe(PickaxeRune.DRILL), new BlockPos(1, 1, 1)));
         helper.assertBlockPresent(Blocks.STONE, claimedA);
@@ -188,7 +188,7 @@ public final class ProtectionGameTests {
         helper.assertTrue(device != null, "the reaper has a block entity");
         helper.assertTrue(WorldEdits.PROFILE.id().equals(WorldEdits.owner(level, device).getUUID()),
                 "nobody placed it yet: the world's own");
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         BlockSnapshot snapshot = BlockSnapshot.create(level.dimension(), level, at);
         NeoForge.EVENT_BUS.post(new BlockEvent.EntityPlaceEvent(snapshot, level.getBlockState(at.below()), player));
         Player owner = WorldEdits.owner(level, device);

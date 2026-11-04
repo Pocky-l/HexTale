@@ -41,7 +41,7 @@ public final class GardenGameTests {
     @HexTest
     public static void aVialSteepsFarmland(GameTestHelper helper) {
         helper.setBlock(AT, Blocks.FARMLAND);
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         player.getAbilities().instabuild = false;
         player.setItemInHand(InteractionHand.MAIN_HAND, ChemVialItem.of(Brew.GROWTH));
         helper.assertTrue(GardenPouring.pourOnSoil(helper.getLevel(), helper.absolutePos(AT), player.getMainHandItem(), player, InteractionHand.MAIN_HAND),
@@ -138,7 +138,7 @@ public final class GardenGameTests {
         for (BlockPos at : BlockPos.betweenClosed(AT.offset(-1, 0, -1), AT.offset(1, 0, 1))) {
             helper.setBlock(at, Blocks.FARMLAND);
         }
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         player.getAbilities().instabuild = false;
         player.setItemInHand(InteractionHand.MAIN_HAND, ChemVialItem.of(Brew.GROWTH));
         GardenPouring.pourOnSoil(helper.getLevel(), helper.absolutePos(AT), player.getMainHandItem(), player, InteractionHand.MAIN_HAND);

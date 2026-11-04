@@ -73,7 +73,7 @@ public final class RuneWorkGameTests {
     private static void mine(GameTestHelper helper, ItemStack tool, BlockPos pos) {
         BlockPos abs = helper.absolutePos(pos);
         BlockState state = helper.getLevel().getBlockState(abs);
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         // Standing over the block, looking straight down at it: the pickaxe strikes its top face.
         player.snapTo(abs.getX() + 0.5, abs.getY() + 1, abs.getZ() + 0.5, 0, 90);
         player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, tool);
@@ -120,9 +120,8 @@ public final class RuneWorkGameTests {
     }
 
     /** A player standing by the altar, who has researched the topic (or nothing, for null). */
-    @SuppressWarnings("removal")
     private static ServerPlayer researcher(GameTestHelper helper, com.pockyl.hextale.research.@org.jspecify.annotations.Nullable ResearchTopic topic) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         net.minecraft.world.phys.Vec3 at = helper.absoluteVec(new net.minecraft.world.phys.Vec3(ALTAR.getX() + 0.5, ALTAR.getY(), ALTAR.getZ() + 2.5));
         player.snapTo(at.x, at.y, at.z, 0, 0);
         if (topic != null) {
@@ -281,7 +280,7 @@ public final class RuneWorkGameTests {
         helper.setBlock(new BlockPos(2, 2, 0), Blocks.STONE);
         helper.setBlock(new BlockPos(2, 2, 2), Blocks.STONE);
         BlockPos struck = helper.absolutePos(new BlockPos(1, 2, 1));
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         // A survival player: a creative break drops nothing, so no rune would work.
         player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
         // West of the wall, looking east and a little down at it: once the block is gone, a look through the hole lands
@@ -553,7 +552,7 @@ public final class RuneWorkGameTests {
         BlockPos creative = new BlockPos(6, 2, 0);
         helper.setBlock(creative, ModBlocks.CREATIVE_ESSENCE_TANK.get());
         helper.getBlockEntity(creative, EssenceTankBlockEntity.class).tank().set(EssenceTankBlockEntity.CREATIVE);
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         // Creative mode knows nothing by itself: the maker must have researched the chalk.
         Research.research(player, ResearchTopics.BINDING_CHALK);
         player.setShiftKeyDown(true);

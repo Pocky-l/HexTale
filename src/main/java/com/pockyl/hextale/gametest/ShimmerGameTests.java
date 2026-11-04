@@ -104,7 +104,7 @@ public final class ShimmerGameTests {
         burner.feed(ChemVialItem.of(Brew.FUEL, 4));
         CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
         crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         Research.research(player, ResearchTopics.RAW_SHIMMER);
 
         BlockPos still = new BlockPos(5, 2, 5);
@@ -144,7 +144,7 @@ public final class ShimmerGameTests {
     public static void refinedShimmerIsDrunkForBuffsOnly(GameTestHelper helper) {
         ItemStack vial = ChemVialItem.of(Brew.REFINED_SHIMMER);
         helper.assertTrue(vial.has(DataComponents.CONSUMABLE) && vial.has(DataComponents.USE_COOLDOWN), "the vial is drunk and rests after");
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         vial.finishUsingItem(helper.getLevel(), player);
         helper.assertTrue(player.hasEffect(MobEffects.STRENGTH) && player.hasEffect(MobEffects.REGENERATION)
                 && player.hasEffect(MobEffects.SPEED) && player.hasEffect(MobEffects.RESISTANCE), "it gives its buffs");
@@ -196,7 +196,7 @@ public final class ShimmerGameTests {
         helper.getBlockEntity(AT.below(), ChemBurnerBlockEntity.class).feed(ChemVialItem.of(Brew.FUEL, 8));
         CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
         crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         Research.research(player, ResearchTopics.EMBER_OIL);
         Research.research(player, ResearchTopics.RAW_SHIMMER);
         helper.assertTrue(Brew.EMBER_OIL.burnTicks() > Brew.FUEL.burnTicks(), "ember oil burns longer than the combustible mix");

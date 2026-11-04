@@ -367,7 +367,7 @@ public final class QuestGameTests {
 
     @HexTest
     public static void questsNoticeTheirGoals(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         RuneKnowledge knowledge = Research.of(player);
         Quests.check(player);
         helper.assertFalse(knowledge.questDone(step("research_table")), "nothing is done with empty hands");
@@ -406,7 +406,7 @@ public final class QuestGameTests {
     /** A step that asks for research is done by researching it: holding the item (found, given) teaches nothing. */
     @HexTest
     public static void researchStepsWantTheResearch(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         RuneKnowledge knowledge = Research.of(player);
         for (Quest quest : ancestors(step("separator"))) {
             knowledge.completeQuest(quest);
@@ -476,7 +476,7 @@ public final class QuestGameTests {
     /** Runes come after the altar: once it stands, a found scroll opens the rune lore, and the blank scroll with it. */
     @HexTest
     public static void aFoundScrollOpensTheRuneLore(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         RuneKnowledge knowledge = Research.of(player);
         for (Quest quest : ancestors(step("hextech_altar"))) {
             knowledge.completeQuest(quest);
@@ -497,7 +497,7 @@ public final class QuestGameTests {
      */
     @HexTest
     public static void theVoidBranchOpensWithTheHaze(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         RuneKnowledge knowledge = Research.of(player);
         var level = helper.getLevel();
         var chunk = level.getChunkAt(player.blockPosition());
@@ -527,7 +527,7 @@ public final class QuestGameTests {
         Quests.fire(player, Quests.BREACH_OPENED);
         helper.assertTrue(knowledge.questDone(step("void_breach")) && Guide.visible(step("void_chitin"), knowledge),
                 "a breach seen tearing open is written down and opens what came out of it");
-        ServerPlayer other = helper.makeMockServerPlayerInLevel();
+        ServerPlayer other = MockPlayers.inLevel(helper);
         RuneKnowledge late = Research.of(other);
         for (Quest quest : ancestors(step("void_breach"))) {
             late.completeQuest(quest);
@@ -551,7 +551,7 @@ public final class QuestGameTests {
      */
     @HexTest
     public static void newStepsWaitToBeLookedAt(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         RuneKnowledge knowledge = Research.of(player);
         knowledge.forgetQuests();
         helper.assertTrue(Guide.fresh(step("researchers_diary"), knowledge) == Guide.Fresh.OPENED, "a new reader's first steps are new");
@@ -581,9 +581,8 @@ public final class QuestGameTests {
     /** A step of the guide the server loaded, by id. */
     /** A strange find opens its step once it is studied under the loupe - holding it is not enough. */
     @HexTest
-    @SuppressWarnings("removal")
     public static void aStrangeFindWantsTheLoupe(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         Quest chitin = step("void_chitin");
         player.getInventory().add(new ItemStack(ModItems.VOID_CHITIN.get()));
         helper.assertFalse(chitin.isMet(player, Guide.server()), "holding the chitin is not enough");

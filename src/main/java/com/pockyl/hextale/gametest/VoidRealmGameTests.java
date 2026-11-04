@@ -182,7 +182,6 @@ public final class VoidRealmGameTests {
 
     /** A held breach takes a player through to its gate in the Void; the gate lets them back out beside the breach. */
     @HexTest(maxTicks = 600, padding = 8)
-    @SuppressWarnings("removal")
     public static void aHeldBreachLetsAPlayerThroughAndTheGateOut(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         BlockPos centre = helper.absolutePos(new BlockPos(1, 4, 1));
@@ -197,7 +196,7 @@ public final class VoidRealmGameTests {
             VoidRoadGameTests.clearRing(helper);
             return;
         }
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         player.snapTo(centre.getX() + 0.5, centre.getY() + 0.5 + 40, centre.getZ() + 0.5, 0, 0);
         player.getAbilities().flying = true;
         boolean[] stage = {false, false};
@@ -345,7 +344,7 @@ public final class VoidRealmGameTests {
         BlockPos pod = fronds.below();
         helper.setBlock(fronds, SinewWillow.wildFronds());
         helper.setBlock(pod, ModBlocks.ICHOR_POD.get().defaultBlockState().setValue(SinewWillow.Pod.AGE, SinewWillow.Pod.RIPE));
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         BlockPos absolute = helper.absolutePos(pod);
         var hit = new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(absolute), net.minecraft.core.Direction.DOWN, absolute, false);
         helper.getLevel().getBlockState(absolute).useWithoutItem(helper.getLevel(), player, hit);

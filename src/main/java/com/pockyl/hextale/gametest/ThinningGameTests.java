@@ -107,7 +107,7 @@ public final class ThinningGameTests {
 
     @HexTest
     public static void voidMitesDrinkMaxHealthUntilHealing(GameTestHelper helper) {
-        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        net.minecraft.server.level.ServerPlayer player = MockPlayers.inLevel(helper);
         float full = player.getMaxHealth();
         helper.assertTrue(com.pockyl.hextale.thevoid.VoidMites.latch(player) && com.pockyl.hextale.thevoid.VoidMites.latch(player),
                 "two mites latch on");

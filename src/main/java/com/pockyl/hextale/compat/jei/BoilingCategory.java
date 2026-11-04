@@ -36,15 +36,15 @@ public class BoilingCategory extends AbstractRecipeCategory<BoilingCategory.Reci
         List<ItemStack> items = recipe.items().isEmpty()
                 ? List.of(new ItemStack(Items.OAK_PLANKS), new ItemStack(Items.COAL), new ItemStack(Items.KELP)) : recipe.items();
         builder.addInputSlot(1, 1).setStandardSlotBackground().addItemStacks(items);
-        builder.addInputSlot(1, 19).setStandardSlotBackground().addItemStack(new ItemStack(Items.WATER_BUCKET))
+        builder.addInputSlot(1, 19).setStandardSlotBackground().add(new ItemStack(Items.WATER_BUCKET))
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.boiling.water",
                         AlembicBlockEntity.WATER_PER_ITEM)));
         builder.addInputSlot(1, 37).setStandardSlotBackground()
                 .addItemStacks(List.of(new ItemStack(Items.CAMPFIRE), new ItemStack(Items.MAGMA_BLOCK), new ItemStack(Items.LAVA_BUCKET),
                         new ItemStack(Items.FLINT_AND_STEEL)))
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.boiling.heat")));
-        builder.addInputSlot(30, 19).setStandardSlotBackground().addItemStack(new ItemStack(Items.GLASS_BOTTLE));
-        builder.addOutputSlot(96, 19).setOutputSlotBackground().addItemStack(new ItemStack(ModItems.ESSENCE_FLASK.get()))
+        builder.addInputSlot(30, 19).setStandardSlotBackground().add(new ItemStack(Items.GLASS_BOTTLE));
+        builder.addOutputSlot(96, 19).setOutputSlotBackground().add(new ItemStack(ModItems.ESSENCE_FLASK.get()))
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.boiling.result")));
     }
 

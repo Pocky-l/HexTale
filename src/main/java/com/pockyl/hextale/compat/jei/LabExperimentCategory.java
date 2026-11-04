@@ -45,12 +45,12 @@ public class LabExperimentCategory extends AbstractRecipeCategory<ExperimentPlan
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, ExperimentPlan plan, IFocusGroup focuses) {
         // The sample goes into the flask: the sample first, a dotted arrow, then the flask.
-        builder.addInputSlot(35, StepCategory.ROW_Y).setStandardSlotBackground().addItemStack(new ItemStack(Items.GLASS_BOTTLE))
+        builder.addInputSlot(35, StepCategory.ROW_Y).setStandardSlotBackground().add(new ItemStack(Items.GLASS_BOTTLE))
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.lab_experiment.flask")));
         plan.sample().ifPresent(sample -> builder.addInputSlot(1, StepCategory.ROW_Y).setStandardSlotBackground().add(sample)
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.lab_experiment.sample"))));
         ResearchTopic topic = plan.topic();
-        builder.addOutputSlot(StepCategory.RESULT_X, StepCategory.ROW_Y).setOutputSlotBackground().addItemStack(ResearchNotesItem.of(topic))
+        builder.addOutputSlot(StepCategory.RESULT_X, StepCategory.ROW_Y).setOutputSlotBackground().add(ResearchNotesItem.of(topic))
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.lab_experiment.opens",
                         Component.translatable(topic.translationKey()).withColor(topic.color()))));
     }

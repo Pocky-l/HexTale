@@ -192,7 +192,7 @@ public final class DualityGameTests {
 
     @HexTest
     public static void shimmerVeinsGiveWhileFedAndOnlyWithholdAfter(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         double health = player.getAttributeValue(Attributes.MAX_HEALTH);
         double size = player.getAttributeValue(Attributes.SCALE);
         ChemVialItem.of(Brew.REFINED_SHIMMER).finishUsingItem(helper.getLevel(), player);
@@ -226,7 +226,7 @@ public final class DualityGameTests {
 
     @HexTest
     public static void lightEssenceWashesAVeinOut(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         ChemVialItem.of(Brew.REFINED_SHIMMER).finishUsingItem(helper.getLevel(), player);
         ChemVialItem.of(Brew.REFINED_SHIMMER).finishUsingItem(helper.getLevel(), player);
         EssenceFlaskItem.filled(EssenceMix.pure(Essence.FIRE, 16)).finishUsingItem(helper.getLevel(), player);

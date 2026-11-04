@@ -53,7 +53,7 @@ public class BrewingCategory extends AbstractRecipeCategory<BrewingCategory.Reci
         builder.addInputSlot(CruciblePot.catalystX(), CruciblePot.CATALYST_Y).setStandardSlotBackground().add(recipe.recipe().catalyst())
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.crucible.catalyst")));
         builder.addInputSlot(CruciblePot.ARROW_X + 4, y - 22).setStandardSlotBackground()
-                .addItemStack(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.GLASS_BOTTLE))
+                .add(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.GLASS_BOTTLE))
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.brewing.bottled")));
         builder.addOutputSlot(StepCategory.RESULT_X, y).setOutputSlotBackground()
                 .add(ChemVialItem.of(recipe.recipe().brew(), recipe.recipe().doses()))

@@ -1611,9 +1611,8 @@ public final class ResearchGameTests {
         return player;
     }
 
-    @SuppressWarnings("removal")
     private static ServerPlayer player(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         Vec3 pos = helper.absoluteVec(new Vec3(0.5, 1, 2.5));
         player.snapTo(pos.x, pos.y, pos.z, 0, 0);
         // A researcher who got as far as ink at the table: the circle's research is open.

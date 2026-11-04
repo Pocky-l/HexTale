@@ -122,11 +122,10 @@ public final class RuneGiftGameTests {
     }
 
     /** Breaks the block as a player standing over it, looking down, with the tool in hand (drops through its runes). */
-    @SuppressWarnings("removal")
     private static void dig(GameTestHelper helper, ItemStack tool, BlockPos pos) {
         BlockPos abs = helper.absolutePos(pos);
         BlockState state = helper.getLevel().getBlockState(abs);
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         player.snapTo(abs.getX() + 0.5, abs.getY() + 1, abs.getZ() + 0.5, 0, 90);
         player.setItemInHand(InteractionHand.MAIN_HAND, tool);
         Block.dropResources(state, helper.getLevel(), abs, null, player, tool);

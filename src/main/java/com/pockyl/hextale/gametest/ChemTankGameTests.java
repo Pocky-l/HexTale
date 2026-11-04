@@ -43,7 +43,7 @@ public final class ChemTankGameTests {
         helper.assertTrue(placed.contents().fuel() == ChemFuel.REFINED_SHIMMER && placed.contents().vials() == 4, "four vials in");
         helper.assertFalse(placed.canPlaceItem(0, ChemVialItem.of(Brew.EMBER_OIL)), "oil does not go into a shimmer tank");
 
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         ItemStack worn = new ItemStack(ModItems.CHEM_TANK.get());
         player.setItemSlot(EquipmentSlot.CHEST, worn);
         helper.assertTrue(ChemTank.worn(player) == worn, "the tank on the back is found");
@@ -77,7 +77,7 @@ public final class ChemTankGameTests {
 
         ItemStack sword = new ItemStack(ModItems.CHEM_STEEL_SWORD.get());
         helper.assertTrue(!sword.isDamageableItem() || sword.has(net.minecraft.core.component.DataComponents.UNBREAKABLE), "it never breaks");
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
         ItemStack tank = new ItemStack(ModItems.CHEM_TANK.get());
         ChemTank.setContents(tank, ChemTank.poured(TankFuel.EMPTY, Brew.EMBER_OIL, 1));
@@ -106,7 +106,7 @@ public final class ChemTankGameTests {
         helper.assertTrue(oil[0] >= 8, "ember oil already guards like netherite");
         helper.assertTrue(Math.abs(empty[0] * GearConfig.EMPTY_DIVISOR.get() - top[0]) < 0.01, "an empty tank divides the protection");
         helper.assertTrue(empty[0] < 2, "an empty chestplate guards like leather");
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         helper.assertFalse(com.pockyl.hextale.chem.ChemGear.wearsArmour(player), "nothing worn yet");
         player.setItemSlot(EquipmentSlot.FEET, new ItemStack(ModItems.CHEM_STEEL_BOOTS.get()));
         helper.assertTrue(com.pockyl.hextale.chem.ChemGear.wearsArmour(player), "the boots are chemtech armour");

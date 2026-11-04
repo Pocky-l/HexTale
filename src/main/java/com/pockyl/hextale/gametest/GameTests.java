@@ -202,7 +202,7 @@ public final class GameTests {
      * The framework places mock players at the world spawn, often far from the test spot.
      */
     public static net.minecraft.server.level.ServerPlayer watcher(GameTestHelper helper, net.minecraft.core.BlockPos near) {
-        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        net.minecraft.server.level.ServerPlayer player = MockPlayers.inLevel(helper);
         player.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
         player.snapTo(near.getX() + 0.5, near.getY(), near.getZ() - 6.5, 0, 0);
         return player;

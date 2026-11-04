@@ -131,7 +131,7 @@ public final class LabGameTests {
 
     @HexTest(maxTicks = 100)
     public static void aSealedFlaskWritesTheNotes(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         Research.learnEverything(player);
         LabBenchBlock.place(helper.getLevel(), helper.absolutePos(BENCH), ModBlocks.LAB_BENCH.get().defaultBlockState());
         LabBenchBlockEntity bench = helper.getBlockEntity(BENCH, LabBenchBlockEntity.class);
@@ -182,7 +182,7 @@ public final class LabGameTests {
 
     @HexTest
     public static void chemtechIsNotResearchedAtTheTable(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         Research.learnEverything(player);
         BlockPos table = new BlockPos(2, 1, 3);
         ResearchTableBlock.place(helper.getLevel(), helper.absolutePos(table), ModBlocks.RESEARCH_TABLE.get().defaultBlockState());
