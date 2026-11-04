@@ -105,6 +105,12 @@ final class GuideSearch {
     boolean keyPressed(KeyEvent event, RuneKnowledge knowledge) {
         flyTo = null;
         if (!focused) {
+            // A letter typed over the map focuses the field and stays here (the inventory key would close the table);
+            // its character arrives right after as charTyped.
+            if (printable(event.key()) && !event.hasControlDown() && !event.hasAltDown()) {
+                focused = true;
+                return true;
+            }
             return false;
         }
         if (event.isEscape()) {
@@ -130,6 +136,14 @@ final class GuideSearch {
         }
         // Every other key (the inventory key too) stays in the field while it is focused.
         return true;
+    }
+
+    /**
+     * Whether a key writes a character: letters, digits, space and the punctuation keys (physical keys, so the same on
+     * a Cyrillic layout); not Enter, Escape, Backspace, Tab, arrows or function keys.
+     */
+    private static boolean printable(int key) {
+        return key >= InputConstants.KEY_A && key <= InputConstants.KEY_0 || key >= InputConstants.KEY_SPACE && key <= InputConstants.KEY_SLASH;
     }
 
     @Nullable

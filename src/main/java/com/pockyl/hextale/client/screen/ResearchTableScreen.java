@@ -172,6 +172,9 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private void setTab(Tab tab) {
         this.tab = tab;
         menu.setSlotsVisible(tab == Tab.DESK);
+        if (tab != Tab.BOOK && book != null) {
+            book.hidden();
+        }
     }
 
     @Nullable

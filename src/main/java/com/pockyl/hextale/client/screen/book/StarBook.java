@@ -245,6 +245,7 @@ public final class StarBook {
         Sky.render(graphics, skyLeft(), skyTop(), skyWidth(), skyHeight(), cameraX, cameraY, zoom(),
                 (GuidePage.minX() + GuidePage.maxX()) / 2.0F, (GuidePage.minY() + GuidePage.maxY()) / 2.0F, trail, mouseX, mouseY, now);
         if (tab == Tab.RUNES) {
+            typing(false);
             List<FormattedCharSequence> tooltip = runes.render(graphics, knowledge, mouseX, mouseY, now);
             PixelArt.flush(graphics);
             List<FormattedCharSequence> tabTip = renderTabs(graphics, mouseX, mouseY);
@@ -282,6 +283,7 @@ public final class StarBook {
             search.y = skyTop() + 3;
             search.render(graphics, font, mouseX, mouseY);
         }
+        typing(guide.selected() == null);
         List<FormattedCharSequence> tooltip = guide.renderPlate(graphics, knowledge, mouseX, mouseY, now);
         // The pixel art is batched: draw it while the scissor still clips it to the sky.
         PixelArt.flush(graphics);
@@ -566,13 +568,17 @@ public final class StarBook {
             // An item under the mouse in a picture: the recipe viewer's own keys show how it is made or what it is for.
             return true;
         }
+        if (tab == Tab.QUESTS && !search.focused() && editor.keyPressed(event)) {
+            // The dev editor's key goes first: a letter over the map would start the search otherwise.
+            return true;
+        }
         if (tab == Tab.QUESTS && guide.selected() == null && search.keyPressed(event, ClientKnowledge.get())) {
             if (search.flyTo != null) {
                 glideTo(search.flyTo.x(), search.flyTo.y());
             }
             return true;
         }
-        return tab == Tab.QUESTS && editor.keyPressed(event);
+        return false;
     }
 
     /** Letters typed over the map go into the search, which flies to the first step found. */
@@ -585,6 +591,28 @@ public final class StarBook {
             glideTo(found.x(), found.y());
         }
         return search.focused();
+    }
+
+    /**
+     * Letters reach a screen only while the window takes text input (SDL, since 26.x), which a vanilla edit box turns on
+     * while it is focused. The map takes typing for the search, so it keeps text input on while the map is shown (the
+     * IME's window beside the field) and lets it go under a plate or on the Runes tab. Asked every frame: changing the
+     * screen (JEI and back) stops it.
+     */
+    private void typing(boolean on) {
+        var input = Minecraft.getInstance().textInputManager();
+        if (on) {
+            input.setTextInputArea(search.x, search.y, search.x + GuideSearch.WIDTH, search.y + GuideSearch.HEIGHT);
+            input.startTextInput(this);
+        } else {
+            input.stopTextInput(this);
+        }
+    }
+
+    /** The book is put away (the table's desk tab): it no longer takes typing. */
+    public void hidden() {
+        typing(false);
+        search.focus(false);
     }
 
     private void clampCamera() {
