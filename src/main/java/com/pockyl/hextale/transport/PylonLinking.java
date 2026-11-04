@@ -63,7 +63,6 @@ public final class PylonLinking {
         Pending going = PENDING.get(player.getUUID());
         if (going != null && going.pos().equals(pylon.getBlockPos()) && going.dimension() == player.level().dimension()) {
             stop(player);
-            player.displayClientMessage(Component.translatable("block.hextale.hex_pylon.link.cancel"), true);
             return;
         }
         PENDING.put(player.getUUID(), new Pending(player.level().dimension(), pylon.getBlockPos(), player.level().getGameTime()));
@@ -151,7 +150,6 @@ public final class PylonLinking {
             clientFrom = null;
         } else if (player instanceof ServerPlayer server && PENDING.containsKey(server.getUUID())) {
             stop(server);
-            server.displayClientMessage(Component.translatable("block.hextale.hex_pylon.link.cancel"), true);
         }
     }
 
@@ -191,8 +189,6 @@ public final class PylonLinking {
             }
         }
         if (count > 0) {
-            player.displayClientMessage(Component.translatable("block.hextale.hex_pylon.link.untied", level.getBlockState(target).getBlock().getName(),
-                    count), true);
             level.playSound(null, target, ModSounds.PYLON_UNLINK.get(), SoundSource.BLOCKS, 0.6F, 1.0F);
         }
     }
@@ -235,7 +231,6 @@ public final class PylonLinking {
         }
         if (target.equals(pending.pos())) {
             stop(player);
-            player.displayClientMessage(Component.translatable("block.hextale.hex_pylon.link.cancel"), true);
             return;
         }
         PylonLink link;
@@ -266,7 +261,6 @@ public final class PylonLinking {
         if (pylon.linked(link)) {
             pylon.toggleLink(link);
             stop(player);
-            player.displayClientMessage(Component.translatable("block.hextale.hex_pylon.link.removed", name), true);
             level.playSound(null, target, ModSounds.PYLON_UNLINK.get(), SoundSource.BLOCKS, 0.6F, 1.0F);
             return;
         }
@@ -283,8 +277,6 @@ public final class PylonLinking {
             return;
         }
         stop(player);
-        player.displayClientMessage(Component.translatable("block.hextale.hex_pylon.link.added", name, pylon.links().size(),
-                pylon.maxLinks()).withStyle(ChatFormatting.GOLD), true);
         level.playSound(null, target, ModSounds.PYLON_LINK.get(), SoundSource.BLOCKS, 0.7F, 1.0F);
         Vec3 at = link.entry();
         level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.x, at.y, at.z, 12, 0.15, 0.15, 0.15, 0.05);
@@ -297,7 +289,6 @@ public final class PylonLinking {
             Pending pending = PENDING.get(player.getUUID());
             if (pending != null && player.level().getGameTime() - pending.since() > TIMEOUT_TICKS) {
                 stop(player);
-                player.displayClientMessage(Component.translatable("block.hextale.hex_pylon.link.cancel"), true);
             }
         }
     }

@@ -1,0 +1,19 @@
+{
+  "region": "chemtech",
+  "stage": "late",
+  "icon": "hextale:chem_tank",
+  "parents": [
+    "chem_steel",
+    "ember_oil",
+    "lab_bench"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:chem_tank"
+  },
+  "research": "chem_tank",
+  "pos": [
+    -1260,
+    290
+  ]
+}

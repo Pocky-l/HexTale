@@ -58,6 +58,12 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.LapidaryBlockEntity>> LAPIDARY =
             BLOCK_ENTITIES.register("hex_lapidary", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.LapidaryBlockEntity::new,
                     ModBlocks.HEX_LAPIDARY.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChemTankBlockEntity>> CHEM_TANK =
+            BLOCK_ENTITIES.register("chem_tank", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.ChemTankBlockEntity::new,
+                    ModBlocks.CHEM_TANK.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChemVatBlockEntity>> CHEM_VAT =
+            BLOCK_ENTITIES.register("chem_vat", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.ChemVatBlockEntity::new,
+                    ModBlocks.CHEM_VAT.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexFoundryBlockEntity>> HEX_FOUNDRY =
             BLOCK_ENTITIES.register("hex_foundry", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.HexFoundryBlockEntity::new,
                     ModBlocks.HEX_FOUNDRY.get()));
@@ -71,7 +77,7 @@ public final class ModBlockEntities {
                     ModBlocks.HEX_SAWMILL.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexWispBlock.Glow>> HEX_WISP =
             BLOCK_ENTITIES.register("hex_wisp", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.HexWispBlock.Glow::new,
-                    ModBlocks.HEX_WISP.get()));
+                    ModBlocks.wisps().toArray(net.minecraft.world.level.block.Block[]::new)));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.DisintegratorBlock.Bowl>> DISINTEGRATOR =
             BLOCK_ENTITIES.register("disintegrator", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.DisintegratorBlock.Bowl::new,
                     ModBlocks.DISINTEGRATOR.get()));
@@ -146,6 +152,16 @@ public final class ModBlockEntities {
             BLOCK_ENTITIES.register("hexcore", () -> com.pockyl.hextale.port.PortTypes.blockEntity(HexcoreBlockEntity::new, ModBlocks.HEXCORE.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RuneSteleBlockEntity>> RUNE_STELE =
             BLOCK_ENTITIES.register("rune_stele", () -> com.pockyl.hextale.port.PortTypes.blockEntity(RuneSteleBlockEntity::new, ModBlocks.RUNE_STELE.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.garden.ChemPlanterBlockEntity>> CHEM_PLANTER =
+            BLOCK_ENTITIES.register("chem_planter", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.garden.ChemPlanterBlockEntity::new,
+                    ModBlocks.CHEM_PLANTER.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.garden.EssenceSprinklerBlockEntity>> ESSENCE_SPRINKLER =
+            BLOCK_ENTITIES.register("essence_sprinkler", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.garden.EssenceSprinklerBlockEntity::new,
+                    ModBlocks.ESSENCE_SPRINKLER.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.garden.SapTapBlockEntity>> SAP_TAP =
+            BLOCK_ENTITIES.register("sap_tap", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.garden.SapTapBlockEntity::new,
+                    ModBlocks.SAP_TAP.get()));
 
     private ModBlockEntities() {
     }

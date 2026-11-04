@@ -64,9 +64,8 @@ public final class ArsenalGameTests {
     /** A thrown dagger bites the creature it meets and turns back to its thrower at once. */
     // Entities in a fresh spot may not tick for a while: give the flight time to start.
     @HexTest(maxTicks = 200, setupTicks = 40)
-    @SuppressWarnings("removal")
     public static void aThrownDaggerBitesAndComesBack(GameTestHelper helper) {
-        net.minecraft.server.level.ServerPlayer thrower = helper.makeMockServerPlayerInLevel();
+        net.minecraft.server.level.ServerPlayer thrower = MockPlayers.inLevel(helper);
         Vec3 from = helper.absoluteVec(new Vec3(1.5, 2, 1.5));
         thrower.moveTo(from.x, from.y, from.z, 0, 0);
         Mob target = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, new BlockPos(1, 2, 5));
@@ -84,13 +83,12 @@ public final class ArsenalGameTests {
 
     /** A dagger in the off hand sometimes finds a gap and strikes along with the main hand's blow - never on every blow. */
     @HexTest
-    @SuppressWarnings("removal")
     public static void anOffHandDaggerStrikesAlong(GameTestHelper helper) {
         Mob plain = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, new BlockPos(1, 2, 1));
         Mob paired = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, new BlockPos(5, 2, 1));
-        net.minecraft.server.level.ServerPlayer one = helper.makeMockServerPlayerInLevel();
+        net.minecraft.server.level.ServerPlayer one = MockPlayers.inLevel(helper);
         one.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(net.minecraft.world.item.Items.IRON_SWORD));
-        net.minecraft.server.level.ServerPlayer two = helper.makeMockServerPlayerInLevel();
+        net.minecraft.server.level.ServerPlayer two = MockPlayers.inLevel(helper);
         two.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(net.minecraft.world.item.Items.IRON_SWORD));
         two.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, new ItemStack(ModItems.TENDRIL_DAGGER.get()));
         ItemStack dagger = new ItemStack(ModItems.TENDRIL_DAGGER.get());
@@ -112,7 +110,6 @@ public final class ArsenalGameTests {
 
     /** A full Strike Gauntlet punch at stone breaks a 3 x 3 face two deep; into the air it throws a zombie back. */
     @HexTest(padding = 4)
-    @SuppressWarnings("removal")
     public static void theStrikeGauntletBreaksRockAndThrows(GameTestHelper helper) {
         for (int x = 0; x <= 2; x++) {
             for (int y = 1; y <= 3; y++) {
@@ -121,7 +118,7 @@ public final class ArsenalGameTests {
                 }
             }
         }
-        net.minecraft.server.level.ServerPlayer smith = helper.makeMockServerPlayerInLevel();
+        net.minecraft.server.level.ServerPlayer smith = MockPlayers.inLevel(helper);
         Vec3 at = helper.absoluteVec(new Vec3(1.5, 1.4, 1.5));
         smith.moveTo(at.x, at.y, at.z, 0, 0);
         ItemStack fist = new ItemStack(ModItems.STRIKE_GAUNTLET.get());
@@ -144,12 +141,11 @@ public final class ArsenalGameTests {
 
     /** A Crystal Battery feeds the heart of a Bulwark cuirass worn within its reach. */
     @HexTest(maxTicks = 60)
-    @SuppressWarnings("removal")
     public static void aBatteryFeedsTheBulwarkHeart(GameTestHelper helper) {
         helper.setBlock(new BlockPos(1, 1, 1), com.pockyl.hextale.registry.ModBlocks.CRYSTAL_BATTERY.get());
         var battery = helper.<com.pockyl.hextale.block.CrystalBatteryBlockEntity>getBlockEntity(new BlockPos(1, 1, 1));
         battery.soak(new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), 8);
-        net.minecraft.server.level.ServerPlayer wearer = helper.makeMockServerPlayerInLevel();
+        net.minecraft.server.level.ServerPlayer wearer = MockPlayers.inLevel(helper);
         Vec3 at = helper.absoluteVec(new Vec3(3.5, 1, 1.5));
         wearer.moveTo(at.x, at.y, at.z, 0, 0);
         wearer.setItemSlot(EquipmentSlot.CHEST, new ItemStack(ModItems.BULWARK_CHESTPLATE.get()));
@@ -159,9 +155,8 @@ public final class ArsenalGameTests {
 
     /** Backstab: the same blow lands harder on a creature that turns its back. */
     @HexTest
-    @SuppressWarnings("removal")
     public static void backstabStrikesHarderFromBehind(GameTestHelper helper) {
-        net.minecraft.server.level.ServerPlayer striker = helper.makeMockServerPlayerInLevel();
+        net.minecraft.server.level.ServerPlayer striker = MockPlayers.inLevel(helper);
         Vec3 at = helper.absoluteVec(new Vec3(3.5, 1, 3.5));
         striker.moveTo(at.x, at.y, at.z, 0, 0);
         ItemStack blade = new ItemStack(ModItems.TENDRIL_DAGGER.get());

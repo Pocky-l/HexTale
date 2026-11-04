@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stem_fruit",
+  "textures": {
+    "stem": "hextale:block/sap_gourd_stem",
+    "upperstem": "hextale:block/attached_sap_gourd_stem"
+  },
+  "render_type": "minecraft:cutout"
+}

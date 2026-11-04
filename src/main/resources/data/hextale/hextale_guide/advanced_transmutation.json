@@ -1,0 +1,150 @@
+{
+  "region": "chemtech",
+  "stage": "mid",
+  "sign": {
+    "id": "hextale:guide_mark",
+    "components": {
+      "minecraft:custom_model_data": -645221388
+    }
+  },
+  "icon": [
+    "minecraft:redstone",
+    "minecraft:quartz",
+    "minecraft:ink_sac",
+    "minecraft:slime_ball",
+    "minecraft:soul_sand",
+    "minecraft:crimson_fungus",
+    "minecraft:crimson_nylium",
+    "minecraft:crimson_roots",
+    "minecraft:crimson_stem",
+    "minecraft:weeping_vines",
+    "minecraft:basalt",
+    "minecraft:prismarine_shard",
+    "minecraft:obsidian",
+    "minecraft:blaze_rod"
+  ],
+  "parents": [
+    "transmutation",
+    "chem_burner",
+    "lab_bench"
+  ],
+  "display": [
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/glowstone_dust",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/redstone"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/amethyst_shard",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/quartz"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/glow_ink_sac",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/ink_sac"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/magma_cream",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/slime_ball"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/soul_soil",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/soul_sand"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/warped_fungus",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/crimson_fungus"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/warped_nylium",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/crimson_nylium"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/warped_roots",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/crimson_roots"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/warped_stem",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/crimson_stem"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/twisting_vines",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/weeping_vines"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/blackstone",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/basalt"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/prismarine_crystals",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/prismarine_shard"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/crying_obsidian",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/obsidian"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/breeze_rod",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/blaze_rod"
+      }
+    }
+  ],
+  "research": "advanced_transmutation",
+  "pos": [
+    -790,
+    -130
+  ]
+}

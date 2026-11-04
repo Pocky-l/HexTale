@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "hextale:chem_steel_block"
+    }
+  ],
+  "result": {
+    "id": "hextale:chem_steel_ingot",
+    "count": 9
+  }
+}

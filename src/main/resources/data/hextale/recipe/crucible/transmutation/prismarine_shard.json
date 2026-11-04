@@ -1,0 +1,13 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:prismarine_crystals"
+  },
+  "essences": {
+    "water": 4
+  },
+  "result": {
+    "id": "minecraft:prismarine_shard"
+  },
+  "research": "advanced_transmutation"
+}

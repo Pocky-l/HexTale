@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:sap_gourd"
+        }
+      ],
+      "bonus_rolls": 0.0
+    }
+  ],
+  "random_sequence": "hextale:blocks/sap_gourd"
+}

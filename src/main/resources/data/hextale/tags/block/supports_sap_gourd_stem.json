@@ -1,0 +1,10 @@
+{
+  "values": [
+    {
+      "id": "#minecraft:supports_melon_stem",
+      "required": false
+    },
+    "hextale:steeped_soil",
+    "hextale:chem_planter"
+  ]
+}

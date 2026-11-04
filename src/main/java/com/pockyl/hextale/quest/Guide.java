@@ -248,15 +248,15 @@ public final class Guide {
 
     // ---- A step and a researcher ----------------------------------------------------------------------------------------
 
-    /** An item step when its goal was met; WIP steps never. */
+    /** A step when its goal was met. */
     public static boolean done(Quest quest, RuneKnowledge knowledge) {
-        return quest.kind() == Quest.Kind.ITEM && knowledge.questDone(quest);
+        return knowledge.questDone(quest);
     }
 
     /** Every parent is done (a device still being worked out that another one grows from only has to be seen). */
     public static boolean open(Quest quest, RuneKnowledge knowledge) {
         for (Quest parent : quest.parents()) {
-            if (parent.kind() == Quest.Kind.WIP ? !visible(parent, knowledge) : !done(parent, knowledge)) {
+            if (!done(parent, knowledge)) {
                 return false;
             }
         }
@@ -282,7 +282,7 @@ public final class Guide {
      * reader has not looked at since. Steps done on purpose are taken in as they are done ({@link Quests}).
      */
     public static Fresh fresh(Quest quest, RuneKnowledge knowledge) {
-        if (quest.kind() != Quest.Kind.ITEM || !knowledge.noticing() || knowledge.noticed(quest.id())) {
+        if (!knowledge.noticing() || knowledge.noticed(quest.id())) {
             return Fresh.NONE;
         }
         if (done(quest, knowledge)) {
@@ -296,7 +296,7 @@ public final class Guide {
      * seen. The book shows it greyed out, as "not reachable yet"; everything further stays in the fog.
      */
     public static boolean ahead(Quest quest, RuneKnowledge knowledge) {
-        if (quest.kind() != Quest.Kind.ITEM || quest.secret() || visible(quest, knowledge)) {
+        if (quest.secret() || visible(quest, knowledge)) {
             return false;
         }
         for (Quest parent : quest.parents()) {

@@ -1,0 +1,13 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:pink_tulip"
+  },
+  "essences": {
+    "light": 3
+  },
+  "result": {
+    "id": "minecraft:white_tulip"
+  },
+  "research": "transmutation"
+}

@@ -1,0 +1,20 @@
+{
+  "values": [
+    {
+      "id": "#minecraft:supports_sugar_cane",
+      "required": false
+    },
+    "minecraft:grass_block",
+    "minecraft:dirt",
+    "minecraft:coarse_dirt",
+    "minecraft:rooted_dirt",
+    "minecraft:podzol",
+    "minecraft:mycelium",
+    "minecraft:moss_block",
+    "minecraft:mud",
+    "minecraft:muddy_mangrove_roots",
+    "minecraft:sand",
+    "minecraft:red_sand",
+    "minecraft:farmland"
+  ]
+}

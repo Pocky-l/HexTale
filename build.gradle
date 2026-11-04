@@ -110,6 +110,10 @@ neoForge {
             if (project.hasProperty('tests')) {
                 systemProperty 'hextale.tests', project.property('tests').toString()
             }
+            // -PguideMap=<file>: the guideMapExport test writes the laid-out diary map there (tools/guide-map renders it).
+            if (project.hasProperty('guideMap')) {
+                systemProperty 'hextale.guideMap', project.file(project.property('guideMap').toString()).absolutePath
+            }
         }
 
         // Opens the mod's screens by a script and saves screenshots (scripts in tools/guishots/, pictures in

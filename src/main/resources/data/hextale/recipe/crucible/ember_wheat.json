@@ -1,0 +1,14 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:wheat_seeds"
+  },
+  "essences": {
+    "magma": 4,
+    "plant": 2
+  },
+  "result": {
+    "id": "hextale:ember_wheat_seeds",
+    "count": 2
+  }
+}

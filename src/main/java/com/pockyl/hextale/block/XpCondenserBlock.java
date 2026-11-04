@@ -62,9 +62,9 @@ public class XpCondenserBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (player instanceof ServerPlayer server && level.getBlockEntity(pos) instanceof XpCondenserBlockEntity condenser) {
-            int given = condenser.give(server, player.isShiftKeyDown());
-            player.displayClientMessage(given > 0 ? Component.translatable("block.hextale.xp_condenser.given", given, condenser.points())
-                    : Component.translatable("block.hextale.xp_condenser.status", condenser.points(), XpCondenserBlockEntity.CAPACITY), true);
+            if (condenser.give(server, player.isShiftKeyDown()) <= 0) {
+                player.displayClientMessage(Component.translatable("block.hextale.xp_condenser.status", condenser.points(), XpCondenserBlockEntity.CAPACITY), true);
+            }
         }
         return InteractionResult.SUCCESS;
     }

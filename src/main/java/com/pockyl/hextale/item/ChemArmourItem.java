@@ -1,0 +1,84 @@
+package com.pockyl.hextale.item;
+
+import com.pockyl.hextale.chem.ChemGear;
+import com.pockyl.hextale.chem.ChemTank;
+import com.pockyl.hextale.chem.TankFuel;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import com.pockyl.hextale.port.ArmorType;
+
+import java.util.function.Consumer;
+
+/**
+ * A piece of chem-steel armour: no runes, never breaks, protects as well as the fuel in the tank on its wearer's back
+ * lets it ({@link ChemGear}); every hit taken spends one action of fuel. Its bar is that tank's level, and its tooltip
+ * lists the protection it gives with that fuel (the item's own attribute lines always show the full one, so they are
+ * hidden).
+ */
+public class ChemArmourItem extends net.minecraft.world.item.ArmorItem {
+    private final ArmorType type;
+
+    /** 1.21.1: armour is an {@link net.minecraft.world.item.ArmorItem} of a registered material (26.x: equippable component). */
+    public ChemArmourItem(net.minecraft.core.Holder<net.minecraft.world.item.ArmorMaterial> material, ArmorType type, Properties properties) {
+        super(material, type.vanilla(), properties);
+        this.type = type;
+    }
+
+    /** 1.21.1: the attribute lines are hidden here (26.x: the tooltip display component). */
+    @Override
+    public net.minecraft.world.item.component.ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
+        return super.getDefaultAttributeModifiers(stack).withTooltip(false);
+    }
+
+    /** 1.21.1: the worn sheet comes from the item; the 3D model draws it (ChemSteelClient). */
+    @Override
+    public net.minecraft.resources.ResourceLocation getArmorTexture(ItemStack stack, net.minecraft.world.entity.Entity entity,
+            net.minecraft.world.entity.EquipmentSlot slot, net.minecraft.world.item.ArmorMaterial.Layer layer, boolean innerModel) {
+        return com.pockyl.hextale.Hextale.id("textures/entity/equipment/humanoid/chem_steel.png");
+    }
+
+    public ArmorType type() {
+        return type;
+    }
+
+    /** The tank whose fuel this piece shows: its own for a chestplate with a built-in tank, else the worn one. */
+    protected TankFuel shown(ItemStack stack) {
+        return ChemTank.contents(ChemGear.clientTank.get());
+    }
+
+    @Override
+    public boolean isBarVisible(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public int getBarWidth(ItemStack stack) {
+        return Math.round(13.0F * shown(stack).level());
+    }
+
+    @Override
+    public int getBarColor(ItemStack stack) {
+        TankFuel fuel = shown(stack);
+        return fuel.isEmpty() ? 0x5A5A5A : fuel.color();
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> tooltipLines, TooltipFlag flag) {
+        Consumer<Component> tooltip = tooltipLines::add;
+        TankFuel tank = shown(stack);
+        tooltip.accept(ChemToolItem.power(tank));
+        float[] armour = ChemGear.armour(type, tank.isEmpty() ? null : tank.fuel());
+        tooltip.accept(CommonComponents.EMPTY);
+        tooltip.accept(Component.translatable("item.modifiers." + type.vanilla().getSlot().getSerializedName()).withStyle(ChatFormatting.GRAY));
+        tooltip.accept(ChemToolItem.plus(Attributes.ARMOR, armour[0]));
+        tooltip.accept(ChemToolItem.plus(Attributes.ARMOR_TOUGHNESS, armour[1]));
+        if (armour[2] > 0) {
+            tooltip.accept(ChemToolItem.plus(Attributes.KNOCKBACK_RESISTANCE, armour[2] * 10));
+        }
+    }
+}

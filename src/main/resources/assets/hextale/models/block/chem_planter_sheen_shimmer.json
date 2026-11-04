@@ -1,0 +1,7 @@
+{
+  "parent": "hextale:block/chem_planter_sheen",
+  "textures": {
+    "particle": "hextale:block/steeped_soil_overlay_shimmer",
+    "overlay": "hextale:block/steeped_soil_overlay_shimmer"
+  }
+}

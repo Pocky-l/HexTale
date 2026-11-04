@@ -65,7 +65,6 @@ public class PinkBrazierBlock extends BaseEntityBlock {
         if (!level.isClientSide()) {
             int taken = brazier.feed(stack);
             if (taken <= 0) {
-                player.displayClientMessage(Component.translatable("block.hextale.pink_brazier.say.full"), true);
                 return net.minecraft.world.ItemInteractionResult.FAIL;
             }
             if (!player.getAbilities().instabuild) {
@@ -74,14 +73,6 @@ public class PinkBrazierBlock extends BaseEntityBlock {
             level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 0.6F, 1.1F);
         }
         return net.minecraft.world.ItemInteractionResult.SUCCESS;
-    }
-
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof PinkBrazierBlockEntity brazier) {
-            player.displayClientMessage(brazier.status(), true);
-        }
-        return InteractionResult.SUCCESS;
     }
 
     /** The pink flame licks over the bowl's rim, sparks and motes rise, and it breathes now and then. */

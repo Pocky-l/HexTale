@@ -1,0 +1,13 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:oak_log"
+  },
+  "essences": {
+    "light": 2
+  },
+  "result": {
+    "id": "minecraft:birch_log"
+  },
+  "research": "transmutation"
+}

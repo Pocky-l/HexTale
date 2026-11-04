@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "hextale:block/garden_trellis"
+    },
+    "facing=east": {
+      "model": "hextale:block/garden_trellis",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "hextale:block/garden_trellis",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "hextale:block/garden_trellis",
+      "y": 270
+    }
+  }
+}

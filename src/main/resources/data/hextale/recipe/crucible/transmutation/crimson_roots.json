@@ -1,0 +1,13 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:warped_roots"
+  },
+  "essences": {
+    "magma": 3
+  },
+  "result": {
+    "id": "minecraft:crimson_roots"
+  },
+  "research": "advanced_transmutation"
+}

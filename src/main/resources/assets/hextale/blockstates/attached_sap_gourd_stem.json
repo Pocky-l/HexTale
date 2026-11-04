@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=west": {
+      "model": "hextale:block/attached_sap_gourd_stem"
+    },
+    "facing=south": {
+      "model": "hextale:block/attached_sap_gourd_stem",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "hextale:block/attached_sap_gourd_stem",
+      "y": 90
+    },
+    "facing=east": {
+      "model": "hextale:block/attached_sap_gourd_stem",
+      "y": 180
+    }
+  }
+}

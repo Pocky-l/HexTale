@@ -1,0 +1,10 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "hextale:item/chem_steel_chestplate",
+    "model": {
+      "type": "hextale:chem_steel",
+      "piece": "chestplate"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:red_sand"
+  },
+  "essences": {
+    "water": 2
+  },
+  "result": {
+    "id": "minecraft:sand"
+  },
+  "research": "transmutation"
+}

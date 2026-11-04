@@ -1,0 +1,21 @@
+{
+  "values": [
+    "hextale:hex_wisp",
+    "hextale:white_hex_wisp",
+    "hextale:orange_hex_wisp",
+    "hextale:magenta_hex_wisp",
+    "hextale:light_blue_hex_wisp",
+    "hextale:yellow_hex_wisp",
+    "hextale:lime_hex_wisp",
+    "hextale:pink_hex_wisp",
+    "hextale:gray_hex_wisp",
+    "hextale:light_gray_hex_wisp",
+    "hextale:cyan_hex_wisp",
+    "hextale:purple_hex_wisp",
+    "hextale:blue_hex_wisp",
+    "hextale:brown_hex_wisp",
+    "hextale:green_hex_wisp",
+    "hextale:red_hex_wisp",
+    "hextale:black_hex_wisp"
+  ]
+}

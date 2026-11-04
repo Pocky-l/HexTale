@@ -8,14 +8,9 @@
   },
   "parents": ["chem_vial", "lab_bench"],
   "display": {
-    "kind": "scheme",
-    "ingredients": [
-      "minecraft:glowstone_dust",
-      "hextale:crucible",
-      "minecraft:glass_bottle"
-    ],
-    "result": "hextale:chem_vial"
+    "kind": "brew",
+    "result": "hextale:glow_mix"
   },
   "research": "glow_mix",
-  "pos": [-535, -123]
+  "pos": [-545, -219]
 }

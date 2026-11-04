@@ -1,0 +1,13 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:sand"
+  },
+  "essences": {
+    "magma": 2
+  },
+  "result": {
+    "id": "minecraft:red_sand"
+  },
+  "research": "transmutation"
+}

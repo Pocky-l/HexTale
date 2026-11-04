@@ -71,7 +71,6 @@ public class AxolotlTankBlock extends BaseEntityBlock {
         if (stack.is(Items.AXOLOTL_BUCKET)) {
             if (!level.isClientSide()) {
                 if (!tank.letIn(stack)) {
-                    player.displayClientMessage(net.minecraft.network.chat.Component.translatable("block.hextale.axolotl_tank.say.taken"), true);
                     return net.minecraft.world.ItemInteractionResult.FAIL;
                 }
                 player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, new ItemStack(Items.BUCKET)));
@@ -89,7 +88,6 @@ public class AxolotlTankBlock extends BaseEntityBlock {
         if (stack.is(Items.TROPICAL_FISH_BUCKET)) {
             if (!level.isClientSide()) {
                 if (!tank.feedBucket()) {
-                    player.displayClientMessage(net.minecraft.network.chat.Component.translatable("block.hextale.axolotl_tank.say.fed"), true);
                     return net.minecraft.world.ItemInteractionResult.FAIL;
                 }
                 player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, new ItemStack(Items.WATER_BUCKET)));
@@ -101,7 +99,6 @@ public class AxolotlTankBlock extends BaseEntityBlock {
             if (!level.isClientSide()) {
                 int taken = tank.feed(stack);
                 if (taken <= 0) {
-                    player.displayClientMessage(net.minecraft.network.chat.Component.translatable("block.hextale.axolotl_tank.say.fed"), true);
                     return net.minecraft.world.ItemInteractionResult.FAIL;
                 }
                 if (!player.getAbilities().instabuild) {
@@ -118,9 +115,7 @@ public class AxolotlTankBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof AxolotlTankBlockEntity tank) {
             ItemStack slime = tank.takeOutput();
-            if (slime.isEmpty()) {
-                player.displayClientMessage(tank.status(), true);
-            } else {
+            if (!slime.isEmpty()) {
                 if (!player.getInventory().add(slime)) {
                     player.drop(slime, false);
                 }

@@ -1,0 +1,13 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:poppy"
+  },
+  "essences": {
+    "light": 3
+  },
+  "result": {
+    "id": "minecraft:dandelion"
+  },
+  "research": "transmutation"
+}

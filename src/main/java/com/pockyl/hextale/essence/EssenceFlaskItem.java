@@ -28,13 +28,15 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * A bottle of essence: a vanilla glass bottle filled with up to {@value #CAPACITY} mB of one liquid (it does not
- * stack, like a potion); emptied, it turns back into a glass bottle. A bottle of a single element is a concentrate -
+ * A bottle of essence: a vanilla glass bottle filled with up to {@value #CAPACITY} mB of one liquid (bottles of the
+ * same liquid stack up to {@value #STACK}); emptied, it turns back into a glass bottle. A bottle of a single element is a concentrate -
  * the only ink the Research Table takes. "Flask" in the code means either: a glass bottle or a bottle of essence.
  */
 public class EssenceFlaskItem extends Item {
     /** Millibuckets, like a vanilla bottle. */
     public static final int CAPACITY = 16;
+    /** Bottles of the same liquid in one stack. */
+    public static final int STACK = 16;
 
     public EssenceFlaskItem(Properties properties) {
         super(properties);

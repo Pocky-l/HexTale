@@ -86,8 +86,6 @@ public class HextechAltarBlock extends BaseEntityBlock {
             ItemStack taken = altar.take();
             player.getInventory().placeItemBackInInventory(taken);
             level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.BLOCKS, 0.8F, 1.4F);
-        } else {
-            player.displayClientMessage(Component.translatable(altar.messageKey("hint")), true);
         }
         return InteractionResult.SUCCESS;
     }

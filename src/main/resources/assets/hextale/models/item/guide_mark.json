@@ -72,6 +72,18 @@
         "hextale:select": 0.12
       },
       "model": "hextale:item/guide/veins_washed"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.13
+      },
+      "model": "hextale:item/guide/transmutation"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.14
+      },
+      "model": "hextale:item/guide/advanced_transmutation"
     }
   ]
 }

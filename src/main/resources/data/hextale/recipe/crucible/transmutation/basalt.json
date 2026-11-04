@@ -1,0 +1,14 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:blackstone"
+  },
+  "essences": {
+    "ash": 4,
+    "magma": 2
+  },
+  "result": {
+    "id": "minecraft:basalt"
+  },
+  "research": "advanced_transmutation"
+}

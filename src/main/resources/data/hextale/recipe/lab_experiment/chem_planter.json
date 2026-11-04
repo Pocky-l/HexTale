@@ -1,0 +1,10 @@
+{
+  "type": "hextale:lab_experiment",
+  "topic": "chem_planter",
+  "target": "plant",
+  "amount": 8,
+  "purity": 0.6,
+  "sample": {
+    "item": "minecraft:bone_meal"
+  }
+}

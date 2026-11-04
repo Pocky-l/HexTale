@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "hextale:block/sap_gourd_top",
+    "side": "hextale:block/sap_gourd_side"
+  }
+}

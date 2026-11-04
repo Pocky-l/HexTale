@@ -133,6 +133,22 @@ public final class FoundryGameTests {
         });
     }
 
+    @HexTest(maxTicks = 200)
+    public static void theFoundryHeatsOnCoalOnlyWithSomethingToMelt(GameTestHelper helper) {
+        build(helper);
+        light(helper);
+        HexFoundryBlockEntity foundry = helper.<HexFoundryBlockEntity>getBlockEntity(HATCH);
+        foundry.setItem(HexFoundryBlockEntity.FUEL, new ItemStack(Items.COAL, 2));
+        helper.runAfterDelay(20, () -> {
+            helper.assertTrue(foundry.heat() == 0 && foundry.getItem(HexFoundryBlockEntity.FUEL).getCount() == 2,
+                    "an empty kiln keeps its coal and stays cold");
+            helper.assertTrue(foundry.blocked().equals("nothing_to_melt"), "and says it has nothing to melt");
+            foundry.setItem(0, new ItemStack(Items.RAW_IRON, 4));
+            helper.succeedWhen(() -> helper.assertTrue(foundry.heat() >= HexFoundryBlockEntity.MELT_HEAT && foundry.blocked().isEmpty(),
+                    "with ore inside the coal burns and the kiln reaches the melting mark"));
+        });
+    }
+
     @HexTest(maxTicks = 100)
     public static void theFoundryBurnsFireFromAJar(GameTestHelper helper) {
         build(helper);

@@ -65,7 +65,7 @@ public final class QuestHookGameTests {
     /** Research granted by the command fires research_completed for that topic only; revoking locks it again. */
     @HexTest
     public static void researchCommandsAndTheirTrigger(GameTestHelper helper) throws CommandSyntaxException {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         AdvancementHolder battery = listen(player, ModTriggers.RESEARCH_COMPLETED.get(), "{\"topic\": \"crystal_battery\"}");
         AdvancementHolder other = listen(player, ModTriggers.RESEARCH_COMPLETED.get(), "{\"topic\": \"hexcore\"}");
         AdvancementHolder any = listen(player, ModTriggers.RESEARCH_COMPLETED.get(), "{}");
@@ -88,11 +88,10 @@ public final class QuestHookGameTests {
     public static void guideCommandsAndTheirTrigger(GameTestHelper helper) throws CommandSyntaxException {
         Guide guide = Guide.server();
         Quest step = guide.all().stream()
-                .filter(quest -> quest.kind() == Quest.Kind.ITEM && quest.topic() == null && !quest.parents().isEmpty()
-                        && quest.parents().getFirst().kind() == Quest.Kind.ITEM)
+                .filter(quest -> quest.topic() == null && !quest.parents().isEmpty())
                 .findFirst().orElseThrow();
         Quest parent = step.parents().getFirst();
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         AdvancementHolder wanted = listen(player, ModTriggers.GUIDE_STEP.get(), "{\"step\": \"" + step.id() + "\"}");
         AdvancementHolder before = listen(player, ModTriggers.GUIDE_STEP.get(), "{\"step\": \"hextale:" + parent.id() + "\"}");
         KnowledgeCommands.grantSteps(source(helper), List.of(player), step.id());
@@ -108,7 +107,7 @@ public final class QuestHookGameTests {
     /** Events reported to the guide fire guide_event with their name. */
     @HexTest
     public static void guideEventsFireTheirTrigger(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         AdvancementHolder opened = listen(player, ModTriggers.GUIDE_EVENT.get(), "{\"event\": \"" + Quests.BREACH_OPENED + "\"}");
         AdvancementHolder core = listen(player, ModTriggers.GUIDE_EVENT.get(), "{\"event\": \"" + Quests.HEXCORE_AWAKENED + "\"}");
         Quests.fire(player, Quests.BREACH_OPENED);
@@ -119,7 +118,7 @@ public final class QuestHookGameTests {
     /** ritual_finished matches by the item on the altar and the ritual's kind. */
     @HexTest
     public static void ritualFinishedMatchesItemAndKind(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         RitualFinishedTrigger trigger = ModTriggers.RITUAL_FINISHED.get();
         AdvancementHolder diamond = listen(player, trigger, "{\"item\": {\"items\": \"minecraft:diamond\"}, \"kind\": \"infuse\"}");
         AdvancementHolder written = listen(player, trigger, "{\"kind\": \"write\"}");

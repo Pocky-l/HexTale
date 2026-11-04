@@ -187,10 +187,7 @@ public class BrassPipeBlock extends Block implements com.pockyl.hextale.port.Rem
         BlockPos neighbourPos = pos.relative(direction);
         BlockState neighbour = level.getBlockState(neighbourPos);
         if (current == PipeSide.NONE && !connects(neighbour, direction)) {
-            if (!level.isClientSide()) {
-                player.displayClientMessage(Component.translatable("block.hextale.brass_pipe.nothing"), true);
-            }
-            return InteractionResult.SUCCESS;
+            return InteractionResult.PASS;
         }
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
@@ -208,8 +205,6 @@ public class BrassPipeBlock extends Block implements com.pockyl.hextale.port.Rem
         }
         level.playSound(null, pos, next == PipeSide.CLOSED ? SoundEvents.COPPER_TRAPDOOR_CLOSE : SoundEvents.COPPER_TRAPDOOR_OPEN,
                 SoundSource.BLOCKS, 0.6F, 1.3F);
-        player.displayClientMessage(Component.translatable("block.hextale.brass_pipe.side." + next.getSerializedName()
-                + (towardsPipe ? ".pipe" : ""), neighbour.getBlock().getName()), true);
         return InteractionResult.SUCCESS;
     }
 

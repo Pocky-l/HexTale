@@ -1,0 +1,13 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:salmon"
+  },
+  "essences": {
+    "water": 2
+  },
+  "result": {
+    "id": "minecraft:cod"
+  },
+  "research": "transmutation"
+}

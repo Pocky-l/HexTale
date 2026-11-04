@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "essences",
-  "icon": "minecraft:pointed_dripstone",
-  "parents": ["brass_pipe", "concentrate"],
-  "pos": [-25, 231]
-}

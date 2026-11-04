@@ -1,0 +1,14 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:vine"
+  },
+  "essences": {
+    "light": 6,
+    "magic": 1
+  },
+  "result": {
+    "id": "minecraft:glow_lichen"
+  },
+  "research": "transmutation"
+}

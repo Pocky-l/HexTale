@@ -2,6 +2,9 @@
   "values": {
     "hextale:void_ichor_bucket": {
       "burn_time": 20000
+    },
+    "hextale:ember_wheat": {
+      "burn_time": 600
     }
   }
 }

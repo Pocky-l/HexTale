@@ -28,12 +28,11 @@ public final class GameTests {
     private static final ResourceLocation STRUCTURE = Hextale.id("empty");
     private static final List<Class<?>> HOLDERS = List.of(ModGameTests.class, ResearchGameTests.class, QuestGameTests.class,
             RuneWorkGameTests.class, HextechGameTests.class, CraftingGameTests.class, PylonGameTests.class,
-            MultiblockGameTests.class, CrucibleGameTests.class, MagicTreeGameTests.class, WhirlReaperGameTests.class, SawmillGameTests.class,
+            MultiblockGameTests.class, CrucibleGameTests.class, GardenGameTests.class, MagicTreeGameTests.class, WhirlReaperGameTests.class, SawmillGameTests.class,
             RuneGiftGameTests.class, ChemGameTests.class, ShimmerGameTests.class, DualityGameTests.class, LabGameTests.class,
             SkypackGameTests.class, VoidGameTests.class, GateGameTests.class, FunnelGameTests.class, SpireGameTests.class, ShackleGameTests.class, CondenserGameTests.class, FoundryGameTests.class, VentGameTests.class, CreativeJarGameTests.class, ThinningGameTests.class, HollowbloomGameTests.class, HealingGameTests.class, VoidRoadGameTests.class, VoidRealmGameTests.class, VoidLifeGameTests.class, StruckGeodeGameTests.class, ForkGameTests.class, GadgetGameTests.class,
             RecipeGameTests.class, ProtectionGameTests.class, AutomationGameTests.class, QuestHookGameTests.class,
-            EssenceFluidGameTests.class, WeaponRuneGameTests.class, ArsenalGameTests.class);
-
+            EssenceFluidGameTests.class, WeaponRuneGameTests.class, ArsenalGameTests.class, TransmutationGameTests.class, ChemVatGameTests.class, ChemTankGameTests.class);
     /**
      * Ticks a test may wait for the chunks round its spot to tick their creatures before its body runs; added to every
      * test's {@link HexTest#maxTicks()}, so the wait never eats into the test's own time.
@@ -204,7 +203,7 @@ public final class GameTests {
      * The framework places mock players at the world spawn, often far from the test spot.
      */
     public static net.minecraft.server.level.ServerPlayer watcher(GameTestHelper helper, net.minecraft.core.BlockPos near) {
-        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        net.minecraft.server.level.ServerPlayer player = MockPlayers.inLevel(helper);
         player.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
         player.moveTo(near.getX() + 0.5, near.getY(), near.getZ() - 6.5, 0, 0);
         return player;

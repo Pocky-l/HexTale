@@ -1,0 +1,14 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:blaze_rod"
+  },
+  "essences": {
+    "air": 10,
+    "spark": 3
+  },
+  "result": {
+    "id": "minecraft:breeze_rod"
+  },
+  "research": "advanced_transmutation"
+}

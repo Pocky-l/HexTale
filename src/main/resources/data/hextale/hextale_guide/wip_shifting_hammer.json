@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "forge",
-  "stage": "late",
-  "icon": "minecraft:mace",
-  "parents": ["radiant_alloy"],
-  "pos": [1296, 146]
-}

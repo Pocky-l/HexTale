@@ -3,12 +3,7 @@
   "icon": "hextale:chem_glass",
   "parents": ["crucible"],
   "display": {
-    "kind": "scheme",
-    "ingredients": [
-      "minecraft:pufferfish",
-      "minecraft:glass",
-      "hextale:crucible"
-    ],
+    "kind": "crucible",
     "result": "hextale:chem_glass"
   },
   "pos": [-470, -40]

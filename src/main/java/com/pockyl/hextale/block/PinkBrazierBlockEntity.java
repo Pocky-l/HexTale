@@ -263,7 +263,8 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
     }
 
     /** One step of growth: a plant with an age grows one stage at once; anything else gets a random tick. */
-    private static void growStep(ServerLevel level, BlockPos at, BlockState plant, RandomSource random) {
+    /** One stage more for a plant with an "age"; anything else that grows gets a random tick. */
+    public static void growStep(ServerLevel level, BlockPos at, BlockState plant, RandomSource random) {
         for (Property<?> property : plant.getProperties()) {
             if (property instanceof IntegerProperty age && property.getName().equals("age")) {
                 int now = plant.getValue(age);

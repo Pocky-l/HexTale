@@ -68,6 +68,7 @@ public class HexFoundryScreen extends MachineScreen<HexFoundryMenu> {
         switch (foundry.blocked()) {
             case "no_fire" -> warn(graphics, x + HexFoundryMenu.FUEL_X, y + HexFoundryMenu.FUEL_Y, 16, 16);
             case "output_full" -> warn(graphics, x + HexFoundryMenu.OUTPUT_X, y + HexFoundryMenu.GRID_Y, 52, 52);
+            case "nothing_to_melt" -> warn(graphics, x + HexFoundryMenu.INPUT_X, y + HexFoundryMenu.GRID_Y, 52, 52);
             default -> {
             }
         }

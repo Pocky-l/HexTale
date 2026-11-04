@@ -36,17 +36,17 @@ public class SeparationCategory extends AbstractRecipeCategory<SeparationCategor
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, Recipe recipe, IFocusGroup focuses) {
-        builder.addInputSlot(1, 1).setStandardSlotBackground().addItemStack(new ItemStack(ModItems.ESSENCE_FLASK.get()))
+        builder.addInputSlot(1, 1).setStandardSlotBackground().addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(new ItemStack(ModItems.ESSENCE_FLASK.get())))
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.separation.mixture",
                         ResearchText.essence(recipe.essence()))));
         builder.addInputSlot(1, 21).setStandardSlotBackground().addItemStacks(recipe.reagents())
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("gui.hextale.separator.binds",
                         ResearchText.essence(recipe.essence()))));
-        builder.addOutputSlot(96, 1).setOutputSlotBackground().addItemStack(HextaleJeiPlugin.concentrate(recipe.essence()))
+        builder.addOutputSlot(96, 1).setOutputSlotBackground().addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(HextaleJeiPlugin.concentrate(recipe.essence())))
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("gui.hextale.port.product.hint")));
         builder.addOutputSlot(96, 21).setOutputSlotBackground()
-                .addItemStack(EssenceFlaskItem.filled(EssenceMix.pure(recipe.essence() == Essence.FIRE ? Essence.WATER : Essence.FIRE, 12)
-                        .plus(EssenceMix.unknown(2))))
+                .addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(EssenceFlaskItem.filled(EssenceMix.pure(recipe.essence() == Essence.FIRE ? Essence.WATER : Essence.FIRE, 12)
+                        .plus(EssenceMix.unknown(2)))))
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("gui.hextale.port.waste.hint")));
     }
 

@@ -1,11 +1,13 @@
 package com.pockyl.hextale.compat.jei;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.RecipeType;
+import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
@@ -42,21 +44,19 @@ public class LabExperimentCategory extends AbstractRecipeCategory<ExperimentPlan
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, ExperimentPlan plan, IFocusGroup focuses) {
-        builder.addInputSlot(1, StepCategory.ROW_Y).setStandardSlotBackground().addItemStack(new ItemStack(Items.GLASS_BOTTLE))
+        // The sample goes into the flask: the sample first, a dotted arrow, then the flask.
+        builder.addInputSlot(35, StepCategory.ROW_Y).setStandardSlotBackground().addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(new ItemStack(Items.GLASS_BOTTLE)))
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.lab_experiment.flask")));
-        plan.sample().ifPresent(sample -> builder.addInputSlot(35, StepCategory.ROW_Y).setStandardSlotBackground().addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(sample))
+        plan.sample().ifPresent(sample -> builder.addInputSlot(1, StepCategory.ROW_Y).setStandardSlotBackground().addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(sample))
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.lab_experiment.sample"))));
         ResearchTopic topic = plan.topic();
-        builder.addOutputSlot(StepCategory.RESULT_X, StepCategory.ROW_Y).setOutputSlotBackground().addItemStack(ResearchNotesItem.of(topic))
+        builder.addOutputSlot(StepCategory.RESULT_X, StepCategory.ROW_Y).setOutputSlotBackground().addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(ResearchNotesItem.of(topic)))
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.lab_experiment.opens",
                         Component.translatable(topic.translationKey()).withColor(topic.color()))));
     }
 
     @Override
     public void createRecipeExtras(IRecipeExtrasBuilder builder, ExperimentPlan plan, IFocusGroup focuses) {
-        if (plan.needsSample()) {
-            builder.addRecipePlusSign().setPosition(20, StepCategory.ROW_Y + 2);
-        }
         builder.addRecipeArrow().setPosition(StepCategory.ARROW_X, StepCategory.ROW_Y);
         Component goal = Component.translatable("gui.hextale.lab_bench.goal", plan.amount(), name(plan.target()),
                 Math.round(plan.purity() * 100));
@@ -70,6 +70,22 @@ public class LabExperimentCategory extends AbstractRecipeCategory<ExperimentPlan
         }
         builder.addText(Component.translatable("jei.hextale.lab_experiment.chain", chain), StepCategory.WIDTH, 20)
                 .setPosition(0, CHAIN_Y).setColor(StepCategory.NOTE_COLOR);
+    }
+
+    @Override
+    public void draw(ExperimentPlan plan, IRecipeSlotsView slots, net.minecraft.client.gui.GuiGraphics portGraphics, double mouseX, double mouseY) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
+        if (plan.sample().isEmpty()) {
+            return;
+        }
+        int color = PixelArt.argb(0x8A6420, 1);
+        int y = StepCategory.ROW_Y + 8;
+        int flow = (int) (net.minecraft.Util.getMillis() / 120 % 6);
+        PixelArt.dotted(graphics, 19, y, 29, y, 3, 3, 6 - flow, color);
+        for (int k = 0; k < 4; k++) {
+            PixelArt.fill(graphics, 30 + k, y - 3 + k, 31 + k, y + 4 - k, color);
+        }
+        PixelArt.flush(graphics);
     }
 
     private static Component name(Essence essence) {

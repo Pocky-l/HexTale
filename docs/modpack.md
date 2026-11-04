@@ -143,12 +143,53 @@ wakes it into `result` after a short swirl.
 
 Not recipes: the multiblocks' shapes, what the lightning wave turns into hextech (block tag
 `hextale:carries_lightning`), the lapidary's cutting, rune burning in the Rune Circle and the essences of items (data map
-`hextale:essences`, `data/hextale/data_maps/item/essences.json`).
+`hextale:essences`, see [Essences of items](#essences-of-items)).
 
 Gear levels and the Nether: Radiant tools and Radiant Bulwark armour reach netherite strength without netherite (their
 Radiant Alloy is gold, Charged Hexsteel and gemstone dust from the Foundry). A pack that gates its progression on the
 Nether can add a netherite scrap to the alloy recipes `hextale:alloying/radiant_alloy_ingot` and
 `hextale:alloying/radiant_alloy_ingot_from_shimmer` (KubeJS: remove them by id and add a copy with one more input).
+
+## Essences of items
+
+What an item boils into in the alembic, what the loupe shows and what the Research Table counts come from the data map
+`hextale:essences`. Every item of every mod carries essences, even with no entry:
+
+1. an item named in the data map keeps exactly that value (hand-tuned: HexTale's own items and the base materials);
+2. any other item is made of its ingredients: a crafting, smelting or stonecutting recipe passes on its ingredients'
+   essences, softened (a block of nine ingots is stronger than one ingot, not nine times), and the words of its id add
+   what it is (`_sword`, `_ore`, `deepslate_`...);
+3. a raw material no recipe makes goes by the words of its id alone, and the last fallback is earth for a block, plant
+   for a plant and metal for an item.
+
+So setting a few raw materials of a mod (its ingots, gems, logs) is usually enough: everything crafted from them follows.
+The table is worked out again on every `/reload`.
+
+A data pack adds or changes entries in `data/<any namespace>/data_maps/item/essences.json`; a later pack wins for the same
+item, so a modpack can change HexTale's own values the same way. Keys are item ids or item tags (`#c:ingots/tin`):
+
+```json
+{
+  "values": {
+    "examplemod:tin_ingot": {"essences": {"metal": 4, "water": 1}},
+    "#c:gems/ruby": {"essences": {"crystal": 4, "fire": 2}, "tier": 2},
+    "hextale:alembic": {"essences": {"steam": 6, "metal": 2}}
+  },
+  "remove": ["minecraft:charcoal"]
+}
+```
+
+- `essences`: essence id -> amount (1-64; 1 point boils into 1 mB). Keep to one to three essences, strongest first:
+  the order breaks ties.
+- `tier` (optional, 1-3, default 1): how valuable the item is (1 simple, 2 valuable, 3 rare).
+- `remove` drops an entry, and the item goes back to being worked out from its recipes and name.
+- Essence ids: the primals `fire`, `water`, `earth`, `air`, `light`, `shadow`, `life`, `metal`, `spark` (lightning) and
+  the compounds `steam`, `magma`, `ash`, `cold`, `sap`, `crystal`, `ore`, `decay`, `rift`, `circuit`, `plant`, `beast`,
+  `magic`.
+- Two items read their essences from the stack instead: `hextale:essence` (one essence, the component
+  `hextale:essence_kind`) and a bottle of essence (what is poured into it).
+
+With KubeJS the same file goes to `kubejs/data/<namespace>/data_maps/item/essences.json`.
 
 ## Tags
 
@@ -225,8 +266,7 @@ chances. The modifiers check the queried loot table, so per-player chests (Lootr
 | `minOrbs` / `maxOrbs` | 1 / 1 | Unstable hextech orbs per amethyst block a lightning wave shatters. |
 | `chainRadius` / `maxChain` | 5 / 125 | How far and how much amethyst one strike runs through. |
 
-`hextale-client.toml`: `breachCinematic` (the camera flight when a breach opens near you), `showWipSteps` (ideas
-in the diary that are not in the game yet).
+`hextale-client.toml`: `breachCinematic` (the camera flight when a breach opens near you).
 
 What wears the land thin, by source, shows `/hextale void sources [radius]` (the Chem Boiler's cracking counts as
 `fumes`). A lit Warding Lamppost burns off a share (35-65% with runes) of every gain within its reach (8-16 blocks)
@@ -240,8 +280,10 @@ and Claims, ...) protect against it:
 
 - tools and gadgets act as the player using them (area mining runes, Dust Charge, Chem Vials, Spawner Cage, ...);
 - placed devices (Whirl Sawmill, Whirl Reaper, Drain Valve, Hexcore) act as the player who placed them;
-- the Void's blight and lightning without a player act as the fake player **[HexTale]**, UUID
-  `2030168d-9eab-3b8b-b353-18a58e583390` - allow or deny it in your claim mod.
+- lightning without a player acts as the fake player **[HexTale]**, UUID
+  `2030168d-9eab-3b8b-b353-18a58e583390` - allow or deny it in your claim mod;
+- the Void's blight is a force of nature and takes claimed land too; with `blightRespectsClaims = true` in
+  `hextale-synced.toml` it asks as **[HexTale]** like lightning.
 
 Block tag `hextale:void_immune`: blocks the blight, the healing land and the Hexcore's lightning never touch.
 
@@ -266,8 +308,10 @@ Other mods' pipes, tanks and hoppers:
 
 Essence as a fluid: `hextale:essence` with the data component `hextale:essence_kind` (the essence id, e.g. `fire`);
 1 mB of fluid = 1 mB of essence. A jar gives fluid only while it holds one essence and nothing else (mixtures are the
-mod's own business and are never split); it takes the essence fluid its sticker allows. The fluid has no bucket and no
-block, so it cannot be placed in the world.
+mod's own business and are never split); it takes the essence fluid its sticker allows. The fluid has no block, so it
+cannot be placed in the world. Its bucket is `hextale:essence_bucket` with the same `hextale:essence_kind` component
+(1000 mB, fluid item capability): an empty bucket filled with essence by any tank becomes one, and a Big Essence Jar or
+any tank empties it back. Item storage keeps the buckets as items.
 
 Research still holds: hoppers and pipes never count as a researcher, so what they bring only makes what needs no
 research. The Sorting Matrix fills any storage with an item handler; it finds chests, barrels and drawers by itself

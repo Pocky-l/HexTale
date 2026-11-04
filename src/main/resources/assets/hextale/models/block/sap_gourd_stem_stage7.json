@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/stem_growth7",
+  "textures": {
+    "stem": "hextale:block/sap_gourd_stem"
+  },
+  "render_type": "minecraft:cutout"
+}

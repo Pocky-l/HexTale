@@ -1,0 +1,13 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:glow_ink_sac"
+  },
+  "essences": {
+    "shadow": 6
+  },
+  "result": {
+    "id": "minecraft:ink_sac"
+  },
+  "research": "advanced_transmutation"
+}

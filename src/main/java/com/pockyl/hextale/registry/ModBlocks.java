@@ -216,10 +216,13 @@ public final class ModBlocks {
     public static final DeferredBlock<RuneCircleBlock> RUNE_CIRCLE = BLOCKS.registerBlock("rune_circle", RuneCircleBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(3.5F, 9.0F).sound(SoundType.POLISHED_DEEPSLATE)
                     .noOcclusion().requiresCorrectToolForDrops().lightLevel(state -> 4));
-    /** A mote of hextech light a pickaxe with the Eternal Flame rune leaves in the dark: no body, no drops, goes out at a touch. */
-    public static final DeferredBlock<HexWispBlock> HEX_WISP = BLOCKS.registerBlock("hex_wisp", HexWispBlock::new,
-            () -> BlockBehaviour.Properties.of().replaceable().noCollission().instabreak().noLootTable().randomTicks().lightLevel(state -> 13)
-                    .sound(SoundType.AMETHYST_CLUSTER).pushReaction(PushReaction.DESTROY));
+    /**
+     * A mote of hextech light a pickaxe with the Eternal Flame rune leaves in the dark (or made in the crucible): no body,
+     * goes out at a touch, drops itself only when a player set it down.
+     */
+    public static final DeferredBlock<HexWispBlock> HEX_WISP = BLOCKS.registerBlock("hex_wisp", HexWispBlock::new, ModBlocks::wispProperties);
+    /** The same wisp in the sixteen dye colours ({@code <dye>_hex_wisp}). */
+    public static final java.util.Map<net.minecraft.world.item.DyeColor, DeferredBlock<HexWispBlock>> DYED_WISPS = dyedWisps();
     /** A refined gemstone in a brass cage: stands or hangs like a lantern, full light. */
     public static final DeferredBlock<HextechLampBlock> HEXTECH_LAMP = BLOCKS.registerBlock("hextech_lamp", HextechLampBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.5F).sound(SoundType.LANTERN)
@@ -461,6 +464,25 @@ public final class ModBlocks {
     public static final DeferredBlock<TransparentBlock> RUSTED_GRATE = BLOCKS.registerBlock("rusted_grate", TransparentBlock::new,
             () -> platingProperties().sound(SoundType.COPPER_GRATE).noOcclusion().isValidSpawn((state, level, pos, type) -> false)
                     .isRedstoneConductor((state, level, pos) -> false).isSuffocating((state, level, pos) -> false));
+    /** The Chem Vat Valve: alone a riveted hatch, in a sealed Chem Vat its controller. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ChemVatBlock> CHEM_VAT = BLOCKS.registerBlock("chem_vat",
+            com.pockyl.hextale.block.ChemVatBlock::new,
+            () -> platingProperties().noOcclusion()
+                    .lightLevel(state -> state.getValue(com.pockyl.hextale.block.ChemVatBlock.LIT) ? 9 : 0));
+    /** The Chem Tank set down: a glass fuel cylinder in leather straps, filled here and pumped into the one worn. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ChemTankBlock> CHEM_TANK = BLOCKS.registerBlock("chem_tank",
+            com.pockyl.hextale.block.ChemTankBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F, 6.0F).sound(SoundType.COPPER).noOcclusion()
+                    .requiresCorrectToolForDrops());
+    /** Chem-steel: iron tempered in acid and shimmer, the metal of chemtech gear; its block and plating are decor. */
+    public static final DeferredBlock<Block> CHEM_STEEL_BLOCK = BLOCKS.registerBlock("chem_steel_block", Block::new,
+            () -> platingProperties().strength(6.0F, 12.0F).sound(SoundType.NETHERITE_BLOCK));
+    public static final DeferredBlock<Block> CHEM_STEEL_PLATING = BLOCKS.registerBlock("chem_steel_plating", Block::new,
+            () -> platingProperties().strength(5.0F, 9.0F));
+    public static final DeferredBlock<StairBlock> CHEM_STEEL_PLATING_STAIRS = BLOCKS.registerBlock("chem_steel_plating_stairs",
+            properties -> new StairBlock(CHEM_STEEL_PLATING.get().defaultBlockState(), properties), () -> platingProperties().strength(5.0F, 9.0F));
+    public static final DeferredBlock<SlabBlock> CHEM_STEEL_PLATING_SLAB = BLOCKS.registerBlock("chem_steel_plating_slab", SlabBlock::new,
+            () -> platingProperties().strength(5.0F, 9.0F));
     /** A bundle of glass tubes in iron bands with green chemistry glowing in them. */
     public static final DeferredBlock<RotatedPillarBlock> CHEM_TUBES = BLOCKS.registerBlock("chem_tubes", RotatedPillarBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GREEN).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
@@ -511,6 +533,73 @@ public final class ModBlocks {
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).strength(3.0F, 6.0F).sound(SoundType.METAL)
                     .requiresCorrectToolForDrops().noOcclusion()
                     .lightLevel(state -> state.getValue(com.pockyl.hextale.block.PinkBrazierBlock.LIT) ? 15 : 0));
+
+    // ---- The chemtech garden -----------------------------------------------------------------------------------------
+    /** Farmland a brew was poured on: never dries, never trampled, holds doses that make plants grow a stage more. */
+    public static final DeferredBlock<com.pockyl.hextale.garden.SteepedSoilBlock> STEEPED_SOIL = BLOCKS.registerBlock("steeped_soil",
+            com.pockyl.hextale.garden.SteepedSoilBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).strength(0.6F).sound(SoundType.GRAVEL));
+    /** A riveted iron planter with green glass sides and a tank of doses for the plant on it. */
+    public static final DeferredBlock<com.pockyl.hextale.garden.ChemPlanterBlock> CHEM_PLANTER = BLOCKS.registerBlock("chem_planter",
+            com.pockyl.hextale.garden.ChemPlanterBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(3.0F, 6.0F).sound(SoundType.METAL)
+                    .requiresCorrectToolForDrops().noOcclusion());
+    /** A copper riser with a turning head that sprays water, sap and brews over the beds around it. */
+    public static final DeferredBlock<com.pockyl.hextale.garden.EssenceSprinklerBlock> ESSENCE_SPRINKLER = BLOCKS.registerBlock("essence_sprinkler",
+            com.pockyl.hextale.garden.EssenceSprinklerBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(2.0F, 6.0F).sound(SoundType.COPPER)
+                    .requiresCorrectToolForDrops().noOcclusion());
+    /** A rusted copper spout in a living trunk that drips sap essence. */
+    public static final DeferredBlock<com.pockyl.hextale.garden.SapTapBlock> SAP_TAP = BLOCKS.registerBlock("sap_tap",
+            com.pockyl.hextale.garden.SapTapBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.5F, 3.0F).sound(SoundType.COPPER)
+                    .noOcclusion().pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY));
+    /** A rusted iron lattice for a wall of the garden: climbable like a ladder. */
+    public static final DeferredBlock<net.minecraft.world.level.block.LadderBlock> GARDEN_TRELLIS = BLOCKS.registerBlock("garden_trellis",
+            net.minecraft.world.level.block.LadderBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(SoundType.CHAIN).noOcclusion()
+                    .pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY));
+
+    // ---- Strains of the garden ---------------------------------------------------------------------------------------
+    /** Cultivated Shimmerbloom: a violet bulb that opens into a shimmerbloom, grown on a bed. */
+    public static final DeferredBlock<com.pockyl.hextale.garden.GardenCropBlock> SHIMMER_BULB = BLOCKS.registerBlock("shimmer_bulb",
+            properties -> new com.pockyl.hextale.garden.GardenCropBlock(() -> ModItems.SHIMMER_BULB.get(), 0xE070D0, properties),
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).noCollission().randomTicks().instabreak().sound(SoundType.CROP)
+                    .pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY)
+                    .lightLevel(state -> state.getValue(com.pockyl.hextale.garden.GardenCropBlock.AGE) >= 2 ? 5 : 0));
+    /** Ember Wheat: grain that smoulders as it ripens. */
+    public static final DeferredBlock<com.pockyl.hextale.garden.GardenCropBlock> EMBER_WHEAT = BLOCKS.registerBlock("ember_wheat",
+            properties -> new com.pockyl.hextale.garden.GardenCropBlock(() -> ModItems.EMBER_WHEAT_SEEDS.get(), 0xF08A3A, properties),
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).noCollission().randomTicks().instabreak().sound(SoundType.CROP)
+                    .pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY)
+                    .lightLevel(state -> state.getValue(com.pockyl.hextale.garden.GardenCropBlock.AGE) == 3 ? 4 : 0));
+    /** The Sap Gourd: a heavy amber gourd full of sap, grown from a stem like a melon. */
+    public static final DeferredBlock<Block> SAP_GOURD = BLOCKS.registerBlock("sap_gourd", Block::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(1.0F).sound(SoundType.WOOD)
+                    .pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY));
+    public static final DeferredBlock<net.minecraft.world.level.block.StemBlock> SAP_GOURD_STEM = BLOCKS.registerBlock("sap_gourd_stem",
+            properties -> new net.minecraft.world.level.block.StemBlock(key("sap_gourd"), key("attached_sap_gourd_stem"),
+                    net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.ITEM, com.pockyl.hextale.Hextale.id("sap_gourd_seeds")),
+                    properties),
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.HARD_CROP)
+                    .pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY));
+    public static final DeferredBlock<net.minecraft.world.level.block.AttachedStemBlock> ATTACHED_SAP_GOURD_STEM = BLOCKS.registerBlock(
+            "attached_sap_gourd_stem",
+            properties -> new net.minecraft.world.level.block.AttachedStemBlock(key("sap_gourd_stem"), key("sap_gourd"),
+                    net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.ITEM, com.pockyl.hextale.Hextale.id("sap_gourd_seeds")),
+                    properties),
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).noCollission().instabreak().sound(SoundType.WOOD)
+                    .pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY));
+    /** Crystal Cane: glassy cane that grows crystal pods on its joints. */
+    public static final DeferredBlock<com.pockyl.hextale.garden.CrystalCaneBlock> CRYSTAL_CANE = BLOCKS.registerBlock("crystal_cane",
+            com.pockyl.hextale.garden.CrystalCaneBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).noCollission().randomTicks().instabreak().sound(SoundType.AMETHYST_CLUSTER)
+                    .pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY)
+                    .lightLevel(state -> state.getValue(com.pockyl.hextale.garden.CrystalCaneBlock.PODDED) ? 3 : 0));
+
+    private static net.minecraft.resources.ResourceKey<Block> key(String path) {
+        return net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.BLOCK, com.pockyl.hextale.Hextale.id(path));
+    }
 
     /** A rune drawn in Rune Chalk on the floor: quickens the altar's rituals around it, glows while one runs. */
     public static final DeferredBlock<com.pockyl.hextale.block.ChalkMarkBlock> CHALK_MARK = BLOCKS.registerBlock("chalk_mark",
@@ -832,5 +921,30 @@ public final class ModBlocks {
 
     public static void register(IEventBus modBus) {
         BLOCKS.register(modBus);
+    }
+    private static BlockBehaviour.Properties wispProperties() {
+        return BlockBehaviour.Properties.of().replaceable().noCollission().instabreak().randomTicks().lightLevel(state -> 13)
+                .sound(WISP_SOUND).pushReaction(PushReaction.DESTROY);
+    }
+
+    /** A wisp goes out with a soft woollen puff, not a clink. */
+    private static final SoundType WISP_SOUND = new SoundType(0.6F, 1.35F, SoundEvents.WOOL_BREAK, SoundEvents.WOOL_STEP,
+            SoundEvents.WOOL_PLACE, SoundEvents.WOOL_HIT, SoundEvents.WOOL_FALL);
+
+    private static java.util.Map<net.minecraft.world.item.DyeColor, DeferredBlock<HexWispBlock>> dyedWisps() {
+        java.util.Map<net.minecraft.world.item.DyeColor, DeferredBlock<HexWispBlock>> wisps = new java.util.EnumMap<>(net.minecraft.world.item.DyeColor.class);
+        for (net.minecraft.world.item.DyeColor dye : net.minecraft.world.item.DyeColor.values()) {
+            wisps.put(dye, BLOCKS.registerBlock(dye.getSerializedName() + "_hex_wisp", properties -> new HexWispBlock(dye, properties),
+                    ModBlocks::wispProperties));
+        }
+        return java.util.Collections.unmodifiableMap(wisps);
+    }
+
+    /** Every wisp: the hextech blue one first, then the dyed ones in dye order. */
+    public static java.util.List<HexWispBlock> wisps() {
+        java.util.List<HexWispBlock> all = new java.util.ArrayList<>();
+        all.add(HEX_WISP.get());
+        DYED_WISPS.values().forEach(wisp -> all.add(wisp.get()));
+        return all;
     }
 }

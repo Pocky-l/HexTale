@@ -41,8 +41,9 @@ public class GreedyFunnelBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (player instanceof ServerPlayer server && level.getBlockEntity(pos) instanceof GreedyFunnelBlockEntity funnel) {
-            int points = funnel.release(server);
-            player.displayClientMessage(points > 0 ? Component.translatable("block.hextale.greedy_funnel.released", points) : status(funnel), true);
+            if (funnel.release(server) <= 0) {
+                player.displayClientMessage(status(funnel), true);
+            }
         }
         return InteractionResult.SUCCESS;
     }

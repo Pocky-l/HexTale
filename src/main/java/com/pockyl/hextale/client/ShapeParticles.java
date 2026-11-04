@@ -54,7 +54,7 @@ final class ShapeParticles {
         }, ModBlocks.SHAPE_PART.get());
         List<Block> shaped = new ArrayList<>();
         for (var entry : ModBlocks.BLOCKS.getEntries()) {
-            if (ModelShapes.covers(entry.get())) {
+            if (ModelShapes.covers(entry.get()) && !(entry.get() instanceof com.pockyl.hextale.block.HexWispBlock)) {
                 shaped.add(entry.get());
             }
         }
@@ -68,6 +68,40 @@ final class ShapeParticles {
                 return true;
             }
         }, shaped.toArray(Block[]::new));
+        event.registerBlock(new IClientBlockExtensions() {
+            @Override
+            public boolean addHitEffects(BlockState state, Level level, net.minecraft.world.phys.HitResult target, ParticleEngine manager) {
+                return true;
+            }
+
+            @Override
+            public boolean addDestroyEffects(BlockState state, Level level, BlockPos pos, ParticleEngine manager) {
+                if (state.getBlock() instanceof com.pockyl.hextale.block.HexWispBlock wisp) {
+                    wispPuff(level, pos, wisp.flame());
+                }
+                return true;
+            }
+        }, ModBlocks.wisps().toArray(Block[]::new));
+    }
+
+    /** A wisp put out: its flame bursts into sparks of its own colours, a few motes drift up and fade. */
+    private static void wispPuff(Level level, BlockPos pos, com.pockyl.hextale.block.HexWispBlock.Flame flame) {
+        net.minecraft.util.RandomSource random = level.getRandom();
+        double x = pos.getX() + 0.5;
+        double y = pos.getY() + 0.5;
+        double z = pos.getZ() + 0.5;
+        for (int i = 0; i < 14; i++) {
+            double angle = random.nextDouble() * Math.PI * 2;
+            double speed = 0.03 + random.nextDouble() * 0.05;
+            int color = i % 3 == 0 ? flame.core() : i % 3 == 1 ? flame.middle() : flame.deep();
+            level.addParticle(com.pockyl.hextale.registry.ModParticles.glint(color), x, y, z,
+                    Math.cos(angle) * speed, 0.01 + random.nextDouble() * 0.05, Math.sin(angle) * speed);
+        }
+        for (int i = 0; i < 5; i++) {
+            level.addParticle(com.pockyl.hextale.registry.ModParticles.wisp(i % 2 == 0 ? flame.middle() : flame.deep()),
+                    x + (random.nextDouble() - 0.5) * 0.2, y - 0.05 + random.nextDouble() * 0.2, z + (random.nextDouble() - 0.5) * 0.2,
+                    (random.nextDouble() - 0.5) * 0.01, 0.015 + random.nextDouble() * 0.015, (random.nextDouble() - 0.5) * 0.01);
+        }
     }
 
     private static void burst(ClientLevel level, BlockPos pos, BlockState state, AABB box, ParticleEngine manager) {

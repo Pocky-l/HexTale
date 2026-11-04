@@ -1,0 +1,14 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:quartz"
+  },
+  "essences": {
+    "magic": 3,
+    "spark": 2
+  },
+  "result": {
+    "id": "minecraft:amethyst_shard"
+  },
+  "research": "advanced_transmutation"
+}

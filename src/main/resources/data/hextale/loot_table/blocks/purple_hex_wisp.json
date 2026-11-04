@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "conditions": [
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "hextale:purple_hex_wisp",
+          "properties": {
+            "placed": "true"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:purple_hex_wisp"
+        }
+      ],
+      "rolls": 1,
+      "bonus_rolls": 0.0
+    }
+  ],
+  "random_sequence": "hextale:blocks/purple_hex_wisp"
+}

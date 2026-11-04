@@ -1,0 +1,26 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "PGP",
+    "GDG",
+    "PCP"
+  ],
+  "key": {
+    "P": {
+      "tag": "c:ingots/iron"
+    },
+    "G": {
+      "item": "hextale:chem_glass"
+    },
+    "D": {
+      "tag": "minecraft:dirt"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    }
+  },
+  "result": {
+    "id": "hextale:chem_planter"
+  },
+  "charge": 2
+}

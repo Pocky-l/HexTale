@@ -279,8 +279,8 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
                                 .append(Component.translatable(rune.translationKey()).withColor(rune.color()));
                     }
                     player.displayClientMessage(Component.translatable("block.hextale.hextech_altar.nothing.runes_missing", names), true);
-                } else {
-                    player.displayClientMessage(Component.translatable(messageKey(center.isEmpty() ? "empty" : "nothing")), true);
+                } else if (!center.isEmpty()) {
+                    player.displayClientMessage(Component.translatable(messageKey("nothing")), true);
                 }
             }
             serverLevel.playSound(null, worldPosition, ModSounds.DEVICE_REFUSE.get(), SoundSource.BLOCKS, 0.8F, 0.9F);
@@ -290,7 +290,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         if (topic != null && !researcherNear(serverLevel, player, topic)) {
             // Nobody here has worked this out at the table yet: the circle does not know how to make it.
             if (player != null) {
-                player.displayClientMessage(Component.translatable("research.hextale.locked",
+                player.displayClientMessage(Component.translatable(topic.lockedKey(),
                         Component.translatable(topic.translationKey()).withColor(topic.color())), true);
             }
             serverLevel.playSound(null, worldPosition, ModSounds.DEVICE_REFUSE.get(), SoundSource.BLOCKS, 0.8F, 0.9F);

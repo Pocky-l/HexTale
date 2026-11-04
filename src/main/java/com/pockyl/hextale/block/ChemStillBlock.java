@@ -71,13 +71,13 @@ public class ChemStillBlock extends BaseEntityBlock {
     @Override
     protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hitResult) {
-        if (!ChemStillBlockEntity.isRaw(stack) || !(level.getBlockEntity(pos) instanceof ChemStillBlockEntity still)) {
+        if (!ChemStillBlockEntity.isRaw(stack) && !ChemStillBlockEntity.isClarifier(stack)
+                || !(level.getBlockEntity(pos) instanceof ChemStillBlockEntity still)) {
             return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (!level.isClientSide()) {
             int taken = still.feed(stack);
             if (taken <= 0) {
-                player.displayClientMessage(Component.translatable("block.hextale.chem_still.say.full"), true);
                 return net.minecraft.world.ItemInteractionResult.FAIL;
             }
             if (!player.getAbilities().instabuild) {
@@ -92,9 +92,7 @@ public class ChemStillBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof ChemStillBlockEntity still) {
             ItemStack refined = still.takeOutput();
-            if (refined.isEmpty()) {
-                player.displayClientMessage(still.status(), true);
-            } else {
+            if (!refined.isEmpty()) {
                 if (!player.getInventory().add(refined)) {
                     player.drop(refined, false);
                 }

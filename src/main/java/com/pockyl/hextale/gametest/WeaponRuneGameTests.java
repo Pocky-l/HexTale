@@ -37,7 +37,7 @@ public final class WeaponRuneGameTests {
 
     /** A survival player holding the weapon, a block south of {@code pos}, facing it. */
     static ServerPlayer fighter(GameTestHelper helper, ItemStack weapon, BlockPos pos) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         player.setGameMode(GameType.SURVIVAL);
         BlockPos abs = helper.absolutePos(pos);
         player.moveTo(abs.getX() + 0.5, abs.getY(), abs.getZ() - 1.0, 0, 0);

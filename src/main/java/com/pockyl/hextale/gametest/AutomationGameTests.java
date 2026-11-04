@@ -155,7 +155,7 @@ public final class AutomationGameTests {
         helper.assertTrue(insert(side, ItemResource.of(ModItems.CUTTING_DISC.get()), 1, true) == 1, "a disc goes in from the side");
         LapidaryBlockEntity lapidary = helper.<LapidaryBlockEntity>getBlockEntity(AT);
         helper.assertTrue(lapidary.blocked() == null && lapidary.cut() != null, "it is ready to cut");
-        lapidary.stroke(helper.makeMockServerPlayerInLevel(), 0, 10);
+        lapidary.stroke(MockPlayers.inLevel(helper), 0, 10);
         ResourceHandler<ItemResource> bottom = com.pockyl.hextale.port.ResourceHandler.ofBlock(level, pos, Direction.DOWN);
         helper.assertTrue(extract(bottom, ItemResource.of(ModItems.UNSTABLE_HEXTECH.get()), 4) == 0, "the clamp gives nothing back");
         helper.succeed();

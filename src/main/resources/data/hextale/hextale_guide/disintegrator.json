@@ -2,10 +2,7 @@
   "region": "chemtech",
   "stage": "mid",
   "icon": "hextale:disintegrator",
-  "parents": [
-    "chem_burner",
-    "lab_bench"
-  ],
+  "parents": ["chem_burner", "lab_bench"],
   "display": {
     "kind": "hex_crafting",
     "result": "hextale:disintegrator",
@@ -15,9 +12,5 @@
     }
   },
   "research": "disintegrator",
-  "station": true,
-  "pos": [
-    -880,
-    40
-  ]
+  "pos": [-836, 71]
 }

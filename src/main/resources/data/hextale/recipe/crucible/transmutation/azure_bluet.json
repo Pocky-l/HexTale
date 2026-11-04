@@ -1,0 +1,13 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:oxeye_daisy"
+  },
+  "essences": {
+    "water": 3
+  },
+  "result": {
+    "id": "minecraft:azure_bluet"
+  },
+  "research": "transmutation"
+}

@@ -110,6 +110,15 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
+        if (stack.is(net.minecraft.world.item.Items.BUCKET) || stack.is(ModItems.ESSENCE_BUCKET.get())) {
+            // A bucket takes a bucketful of one pure essence out of the jar, a Bucket of Essence pours it in.
+            if (!net.neoforged.neoforge.fluids.FluidUtil.interactWithFluidHandler(player, hand,
+                    com.pockyl.hextale.port.ResourceHandler.asFluidHandler(tank.fluidPort()))) {
+                player.displayClientMessage(Component.translatable(stack.is(net.minecraft.world.item.Items.BUCKET)
+                        ? "block.hextale.essence_tank.bucket_empty" : "block.hextale.essence_tank.bucket_full"), true);
+            }
+            return InteractionResult.SUCCESS;
+        }
         if (com.pockyl.hextale.item.HextechSkypackItem.is(stack)) {
             // A skypack drinks the air out of the jar (any jar, the creative one too).
             if (!com.pockyl.hextale.item.HextechSkypackItem.fillFrom((ServerLevel) level, tank, stack, player.position().add(0, 1.1, 0),
@@ -121,10 +130,9 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
         if (com.pockyl.hextale.item.RecallCharmItem.is(stack)) {
             // A recall charm drinks rift essence to wind itself again.
             int wound = com.pockyl.hextale.item.RecallCharmItem.wind((ServerLevel) level, tank, stack, player.position().add(0, 1.1, 0));
-            player.displayClientMessage(wound > 0 ? Component.translatable("item.hextale.recall_charm.wound",
-                    com.pockyl.hextale.item.RecallCharmItem.windings(stack), com.pockyl.hextale.item.RecallCharmItem.WINDINGS)
-                    : Component.translatable(com.pockyl.hextale.item.RecallCharmItem.windings(stack) < com.pockyl.hextale.item.RecallCharmItem.WINDINGS
-                    ? "item.hextale.recall_charm.no_rift" : "item.hextale.recall_charm.full"), true);
+            if (wound <= 0 && com.pockyl.hextale.item.RecallCharmItem.windings(stack) < com.pockyl.hextale.item.RecallCharmItem.WINDINGS) {
+                player.displayClientMessage(Component.translatable("item.hextale.recall_charm.no_rift"), true);
+            }
             return InteractionResult.SUCCESS;
         }
         if (tank.isCreative()) {
@@ -155,7 +163,6 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
                 serverLevel.sendParticles(ModParticles.wisp(color), at.x, at.y, at.z, 4, 0.08, 0.1, 0.08, 0.01);
                 serverLevel.sendParticles(ModParticles.glint(color), at.x, at.y, at.z, 3, 0.12, 0.12, 0.12, 0.01);
             }
-            player.displayClientMessage(Component.translatable("block.hextale.essence_tank.sticker", Component.translatable(essence.translationKey())), true);
             return InteractionResult.SUCCESS;
         }
         if (tank.sticker() != null && EssenceFlaskItem.isFlask(stack) && !EssenceFlaskItem.contents(stack).isEmpty()
@@ -197,10 +204,7 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
             }
             return InteractionResult.SUCCESS;
         }
-        if (!level.isClientSide()) {
-            player.displayClientMessage(Flasks.describe(tank.tank()), true);
-        }
-        return InteractionResult.SUCCESS;
+        return InteractionResult.PASS;
     }
 
     @Override

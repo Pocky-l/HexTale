@@ -1,0 +1,13 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:weeping_vines"
+  },
+  "essences": {
+    "cold": 3
+  },
+  "result": {
+    "id": "minecraft:twisting_vines"
+  },
+  "research": "advanced_transmutation"
+}

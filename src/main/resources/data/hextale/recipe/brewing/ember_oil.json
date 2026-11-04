@@ -1,0 +1,13 @@
+{
+  "type": "hextale:brewing",
+  "catalyst": {
+    "item": "hextale:ember_wheat"
+  },
+  "essences": {
+    "magma": 6,
+    "sap": 4
+  },
+  "brew": "ember_oil",
+  "heat": 3,
+  "doses": 4
+}

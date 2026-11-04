@@ -178,6 +178,9 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private void setTab(Tab tab) {
         this.tab = tab;
         menu.setSlotsVisible(tab == Tab.DESK);
+        if (tab != Tab.BOOK && book != null) {
+            book.hidden();
+        }
     }
 
     @Nullable
@@ -1046,6 +1049,12 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             return true;
         }
         return super.keyPressed(event.key(), event.scancode(), event.modifiers());
+    }
+
+    @Override
+    public boolean charTyped(char portChar, int portMods) {
+        com.pockyl.hextale.port.client.CharacterEvent event = new com.pockyl.hextale.port.client.CharacterEvent(portChar, portMods);
+        return tab == Tab.BOOK && book.charTyped(event) || super.charTyped((char) event.codepoint(), event.modifiers());
     }
 
     @Override

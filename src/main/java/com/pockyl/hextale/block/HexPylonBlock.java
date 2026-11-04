@@ -80,7 +80,6 @@ public class HexPylonBlock extends BaseEntityBlock implements com.pockyl.hextale
             if (!old.isEmpty()) {
                 com.pockyl.hextale.item.PylonFilterItem.give(player, old);
             }
-            player.displayClientMessage(Component.translatable("item.hextale.pylon_filter.set"), true);
         } else {
             com.pockyl.hextale.rune.Essence essence = com.pockyl.hextale.item.EssenceStickerItem.essence(stack);
             if (essence == null) {
@@ -95,7 +94,6 @@ public class HexPylonBlock extends BaseEntityBlock implements com.pockyl.hextale
                 com.pockyl.hextale.item.PylonFilterItem.give(player,
                         com.pockyl.hextale.item.EssenceStickerItem.of(com.pockyl.hextale.registry.ModItems.ESSENCE_STICKER.get(), old));
             }
-            player.displayClientMessage(Component.translatable("item.hextale.essence_sticker.set", Component.translatable(essence.translationKey())), true);
         }
         pylon.getLevel().playSound(null, pylon.getBlockPos(), net.minecraft.sounds.SoundEvents.ITEM_FRAME_ADD_ITEM,
                 net.minecraft.sounds.SoundSource.BLOCKS, 0.7F, 1.2F);
@@ -115,10 +113,7 @@ public class HexPylonBlock extends BaseEntityBlock implements com.pockyl.hextale
         }
         if (player.isSecondaryUseActive()) {
             if (pylon.clearLinks()) {
-                player.displayClientMessage(Component.translatable("block.hextale.hex_pylon.link.cleared"), true);
                 level.playSound(null, pos, com.pockyl.hextale.registry.ModSounds.PYLON_UNLINK.get(), SoundSource.BLOCKS, 0.6F, 1.0F);
-            } else {
-                player.displayClientMessage(status(pylon), true);
             }
             return InteractionResult.SUCCESS;
         }

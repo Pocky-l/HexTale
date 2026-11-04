@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#minecraft:supports_melon_stem_fruit",
+      "required": false
+    },
+    "hextale:steeped_soil"
+  ]
+}

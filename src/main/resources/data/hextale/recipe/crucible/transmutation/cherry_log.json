@@ -1,0 +1,13 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:mangrove_log"
+  },
+  "essences": {
+    "life": 2
+  },
+  "result": {
+    "id": "minecraft:cherry_log"
+  },
+  "research": "transmutation"
+}

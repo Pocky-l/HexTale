@@ -198,4 +198,27 @@ public final class EssenceFluidGameTests {
         helper.assertTrue(extract(bottom, fire, 400, true) == 400 && jar.tank().amount() == 600, "the controller gives it back");
         helper.succeed();
     }
+    /** A bucket of essence: an empty bucket fills with 1000 mB of one essence and becomes its bucket, which pours it back. */
+    @HexTest
+    public static void bucketsCarryOneEssence(GameTestHelper helper) {
+        // 1.21.1: item fluid handlers (IFluidHandlerItem) hold their container themselves.
+        net.neoforged.neoforge.fluids.FluidStack fire = EssenceFluid.resource(Essence.FIRE).toStack(1000);
+        var bucket = new ItemStack(net.minecraft.world.item.Items.BUCKET).getCapability(Capabilities.FluidHandler.ITEM);
+        helper.assertTrue(bucket != null, "an empty bucket takes fluids");
+        helper.assertTrue(bucket.fill(fire.copyWithAmount(500), net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.SIMULATE) == 0,
+                "half a bucket is no bucket");
+        helper.assertTrue(bucket.fill(fire.copy(), net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.EXECUTE) == 1000,
+                "a bucketful of fire goes in");
+        ItemStack filled = bucket.getContainer();
+        helper.assertTrue(filled.is(ModItems.ESSENCE_BUCKET.get()) && com.pockyl.hextale.item.EssenceBucketItem.essence(filled) == Essence.FIRE,
+                "it became a Bucket of Essence: Fire, got " + filled);
+        var pour = filled.getCapability(Capabilities.FluidHandler.ITEM);
+        helper.assertTrue(pour != null && net.neoforged.neoforge.fluids.FluidStack.isSameFluidSameComponents(pour.getFluidInTank(0), fire)
+                && pour.getFluidInTank(0).getAmount() == 1000, "it holds 1000 mB of fire");
+        helper.assertTrue(pour.fill(EssenceFluid.resource(Essence.WATER).toStack(1000), net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.SIMULATE) == 0,
+                "a full bucket takes nothing more");
+        helper.assertTrue(pour.drain(fire.copy(), net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.EXECUTE).getAmount() == 1000
+                && pour.getContainer().is(net.minecraft.world.item.Items.BUCKET), "pouring it out leaves an empty bucket");
+        helper.succeed();
+    }
 }

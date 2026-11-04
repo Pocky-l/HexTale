@@ -347,14 +347,19 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
             active++;
         }
         if (active == 0) {
-            cool(full ? "output_full" : "");
+            // Fuel or fire waiting with nothing to melt: say so, the kiln heats only while it melts.
+            boolean waiting = fire > 0 || !items.get(FUEL).isEmpty();
+            cool(full ? "output_full" : waiting ? "nothing_to_melt" : "");
             return false;
         }
         if (fire <= 0 && !kindle(level)) {
             cool("no_fire");
             return false;
         }
-        blocked = "";
+        if (!blocked.isEmpty()) {
+            blocked = "";
+            sync();
+        }
         // A big fire eats more the more it melts at once, still far less per piece than a furnace.
         int use = 1 + active / 2;
         int flame = strength(FoundryRune.ETERNAL_FLAME);
@@ -534,6 +539,10 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
     private void cool(String reason) {
         boolean changed = !blocked.equals(reason);
         blocked = reason;
+        if (changed) {
+            // The screen and Jade read the reason off the client's copy.
+            sync();
+        }
         if (heat > 0) {
             heat = Math.max(0, heat - COOLING);
             changed = true;

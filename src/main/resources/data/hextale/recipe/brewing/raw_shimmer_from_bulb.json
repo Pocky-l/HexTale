@@ -1,0 +1,13 @@
+{
+  "type": "hextale:brewing",
+  "catalyst": {
+    "item": "hextale:shimmer_bulb"
+  },
+  "essences": {
+    "sap": 4,
+    "light": 4
+  },
+  "brew": "raw_shimmer",
+  "heat": 3,
+  "doses": 6
+}

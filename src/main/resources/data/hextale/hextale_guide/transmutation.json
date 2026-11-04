@@ -1,0 +1,219 @@
+{
+  "region": "chemtech",
+  "sign": {
+    "id": "hextale:guide_mark",
+    "components": {
+      "minecraft:custom_model_data": -1324917423
+    }
+  },
+  "icon": [
+    "minecraft:sand",
+    "minecraft:sandstone",
+    "minecraft:red_mushroom",
+    "minecraft:red_mushroom_block",
+    "minecraft:dandelion",
+    "minecraft:blue_orchid",
+    "minecraft:azure_bluet",
+    "minecraft:red_tulip",
+    "minecraft:white_tulip",
+    "minecraft:allium",
+    "minecraft:sunflower",
+    "minecraft:carrot",
+    "minecraft:beetroot",
+    "minecraft:dirt",
+    "minecraft:cod",
+    "minecraft:beef",
+    "minecraft:oak_log",
+    "minecraft:spruce_log",
+    "minecraft:jungle_log",
+    "minecraft:cherry_log",
+    "minecraft:vine",
+    "minecraft:kelp"
+  ],
+  "parents": [
+    "lab_bench"
+  ],
+  "display": [
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/red_sand",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/sand"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/red_sandstone",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/sandstone"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/brown_mushroom",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/red_mushroom"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/brown_mushroom_block",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/red_mushroom_block"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/poppy",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/dandelion"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/cornflower",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/blue_orchid"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/oxeye_daisy",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/azure_bluet"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/orange_tulip",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/red_tulip"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/pink_tulip",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/white_tulip"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/lily_of_the_valley",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/allium"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/lilac",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/sunflower"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/potato",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/carrot"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/sweet_berries",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/beetroot"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/podzol",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/dirt"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/salmon",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/cod"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/porkchop",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/beef"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/birch_log",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/oak_log"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/dark_oak_log",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/spruce_log"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/acacia_log",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/jungle_log"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/mangrove_log",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/cherry_log"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/glow_lichen",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/vine"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/seagrass",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/kelp"
+      }
+    }
+  ],
+  "research": "transmutation",
+  "pos": [
+    -680,
+    -55
+  ]
+}

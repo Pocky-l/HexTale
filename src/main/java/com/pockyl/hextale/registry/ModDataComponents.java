@@ -115,6 +115,11 @@ public final class ModDataComponents {
             COMPONENTS.registerComponentType("brew", builder -> builder
                     .persistent(com.pockyl.hextale.chem.Brew.CODEC).networkSynchronized(com.pockyl.hextale.chem.Brew.STREAM_CODEC));
 
+    /** The fuel in a Chem Tank (item and placed block). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.chem.TankFuel>> CHEM_TANK =
+            COMPONENTS.registerComponentType("chem_tank", builder -> builder
+                    .persistent(com.pockyl.hextale.chem.TankFuel.CODEC).networkSynchronized(com.pockyl.hextale.chem.TankFuel.STREAM_CODEC));
+
     /** The runes burned into a Chem Burner. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> BURNER_RUNES =
             COMPONENTS.registerComponentType("burner_runes", builder -> builder
@@ -136,6 +141,15 @@ public final class ModDataComponents {
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> BRAZIER_RUNES =
             COMPONENTS.registerComponentType("brazier_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> PLANTER_RUNES =
+            COMPONENTS.registerComponentType("planter_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> SPRINKLER_RUNES =
+            COMPONENTS.registerComponentType("sprinkler_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> TAP_RUNES =
+            COMPONENTS.registerComponentType("tap_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> SKYPACK_RUNES =
             COMPONENTS.registerComponentType("skypack_runes", builder -> builder

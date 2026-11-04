@@ -1,0 +1,13 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:porkchop"
+  },
+  "essences": {
+    "beast": 2
+  },
+  "result": {
+    "id": "minecraft:beef"
+  },
+  "research": "transmutation"
+}

@@ -1,0 +1,29 @@
+{
+  "region": "chemtech",
+  "stage": "late",
+  "icon": "hextale:chem_vat",
+  "parents": [
+    "chem_still",
+    "acid",
+    "rusted_plating",
+    "lab_bench"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "chem_vat_formed"
+  },
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:chem_vat",
+    "then": {
+      "kind": "multiblock",
+      "result": "chem_vat"
+    }
+  },
+  "research": "chem_vat",
+  "station": true,
+  "pos": [
+    -1080,
+    170
+  ]
+}

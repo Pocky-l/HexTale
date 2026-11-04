@@ -7,8 +7,12 @@ import com.pockyl.hextale.port.client.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import com.pockyl.hextale.port.client.BlockEntityRenderState;
 import com.pockyl.hextale.port.client.ModelFeatureRenderer;
+import com.pockyl.hextale.port.client.ItemModelResolver;
+import com.pockyl.hextale.port.client.ItemStackRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import com.pockyl.hextale.port.client.CameraRenderState;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -21,7 +25,8 @@ import org.jspecify.annotations.Nullable;
 /**
  * The liquids of a Chem Still, seen through its glass: violet raw shimmer in the boiler's sight glass, falling as the
  * boiler empties, and magenta refined shimmer rising in the receiver as vials collect there. Coordinates are those of
- * the north-facing model, turned with the block.
+ * the north-facing model, turned with the block. Crystal Pods waiting to clear the shimmer lie on the base behind
+ * the receiver, up to three of them.
  */
 public class ChemStillRenderer implements BlockEntityRenderer<ChemStillBlockEntity, ChemStillRenderer.State> {
     // Receiver flask (inside the glass), front right of the north-facing model.
@@ -39,6 +44,9 @@ public class ChemStillRenderer implements BlockEntityRenderer<ChemStillBlockEnti
     private static final float SIGHT_TOP = 7.8F / 16;
     private static final int RAW = 0xE0000000 | Brew.RAW_SHIMMER.color();
     private static final int REFINED = 0xE0000000 | Brew.REFINED_SHIMMER.color();
+    // Where the pods lie (x, z in model pixels) and how each is turned.
+    private static final float[][] PODS = {{3.6F, 9.6F, 20}, {4.4F, 12.4F, -35}, {2.4F, 13.0F, 75}};
+    private static final float BASE_TOP = 1.0F / 16;
 
     public static final class State extends BlockEntityRenderState {
         float raw;
@@ -47,9 +55,14 @@ public class ChemStillRenderer implements BlockEntityRenderer<ChemStillBlockEnti
         long seed;
         boolean working;
         Direction facing = Direction.NORTH;
+        int pods;
+        final ItemStackRenderState pod = new ItemStackRenderState();
     }
 
+    private final ItemModelResolver itemModelResolver;
+
     public ChemStillRenderer(BlockEntityRendererProvider.Context context) {
+        itemModelResolver = ItemModelResolver.INSTANCE;
     }
 
     @Override
@@ -68,6 +81,8 @@ public class ChemStillRenderer implements BlockEntityRenderer<ChemStillBlockEnti
         state.refined = still.output().getCount() / 16.0F;
         state.working = still.getBlockState().getValue(ChemStillBlock.WORKING);
         state.facing = still.getBlockState().getValue(ChemStillBlock.FACING);
+        state.pods = Math.min(PODS.length, still.clarifier().getCount());
+        itemModelResolver.updateForTopItem(state.pod, still.clarifier(), ItemDisplayContext.FIXED, level, null, (int) state.seed);
     }
 
     @Override
@@ -86,6 +101,15 @@ public class ChemStillRenderer implements BlockEntityRenderer<ChemStillBlockEnti
             float top = SIGHT_BOTTOM + (SIGHT_TOP - SIGHT_BOTTOM) * Math.min(1, state.raw);
             LiquidBox.submit(poseStack, collector, SIGHT_MIN_X, SIGHT_Z, SIGHT_MAX_X, SIGHT_Z + 0.5F / 16, SIGHT_BOTTOM, top, RAW,
                     state.time, state.seed + 1, 0);
+        }
+        for (int i = 0; i < state.pods && !state.pod.isEmpty(); i++) {
+            poseStack.pushPose();
+            poseStack.translate(PODS[i][0] / 16, BASE_TOP + 0.3F / 16, PODS[i][1] / 16);
+            poseStack.mulPose(Axis.YP.rotationDegrees(PODS[i][2]));
+            poseStack.mulPose(Axis.XP.rotationDegrees(90));
+            poseStack.scale(0.25F, 0.25F, 0.25F);
+            state.pod.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
+            poseStack.popPose();
         }
         poseStack.popPose();
     }

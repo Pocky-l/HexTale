@@ -61,7 +61,6 @@ public class TuningForkItem extends Item {
         if (player.isSecondaryUseActive()) {
             if (stack.has(ModDataComponents.TUNED_BLOCK.get())) {
                 stack.remove(ModDataComponents.TUNED_BLOCK.get());
-                player.displayClientMessage(Component.translatable("item.hextale.tuning_fork.untuned"), true);
                 level.playSound(null, player.blockPosition(), ModSounds.LAMP_FLICKER.get(), SoundSource.PLAYERS, 0.6F, 0.7F);
             }
             return InteractionResult.SUCCESS;
@@ -86,7 +85,6 @@ public class TuningForkItem extends Item {
         BlockPos pos = context.getClickedPos();
         Block block = level.getBlockState(pos).getBlock();
         context.getItemInHand().set(ModDataComponents.TUNED_BLOCK.get(), block);
-        player.displayClientMessage(Component.translatable("item.hextale.tuning_fork.tuned", block.getName()), true);
         if (level instanceof ServerLevel server) {
             Vec3 at = context.getClickLocation();
             server.sendParticles(ModParticles.ring(ModParticles.HEXTECH), at.x, at.y, at.z, 1, 0, 0, 0, 0);

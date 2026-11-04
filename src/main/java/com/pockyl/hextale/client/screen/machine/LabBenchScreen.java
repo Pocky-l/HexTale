@@ -556,7 +556,7 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
 
     /**
      * A sprite button: frame by state (pressed for a moment after a click, glowing gold when {@code ready}), the icon
-     * centred (left of centre when there is a label), sunk a pixel while pressed.
+     * centred, sunk a pixel while pressed.
      */
     private void button(GuiGraphicsExtractor graphics, int id, int bx, int by, int w, int h, boolean active, boolean ready, ResourceLocation icon,
                         int iconSize, int mouseX, int mouseY) {
@@ -577,7 +577,7 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
             PixelArt.flush(graphics);
         }
         int sink = pressed ? 1 : 0;
-        int ix = id == 2 ? x + 4 : x + (w - iconSize) / 2;
+        int ix = x + (w - iconSize) / 2;
         int iy = y + (h - iconSize) / 2 + sink;
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, icon, ix + sink, iy, iconSize, iconSize, active ? -1 : 0x80FFFFFF);
     }
@@ -1145,9 +1145,6 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
         if (bench == null) {
             return;
         }
-        boolean ready = sealable(bench);
-        HexPlate.line(graphics, font, Component.translatable(KEY + "seal"), SEAL_X + 19, SEAL_Y + 5, SEAL_W - 22,
-                ready ? 0xFFFFF4C0 : 0xFF8A7A66, ready);
         Flask flask = bench.flask();
         ExperimentPlan plan = bench.plan();
         int tx = JX + 3;

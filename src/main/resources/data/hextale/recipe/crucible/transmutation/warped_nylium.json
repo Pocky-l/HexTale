@@ -1,0 +1,13 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:crimson_nylium"
+  },
+  "essences": {
+    "cold": 3
+  },
+  "result": {
+    "id": "minecraft:warped_nylium"
+  },
+  "research": "advanced_transmutation"
+}

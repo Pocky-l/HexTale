@@ -61,14 +61,6 @@ public class MiasmaVentBlock extends BaseEntityBlock {
         return ModelShapes.of(state);
     }
 
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        if (!level.isClientSide()) {
-            player.displayClientMessage(status(state), true);
-        }
-        return InteractionResult.SUCCESS;
-    }
-
     /** What the vent does now: breathing over its reach, or held shut by a redstone signal. */
     public static Component status(BlockState state) {
         int side = MiasmaVentBlockEntity.RADIUS * 2 + 1;

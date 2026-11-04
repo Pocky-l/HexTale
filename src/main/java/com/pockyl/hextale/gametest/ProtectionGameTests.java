@@ -90,7 +90,7 @@ public final class ProtectionGameTests {
         BlockPos free = centre.west();
         level.setBlockAndUpdate(claimed, Blocks.STONE.defaultBlockState());
         level.setBlockAndUpdate(free, Blocks.STONE.defaultBlockState());
-        ServerPlayer thrower = helper.makeMockServerPlayerInLevel();
+        ServerPlayer thrower = MockPlayers.inLevel(helper);
         DustCharge charge = new DustCharge(ModEntities.DUST_CHARGE.get(), level);
         List<BlockPos> cracked = new ArrayList<>();
         protecting(List.of(claimed), () -> cracked.addAll(DustCharge.burst(level, Vec3.atCenterOf(centre), charge, thrower)));
@@ -112,7 +112,7 @@ public final class ProtectionGameTests {
         }
         BlockPos claimedA = new BlockPos(0, 1, 0);
         BlockPos claimedB = new BlockPos(2, 1, 1);
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         protecting(List.of(helper.absolutePos(claimedA), helper.absolutePos(claimedB)),
                 () -> mine(helper, player, pickaxe(PickaxeRune.DRILL), new BlockPos(1, 1, 1)));
         helper.assertBlockPresent(Blocks.STONE, claimedA);
@@ -125,22 +125,35 @@ public final class ProtectionGameTests {
         helper.succeed();
     }
 
+    /** The blight takes claimed land by default (GitHub issue #9); with blightRespectsClaims on, a claim keeps it out. */
     @HexTest
-    public static void aClaimKeepsTheBlightOut(GameTestHelper helper) {
-        BlockPos grass = new BlockPos(0, 1, 0);
-        BlockPos stone = new BlockPos(2, 1, 0);
-        helper.setBlock(grass, Blocks.GRASS_BLOCK);
-        helper.setBlock(grass.above(), Blocks.SHORT_GRASS);
+    public static void aClaimKeepsTheBlightOutOnlyWhenAsked(GameTestHelper helper) {
+        BlockPos claimed = new BlockPos(0, 1, 0);
+        BlockPos guarded = new BlockPos(2, 1, 0);
+        BlockPos stone = new BlockPos(4, 1, 0);
+        helper.setBlock(claimed, Blocks.GRASS_BLOCK);
+        helper.setBlock(guarded, Blocks.GRASS_BLOCK);
+        helper.setBlock(guarded.above(), Blocks.SHORT_GRASS);
         helper.setBlock(stone, Blocks.STONE);
         ServerLevel level = helper.getLevel();
-        BlockPos at = helper.absolutePos(grass);
+        BlockPos at = helper.absolutePos(claimed);
+        BlockPos kept = helper.absolutePos(guarded);
         BlockPos rock = helper.absolutePos(stone);
-        protecting(List.of(at), () -> {
-            Thinning.blightColumn(level, at.getX(), at.getZ(), level.getRandom());
-            Thinning.blightColumn(level, rock.getX(), rock.getZ(), level.getRandom());
-        });
-        helper.assertBlockPresent(Blocks.GRASS_BLOCK, grass);
-        helper.assertBlockPresent(Blocks.SHORT_GRASS, grass.above());
+        refusedFor = null;
+        protecting(List.of(at), () -> Thinning.blightColumn(level, at.getX(), at.getZ(), level.getRandom()));
+        helper.assertBlockPresent(ModBlocks.VOID_SOIL.get(), claimed);
+        helper.assertTrue(refusedFor == null, "nobody was asked by default");
+        Config.BLIGHT_RESPECTS_CLAIMS.set(true);
+        try {
+            protecting(List.of(kept), () -> {
+                Thinning.blightColumn(level, kept.getX(), kept.getZ(), level.getRandom());
+                Thinning.blightColumn(level, rock.getX(), rock.getZ(), level.getRandom());
+            });
+        } finally {
+            Config.BLIGHT_RESPECTS_CLAIMS.set(false);
+        }
+        helper.assertBlockPresent(Blocks.GRASS_BLOCK, guarded);
+        helper.assertBlockPresent(Blocks.SHORT_GRASS, guarded.above());
         helper.assertBlockPresent(ModBlocks.VOID_ROCK.get(), stone);
         helper.assertTrue(WorldEdits.PROFILE.getId().equals(refusedFor), "the world's own [HexTale] was asked for, got " + refusedFor);
         helper.succeed();
@@ -175,7 +188,7 @@ public final class ProtectionGameTests {
         helper.assertTrue(device != null, "the reaper has a block entity");
         helper.assertTrue(WorldEdits.PROFILE.getId().equals(WorldEdits.owner(level, device).getUUID()),
                 "nobody placed it yet: the world's own");
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         BlockSnapshot snapshot = BlockSnapshot.create(level.dimension(), level, at);
         NeoForge.EVENT_BUS.post(new BlockEvent.EntityPlaceEvent(snapshot, level.getBlockState(at.below()), player));
         Player owner = WorldEdits.owner(level, device);

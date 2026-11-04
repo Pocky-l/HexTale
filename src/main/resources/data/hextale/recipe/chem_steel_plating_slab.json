@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "hextale:chem_steel_plating"
+    }
+  },
+  "result": {
+    "id": "hextale:chem_steel_plating_slab",
+    "count": 6
+  }
+}

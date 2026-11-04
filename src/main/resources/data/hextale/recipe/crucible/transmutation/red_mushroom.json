@@ -1,0 +1,13 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:brown_mushroom"
+  },
+  "essences": {
+    "fire": 2
+  },
+  "result": {
+    "id": "minecraft:red_mushroom"
+  },
+  "research": "transmutation"
+}

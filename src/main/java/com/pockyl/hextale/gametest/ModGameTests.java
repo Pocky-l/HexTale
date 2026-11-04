@@ -41,6 +41,24 @@ public final class ModGameTests {
         helper.succeed();
     }
 
+    /** Every creature of the Void has a spawn egg, and the egg names that creature (spawners and pick-block use it). */
+    @HexTest
+    public static void voidCreaturesHaveSpawnEggs(GameTestHelper helper) {
+        var eggs = java.util.Map.of(
+                ModItems.VOID_MITE_SPAWN_EGG, com.pockyl.hextale.registry.ModEntities.VOID_MITE,
+                ModItems.VOIDLING_SPAWN_EGG, com.pockyl.hextale.registry.ModEntities.VOIDLING,
+                ModItems.RIB_CRAWLER_SPAWN_EGG, com.pockyl.hextale.registry.ModEntities.RIB_CRAWLER,
+                ModItems.PIT_MAW_SPAWN_EGG, com.pockyl.hextale.registry.ModEntities.PIT_MAW,
+                ModItems.SEER_SPAWN_EGG, com.pockyl.hextale.registry.ModEntities.SEER);
+        eggs.forEach((egg, type) -> {
+            helper.assertTrue(((net.minecraft.world.item.SpawnEggItem) egg.get()).getType(new ItemStack(egg.get())) == type.get(),
+                    egg.getId() + " does not spawn " + type.getId());
+            helper.assertTrue(net.minecraft.world.item.SpawnEggItem.byId(type.get()) == egg.get(),
+                    type.getId() + " has no spawn egg");
+        });
+        helper.succeed();
+    }
+
     /**
      * Another mod's two-tank water container: draining it tank by tank in one transaction counts every drop once (each
      * tank's call used to simulate against the untouched container and count its water again).

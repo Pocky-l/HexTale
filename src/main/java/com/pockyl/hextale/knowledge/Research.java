@@ -163,13 +163,11 @@ public final class Research {
         ItemEssenceTable.byId().keySet().forEach(knowledge::study);
         List<Quest> steps = new ArrayList<>();
         for (Quest quest : Guide.server().all()) {
-            if (quest.kind() == Quest.Kind.ITEM) {
-                if (!knowledge.questDone(quest)) {
-                    steps.add(quest);
-                }
-                knowledge.completeQuest(quest);
-                knowledge.notice(quest.id());
+            if (!knowledge.questDone(quest)) {
+                steps.add(quest);
             }
+            knowledge.completeQuest(quest);
+            knowledge.notice(quest.id());
         }
         sync(player);
         topics.forEach(topic -> ModTriggers.RESEARCH_COMPLETED.get().trigger(player, topic.id()));

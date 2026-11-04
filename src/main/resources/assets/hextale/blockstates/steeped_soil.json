@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "dose=none": {
+      "model": "hextale:block/steeped_soil"
+    },
+    "dose=growth": {
+      "model": "hextale:block/steeped_soil_growth"
+    },
+    "dose=sap": {
+      "model": "hextale:block/steeped_soil_sap"
+    },
+    "dose=shimmer": {
+      "model": "hextale:block/steeped_soil_shimmer"
+    }
+  }
+}

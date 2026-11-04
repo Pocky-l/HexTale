@@ -54,6 +54,8 @@ public final class TableModels {
     public static final ModelResourceLocation LAPIDARY_GEAR = model("block/hex_lapidary_gear");
     public static final ModelResourceLocation WHIRL_REAPER_VANES = model("block/whirl_reaper_vanes");
     public static final ModelResourceLocation HEX_SAW_DISC = model("block/hex_sawmill_disc");
+    /** The Essence Sprinkler's head, turned by its renderer about the riser's axis after each spray. */
+    public static final ModelResourceLocation SPRINKLER_HEAD = model("block/essence_sprinkler_head");
     /** The formed Hex Foundry round its heart, facing north, and its glowing parts (drawn at full light while hot). */
     public static final ModelResourceLocation HEX_FOUNDRY = model("block/hex_foundry/formed");
     public static final ModelResourceLocation HEX_FOUNDRY_GLOW = model("block/hex_foundry/glow");
@@ -77,6 +79,8 @@ public final class TableModels {
     /** The Chem Boiler's gauge needle (built pointing up from {@code ChemBoilerRenderer.NEEDLE_PIVOT}) and safety valve. */
     public static final ModelResourceLocation CHEM_BOILER_NEEDLE = model("block/chem_boiler_needle");
     public static final ModelResourceLocation CHEM_BOILER_VALVE = model("block/chem_boiler_valve");
+    /** The Chem Tank as worn: shoulder and chest straps, drawn on the player's back by {@link ChemTankLayer}. */
+    public static final ModelResourceLocation CHEM_TANK_WORN = model("item/chem_tank_worn");
 
     private TableModels() {
     }
@@ -108,5 +112,13 @@ public final class TableModels {
         Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(poseStack.last(),
                 collector.buffer(Sheets.translucentCullBlockSheet()), null, model, 1, 1, 1, light, OverlayTexture.NO_OVERLAY,
                 ModelData.EMPTY, Sheets.translucentCullBlockSheet());
+    }
+
+    /** Draws a block state's own model (any block of the world) at the pose, untinted. */
+    public static void submitState(PoseStack poseStack, SubmitNodeCollector collector, net.minecraft.world.level.block.state.BlockState state,
+                                   int light) {
+        // 1.21.1: the block renderer draws the state's model in its own render types.
+        Minecraft.getInstance().getBlockRenderer().renderSingleBlock(state, poseStack, collector.buffers(), light, OverlayTexture.NO_OVERLAY,
+                ModelData.EMPTY, null);
     }
 }

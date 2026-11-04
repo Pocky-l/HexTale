@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "forge",
-  "stage": "late",
-  "icon": "minecraft:stonecutter",
-  "parents": ["radiant_alloy"],
-  "pos": [1345, 133]
-}

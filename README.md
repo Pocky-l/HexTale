@@ -59,7 +59,8 @@ first hextech crystals are under the glassy fulgurite marks on the surface, wher
 devices are researched at the Research Table before they can be made. In creative mode everything is in the Pocky Mods tab.
 
 **For modpack makers:** every recipe is an ordinary data-driven recipe type (`hextale:hex_crafting`, `hextale:infusion`,
-...), so data packs and [KubeJS](https://www.curseforge.com/minecraft/mc-mods/kubejs) can change them; materials go by
+...), so data packs and [KubeJS](https://www.curseforge.com/minecraft/mc-mods/kubejs) can change them; the essences of
+any item (yours or HexTale's) are set in the data map `hextale:essences`, and whatever is crafted from it follows; materials go by
 `c:` tags, machines and the Void respect claims, quests get advancement triggers. Working with essence slowly sickens the
 land around a base (the Thinning); `thinning = false` in `hextale-synced.toml` turns it off. Everything is in
 [the modpack guide](docs/modpack.md). Free to use in any modpack.

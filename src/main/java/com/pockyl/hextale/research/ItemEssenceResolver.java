@@ -40,7 +40,8 @@ import java.util.Set;
  *     among the items it makes and softened (a block of nine ingots is stronger than one, not nine times); cooking adds
  *     a little fire; the words of the result's own name add what it IS (a sword is also a weapon).</li>
  * </ol>
- * Whatever is still left (circular recipes) falls back to its name, and at last to its kind. An item keeps its three
+ * Recipe circles (ingot, block, nugget) are broken by the names of their members and resolved again; whatever is
+ * still left falls back to its kind. An item keeps its three
  * strongest essences, each 1-32: few enough to tell apart at a glance.
  */
 public final class ItemEssenceResolver {
@@ -104,6 +105,35 @@ public final class ItemEssenceResolver {
         }
 
         // Made things: from their ingredients, until nothing changes.
+        fromRecipes(makers, out);
+
+        // Recipe circles (ingot <-> block <-> nugget) stay unresolved: the members with a known word take it, and
+        // the rest of the circle is made of them again (nine named ingots make a block).
+        boolean named = false;
+        for (Item item : makers.keySet()) {
+            if (!out.containsKey(item)) {
+                ItemEssences byWords = byName(item);
+                if (byWords != null) {
+                    out.put(item, byWords);
+                    named = true;
+                }
+            }
+        }
+        if (named) {
+            fromRecipes(makers, out);
+        }
+
+        // Whatever is left: its kind.
+        for (Item item : BuiltInRegistries.ITEM) {
+            if (item != Items.AIR && !out.containsKey(item)) {
+                out.put(item, byKind(item));
+            }
+        }
+        Hextale.LOGGER.debug("Resolved the elements of {} items in {} ms", out.size(), (System.nanoTime() - start) / 1_000_000);
+        return out;
+    }
+
+    private static void fromRecipes(Map<Item, List<Made>> makers, Map<Item, ItemEssences> out) {
         for (int pass = 0; pass < PASSES; pass++) {
             Map<Item, ItemEssences> found = new HashMap<>();
             for (Map.Entry<Item, List<Made>> entry : makers.entrySet()) {
@@ -126,17 +156,6 @@ public final class ItemEssenceResolver {
             }
             out.putAll(found);
         }
-
-        // Whatever is left: its name, then its kind.
-        for (Item item : BuiltInRegistries.ITEM) {
-            if (item == Items.AIR || out.containsKey(item)) {
-                continue;
-            }
-            ItemEssences named = byName(item);
-            out.put(item, named != null ? named : byKind(item));
-        }
-        Hextale.LOGGER.debug("Resolved the elements of {} items in {} ms", out.size(), (System.nanoTime() - start) / 1_000_000);
-        return out;
     }
 
     private record Made(List<Ingredient> ingredients, int count, boolean cooked) {
@@ -217,6 +236,9 @@ public final class ItemEssenceResolver {
         ItemStack stack = new ItemStack(item);
         if (stack.has(DataComponents.FOOD)) {
             return ItemEssences.of(rarityTier(item), Essence.LIFE, 2, Essence.PLANT, 1);
+        }
+        if (item instanceof BlockItem block && block.getBlock() instanceof net.minecraft.world.level.block.BushBlock) {
+            return ItemEssences.of(rarityTier(item), Essence.PLANT, 2);
         }
         if (item instanceof BlockItem) {
             return ItemEssences.of(rarityTier(item), Essence.EARTH, 2);

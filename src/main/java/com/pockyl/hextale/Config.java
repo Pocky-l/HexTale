@@ -42,6 +42,13 @@ public final class Config {
                     + "Off: the Thinning still spreads, hazes and opens breaches, but the ground stays as it is.")
             .translation("hextale.configuration.blightChangesBlocks")
             .define("blightChangesBlocks", true);
+    /** Whether claim mods may keep the blight off claimed land (GitHub issue #9: claimed chunks never got blighted). */
+    public static final ModConfigSpec.BooleanValue BLIGHT_RESPECTS_CLAIMS = BUILDER
+            .comment("Whether claim mods (FTB Chunks, Open Parties and Claims, ...) keep the blight off claimed land. "
+                    + "Off: the blight is a force of nature like fire and takes claimed land too. "
+                    + "On: it asks as the fake player [HexTale], which a claim mod may allow or deny.")
+            .translation("hextale.configuration.blightRespectsClaims")
+            .define("blightRespectsClaims", false);
     public static final ModConfigSpec.BooleanValue VOID_MITES_SPAWN = BUILDER
             .comment("Whether Void Mites crawl out of blighted ground near players.")
             .translation("hextale.configuration.voidMitesSpawn")

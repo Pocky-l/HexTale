@@ -69,6 +69,12 @@ public class StarBookScreen extends Screen {
     }
 
     @Override
+    public boolean charTyped(char portChar, int portMods) {
+        com.pockyl.hextale.port.client.CharacterEvent event = new com.pockyl.hextale.port.client.CharacterEvent(portChar, portMods);
+        return book.charTyped(event) || super.charTyped((char) event.codepoint(), event.modifiers());
+    }
+
+    @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         return book.mouseScrolled(mouseX, mouseY, scrollY) || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
