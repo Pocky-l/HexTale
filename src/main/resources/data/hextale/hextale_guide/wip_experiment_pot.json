@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "chemtech",
-  "stage": "mid",
-  "icon": "minecraft:flower_pot",
-  "parents": ["lab_bench", "concentrate"],
-  "pos": [-790, 40]
-}

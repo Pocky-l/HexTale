@@ -124,7 +124,7 @@ public final class GadgetGameTests {
 
     @HexTest
     public static void theRecallCharmRemembersWhereIStood(GameTestHelper helper) {
-        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        net.minecraft.server.level.ServerPlayer player = MockPlayers.inLevel(helper);
         Vec3 first = player.position();
         com.pockyl.hextale.item.RecallCharmItem.mark(player);
         player.teleportTo(first.x + 5, first.y, first.z);
@@ -184,7 +184,7 @@ public final class GadgetGameTests {
     /** Fireproofing: the way back puts the fire out and keeps it off. */
     @HexTest
     public static void aFireproofRecallPutsTheFireOut(GameTestHelper helper) {
-        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        net.minecraft.server.level.ServerPlayer player = MockPlayers.inLevel(helper);
         player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
         net.minecraft.world.item.ItemStack charm = new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.RECALL_CHARM.get());
         com.pockyl.hextale.runework.RuneHolder.RECALL.set(charm,
@@ -202,7 +202,7 @@ public final class GadgetGameTests {
     /** Reading the notes of a device that takes runes gives a one-star scroll of one of its runes the reader lacks. */
     @HexTest
     public static void researchNotesHoldARune(GameTestHelper helper) {
-        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        net.minecraft.server.level.ServerPlayer player = MockPlayers.inLevel(helper);
         player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
         net.minecraft.world.item.ItemStack notes = com.pockyl.hextale.item.ResearchNotesItem.of(com.pockyl.hextale.research.ResearchTopics.LEVITATION_PLATE);
         player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, notes);
@@ -231,7 +231,7 @@ public final class GadgetGameTests {
         net.minecraft.world.item.ItemStack charm = new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.RECALL_CHARM.get());
         int full = com.pockyl.hextale.item.RecallCharmItem.WINDINGS;
         helper.assertTrue(com.pockyl.hextale.item.RecallCharmItem.windings(charm) == full, "a new charm comes fully wound");
-        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        net.minecraft.server.level.ServerPlayer player = MockPlayers.inLevel(helper);
         player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
         player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, charm);
         com.pockyl.hextale.item.RecallCharmItem.mark(player);
@@ -611,7 +611,7 @@ public final class GadgetGameTests {
 
     @HexTest
     public static void aSipOfEssenceGivesItsGift(GameTestHelper helper) {
-        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        net.minecraft.server.level.ServerPlayer player = MockPlayers.inLevel(helper);
         int gifts = com.pockyl.hextale.essence.EssenceFlaskItem.drink(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.FIRE, 16), player);
         helper.assertTrue(gifts == 1 && player.hasEffect(net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE), "fire gives fire resistance");
         com.pockyl.hextale.essence.EssenceFlaskItem.drink(com.pockyl.hextale.essence.EssenceMix.unknown(8), player);
@@ -646,7 +646,7 @@ public final class GadgetGameTests {
     /** Trousers with Magnet draw a loose item within reach towards the wearer and leave one beyond it. */
     @HexTest(padding = 4)
     public static void magnetTrousersDrawLooseThingsIn(GameTestHelper helper) {
-        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        net.minecraft.server.level.ServerPlayer player = MockPlayers.inLevel(helper);
         Vec3 spot = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(1, 1, 1)));
         player.teleportTo(spot.x, spot.y, spot.z);
         ItemEntity near = helper.spawnItem(Items.COBBLESTONE, player.position().add(3, 0.5, 0).subtract(Vec3.atLowerCornerOf(helper.absolutePos(BlockPos.ZERO))));

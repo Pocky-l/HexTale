@@ -1,0 +1,15 @@
+{
+  "region": "chemtech",
+  "icon": "hextale:steeped_soil",
+  "parents": [
+    "lab_bench"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "steeped_soil"
+  },
+  "pos": [
+    -600,
+    150
+  ]
+}

@@ -92,6 +92,14 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
     private static final int STEAM = 0xE8EEF2;
     /** Doses of one brew the water holds at most. */
     public static final int MAX_DOSES = 12;
+    /** Stacks of finished results that float on the surface; more are thrown out over the rim. */
+    public static final int FLOAT_STACKS = 6;
+    /** Ticks a first sneak-use keeps the pot ready to boil away on the second one. */
+    public static final int BOIL_AWAY_ARMED_TICKS = 60;
+    /** Ticks without anything going in or out after which a burner below burns at a quarter of its rate. */
+    public static final int IDLE_TICKS = 600;
+    /** How often floating results are passed into a container on the pot's facing side. */
+    private static final int PASS_TICKS = 10;
 
     /** How the water stands, by its temperature. */
     public enum Phase {
@@ -141,6 +149,18 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
     /** Results of transmutations under way, and when they rise out of the water. */
     private final List<ItemStack> rising = new ArrayList<>();
     private long risesAt;
+    /** Finished results bobbing on the surface: fished out by hand or passed into a container on the facing side. */
+    private final List<ItemStack> floating = new ArrayList<>();
+    /** When a first sneak-use readied the pot to boil away (not saved: a reload forgets it). */
+    private long armedAt = -1000;
+    /**
+     * The researcher the pot works for when nobody puts an item in by hand (hoppers, pipes, dispensers): who woke it, then
+     * whoever last put something in by hand.
+     */
+    private java.util.@Nullable UUID owner;
+    /** When something last went in or came out; a burner below idles after {@link #IDLE_TICKS} without that. */
+    private long busyAt;
+    private int lastSignal = -1;
     /** Client only: when each essence last grew in the water, for the icons over the crucible. */
     private final long[] grewAt = new long[com.pockyl.hextale.rune.Essence.values().length];
     /** Results just thrown out: no crucible catches them again for a moment. */
@@ -216,6 +236,9 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
         if (!rising.isEmpty() && now >= risesAt) {
             rise(level);
         }
+        if (!floating.isEmpty() && now % PASS_TICKS == 0) {
+            passOut(level);
+        }
         if (now % SCAN_TICKS == 0 && liquid() > 0) {
             takeItems(level);
         }
@@ -244,7 +267,15 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
             }
             ItemStack stack = entity.getItem();
             float caughtAt = (float) Math.max(surface(), entity.getY() - y);
-            Player thrower = entity.getOwner() instanceof Player player ? player : null;
+            Player thrower = entity.getOwner() instanceof Player player ? player : owner();
+            if (refuses(stack)) {
+                // Things it must never eat (enchanted, named, holding other things): they bob back out with a gloop.
+                if (entity.getBoundingBox().intersects(inside) && entity.getDeltaMovement().y <= 0.05) {
+                    entity.setDeltaMovement((level.getRandom().nextDouble() - 0.5) * 0.25, 0.35, (level.getRandom().nextDouble() - 0.5) * 0.25);
+                    gloop();
+                }
+                continue;
+            }
             int taken = take(stack, stack.getCount(), entity.getBoundingBox().intersects(inside) || boiling(), thrower);
             if (taken > 0) {
                 sankFrom = caughtAt;
@@ -272,7 +303,7 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
      * @return how many were taken
      */
     public int take(ItemStack stack, int count, boolean reached, @Nullable Player researcher) {
-        if (stack.isEmpty() || count <= 0 || drying() || liquid() <= 0) {
+        if (stack.isEmpty() || count <= 0 || drying() || liquid() <= 0 || refuses(stack)) {
             return 0;
         }
         CrucibleRecipe recipe = CrucibleRecipe.find(stack, essence, researcher);
@@ -294,7 +325,7 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
         int dissolved = dissolve(stack, count);
         if (dissolved > 0 && locked != null && researcher instanceof ServerPlayer player) {
             // The brew was right, the researcher was not ready: the item only dissolved.
-            player.sendOverlayMessage(Component.translatable("research.hextale.locked",
+            player.sendOverlayMessage(Component.translatable(locked.lockedKey(),
                     Component.translatable(locked.translationKey()).withColor(locked.color())));
         }
         return dissolved;
@@ -360,6 +391,67 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
         }
     }
 
+    /**
+     * What the held item would do in the pot right now, told before it is lost (Jade, goggles): it changes into a result,
+     * starts a brew, dissolves, or why not. Plain lines; null when the item is not something put in (water, buckets,
+     * bottles and jars of essence) or the pot is dry. Works on either side.
+     */
+    public @Nullable Component preview(ItemStack held, Player player) {
+        boolean client = level == null || level.isClientSide();
+        if (held.isEmpty() || liquid() <= 0 || drying() || CrucibleBlock.isWaterBottle(held) || held.is(net.minecraft.world.item.Items.GLASS_BOTTLE)
+                || held.is(com.pockyl.hextale.registry.ModItems.ESSENCE_FLASK.get()) || held.is(com.pockyl.hextale.registry.ModItems.ESSENCE_TANK.get())
+                || held.is(net.minecraft.world.item.Items.BUCKET) || held.is(net.minecraft.world.item.Items.WATER_BUCKET)) {
+            return null;
+        }
+        String key = "block.hextale.crucible.preview.";
+        if (refuses(held)) {
+            return Component.translatable(key + "refuses");
+        }
+        CrucibleRecipe recipe = CrucibleRecipe.find(held, essence, player, client);
+        if (recipe != null) {
+            int times = Math.min(held.getCount(), essence.timesHolds(recipe.essences()));
+            ItemStack result = recipe.result().create();
+            Component line = Component.translatable(key + "transmute", result.getHoverName(), times * result.getCount());
+            if (held.getCount() > times) {
+                return Component.translatable(boiling() ? key + "rest_dissolves" : key + "rest_stays", line);
+            }
+            return line;
+        }
+        ResearchTopic locked = CrucibleRecipe.lockedFor(held, essence, player, client);
+        if (locked != null) {
+            return Component.translatable(key + "locked", Component.translatable(locked.translationKey()).withColor(locked.color()));
+        }
+        EssenceMix each = essencesOf(held);
+        if (!boiling()) {
+            return Component.translatable(each.isEmpty() ? key + "nothing" : key + "not_boiling");
+        }
+        BrewRecipe hot = BrewRecipe.find(held, essence, BrewRecipe.BURNER_HEAT, brew, client);
+        if (hot != null) {
+            Component name = Component.translatable(hot.brew().translationKey()).withColor(hot.brew().color());
+            if (!hot.mayBrew(player)) {
+                ResearchTopic topic = ResearchTopics.forBrew(hot.brew());
+                return Component.translatable(key + "locked", topic == null ? name : Component.translatable(topic.translationKey()).withColor(topic.color()));
+            }
+            if (hot.heat() > heat()) {
+                return Component.translatable(key + "needs_heat", name, Component.translatable("block.hextale.crucible.heat." + hot.heat()));
+            }
+            int room = (MAX_DOSES - doses) / hot.doses();
+            if (room <= 0) {
+                return Component.translatable(key + "doses_full", name);
+            }
+            int times = Math.min(held.getCount(), Math.min(room, essence.timesHolds(hot.essences())));
+            return Component.translatable(key + "brew", name, times * hot.doses());
+        }
+        if (brew != null && BrewRecipe.find(held, essence, BrewRecipe.BURNER_HEAT, null, client) != null) {
+            return Component.translatable(key + "other_brew", Component.translatable(brew.translationKey()).withColor(brew.color()));
+        }
+        if (each.isEmpty()) {
+            return Component.translatable(key + "nothing");
+        }
+        boolean catalyst = CrucibleRecipe.anyFor(held, client) || BrewRecipe.anyFor(held, client) != null;
+        return Component.translatable(catalyst ? key + "short" : key + "dissolves", each.describe());
+    }
+
     /** The brew in the water (null: plain water), and its doses left. */
     public @Nullable Brew brew() {
         return brew;
@@ -388,6 +480,54 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
     @Override
     public boolean wantsHeat() {
         return liquid() > 0 && !drying();
+    }
+
+    /** Boiling with nothing going in or out for a while: a burner below only keeps it on the boil. */
+    @Override
+    public boolean idle() {
+        return level != null && temperature >= BOILING && rising.isEmpty() && level.getGameTime() - busyAt > IDLE_TICKS;
+    }
+
+    /**
+     * Things the crucible never takes, by hand, thrown or piped: enchanted, named or damaged gear, tools and armour, and
+     * anything that holds other things (a filled shulker box, a bundle). They bob back out instead of dissolving.
+     */
+    public static boolean refuses(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return false;
+        }
+        if (stack.isDamageableItem() || stack.has(net.minecraft.core.component.DataComponents.CUSTOM_NAME)) {
+            return true;
+        }
+        var enchantments = stack.get(net.minecraft.core.component.DataComponents.ENCHANTMENTS);
+        var stored = stack.get(net.minecraft.core.component.DataComponents.STORED_ENCHANTMENTS);
+        if (enchantments != null && !enchantments.isEmpty() || stored != null && !stored.isEmpty()) {
+            return true;
+        }
+        var container = stack.get(net.minecraft.core.component.DataComponents.CONTAINER);
+        if (container != null && container.nonEmptyItemCopyStream().findAny().isPresent()) {
+            return true;
+        }
+        var bundle = stack.get(net.minecraft.core.component.DataComponents.BUNDLE_CONTENTS);
+        return bundle != null && !bundle.isEmpty() || stack.is(com.pockyl.hextale.registry.ModTags.CRUCIBLE_REFUSES);
+    }
+
+    /** A soft hollow gloop: the pot would not take that. */
+    private void gloop() {
+        playAt(SoundEvents.BUBBLE_COLUMN_BUBBLE_POP, 0.6F, 0.55F + (level == null ? 0 : level.getRandom().nextFloat() * 0.1F));
+    }
+
+    /** The researcher the pot works for when no player puts an item in (null when they are not online). */
+    public @Nullable Player owner() {
+        return researcher(owner);
+    }
+
+    /** Who the pot works for from now on: whoever woke it, then whoever last put something in by hand. */
+    public void setOwner(Player player) {
+        if (!player.getUUID().equals(owner)) {
+            owner = player.getUUID();
+            setChanged();
+        }
     }
 
     /**
@@ -442,11 +582,44 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
         return count;
     }
 
-    /** The transmuted items rise out of the liquid, thrown up over the rim with a burst of the essences' light. */
+    /**
+     * The transmuted items rise to the surface with a burst of the essences' light and float there, to be fished out by
+     * hand or passed into a container on the pot's facing side; what does not fit on the surface is thrown over the rim.
+     */
     private void rise(ServerLevel level) {
         Vec3 at = Vec3.atLowerCornerOf(worldPosition).add(0.5, surface() + 0.15, 0.5);
-        var random = level.getRandom();
+        List<ItemStack> over = new ArrayList<>();
         for (ItemStack result : rising) {
+            for (ItemStack held : floating) {
+                if (!result.isEmpty() && ItemStack.isSameItemSameComponents(held, result) && held.getCount() < held.getMaxStackSize()) {
+                    int moved = Math.min(result.getCount(), held.getMaxStackSize() - held.getCount());
+                    held.grow(moved);
+                    result.shrink(moved);
+                }
+            }
+            while (!result.isEmpty()) {
+                ItemStack part = result.split(result.getMaxStackSize());
+                (floating.size() < FLOAT_STACKS ? floating : over).add(part);
+            }
+        }
+        rising.clear();
+        throwOut(level, over);
+        busyAt = level.getGameTime();
+        passOut(level);
+        level.sendParticles(ModParticles.wisp(pouredColor), at.x, at.y, at.z, 10, 0.22, 0.12, 0.22, 0.01);
+        level.sendParticles(ModParticles.glint(pouredColor), at.x, at.y + 0.1, at.z, 12, 0.2, 0.2, 0.2, 0.04);
+        level.sendParticles(ModParticles.drop(pouredColor), at.x, at.y, at.z, 12, 0.2, 0.02, 0.2, 0.1);
+        level.sendParticles(ModParticles.ring(pouredColor), at.x, at.y + 0.02, at.z, 0, 0.6, 1, 0, 1);
+        playAt(ModSounds.BLOCK_AWAKEN.get(), 0.6F, 1.2F);
+        playAt(SoundEvents.GENERIC_SPLASH, 0.35F, 1.2F);
+        changed();
+    }
+
+    /** Stacks thrown up over the rim in random directions (results that do not fit, or everything when it empties). */
+    private void throwOut(ServerLevel level, List<ItemStack> stacks) {
+        Vec3 at = Vec3.atLowerCornerOf(worldPosition).add(0.5, surface() + 0.15, 0.5);
+        var random = level.getRandom();
+        for (ItemStack result : stacks) {
             while (!result.isEmpty()) {
                 ItemStack part = result.split(result.getMaxStackSize());
                 ItemEntity entity = new ItemEntity(level, at.x, at.y, at.z, part);
@@ -457,14 +630,66 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
                 level.addFreshEntity(entity);
             }
         }
+    }
+
+    /** Everything still soaking or floating leaves the pot over the rim (it is being emptied). */
+    private void throwOutAll(ServerLevel level) {
+        List<ItemStack> all = new ArrayList<>(rising);
+        all.addAll(floating);
         rising.clear();
-        level.sendParticles(ModParticles.wisp(pouredColor), at.x, at.y, at.z, 10, 0.22, 0.12, 0.22, 0.01);
-        level.sendParticles(ModParticles.glint(pouredColor), at.x, at.y + 0.1, at.z, 12, 0.2, 0.2, 0.2, 0.04);
-        level.sendParticles(ModParticles.drop(pouredColor), at.x, at.y, at.z, 12, 0.2, 0.02, 0.2, 0.1);
-        level.sendParticles(ModParticles.ring(pouredColor), at.x, at.y + 0.02, at.z, 0, 0.6, 1, 0, 1);
-        playAt(ModSounds.BLOCK_AWAKEN.get(), 0.6F, 1.2F);
-        playAt(SoundEvents.GENERIC_SPLASH, 0.35F, 1.2F);
+        floating.clear();
+        throwOut(level, all);
+    }
+
+    /** Floating results drift over the lip into a hopper, chest or pipe on the pot's facing side. */
+    private void passOut(ServerLevel level) {
+        if (floating.isEmpty()) {
+            return;
+        }
+        net.minecraft.core.Direction side = getBlockState().getValue(CrucibleBlock.FACING);
+        BlockPos next = worldPosition.relative(side);
+        if (level.getCapability(net.neoforged.neoforge.capabilities.Capabilities.Item.BLOCK, next, side.getOpposite()) == null) {
+            return;
+        }
+        boolean moved = false;
+        for (java.util.Iterator<ItemStack> it = floating.iterator(); it.hasNext(); ) {
+            ItemStack stack = it.next();
+            int in = com.pockyl.hextale.transport.PylonInsert.insert(level, next, side.getOpposite(),
+                    net.neoforged.neoforge.transfer.item.ItemResource.of(stack), stack.getCount(), null, owner);
+            if (in > 0) {
+                stack.shrink(in);
+                moved = true;
+            }
+            if (stack.isEmpty()) {
+                it.remove();
+            }
+        }
+        if (moved) {
+            playAt(SoundEvents.BUCKET_EMPTY_FISH, 0.3F, 1.3F);
+            changed();
+        }
+    }
+
+    /** Fishes the floating results out for the player (empty-hand use); false when nothing floats. */
+    public boolean fishOut(Player player) {
+        if (floating.isEmpty()) {
+            return false;
+        }
+        for (ItemStack stack : floating) {
+            if (!player.getInventory().add(stack)) {
+                player.drop(stack, false);
+            }
+        }
+        floating.clear();
+        busyAt = level == null ? 0 : level.getGameTime();
+        playAt(SoundEvents.BUCKET_FILL_FISH, 0.4F, 1.2F);
         changed();
+        return true;
+    }
+
+    /** Results floating on the surface (a copy). */
+    public List<ItemStack> floating() {
+        return floating.stream().map(ItemStack::copy).toList();
     }
 
     /** What the item dissolves into: its essences, {@value #MB_PER_POINT} mB a point (empty for an item without any). */
@@ -521,16 +746,25 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
         return essence;
     }
 
-    /** Broken while results still soak: they come out with the block instead of vanishing. */
+    /**
+     * Broken: results still soaking or floating come out with the block instead of vanishing; the essence in it spills on
+     * the ground and wears the land like any essence poured away.
+     */
     @Override
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
         super.preRemoveSideEffects(pos, state);
-        if (level != null && !level.isClientSide()) {
+        if (level instanceof ServerLevel server) {
             for (ItemStack result : rising) {
                 net.minecraft.world.Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, result);
             }
+            for (ItemStack result : floating) {
+                net.minecraft.world.Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, result);
+            }
+            com.pockyl.hextale.thevoid.Thinning.poured(server, pos, essence, essence.total(), false);
+            essence = EssenceMix.EMPTY;
         }
         rising.clear();
+        floating.clear();
     }
 
     /** Results of transmutations about to rise (a copy). */
@@ -596,17 +830,26 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
 
     /**
      * Whether a piped item would be taken in: a catalyst the water can pay for (cold water too), or, in boiling water,
-     * anything with essences or a brew's catalyst. Research locks hold: only the owner of the pylon that brings it counts
-     * as the researcher, a hopper or another mod's pipe never does.
+     * anything with essences or a brew's catalyst - but not a brew catalyst while the doses are full (it would only bob
+     * back out). Research locks hold for the owner of the pylon that brings it; a hopper or another mod's pipe works for
+     * the pot's own researcher (who woke it or last put something in by hand).
      */
     private boolean takesPiped(ItemStack stack, java.util.@Nullable UUID deliverer) {
-        if (level == null || level.isClientSide() || drying() || liquid() <= 0 || stack.isEmpty()) {
+        if (level == null || level.isClientSide() || drying() || liquid() <= 0 || stack.isEmpty() || refuses(stack)) {
             return false;
         }
-        if (CrucibleRecipe.find(stack, essence, researcher(deliverer)) != null) {
+        Player researcher = deliverer == null ? owner() : researcher(deliverer);
+        if (CrucibleRecipe.find(stack, essence, researcher) != null) {
             return true;
         }
-        return boiling() && (!essencesOf(stack).isEmpty() || BrewRecipe.find(stack, essence, heat(), brew) != null);
+        if (!boiling()) {
+            return false;
+        }
+        BrewRecipe brewing = BrewRecipe.find(stack, essence, heat(), brew);
+        if (brewing != null && brewing.mayBrew(researcher)) {
+            return (MAX_DOSES - doses) / brewing.doses() > 0;
+        }
+        return !essencesOf(stack).isEmpty();
     }
 
     /** Piped items sink as if dropped in; what the water will not take now falls in from just over the rim. */
@@ -615,7 +858,7 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
             return;
         }
         sankFrom = BRIM;
-        int taken = take(stack, stack.getCount(), true, researcher(deliverer));
+        int taken = take(stack, stack.getCount(), true, deliverer == null ? owner() : researcher(deliverer));
         if (taken < stack.getCount()) {
             ItemEntity rest = new ItemEntity(server, worldPosition.getX() + 0.5, worldPosition.getY() + 1.05, worldPosition.getZ() + 0.5,
                     stack.copyWithCount(stack.getCount() - taken), 0, 0, 0);
@@ -646,7 +889,7 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
      * @return the water taken (all of {@code amount} or nothing)
      */
     public int fillWater(int amount, boolean simulate) {
-        if (drying() || water >= CAPACITY && essence.isEmpty()) {
+        if (drying() || water >= CAPACITY && essence.isEmpty() || wouldSpillEssence(amount)) {
             return 0;
         }
         if (!simulate) {
@@ -658,8 +901,14 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
         return amount;
     }
 
+    /** Whether this much water would push essence over the brim (water refuses to: it would brim over). */
+    public boolean wouldSpillEssence(int amount) {
+        return !essence.isEmpty() && volume() + amount > CAPACITY;
+    }
+
     /**
-     * Whatever rises past the brim spills over the rim: water and essence leave in proportion.
+     * Whatever rises past the brim spills over the rim: water and essence leave in proportion. The essence spilt wears
+     * the land like any essence poured away.
      */
     private void spillOver() {
         int excess = volume() - CAPACITY;
@@ -669,8 +918,11 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
         int liquid = water + essence.total();
         int waterLoss = liquid <= 0 ? 0 : Math.round(excess * water / (float) liquid);
         water = Math.max(0, water - waterLoss);
-        essence = essence.part(Math.max(0, essence.total() - (excess - waterLoss)));
+        EssenceMix kept = essence.part(Math.max(0, essence.total() - (excess - waterLoss)));
+        EssenceMix spilt = essence.minus(kept);
+        essence = kept;
         if (level instanceof ServerLevel server) {
+            com.pockyl.hextale.thevoid.Thinning.poured(server, worldPosition, spilt, spilt.total(), false);
             // Over the rim and down the sides, on every side.
             double x = worldPosition.getX() + 0.5;
             double y = worldPosition.getY() + BRIM + 0.05;
@@ -748,29 +1000,69 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
     }
 
     /**
-     * Boils the water dry at once (sneak-use): it goes up in a cloud of steam over a moment, taking the essence and
-     * whatever is under way along.
+     * Sneak-use with an empty hand: the first readies the pot - it hisses and a plume thickens over it, and the player is
+     * told what would be lost; a second within {@value #BOIL_AWAY_ARMED_TICKS} ticks boils it all away.
+     *
+     * @return whether it boiled away now
+     */
+    public boolean sneakUse(ServerPlayer player) {
+        if (liquid() <= 0 || drying() || !(level instanceof ServerLevel server)) {
+            return false;
+        }
+        long now = server.getGameTime();
+        if (now - armedAt <= BOIL_AWAY_ARMED_TICKS) {
+            armedAt = -1000;
+            boilAway();
+            return true;
+        }
+        armedAt = now;
+        Vec3 at = Vec3.atLowerCornerOf(worldPosition).add(0.5, surface(), 0.5);
+        server.sendParticles(ModParticles.vapour(ModParticles.STEAM), at.x, at.y + 0.15, at.z, 14, 0.2, 0.15, 0.2, 0.02);
+        playAt(ModSounds.CRUCIBLE_EVAPORATE.get(), 0.3F, 1.4F);
+        Component what = brew != null
+                ? Component.translatable("block.hextale.crucible.say.boil_away.brew",
+                        Component.translatable(brew.translationKey()).withColor(brew.color()), doses)
+                : Component.translatable("block.hextale.crucible.say.boil_away.liquid", water, essence.total());
+        player.sendOverlayMessage(Component.translatable("block.hextale.crucible.say.boil_away", what));
+        return false;
+    }
+
+    /** Whether a first sneak-use has readied it to boil away. */
+    public boolean armed() {
+        return level != null && level.getGameTime() - armedAt <= BOIL_AWAY_ARMED_TICKS;
+    }
+
+    /**
+     * Boils the water dry at once: it goes up in a cloud of steam over a moment, taking the essence (it wears the land
+     * like essence poured away) and the brew along; results still soaking or floating are thrown out over the rim.
      */
     public void boilAway() {
-        if (liquid() <= 0 || drying() || level == null) {
+        if (liquid() <= 0 || drying() || !(level instanceof ServerLevel server)) {
             return;
         }
-        dryingAt = level.getGameTime();
+        dryingAt = server.getGameTime();
         // Everything goes up as one cloud: the level sinks from where the liquid stood.
         dryingFrom = liquid();
+        com.pockyl.hextale.thevoid.Thinning.poured(server, worldPosition, essence, essence.total(), false);
         water = dryingFrom;
         essence = EssenceMix.EMPTY;
         brew = null;
         doses = 0;
-        rising.clear();
-        playAt(ModSounds.CRUCIBLE_EVAPORATE.get(), 0.9F, 0.9F + level.getRandom().nextFloat() * 0.1F);
+        throwOutAll(server);
+        playAt(ModSounds.CRUCIBLE_EVAPORATE.get(), 0.9F, 0.9F + server.getRandom().nextFloat() * 0.1F);
         changed();
     }
 
-    /** Everything goes: water, essence (poured away, it wears the land), brew and soaking things. */
+    /**
+     * Everything goes: water, essence (poured away, it wears the land) and brew; results still soaking or floating are
+     * thrown out over the rim.
+     */
     private void empty() {
-        if (level instanceof ServerLevel server && !essence.isEmpty()) {
-            com.pockyl.hextale.thevoid.Thinning.poured(server, worldPosition, essence, essence.total(), false);
+        if (level instanceof ServerLevel server) {
+            if (!essence.isEmpty()) {
+                com.pockyl.hextale.thevoid.Thinning.poured(server, worldPosition, essence, essence.total(), false);
+            }
+            throwOutAll(server);
         }
         water = 0;
         temperature = 0;
@@ -778,6 +1070,7 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
         brew = null;
         doses = 0;
         rising.clear();
+        floating.clear();
         changed();
     }
 
@@ -788,8 +1081,27 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
     }
 
     private void changed() {
+        if (level != null) {
+            busyAt = level.getGameTime();
+        }
         setChanged();
         sync();
+        int signal = signal();
+        if (signal != lastSignal && level != null && !level.isClientSide()) {
+            lastSignal = signal;
+            level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
+        }
+    }
+
+    /** Comparator: 0 dry, 1-7 by how full it is, 8-15 by the doses of a brew in it. */
+    public int signal() {
+        if (liquid() <= 0) {
+            return 0;
+        }
+        if (brew != null && doses > 0) {
+            return 8 + Math.min(7, (doses * 7 + MAX_DOSES - 1) / MAX_DOSES);
+        }
+        return 1 + Math.min(6, volume() * 6 / CAPACITY);
     }
 
     private void sync() {
@@ -879,6 +1191,9 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
         dryingAt = input.getLongOr("drying_at", -1000);
         dryingFrom = input.getIntOr("drying_from", 0);
         risesAt = input.getLongOr("rises_at", 0);
+        floating.clear();
+        input.listOrEmpty("floating", ItemStack.CODEC).forEach(floating::add);
+        owner = input.read("owner", net.minecraft.core.UUIDUtil.CODEC).orElse(null);
     }
 
     @Override
@@ -906,6 +1221,12 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
         output.putInt("drying_from", dryingFrom);
         if (!sank.isEmpty()) {
             output.store("sank", ItemStack.CODEC, sank);
+        }
+        if (!floating.isEmpty()) {
+            output.store("floating", ItemStack.CODEC.listOf(), List.copyOf(floating));
+        }
+        if (owner != null) {
+            output.store("owner", net.minecraft.core.UUIDUtil.CODEC, owner);
         }
     }
 

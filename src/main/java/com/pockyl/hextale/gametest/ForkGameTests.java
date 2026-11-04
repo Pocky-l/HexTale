@@ -26,7 +26,7 @@ public final class ForkGameTests {
         ItemStack fork = new ItemStack(ModItems.TUNING_FORK.get());
         com.pockyl.hextale.runework.RuneHolder.FORK.set(fork,
                 com.pockyl.hextale.runework.PickaxeRunes.EMPTY.with(com.pockyl.hextale.runework.ForkRune.INSIGHT.rune(), 1));
-        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        net.minecraft.server.level.ServerPlayer player = MockPlayers.inLevel(helper);
         player.snapTo(ear.getX() + 0.5, ear.getY() - 1.0, ear.getZ() + 0.5, 0, 0);
         for (int i = 0; i < 3; i++) {
             TuningForkItem.listen(helper.getLevel(), player, fork);

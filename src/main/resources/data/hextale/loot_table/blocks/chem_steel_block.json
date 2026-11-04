@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:chem_steel_block"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "hextale:blocks/chem_steel_block"
+}

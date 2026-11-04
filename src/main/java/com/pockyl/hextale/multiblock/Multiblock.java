@@ -67,11 +67,6 @@ public abstract class Multiblock {
         return Shapes.block();
     }
 
-    /** What the player is told when the structure comes alive. */
-    public Component formedMessage() {
-        return Component.translatable("multiblock.hextale." + id + ".formed");
-    }
-
     /** What must be researched before the structure can be woken, or null. */
     public com.pockyl.hextale.research.@org.jspecify.annotations.Nullable ResearchTopic topic() {
         return null;

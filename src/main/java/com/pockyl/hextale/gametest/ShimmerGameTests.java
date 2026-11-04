@@ -104,7 +104,7 @@ public final class ShimmerGameTests {
         burner.feed(ChemVialItem.of(Brew.FUEL, 4));
         CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
         crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         Research.research(player, ResearchTopics.RAW_SHIMMER);
 
         BlockPos still = new BlockPos(5, 2, 5);
@@ -124,6 +124,8 @@ public final class ShimmerGameTests {
                 ItemStack second = crucible.bottle();
                 helper.assertTrue(ChemVialItem.brew(first) == Brew.RAW_SHIMMER, "a bottle takes raw shimmer");
                 helper.assertTrue(distiller.feed(first) == 1 && distiller.feed(second) == 1, "the still takes raw vials");
+                helper.assertFalse(distiller.wantsHeat(), "without a Crystal Pod the still does not start");
+                helper.assertTrue(distiller.feed(new ItemStack(ModItems.CRYSTAL_POD.get())) == 1, "the still takes a pod");
                 // The still's burner burns a raw vial too: shimmer is fuel, and its flame is pink.
                 helper.assertTrue(stillBurner.feed(ChemVialItem.of(Brew.RAW_SHIMMER)) == 1, "a burner takes raw shimmer");
                 brewed[0] = true;
@@ -133,6 +135,7 @@ public final class ShimmerGameTests {
             }
             helper.assertTrue(ChemVialItem.brew(distiller.output()) == Brew.REFINED_SHIMMER, "two raw vials became refined shimmer");
             helper.assertTrue(distiller.input().isEmpty(), "both raw vials were used");
+            helper.assertTrue(distiller.clarifier().isEmpty(), "the pod was used");
             helper.assertTrue(sawPink[0], "the still's burner burned shimmer's pink flame");
         });
     }
@@ -141,7 +144,7 @@ public final class ShimmerGameTests {
     public static void refinedShimmerIsDrunkForBuffsOnly(GameTestHelper helper) {
         ItemStack vial = ChemVialItem.of(Brew.REFINED_SHIMMER);
         helper.assertTrue(vial.has(DataComponents.CONSUMABLE) && vial.has(DataComponents.USE_COOLDOWN), "the vial is drunk and rests after");
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         vial.finishUsingItem(helper.getLevel(), player);
         helper.assertTrue(player.hasEffect(MobEffects.STRENGTH) && player.hasEffect(MobEffects.REGENERATION)
                 && player.hasEffect(MobEffects.SPEED) && player.hasEffect(MobEffects.RESISTANCE), "it gives its buffs");
@@ -182,6 +185,36 @@ public final class ShimmerGameTests {
             }
             helper.assertTrue(fire.burn() > 0, "it burns");
             helper.assertTrue(ages > start + 3, "the wheat in its light grew (" + ages + ")");
+        });
+    }
+
+    /** Ember Wheat boils into Ember Oil, a longer fuel; Shimmer Bulbs make raw shimmer in a bigger batch than slime. */
+    @HexTest
+    public static void farmedPlantsBrewFuels(GameTestHelper helper) {
+        helper.setBlock(AT.below(), ModBlocks.CHEM_BURNER.get());
+        helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
+        helper.getBlockEntity(AT.below(), ChemBurnerBlockEntity.class).feed(ChemVialItem.of(Brew.FUEL, 8));
+        CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
+        crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
+        ServerPlayer player = MockPlayers.inLevel(helper);
+        Research.research(player, ResearchTopics.EMBER_OIL);
+        Research.research(player, ResearchTopics.RAW_SHIMMER);
+        helper.assertTrue(Brew.EMBER_OIL.burnTicks() > Brew.FUEL.burnTicks(), "ember oil burns longer than the combustible mix");
+        boolean[] oil = {false};
+        helper.succeedWhen(() -> {
+            helper.assertTrue(crucible.boiling(), "the water boils");
+            if (!oil[0]) {
+                crucible.pour(EssenceMix.pure(Essence.MAGMA, 6).plus(EssenceMix.pure(Essence.SAP, 4)));
+                helper.assertTrue(crucible.take(new ItemStack(ModItems.EMBER_WHEAT.get()), 1, true, player) == 1, "the wheat goes in");
+                helper.assertTrue(crucible.brew() == Brew.EMBER_OIL && crucible.doses() == 4, "four doses of ember oil");
+                while (crucible.doses() > 0) {
+                    crucible.bottle();
+                }
+                oil[0] = true;
+            }
+            crucible.pour(EssenceMix.pure(Essence.SAP, 4).plus(EssenceMix.pure(Essence.LIGHT, 4)));
+            helper.assertTrue(crucible.take(new ItemStack(ModItems.SHIMMER_BULB.get()), 1, true, player) == 1, "the bulb goes in");
+            helper.assertTrue(crucible.brew() == Brew.RAW_SHIMMER && crucible.doses() == 6, "six doses of raw shimmer from one bulb");
         });
     }
 }

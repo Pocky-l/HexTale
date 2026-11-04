@@ -11,5 +11,6 @@
     }
   },
   "station": true,
+  "landmark": true,
   "pos": [-550, 40]
 }

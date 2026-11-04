@@ -204,6 +204,12 @@ public final class BlockAwakening {
         if (old.is(Blocks.WATER_CAULDRON) && level.getBlockEntity(pos) instanceof CrucibleBlockEntity crucible) {
             crucible.setWater(old.getValue(LayeredCauldronBlock.LEVEL) * CrucibleBlockEntity.BUCKET / LayeredCauldronBlock.MAX_FILL_LEVEL);
         }
+        if (pending.player() != null && level.getBlockEntity(pos) instanceof CrucibleBlockEntity crucible) {
+            Player player = level.getPlayerByUUID(pending.player());
+            if (player != null) {
+                crucible.setOwner(player);
+            }
+        }
         if (pending.player() != null && level.getBlockEntity(pos) instanceof HexFurnaceBlockEntity furnace) {
             Player player = level.getPlayerByUUID(pending.player());
             if (player != null) {

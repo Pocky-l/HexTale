@@ -3,7 +3,6 @@ package com.pockyl.hextale.research;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
 import com.pockyl.hextale.registry.ModDataMaps;
 
@@ -13,91 +12,32 @@ import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
-import static com.pockyl.hextale.rune.Essence.*;
+import com.pockyl.hextale.rune.Essence;
 
 
 /**
- * Items and the essences they carry. In game the essences of every item come from {@link ItemEssenceTable} (the
- * {@code hextale:essences} data map plus what is derived from recipes and names); the {@link #canonical()} set below is
- * the default data map, hand-tuned base materials.
+ * Items and the essences they carry. In game the essences of every item come from {@link ItemEssenceTable}: the
+ * {@code hextale:essences} data map (hand-tuned, and what data packs and modpacks set) plus what is derived from
+ * recipes and names for everything it does not name.
  */
 public final class ResearchItems {
-    private static final Map<Item, ItemEssences> CANONICAL = new LinkedHashMap<>();
-
-    static {
-        // Hand-tuned base materials: what the words of their names alone would get only roughly right.
-        add(Items.COAL, 1, FIRE, 4);
-        add(Items.CHARCOAL, 1, FIRE, 3, ASH, 1);
-        add(Items.REDSTONE, 1, SPARK, 4);
-        add(Items.GLOWSTONE_DUST, 1, LIGHT, 4);
-        add(Items.STICK, 1, PLANT, 1);
-        add(Items.CLAY_BALL, 1, EARTH, 2, WATER, 2);
-        add(Items.INK_SAC, 1, SHADOW, 4);
-        add(Items.GLOW_INK_SAC, 2, LIGHT, 3, MAGIC, 1);
-        add(Items.BONE, 1, DECAY, 4);
-        add(Items.STRING, 1, BEAST, 2, PLANT, 1);
-        add(Items.GUNPOWDER, 1, FIRE, 3, ASH, 2);
-        add(Items.SLIME_BALL, 1, SAP, 4);
-        add(Items.FEATHER, 1, AIR, 3);
-        add(Items.LEATHER, 1, BEAST, 4);
-        add(Items.FLINT, 1, EARTH, 2, FIRE, 1);
-        add(Items.IRON_INGOT, 2, METAL, 5);
-        add(Items.GOLD_INGOT, 2, METAL, 4, LIGHT, 2);
-        add(Items.COPPER_INGOT, 1, METAL, 3, SPARK, 2);
-        add(Items.AMETHYST_SHARD, 2, CRYSTAL, 4, SPARK, 2);
-        add(Items.QUARTZ, 2, CRYSTAL, 4, MAGMA, 1);
-        add(Items.LAPIS_LAZULI, 2, MAGIC, 3, CRYSTAL, 2);
-        add(Items.EMERALD, 2, CRYSTAL, 5, LIFE, 2);
-        add(Items.DIAMOND, 3, CRYSTAL, 8, LIGHT, 2);
-        add(Items.PRISMARINE_CRYSTALS, 2, WATER, 3, CRYSTAL, 3, LIGHT, 1);
-        add(Items.PRISMARINE_SHARD, 2, WATER, 4, CRYSTAL, 2);
-        add(Items.BLAZE_ROD, 3, FIRE, 6, MAGMA, 2, MAGIC, 1);
-        add(Items.BLAZE_POWDER, 2, FIRE, 5, MAGMA, 1);
-        add(Items.ENDER_PEARL, 2, RIFT, 5, AIR, 1);
-        add(Items.GHAST_TEAR, 3, MAGIC, 4, WATER, 2);
-        add(Items.PHANTOM_MEMBRANE, 2, AIR, 3, RIFT, 3);
-        add(Items.ECHO_SHARD, 3, SHADOW, 6, MAGIC, 2);
-        add(Items.HONEY_BOTTLE, 2, SAP, 6);
-        add(Items.HEART_OF_THE_SEA, 3, WATER, 8, MAGIC, 4);
-        add(Items.NAUTILUS_SHELL, 2, WATER, 4, DECAY, 2);
-        add(Items.WIND_CHARGE, 3, AIR, 6, FIRE, 1);
-        add(Items.BREEZE_ROD, 3, AIR, 6, SPARK, 3);
-        add(Items.TOTEM_OF_UNDYING, 3, MAGIC, 8, LIFE, 6);
-        add(Items.NETHERITE_INGOT, 3, METAL, 10, MAGMA, 4);
-        add(Items.NETHER_STAR, 3, MAGIC, 16, RIFT, 4);
-        add(Items.DRAGON_BREATH, 3, RIFT, 4, MAGIC, 3, FIRE, 2);
-        add(Items.SHULKER_SHELL, 3, RIFT, 4, METAL, 3);
-        add(Items.EXPERIENCE_BOTTLE, 2, MAGIC, 6);
-        // Plain sources of the primals found everywhere: their ink needs no separator.
-        add(Items.SNOWBALL, 1, WATER, 2);
-        add(Items.SEAGRASS, 1, WATER, 3);
-        add(Items.WHEAT_SEEDS, 1, LIFE, 3);
-        // One clear source for essences the words spread thin.
-        add(Items.CAULDRON, 2, STEAM, 4, METAL, 4);
-        add(Items.CAMPFIRE, 1, ASH, 4, FIRE, 3);
-        add(Items.TUFF, 1, ASH, 3, EARTH, 3);
-        add(Items.TRIDENT, 3, WATER, 5, SPARK, 4, METAL, 2);
-        add(Items.DEEPSLATE, 1, EARTH, 4, SHADOW, 2);
-        add(Items.HEAVY_CORE, 3, METAL, 5, EARTH, 3);
-        add(Items.COBWEB, 1, BEAST, 2, SHADOW, 2);
-        add(Items.GOAT_HORN, 2, AIR, 4, BEAST, 3);
-        add(Items.TINTED_GLASS, 2, CRYSTAL, 3, SHADOW, 2);
-        add(Items.END_ROD, 2, LIGHT, 4, MAGIC, 2);
-        add(Items.GLISTERING_MELON_SLICE, 2, LIFE, 4, MAGIC, 1);
-        add(Items.CLOCK, 2, METAL, 3, MAGIC, 3);
-        add(Items.NETHER_WART, 1, MAGMA, 2, PLANT, 2);
-    }
-
     private ResearchItems() {
     }
 
-    private static void add(Item item, int tier, Object... pairs) {
-        CANONICAL.put(item, ItemEssences.of(tier, pairs));
-    }
-
-    /** The base materials of the default data map. */
+    /**
+     * The hand-tuned items: everything the {@code hextale:essences} data map names (this mod's
+     * {@code data/hextale/data_maps/item/essences.json} plus whatever data packs add or replace).
+     */
     public static Map<Item, ItemEssences> canonical() {
-        return Collections.unmodifiableMap(CANONICAL);
+        Map<Item, ItemEssences> out = new LinkedHashMap<>();
+        for (Item item : net.minecraft.core.registries.BuiltInRegistries.ITEM) {
+            @SuppressWarnings("deprecation")
+            ItemEssences tuned = item.builtInRegistryHolder().getData(ModDataMaps.ESSENCES);
+            if (tuned != null) {
+                out.put(item, tuned);
+            }
+        }
+        return Collections.unmodifiableMap(out);
     }
 
     /**
@@ -115,8 +55,42 @@ public final class ResearchItems {
         return holder.getData(ModDataMaps.ESSENCES);
     }
 
+    /**
+     * What this very stack carries: an essence item is its one essence, a bottle what is poured into it (its three
+     * strongest essences, 1 point a mB); everything else is its item's essences.
+     */
     @Nullable
     public static ItemEssences of(ItemStack stack) {
-        return stack.isEmpty() ? null : of(stack.getItem());
+        if (stack.isEmpty()) {
+            return null;
+        }
+        Essence kind = com.pockyl.hextale.item.EssenceItem.essence(stack);
+        if (kind != null) {
+            return ItemEssences.of(kind.isPrimal() ? 1 : 2, kind, ESSENCE_ITEM_POINTS);
+        }
+        if (stack.is(com.pockyl.hextale.registry.ModItems.ESSENCE_FLASK.get())) {
+            ItemEssences poured = poured(com.pockyl.hextale.essence.EssenceFlaskItem.contents(stack));
+            if (poured != null) {
+                return poured;
+            }
+        }
+        return of(stack.getItem());
+    }
+
+    /** Points of its essence an essence item carries. */
+    public static final int ESSENCE_ITEM_POINTS = 4;
+
+    @Nullable
+    private static ItemEssences poured(com.pockyl.hextale.essence.EssenceMix mix) {
+        java.util.List<Map.Entry<Essence, Integer>> known = new java.util.ArrayList<>(mix.asMap().entrySet());
+        if (known.isEmpty()) {
+            return null;
+        }
+        known.sort((a, b) -> b.getValue() - a.getValue() != 0 ? b.getValue() - a.getValue() : a.getKey().ordinal() - b.getKey().ordinal());
+        Map<Essence, Integer> kept = new LinkedHashMap<>();
+        for (Map.Entry<Essence, Integer> entry : known.subList(0, Math.min(3, known.size()))) {
+            kept.put(entry.getKey(), Math.min(64, entry.getValue()));
+        }
+        return new ItemEssences(kept, 1);
     }
 }

@@ -73,12 +73,10 @@ final class GuideEditScreen extends Screen {
         name.setValue(initialName);
         y += 32;
         initialGoal = GuideEditor.text(quest.translationKey() + ".goal");
-        if (quest.kind() == Quest.Kind.ITEM) {
-            goal = addRenderableWidget(new EditBox(font, left, y, WIDTH, 18, Component.literal("Goal")));
-            goal.setMaxLength(300);
-            goal.setValue(initialGoal);
-            y += 32;
-        }
+        goal = addRenderableWidget(new EditBox(font, left, y, WIDTH, 18, Component.literal("Goal")));
+        goal.setMaxLength(300);
+        goal.setValue(initialGoal);
+        y += 32;
         initialDescription = GuideEditor.text(quest.translationKey() + ".desc");
         description = addRenderableWidget(MultiLineEditBox.builder().setX(left).setY(y).setShowDecorations(false).build(font, WIDTH, 64, Component.literal("Description")));
         description.setCharacterLimit(2000);
@@ -102,13 +100,10 @@ final class GuideEditScreen extends Screen {
             button.setMessage(stationLabel());
         }).bounds(left + WIDTH / 2 + 4, y, WIDTH / 2 - 4, 20).build());
         y += 26;
-        int third = (WIDTH - 8) / 3;
-        addRenderableWidget(Button.builder(Component.literal("+ device after it"), button -> addChild(Quest.Kind.WIP))
-                .bounds(left, y, third, 20).build());
-        addRenderableWidget(Button.builder(Component.literal("+ item step after it"), button -> addChild(Quest.Kind.ITEM))
-                .bounds(left + third + 4, y, third, 20).build());
+        addRenderableWidget(Button.builder(Component.literal("+ step after it"), button -> addChild())
+                .bounds(left, y, WIDTH / 2 - 4, 20).build());
         addRenderableWidget(Button.builder(Component.literal("Remove"), button -> remove())
-                .bounds(left + 2 * (third + 4), y, third, 20).build());
+                .bounds(left + WIDTH / 2 + 4, y, WIDTH / 2 - 4, 20).build());
         y += 26;
         addRenderableWidget(Button.builder(Component.literal("Save"), button -> save()).bounds(left, y, WIDTH / 2 - 4, 20).build());
         addRenderableWidget(Button.builder(Component.literal("Cancel"), button -> onClose())
@@ -128,7 +123,7 @@ final class GuideEditScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         super.extractRenderState(graphics, mouseX, mouseY, a);
         int left = (width - WIDTH) / 2;
-        graphics.text(font, Component.literal(quest.id() + "  (" + quest.kind().name().toLowerCase(java.util.Locale.ROOT) + ", "
+        graphics.text(font, Component.literal(quest.id() + "  ("
                 + quest.region().name().toLowerCase(java.util.Locale.ROOT) + ")  -  data/hextale/hextale_guide/" + quest.id() + ".json"),
                 left, 8, TEXT, true);
         graphics.text(font, Component.literal("Name"), left, name.getY() - 10, MUTED, false);
@@ -196,7 +191,7 @@ final class GuideEditScreen extends Screen {
         return true;
     }
 
-    /** What is wrong with these parents, or null: they must exist, not wait for this step, and an item never waits for a WIP. */
+    /** What is wrong with these parents, or null: they must exist and not wait for this step. */
     @Nullable
     private String checkParents(List<String> ids) {
         Guide guide = Guide.client();
@@ -212,29 +207,26 @@ final class GuideEditScreen extends Screen {
             if (parent == quest || after.contains(parent)) {
                 return id + " waits for " + quest.id() + " - it cannot come first";
             }
-            if (quest.kind() == Quest.Kind.ITEM && parent.kind() == Quest.Kind.WIP) {
-                return "An item step cannot wait for a device still being worked out";
-            }
         }
         return null;
     }
 
     /** Adds a step after this one (saving this one first): a book for an icon, next to it on the map, to be edited now. */
-    private void addChild(Quest.Kind kind) {
+    private void addChild() {
         if (!apply()) {
             return;
         }
         Guide guide = Guide.client();
-        String base = kind == Quest.Kind.WIP ? "wip_custom_" : "custom_";
+        String base = "custom_";
         int n = 1;
         while (guide.byId(base + n) != null) {
             n++;
         }
         String id = base + n;
         Quest at = guide.byId(quest.id());
-        QuestDefinition definition = new QuestDefinition(kind, quest.region(), quest.stage(), List.of(new ItemStackTemplate(Items.BOOK)), List.of(quest.id()),
+        QuestDefinition definition = new QuestDefinition(quest.region(), quest.stage(), List.of(new ItemStackTemplate(Items.BOOK)), List.of(quest.id()),
                 Optional.empty(), List.of(), Optional.empty(), Quest.Aura.NONE, false, false, false, Optional.empty(),
-                Optional.of(freeSpot(guide, at != null ? at : quest)));
+                Optional.of(freeSpot(guide, at != null ? at : quest)), Optional.empty());
         Map<String, @Nullable QuestDefinition> changed = new LinkedHashMap<>();
         changed.put(id, definition);
         boolean saved = GuideEditor.saveSteps(changed);
@@ -245,11 +237,9 @@ final class GuideEditScreen extends Screen {
         }
         boolean russian = minecraft.getLanguageManager().getSelected().equals("ru_ru");
         Map<String, @Nullable String> texts = new LinkedHashMap<>();
-        texts.put(child.translationKey(), kind == Quest.Kind.WIP ? (russian ? "Новое устройство" : "New device") : (russian ? "Новый шаг" : "New step"));
+        texts.put(child.translationKey(), russian ? "Новый шаг" : "New step");
         texts.put(child.translationKey() + ".desc", "");
-        if (kind == Quest.Kind.ITEM) {
-            texts.put(child.translationKey() + ".goal", russian ? "получить предмет" : "obtain it");
-        }
+        texts.put(child.translationKey() + ".goal", russian ? "получить предмет" : "obtain it");
         saved &= GuideEditor.saveTexts(texts);
         GuideEditor.report(id + " added", saved);
         minecraft.setScreen(new GuideEditScreen(child, parent));

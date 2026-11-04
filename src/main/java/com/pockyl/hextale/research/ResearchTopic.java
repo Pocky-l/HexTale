@@ -1,7 +1,9 @@
 package com.pockyl.hextale.research;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.level.ItemLike;
 
 import com.pockyl.hextale.chem.Brew;
@@ -26,9 +28,11 @@ import org.jspecify.annotations.Nullable;
  * @param items what the topic lets the researcher make; the first one names and shows it (none for a brew)
  * @param brew  the brew a chemtech reaction topic opens, or null
  * @param name  the topic's own name key when it opens a whole kit (the hextech tools), or null: named after its first item
+ * @param mark  the diary picture ({@code hextale:guide_mark} model) that shows a topic opening no item of its own, such
+ *              as transmutation (its Crucible recipes name it), or null
  */
 public record ResearchTopic(String id, List<Supplier<? extends ItemLike>> items, Essence action, Essence target, int tier, Bench bench,
-                            @Nullable Brew brew, @Nullable String name) {
+                            @Nullable Brew brew, @Nullable String name, @Nullable String mark) {
     /** Where a topic is worked out. */
     public enum Bench {
         /** The Research Table: a hexagon parchment and an ink thread. */
@@ -38,10 +42,18 @@ public record ResearchTopic(String id, List<Supplier<? extends ItemLike>> items,
     }
 
     public Item item() {
+        if (mark != null) {
+            return ModItems.GUIDE_MARK.get();
+        }
         return brew != null ? ModItems.CHEM_VIAL.get() : items.getFirst().get().asItem();
     }
 
     public ItemStack icon() {
+        if (mark != null) {
+            ItemStack picture = new ItemStack(ModItems.GUIDE_MARK.get());
+            picture.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(List.of(), List.of(), List.of(mark), List.of()));
+            return picture;
+        }
         return brew != null ? ChemVialItem.of(brew) : new ItemStack(item());
     }
 
@@ -59,6 +71,11 @@ public record ResearchTopic(String id, List<Supplier<? extends ItemLike>> items,
 
     public boolean lab() {
         return bench == Bench.LAB;
+    }
+
+    /** The line that says where to research this topic first (the Research Table or the Lab Bench), taking its name. */
+    public String lockedKey() {
+        return lab() ? "research.hextale.locked_lab" : "research.hextale.locked";
     }
 
     public boolean opens(Item item) {

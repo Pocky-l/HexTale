@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "conditions": [
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "hextale:blue_hex_wisp",
+          "properties": {
+            "placed": "true"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:blue_hex_wisp"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "hextale:blocks/blue_hex_wisp"
+}

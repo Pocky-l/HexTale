@@ -1,0 +1,11 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:soul_sand",
+  "essences": {
+    "shadow": 3
+  },
+  "result": {
+    "id": "minecraft:soul_soil"
+  },
+  "research": "advanced_transmutation"
+}

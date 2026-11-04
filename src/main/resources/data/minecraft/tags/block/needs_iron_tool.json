@@ -4,6 +4,11 @@
     "hextale:charged_hexsteel_block",
     "hextale:hexsteel_plating",
     "hextale:void_carapace_tiles",
-    "hextale:gnawed_gold_ore"
+    "hextale:gnawed_gold_ore",
+    "hextale:chem_vat",
+    "hextale:chem_steel_block",
+    "hextale:chem_steel_plating",
+    "hextale:chem_steel_plating_stairs",
+    "hextale:chem_steel_plating_slab"
   ]
 }

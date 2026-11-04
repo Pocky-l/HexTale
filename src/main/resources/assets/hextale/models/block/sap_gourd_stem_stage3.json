@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/stem_growth3",
+  "textures": {
+    "stem": "hextale:block/sap_gourd_stem"
+  }
+}

@@ -17,6 +17,7 @@ public final class Quests {
     /** Events the game reports to the guide ({@link #fire}); event goals in the data name them. */
     public static final String BIG_ESSENCE_JAR_FORMED = "big_essence_jar_formed";
     public static final String HEX_FOUNDRY_LIT = "hex_foundry_lit";
+    public static final String CHEM_VAT_FORMED = "chem_vat_formed";
     public static final String RUNE_SCROLL_WRITTEN = "rune_scroll_written";
     public static final String HEXCORE_AWAKENED = "hexcore_awakened";
     /** A figure drawn in Binding Chalk closed near the player. */
@@ -56,6 +57,8 @@ public final class Quests {
     public static final String VOID_MARKED = "void_marked";
     public static final String NURSERY_HATCHED = "nursery_hatched";
     public static final String SWALLOWED_RUIN = "swallowed_ruin";
+    /** A brew poured on farmland: the first Steeped Soil. */
+    public static final String STEEPED_SOIL = "steeped_soil";
 
     /** The event of a block woken with hextech dust (its id path), for the one who woke it. */
     public static String awakened(String block) {
@@ -80,7 +83,7 @@ public final class Quests {
         }
         Quest last = null;
         for (Quest quest : guide.all()) {
-            if (quest.kind() == Quest.Kind.ITEM && !knowledge.questDone(quest) && Guide.open(quest, knowledge) && quest.isMet(player, guide)) {
+            if (!knowledge.questDone(quest) && Guide.open(quest, knowledge) && quest.isMet(player, guide)) {
                 complete(player, knowledge, quest);
                 announce(player, quest);
                 last = quest;
@@ -125,7 +128,7 @@ public final class Quests {
      */
     public static boolean grant(ServerPlayer player, Quest quest) {
         RuneKnowledge knowledge = Research.of(player);
-        if (quest.kind() != Quest.Kind.ITEM || knowledge.questDone(quest)) {
+        if (knowledge.questDone(quest)) {
             return false;
         }
         complete(player, knowledge, quest);

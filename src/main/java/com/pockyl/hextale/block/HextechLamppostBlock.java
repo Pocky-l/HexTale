@@ -111,17 +111,6 @@ public class HextechLamppostBlock extends BaseEntityBlock {
         return super.playerWillDestroy(level, pos, state, player);
     }
 
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        if (!level.isClientSide()) {
-            HextechLamppostBlockEntity post = postAt(level, pos, state);
-            if (post != null) {
-                player.sendOverlayMessage(post.status());
-            }
-        }
-        return InteractionResult.SUCCESS;
-    }
-
     /** A lit head sheds a cold mote now and then. */
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {

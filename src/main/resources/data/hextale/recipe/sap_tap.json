@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CCN",
+    "  C"
+  ],
+  "key": {
+    "C": "minecraft:copper_ingot",
+    "N": "minecraft:iron_nugget"
+  },
+  "result": {
+    "id": "hextale:sap_tap"
+  }
+}

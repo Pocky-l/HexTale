@@ -5,7 +5,185 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Buckets of Essence (#8): an empty bucket fills with 1000 mB of one pure essence from a Big Essence Jar or another
+  mod's tank, and pours it back into them; storage mods keep them as items. They never pour out into the world.
+- The Researcher's Diary has a search (#8): type over the map or click the field in its corner, and the steps you can
+  see whose name holds the words are ringed and the map flies to the first; Enter goes to the next, Escape clears.
+- The Researcher's Diary links its pictures: click an item in a recipe or scheme to open the step that makes it (the
+  back arrow returns to the step you came from). With [JEI](https://www.curseforge.com/minecraft/mc-mods/jei), JEI's
+  own show recipe / show uses keys work on those items too.
+- The Chem Still shows the Crystal Pods it holds, lying on its base behind the receiver.
+- JEI shows what the Chem Vat tempers: the metals, the vials of acid and shimmer its bath must hold, and the result.
+- Chem-steel tools and armour are 3D models, with glass in the colour of the fuel in the tank you wear (dark when it is
+  empty; shimmer glows). The armour: riveted plates over dark leather, copper hoses, a respirator with glass filters.
+- While you wear a Chem Tank, a small glass gauge beside the hotbar shows its fuel in the fuel's colour.
+- Chem-Steel Tank Chestplate (its own Lab Bench research): a chem-steel chestplate with the tank built into its back, so
+  armour and fuel take one slot. It fills, pumps and feeds the gear like a Chem Tank.
+- Chem-steel armour (one Lab Bench research for the whole set): helmet, chestplate, leggings and boots that never break
+  and take no runes. Like the tools they run on the Chem Tank: refined shimmer gives the riftforged Bulwark's protection,
+  ember oil the refined one's; with an empty tank they guard little better than leather. Every blow they take burns a
+  little fuel.
+- Chem-steel tools (late chemtech, one Lab Bench research for all four): pickaxe, axe, shovel and sword that never
+  break and take no runes. They run on the Chem Tank on your back: refined shimmer gives the full strength of the
+  riftforged tools, raw shimmer that of the radiant ones, ember oil that of the refined ones; with an empty tank they dig
+  slower than stone tools and hit barely harder than a fist. Their tooltip shows what they give with the fuel you wear,
+  their bar the tank's fuel; every block and every hit spends a little of it. The sword never breaks blocks, so a missed
+  swing cannot dig.
+- Chem Tank (late chemtech, worked out at the Lab Bench, made of chem-steel): a glass fuel tank in leather straps
+  worn on the back - in the chest slot, or in the back slot when Curios is installed. It holds one fuel at a time (ember
+  oil, raw or refined shimmer), shown through its glass on the wearer's back and as the bar of the item; fuel vials
+  clicked onto it in the inventory pour in. Set down, it is filled with vials by hand or hopper, and an empty hand on it
+  pumps its fuel into the tank you wear. It keeps its fuel when broken. Chemtech tools and armour that run on it come next.
+- Chem Vat (late chemtech, worked out at the Lab Bench): a 3x3x3 tank of rusted plating over a Chem Burner, with
+  Chem Glass in three sides, a Rusted Grate on top and the new Chem Vat Valve in front, sealed with a vial of acid. Pour
+  acid and refined shimmer into its bath, give its fire vials of combustible mix or ember oil, and drop in metal - by
+  hand, by hopper or thrown on the grate. It tempers two iron ingots and a netherite scrap into a Chem-Steel Ingot; the
+  bath shows through the glass, green with acid and violet with shimmer.
+- Chem-steel decor: Block of Chem-Steel, Chem-Steel Plating with stairs and slab.
+- Ember Oil (worked out at the Lab Bench): Ember Wheat boiled in the Crucible with magma and sap essence gives four vials
+  of a thick amber fuel that burns half as long again as the combustible mix in a Chem Burner or a furnace.
+- Shimmer Bulbs brew raw shimmer: a bulb in the Crucible with sap and light essence gives six vials, twice what a
+  Regenerative Slime gives, so a bulb field becomes the real source of shimmer.
+- Spawn eggs for the creatures of the Void: Void Mite, Voidling, Rib Crawler, Pit Maw and Seer (creative tab and the
+  vanilla Spawn Eggs tab).
+- Wisps can now be made: a torch thrown into the boiling Crucible with a little light and spark essence rises as two
+  Wisps. Set one down by hand and it floats there as a lasting little flame; a touch puts it out at once with a soft
+  puff of sparks in its colour and gives it back.
+- Wisps come in the hextech blue and all sixteen dye colours: mix any Wisp with a dye at the crafting table (hextech
+  dust turns it blue again).
+- The creative tab has a concentrate of every one of the 22 essences, not only of the primals.
+- Modpacks and other mods can set the essences of any item, HexTale's own included, in the data map
+  `hextale:essences`; everything crafted from it follows. How: the modpack guide (`docs/modpack.md`, "Essences of items").
+
+- The chemtech garden begins. A vial of growth tonic or raw shimmer, or a bottle of sap, poured on farmland soaks the
+  3x3 around it into Steeped Soil: it never dries out or gets trampled, crops grow on it as on wet farmland, and while
+  its doses last a crop on it often grows a stage more and a ripe harvest sometimes comes twice (shimmer strongest, sap
+  weakest). Growth tonic splashed over farmland steeps it too.
+- Chem Planter (worked out at the Lab Bench): an iron box with green glass sides and soil on top; its tank of growth
+  tonic, raw shimmer or piped sap shows through the glass. It grows the plant on it by itself, a stage every five
+  seconds for a dose, day or night, and its dose sometimes doubles a ripe harvest. Runes: Growth (feeds sooner),
+  Fertility (a ripe harvest twice), Pollen (a neighbour grows too), Dam.
+- Essence Sprinkler (worked out at the Lab Bench): a copper riser with a turning head; water and sap come by pipe, brews
+  are poured in, and every few seconds it wets the dry farmland around it and tops up the beds and planters that run low
+  on doses, so it spends only what the plants used. Runes: Shift,
+  Dam, Fertility, Healing.
+- Sap Tap: a copper spout set on the trunk of a living tree drips sap essence into a jar or pipe under it, or gathers it
+  for a glass bottle; faster from a magic tree or a jungle trunk. Runes: Haste, Spring, Photosynthesis.
+- Garden Trellis: a rusted iron lattice to climb like a ladder.
+- Strains, each worked out at the Lab Bench and then made in the Crucible: a plain plant dropped into the boiling
+  Crucible with the right essences comes out changed - wheat seeds with magma into Ember Wheat seeds, melon seeds with
+  sap into Sap Gourd seeds, sugar cane with crystal into Crystal Cane, glow berries with rift into Shimmer Bulbs.
+- The first strains: Cultivated Shimmerbloom (a bulb that opens into a shimmerbloom: shimmer from a garden bed), Ember
+  Wheat (smouldering grain that burns in a furnace), the Sap Gourd (a melon-like gourd full of sap) and Crystal Cane
+  (glassy cane that grows crystal pods to pick).
+- Transmutation, worked out at the Lab Bench right after it is built: the Crucible turns an item into a kindred one
+  for a little essence from its water, and every change also works backwards. Sand and red sand, sandstone and red
+  sandstone, red and brown mushrooms and their blocks, seven pairs of flowers and tall flowers, carrots and potatoes,
+  beetroots and sweet berries, dirt and podzol, cod and salmon, beef and porkchops, four pairs of logs, vines and glow
+  lichen, kelp and seagrass.
+- Advanced Transmutation (Lab Bench, after the Chem Burner): rarer things change for more essence. Redstone and
+  glowstone dust, nether quartz and amethyst shards, ink sacs and glow ink sacs, slime balls and magma cream, soul sand
+  and soul soil, the crimson and warped fungi, nylium, roots, stems and vines, basalt and blackstone, prismarine shards
+  and crystals, obsidian and crying obsidian, blaze rods and breeze rods.
+- A transmutation never gives more essence than went into it: each one costs what the new item carries more than the
+  old one, plus a small fee. JEI lists every pair under the Crucible.
+- The diary steps of both transmutations show every pair: pick an item in their rows to see its change there and back.
+  No item that starts two Crucible recipes or brews asks for the same essence in both, so the water decides clearly
+  what it becomes.
+
+### Changed
+- JEI shows how a researched thing is made - its recipe, its multiblock and its info page - only once you have
+  researched it; the item itself stays in the list. Lab Bench experiments stay visible.
+- The Chem Still needs a Crystal Pod (grown on Crystal Cane) for every vial of refined shimmer it makes: drop pods in
+  by hand or by hopper from the top or the sides.
+- Hextech tools and armour are much stronger, each level a clear step: runed tools now beat diamond, refined ones beat
+  netherite, radiant ones go well past it, and the riftforged tools mine stone in an instant with Efficiency V and fell
+  ordinary creatures in one blow with Sharpness V (pickaxe speed 8.5 / 11 / 14 / 20, sword 7.5 / 9 / 10.5 / 14).
+  Bulwark armour climbs to 30 armour points and toughness 5 a piece at level 4. Hexsteel tools and armour wear a
+  little longer than diamond ones.
+- Every level of tools and armour can be retuned in `config/hextale-startup.toml` (speed, damage, durability,
+  protection, toughness); it is read at start-up and must match on the server and the clients.
+- Devices talk less. Lines above the hotbar that only repeated what you see and hear are gone: "holds no more",
+  "valve open", "sticker set", "linked", "the plate is aimed" and the like, status lines on an empty-hand click where
+  the Researcher's Goggles show the same, and the altar's hint on an empty click. Lines that tell you why something
+  did not work, or a number you cannot see elsewhere, stay.
+- Every description in the mod was rewritten to be clear, in English and Russian. Rune descriptions, tooltips,
+  hints and JEI pages now say plainly what a thing does and how to use it; the Researcher's Diary keeps its voice but
+  says what each step is about and what to do next. Several texts that disagreed with how things actually work were
+  corrected along the way.
+- Descriptions are about half as long (English and Russian). Diary steps, JEI pages, hints and tooltips say what a thing
+  does and what is not obvious, and no longer repeat recipes, amounts and costs that JEI or the screens already show.
+  One word for each thing: the Void's mark on the land is "sickness" everywhere, chemtech brews come in vials, and the
+  Arc Spire's Thrift rune names Lightning Essence.
+- The diary draws its recipes as what happens instead of "this plus that". A Crucible step shows the pot over its
+  fire, the essences its water must hold (sign, name and mB), what is thrown in and what rises; a brew also names the
+  heat it needs and the bottles that scoop its doses. Dust on a block, the lapidary, the still, the tank and the
+  Awakened Furnace's alloys show the inputs flowing into the device, drawn large, and the result coming out.
+- JEI shows them the same way: the Crucible and Crucible Brewing pages draw the pot with its essences, the catalyst
+  falling in, the fire and the heat it needs; hextech working, the still, the tank, the drain valve, rune writing and
+  the Lab Bench show their inputs flowing into the device instead of plus signs.
+- Labels that only repeated an icon are gone: the Crucible's "any fire" and the Chem Burner's heat (the icon says it,
+  a cooler brew only adds "or hotter"), the catalyst's and the bottle's captions, the diary's notes under the furnace,
+  the workbench, the bush, the alembic and the tank, the Lab Bench's Seal label, JEI's "Hexcore only" and "charge", the
+  research's "Goals" word; the words stay in the tooltips.
+- The Researcher's Diary map is tidier: the riftmetal tools, the Hexcore's steps and the deep side of the Void sit
+  closer to where they come from, the pylons and farm devices have room around them, and the chemtech garden fans out
+  under its soil instead of trailing far below.
+- A step's shape on the diary map always says what it asks for: a hexagon means it must be researched first, also for
+  a workstation (the Chem Burner, Chem Still, Axolotl Tank, Lapidary and Rune Circle now show their hexagon inside the
+  cog ring), and only devices where further steps are made wear the cog ring (the Disintegrator and the Foundry no
+  longer do, the Separator and the Rune Circle now do). The Lab Bench, where all chemtech starts, gets a great frame
+  like the Research Table.
+- The Russian name of the Nursery step no longer repeats the Incubator's.
+- Bottles of essence stack up to 16 when they hold the same liquid (a separator pours a stack one whole bottle at a time).
+- Every item of the mod carries the essences it is made of instead of a guess: wisps are pure light, devices carry
+  what they work with (the alembic steam, the arc spire lightning), metals, crystals, gear, plants and the Void's things
+  were all gone through; magic wood and magic stone now carry magic. The essence items carry their own essence.
+- A few vanilla items got sensible essences too: sulfur, cinnabar, resin, the creaking heart, ferns, bushes, petals and
+  roots.
+- The Crucible is a heavier cast-iron cauldron with a new model and texture.
+- Wisps the Eternal Flame rune leaves in tunnels still drop nothing, and they still give way to any block put there;
+  Wisps set down by hand keep their spot.
+- Wisps are drawn as round flames that look whole from every side, with twisting tongues, instead of a flat picture.
+- Wisps can be aimed at and put out with anything in hand; only a pickaxe with the Eternal Flame rune looks past them,
+  so digging on never puts out the light it leaves.
+- The Crucible is kinder to the hands. Things go in by hand only when aimed into the pot; aimed at its outside, a
+  torch or a block is placed as against any block. It never takes tools, armour, named or enchanted things, filled
+  shulker boxes and bundles, jars or vials: thrown in, they bob back out with a soft gloop. An empty glass bottle is
+  no longer swallowed when there is no brew to bottle.
+- Finished results no longer fly off in all directions: they float on the water until fished out with an empty hand,
+  or drift over the lip into a hopper, chest or pipe on the Crucible's front side.
+- Boiling the Crucible away takes two sneak-uses: the first makes it hiss and says what would be lost. Results still
+  soaking or floating are thrown out instead of vanishing, whichever way the pot is emptied.
+- Essence that leaves the Crucible always wears the land: boiled away, spilt over the rim or lost with the broken pot,
+  like essence poured out of a bucket.
+- A bucket or bottle of water that would push essence over the rim is refused.
+- Jade and the researcher's goggles tell what the item in hand would do in the Crucible before it is lost: what it
+  turns into, which brew it starts, what it dissolves into, or why not (more heat, research, another brew, full doses).
+  The water also stirs towards a player holding something it can take.
+- The Crucible's status names the heat under it, and a comparator reads it (fill level, or the doses of a brew).
+- Hoppers and pipes feeding the Crucible now work for the researcher who woke it or last used it by hand, so brews
+  and researched transmutations start from them too; a catalyst for full doses stays in the hopper.
+- A Chem Burner under a Crucible that has been boiling idle for half a minute burns its fuel four times slower.
+
+### Removed
+- The "ideas in the margins" (WIP steps) are gone from the diary for good, and with them the client option
+  `showWipSteps`: the map shows only what is really in the game.
+
 ### Fixed
+- Claimed chunks (FTB Chunks and other claim mods) get blighted like any other land (#9): the blight is a force of
+  nature. Servers that want claims to keep it out can turn on `blightRespectsClaims`.
+- The Foundry no longer reads "Waking up" while it stands idle: with fuel or fire but nothing to melt it says it heats
+  only while something melts inside and marks its input grid. Its warnings now show on the screen as soon as they happen.
+- The diary pictures say what really happens: Rusted Plating shows a vial of acid thrown at an iron block (not a
+  fermented spider eye and an empty vial), Refined Shimmer shows vials of raw shimmer going into the Chem Still, the
+  Hextech Crystal and Gemstone show the Lapidary with its disc, a Void Crystal is mined from its cluster, and Void
+  Carapace says it is made in the Crucible.
+- JEI has a "Thrown Vial" page: acid rusts iron blocks into Rusted Plating and ages copper, coolant sets lava into
+  obsidian and magma into netherrack.
+- A Crucible or a workbench that refuses something worked out at the Lab Bench now says to research it at the Lab
+  Bench, not at the Research Table.
 - Leaving the game in the middle of a passage through a breach or a gate no longer sinks the player into the ground
   (or below the world) on the next visit, and the passage no longer carries the player a dozen blocks off the spot
   they arrive at while its screen is still up.

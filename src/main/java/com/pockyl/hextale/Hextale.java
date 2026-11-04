@@ -41,6 +41,8 @@ public final class Hextale {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public Hextale(IEventBus modBus, ModContainer container) {
+        // First: tool and armour materials read it while the items register.
+        container.registerConfig(ModConfig.Type.STARTUP, GearConfig.SPEC);
         com.pockyl.hextale.registry.ModAliases.register();
         ModBlocks.register(modBus);
         ModItems.register(modBus);
@@ -61,6 +63,7 @@ public final class Hextale {
         modBus.addListener((net.neoforged.neoforge.common.world.chunk.RegisterTicketControllersEvent event) ->
                 event.register(com.pockyl.hextale.block.WorldAnchorBlock.TICKETS));
         PickaxeEffects.register();
+        com.pockyl.hextale.chem.ChemGear.register();
         com.pockyl.hextale.runework.ToolEffects.register();
         com.pockyl.hextale.runework.WeaponRunes.register();
         com.pockyl.hextale.farm.FunnelEvents.register();
@@ -117,6 +120,8 @@ public final class Hextale {
         output.accept(ModItems.NULLSTONE);
         output.accept(ModItems.HEXTECH_LAMP);
         output.accept(ModItems.HEXTECH_LAMPPOST);
+        output.accept(ModItems.HEX_WISP);
+        ModItems.DYED_WISPS.values().forEach(output::accept);
 
         // Essence works.
         output.accept(ModItems.ALEMBIC);
@@ -130,9 +135,33 @@ public final class Hextale {
         // Chemtech.
         output.accept(ModItems.CHEM_BURNER);
         output.accept(ModItems.CHEM_STILL);
+        output.accept(ModItems.CHEM_VAT);
+        output.accept(ModItems.CHEM_TANK);
+        output.accept(ModItems.CHEM_STEEL_PICKAXE);
+        output.accept(ModItems.CHEM_STEEL_AXE);
+        output.accept(ModItems.CHEM_STEEL_SHOVEL);
+        output.accept(ModItems.CHEM_STEEL_SWORD);
+        output.accept(ModItems.CHEM_STEEL_HELMET);
+        output.accept(ModItems.CHEM_STEEL_CHESTPLATE);
+        output.accept(ModItems.CHEM_STEEL_TANK_CHESTPLATE);
+        output.accept(ModItems.CHEM_STEEL_LEGGINGS);
+        output.accept(ModItems.CHEM_STEEL_BOOTS);
         output.accept(ModItems.CHEM_BOILER);
         output.accept(ModItems.AXOLOTL_TANK);
         output.accept(ModItems.PINK_BRAZIER);
+        // The chemtech garden.
+        output.accept(ModItems.SAP_TAP);
+        output.accept(ModItems.CHEM_PLANTER);
+        output.accept(ModItems.ESSENCE_SPRINKLER);
+        output.accept(ModItems.STEEPED_SOIL);
+        output.accept(ModItems.GARDEN_TRELLIS);
+        output.accept(ModItems.SHIMMER_BULB);
+        output.accept(ModItems.EMBER_WHEAT_SEEDS);
+        output.accept(ModItems.EMBER_WHEAT);
+        output.accept(ModItems.SAP_GOURD_SEEDS);
+        output.accept(ModItems.SAP_GOURD);
+        output.accept(ModItems.CRYSTAL_CANE);
+        output.accept(ModItems.CRYSTAL_POD);
 
         // Pylon logistics.
         output.accept(ModItems.GATHERING_PYLON);
@@ -318,6 +347,11 @@ public final class Hextale {
         output.accept(ModItems.RUSTED_PLATING_SLAB);
         output.accept(ModItems.RIVETED_RUSTED_PLATING);
         output.accept(ModItems.RUSTED_GRATE);
+        output.accept(ModItems.CHEM_STEEL_INGOT);
+        output.accept(ModItems.CHEM_STEEL_BLOCK);
+        output.accept(ModItems.CHEM_STEEL_PLATING);
+        output.accept(ModItems.CHEM_STEEL_PLATING_STAIRS);
+        output.accept(ModItems.CHEM_STEEL_PLATING_SLAB);
         output.accept(ModItems.CHEM_TUBES);
         output.accept(ModItems.BRASS_GRATE);
         output.accept(ModItems.CHEM_GLASS);
@@ -400,14 +434,17 @@ public final class Hextale {
         output.accept(ModItems.GNAWED_GOLD_ORE);
         output.accept(ModItems.VOID_LENS);
 
-        // Bottles of the primals and of unknown essence, then every essence as an item in catalogue order
-        // (primals, pairs, deeper compounds), then every brew.
-        for (Essence essence : Essence.PRIMALS) {
+        // A concentrate of every essence and a bottle of unknown essence, then every essence as an item, both in
+        // catalogue order (primals, then compounds), then every brew.
+        for (Essence essence : Essence.values()) {
             output.accept(EssenceFlaskItem.filled(EssenceMix.pure(essence, EssenceFlaskItem.CAPACITY)));
         }
         output.accept(EssenceFlaskItem.filled(EssenceMix.unknown(EssenceFlaskItem.CAPACITY)));
         for (Essence essence : Essence.values()) {
             output.accept(com.pockyl.hextale.item.EssenceItem.of(essence));
+        }
+        for (Essence essence : Essence.values()) {
+            output.accept(com.pockyl.hextale.item.EssenceBucketItem.of(essence));
         }
         for (com.pockyl.hextale.chem.Brew brew : com.pockyl.hextale.chem.Brew.values()) {
             output.accept(com.pockyl.hextale.chem.ChemVialItem.of(brew));
@@ -421,6 +458,13 @@ public final class Hextale {
         output.accept(ModItems.SCROLL_OF_OMNISCIENCE);
         output.accept(ModItems.SCROLL_OF_OBLIVION);
         output.accept(ModItems.VOID_SHARD);
+
+        // Spawn eggs of the Void's creatures.
+        output.accept(ModItems.VOID_MITE_SPAWN_EGG);
+        output.accept(ModItems.VOIDLING_SPAWN_EGG);
+        output.accept(ModItems.RIB_CRAWLER_SPAWN_EGG);
+        output.accept(ModItems.PIT_MAW_SPAWN_EGG);
+        output.accept(ModItems.SEER_SPAWN_EGG);
     }
 
     /** A scroll of "Smelting" shows players what scrolls look like; real ones come from the Research Table. */
@@ -429,7 +473,13 @@ public final class Hextale {
     }
 
     private static void addToVanillaTabs(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
+        if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
+            event.accept(ModItems.VOID_MITE_SPAWN_EGG);
+            event.accept(ModItems.VOIDLING_SPAWN_EGG);
+            event.accept(ModItems.RIB_CRAWLER_SPAWN_EGG);
+            event.accept(ModItems.PIT_MAW_SPAWN_EGG);
+            event.accept(ModItems.SEER_SPAWN_EGG);
+        } else if (event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
             event.accept(ModItems.VOID_SOIL);
             event.accept(ModItems.VOID_ROCK);
             event.accept(ModItems.VOID_CORAL);

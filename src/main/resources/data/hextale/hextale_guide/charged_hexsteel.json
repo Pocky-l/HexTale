@@ -6,16 +6,12 @@
     "hexsteel"
   ],
   "display": {
-    "kind": "scheme",
-    "ingredients": [
-      "hextale:hexsteel_ingot",
-      "hextale:crucible"
-    ],
+    "kind": "crucible",
     "result": "hextale:charged_hexsteel_ingot"
   },
   "research": "charged_hexsteel",
   "pos": [
-    765,
-    110
+    734,
+    86
   ]
 }

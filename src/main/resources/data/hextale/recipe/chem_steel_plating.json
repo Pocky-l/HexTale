@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PPP",
+    "P#P",
+    "PPP"
+  ],
+  "key": {
+    "P": "hextale:rusted_plating",
+    "#": "#c:ingots/chem_steel"
+  },
+  "result": {
+    "id": "hextale:chem_steel_plating",
+    "count": 8
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "dyed_hex_wisp",
+  "ingredients": [
+    "#hextale:hex_wisps",
+    "#c:dyes/light_blue"
+  ],
+  "result": {
+    "id": "hextale:light_blue_hex_wisp"
+  }
+}

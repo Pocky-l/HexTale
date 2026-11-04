@@ -1,0 +1,18 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "CDC",
+    " L ",
+    " P "
+  ],
+  "key": {
+    "C": "minecraft:copper_ingot",
+    "D": "minecraft:dispenser",
+    "L": "minecraft:lightning_rod",
+    "P": "#c:ingots/iron"
+  },
+  "result": {
+    "id": "hextale:essence_sprinkler"
+  },
+  "charge": 2
+}

@@ -91,9 +91,7 @@ public class VoidAnchorBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof VoidAnchorBlockEntity anchor) {
-            if (anchor.crystal().isEmpty()) {
-                player.sendOverlayMessage(status(anchor));
-            } else {
+            if (!anchor.crystal().isEmpty()) {
                 player.getInventory().placeItemBackInInventory(anchor.take());
                 level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_BREAK, SoundSource.BLOCKS, 0.7F, 1.0F);
             }

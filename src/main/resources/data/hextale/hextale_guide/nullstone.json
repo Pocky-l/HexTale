@@ -4,12 +4,8 @@
   "icon": "hextale:nullstone",
   "parents": ["hextech_altar"],
   "display": {
-    "kind": "scheme",
-    "ingredients": [
-      "minecraft:calcite",
-      "hextale:crucible"
-    ],
+    "kind": "crucible",
     "result": "hextale:nullstone"
   },
-  "pos": [574, -161]
+  "pos": [568, -159]
 }

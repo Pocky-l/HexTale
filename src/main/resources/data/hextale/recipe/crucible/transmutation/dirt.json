@@ -1,0 +1,12 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:podzol",
+  "essences": {
+    "plant": 3,
+    "earth": 1
+  },
+  "result": {
+    "id": "minecraft:dirt"
+  },
+  "research": "transmutation"
+}

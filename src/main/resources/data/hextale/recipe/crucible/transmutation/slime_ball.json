@@ -1,0 +1,11 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:magma_cream",
+  "essences": {
+    "sap": 3
+  },
+  "result": {
+    "id": "minecraft:slime_ball"
+  },
+  "research": "advanced_transmutation"
+}

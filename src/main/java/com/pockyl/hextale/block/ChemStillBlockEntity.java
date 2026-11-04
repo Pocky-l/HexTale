@@ -42,23 +42,27 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The Chem Still: a copper pot still over a Chem Burner. Vials of raw shimmer poured into its boiler come round through
- * the swan neck and the cooling coil and drip into the receiver as refined shimmer - two raw vials make one refined. It
- * works only over a lit burner, and the burner burns only while the still has raw shimmer to boil and room for the
- * result. Hoppers feed raw vials from the top and the sides and take refined ones from the bottom.
+ * the swan neck and the cooling coil and drip into the receiver as refined shimmer - two raw vials and one Crystal Pod
+ * (the clarifier) make one refined. It works only over a lit burner, and the burner burns only while the still has raw
+ * shimmer, a pod and room for the result. Hoppers feed vials and pods from the top and the sides and take refined
+ * vials from the bottom.
  */
 public class ChemStillBlockEntity extends BlockEntity implements WorldlyContainer, HeatUser {
     public static final int INPUT = 0;
     public static final int OUTPUT = 1;
+    /** Crystal Pods, one spent per refined vial. */
+    public static final int CLARIFIER = 2;
     /** Raw vials one refined vial takes. */
     public static final int RAW_PER_REFINED = 2;
     /** Ticks over a lit burner for one refined vial. */
     public static final int REFINE_TICKS = 400;
     private static final int SYNC_TICKS = 10;
-    private static final int[] TOP_AND_SIDES = {INPUT};
+    private static final int[] TOP_AND_SIDES = {INPUT, CLARIFIER};
     private static final int[] BOTTOM = {OUTPUT};
 
     private ItemStack input = ItemStack.EMPTY;
     private ItemStack output = ItemStack.EMPTY;
+    private ItemStack clarifier = ItemStack.EMPTY;
     private int progress;
     private PickaxeRunes runes = PickaxeRunes.EMPTY;
     private boolean dirty;
@@ -90,10 +94,11 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
         }
     }
 
-    /** Raw shimmer to boil and room in the receiver. */
+    /** Raw shimmer to boil, a pod to clear it and room in the receiver. */
     @Override
     public boolean wantsHeat() {
-        return isRaw(input) && input.getCount() >= RAW_PER_REFINED && output.getCount() < output.getMaxStackSize();
+        return isRaw(input) && input.getCount() >= RAW_PER_REFINED && isClarifier(clarifier)
+                && output.getCount() < output.getMaxStackSize();
     }
 
     public int refineTicks() {
@@ -101,9 +106,10 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
         return haste > 0 ? Math.round(REFINE_TICKS * HolderRune.at(StillRune.FASTER, haste)) : REFINE_TICKS;
     }
 
-    /** Two raw vials become one refined; Steam may give a second, Radiance experience, Purification a crystal. */
+    /** Two raw vials and a pod become one refined; Steam may give a second, Radiance experience, Purification a crystal. */
     private void refine(ServerLevel level) {
         input.shrink(RAW_PER_REFINED);
+        clarifier.shrink(1);
         Vec3 at = Vec3.atCenterOf(worldPosition);
         int made = 1;
         int steam = strength(StillRune.STEAM);
@@ -143,6 +149,15 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
         return ChemVialItem.brew(stack) == Brew.RAW_SHIMMER;
     }
 
+    /** The clarifier: a Crystal Pod from Crystal Cane. */
+    public static boolean isClarifier(ItemStack stack) {
+        return stack.is(ModItems.CRYSTAL_POD.get());
+    }
+
+    public ItemStack clarifier() {
+        return clarifier;
+    }
+
     public ItemStack input() {
         return input;
     }
@@ -156,19 +171,21 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
         return progress / (float) refineTicks();
     }
 
-    /** Pours raw vials into the boiler, as many as fit; returns how many. */
+    /** Pours raw vials into the boiler or drops pods into the clarifier, as many as fit; returns how many. */
     public int feed(ItemStack stack) {
-        if (!isRaw(stack) || !input.isEmpty() && !ItemStack.isSameItemSameComponents(input, stack)) {
+        int slot = isRaw(stack) ? INPUT : isClarifier(stack) ? CLARIFIER : -1;
+        ItemStack held = slot == INPUT ? input : clarifier;
+        if (slot < 0 || !held.isEmpty() && !ItemStack.isSameItemSameComponents(held, stack)) {
             return 0;
         }
-        int taken = Math.min(stack.getCount(), stack.getMaxStackSize() - input.getCount());
+        int taken = Math.min(stack.getCount(), stack.getMaxStackSize() - held.getCount());
         if (taken <= 0) {
             return 0;
         }
-        if (input.isEmpty()) {
-            input = stack.copyWithCount(taken);
+        if (held.isEmpty()) {
+            setItemQuietly(slot, stack.copyWithCount(taken));
         } else {
-            input.grow(taken);
+            held.grow(taken);
         }
         changed();
         return taken;
@@ -185,6 +202,9 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
     public Component status() {
         if (!isRaw(input) || input.getCount() < RAW_PER_REFINED) {
             return Component.translatable("block.hextale.chem_still.status.empty", input.getCount());
+        }
+        if (!isClarifier(clarifier)) {
+            return Component.translatable("block.hextale.chem_still.status.no_pod");
         }
         if (output.getCount() >= output.getMaxStackSize()) {
             return Component.translatable("block.hextale.chem_still.status.full");
@@ -226,7 +246,7 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
 
     @Override
     public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
-        return slot == INPUT && isRaw(stack);
+        return canPlaceItem(slot, stack);
     }
 
     @Override
@@ -236,17 +256,17 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
 
     @Override
     public int getContainerSize() {
-        return 2;
+        return 3;
     }
 
     @Override
     public boolean isEmpty() {
-        return input.isEmpty() && output.isEmpty();
+        return input.isEmpty() && output.isEmpty() && clarifier.isEmpty();
     }
 
     @Override
     public ItemStack getItem(int slot) {
-        return slot == INPUT ? input : output;
+        return slot == INPUT ? input : slot == CLARIFIER ? clarifier : output;
     }
 
     @Override
@@ -272,6 +292,8 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
     private void setItemQuietly(int slot, ItemStack stack) {
         if (slot == INPUT) {
             input = stack;
+        } else if (slot == CLARIFIER) {
+            clarifier = stack;
         } else {
             output = stack;
         }
@@ -279,7 +301,7 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
 
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
-        return slot == INPUT && isRaw(stack);
+        return slot == INPUT ? isRaw(stack) : slot == CLARIFIER && isClarifier(stack);
     }
 
     @Override
@@ -291,6 +313,7 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
     public void clearContent() {
         input = ItemStack.EMPTY;
         output = ItemStack.EMPTY;
+        clarifier = ItemStack.EMPTY;
     }
 
     // ---- Saving -------------------------------------------------------------------------------------------------------
@@ -300,6 +323,7 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
         super.loadAdditional(input);
         this.input = input.read("input", ItemStack.CODEC).orElse(ItemStack.EMPTY);
         output = input.read("output", ItemStack.CODEC).orElse(ItemStack.EMPTY);
+        clarifier = input.read("clarifier", ItemStack.CODEC).orElse(ItemStack.EMPTY);
         progress = input.getIntOr("progress", 0);
         runes = input.read("runes", PickaxeRunes.CODEC).orElse(PickaxeRunes.EMPTY);
     }
@@ -312,6 +336,9 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
         }
         if (!this.output.isEmpty()) {
             output.store("output", ItemStack.CODEC, this.output);
+        }
+        if (!clarifier.isEmpty()) {
+            output.store("clarifier", ItemStack.CODEC, clarifier);
         }
         output.putInt("progress", progress);
         if (!runes.isEmpty()) {

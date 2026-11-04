@@ -1,0 +1,12 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:prismarine_shard",
+  "essences": {
+    "light": 4,
+    "crystal": 1
+  },
+  "result": {
+    "id": "minecraft:prismarine_crystals"
+  },
+  "research": "advanced_transmutation"
+}

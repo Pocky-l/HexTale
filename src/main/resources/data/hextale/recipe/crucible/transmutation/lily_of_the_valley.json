@@ -1,0 +1,12 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:allium",
+  "essences": {
+    "water": 2,
+    "light": 2
+  },
+  "result": {
+    "id": "minecraft:lily_of_the_valley"
+  },
+  "research": "transmutation"
+}

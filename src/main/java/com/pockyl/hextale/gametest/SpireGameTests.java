@@ -117,7 +117,6 @@ public final class SpireGameTests {
      * takes the whole spire down and gets one spire back, with its runes kept on it.
      */
     @HexTest(maxTicks = 60)
-    @SuppressWarnings("removal")
     public static void theSpireStandsTwoBlocksTallAndFallsWhole(GameTestHelper helper) {
         clear(helper);
         helper.setBlock(BASE, ModBlocks.ARC_SPIRE.get());
@@ -126,7 +125,7 @@ public final class SpireGameTests {
             helper.assertTrue(top.is(ModBlocks.ARC_SPIRE.get()) && ArcSpireBlock.upper(top), "the spire grew its upper half, got " + top);
             ArcSpireBlockEntity spire = helper.getBlockEntity(BASE, ArcSpireBlockEntity.class);
             helper.assertTrue(spire.tall() && spire.crystal().y - helper.absolutePos(BASE).getY() > 2, "the crystal rides over the top");
-            ServerPlayer player = helper.makeMockServerPlayerInLevel();
+            ServerPlayer player = MockPlayers.inLevel(helper);
             player.setGameMode(GameType.SURVIVAL);
             player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_PICKAXE));
             player.gameMode.destroyBlock(helper.absolutePos(BASE.above()));

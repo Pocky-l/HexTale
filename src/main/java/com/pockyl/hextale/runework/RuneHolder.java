@@ -51,6 +51,12 @@ public enum RuneHolder {
     BOILER(() -> ModDataComponents.BOILER_RUNES.get(), BoilerRune.SLOTS, BoilerRune.values()),
     /** The Pink Brazier. */
     BRAZIER(() -> ModDataComponents.BRAZIER_RUNES.get(), BrazierRune.SLOTS, BrazierRune.values()),
+    /** The Chem Planter. */
+    PLANTER(() -> ModDataComponents.PLANTER_RUNES.get(), PlanterRune.SLOTS, PlanterRune.values()),
+    /** The Essence Sprinkler. */
+    SPRINKLER(() -> ModDataComponents.SPRINKLER_RUNES.get(), SprinklerRune.SLOTS, SprinklerRune.values()),
+    /** The Sap Tap. */
+    TAP(() -> ModDataComponents.TAP_RUNES.get(), TapRune.SLOTS, TapRune.values()),
     /** The Hextech Skypack. */
     SKYPACK(() -> ModDataComponents.SKYPACK_RUNES.get(), SkypackRune.SLOTS, SkypackRune.values()),
     /** The Hextech Tuning Fork. */
@@ -141,6 +147,15 @@ public enum RuneHolder {
         }
         if (item == ModItems.PINK_BRAZIER.get()) {
             return BRAZIER;
+        }
+        if (item == ModItems.CHEM_PLANTER.get()) {
+            return PLANTER;
+        }
+        if (item == ModItems.ESSENCE_SPRINKLER.get()) {
+            return SPRINKLER;
+        }
+        if (item == ModItems.SAP_TAP.get()) {
+            return TAP;
         }
         if (item == ModItems.LAB_BENCH.get()) {
             return LAB;
@@ -368,6 +383,9 @@ public enum RuneHolder {
             case STILL -> List.of(new ItemStack(ModItems.CHEM_STILL.get()));
             case BOILER -> List.of(new ItemStack(ModItems.CHEM_BOILER.get()));
             case BRAZIER -> List.of(new ItemStack(ModItems.PINK_BRAZIER.get()));
+            case PLANTER -> List.of(new ItemStack(ModItems.CHEM_PLANTER.get()));
+            case SPRINKLER -> List.of(new ItemStack(ModItems.ESSENCE_SPRINKLER.get()));
+            case TAP -> List.of(new ItemStack(ModItems.SAP_TAP.get()));
             case LAB -> List.of(new ItemStack(ModItems.LAB_BENCH.get()));
             case SKYPACK -> List.of(new ItemStack(ModItems.HEXTECH_SKYPACK.get()));
             case FORK -> List.of(new ItemStack(ModItems.TUNING_FORK.get()));

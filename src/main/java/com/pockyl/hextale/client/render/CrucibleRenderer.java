@@ -72,6 +72,9 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
     private static final float STREAM_TICKS = 12;
     private static final int SWIRL_MOTES = 12;
     private static final int RIPPLE_BEADS = 14;
+    private static final int FLOAT_SHOWN = 3;
+    /** How near the holder must be for the water to reach for a held item. */
+    private static final double REACH_FROM = 5;
 
     private final ItemModelResolver itemModelResolver;
 
@@ -89,6 +92,13 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
         boolean drying;
         boolean brewed;
         final ItemStackRenderState sinking = new ItemStackRenderState();
+        /** Finished results floating on the water (up to {@link #FLOAT_SHOWN}). */
+        final List<ItemStackRenderState> floating = new ArrayList<>();
+        int floatCount;
+        /** The held item could be paid for: the water stirs towards the holder, in the colour of what it would take. */
+        boolean reaching;
+        int reachColor;
+        float reachAngle;
         /** The essences in the water, most first, with their amounts and when each last grew (only seen in goggles). */
         final List<Essence> shown = new ArrayList<>();
         final List<Integer> amounts = new ArrayList<>();
@@ -148,11 +158,54 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
         state.sinkAge = state.time - crucible.sankAt();
         state.sinkFrom = crucible.sankFrom();
         state.drying = crucible.drying();
+        List<net.minecraft.world.item.ItemStack> floating = crucible.floating();
+        state.floatCount = Math.min(FLOAT_SHOWN, floating.size());
+        while (state.floating.size() < state.floatCount) {
+            state.floating.add(new ItemStackRenderState());
+        }
+        for (int i = 0; i < state.floatCount; i++) {
+            itemModelResolver.updateForTopItem(state.floating.get(i), floating.get(i), ItemDisplayContext.FIXED, level, null, (int) state.seed + i);
+        }
+        reach(crucible, state);
         if (state.sinkAge < SINK_TICKS && !crucible.sank().isEmpty()) {
             itemModelResolver.updateForTopItem(state.sinking, crucible.sank(), ItemDisplayContext.FIXED, level, null, (int) state.seed);
         } else {
             state.sinking.clear();
         }
+    }
+
+    /**
+     * Whether the water reaches for what the nearby player holds: a catalyst it can pay for now, or a brew's catalyst it
+     * would take - no text, the surface just stirs towards them in the colour of the essences it would spend.
+     */
+    private static void reach(CrucibleBlockEntity crucible, State state) {
+        state.reaching = false;
+        var player = Minecraft.getInstance().player;
+        if (player == null || crucible.liquid() <= 0 || crucible.drying()) {
+            return;
+        }
+        Vec3 centre = Vec3.atCenterOf(crucible.getBlockPos());
+        if (player.position().distanceToSqr(centre) > REACH_FROM * REACH_FROM) {
+            return;
+        }
+        var held = player.getMainHandItem();
+        if (held.isEmpty() || CrucibleBlockEntity.refuses(held)) {
+            return;
+        }
+        var recipe = com.pockyl.hextale.crafting.CrucibleRecipe.find(held, crucible.essence(), player, true);
+        if (recipe != null) {
+            state.reachColor = recipe.essences().color();
+        } else if (crucible.boiling()) {
+            var brew = com.pockyl.hextale.crafting.BrewRecipe.find(held, crucible.essence(), crucible.heat(), crucible.brew(), true);
+            if (brew == null || !brew.mayBrew(player)) {
+                return;
+            }
+            state.reachColor = brew.brew().color();
+        } else {
+            return;
+        }
+        state.reaching = true;
+        state.reachAngle = (float) Math.atan2(player.getZ() - centre.z, player.getX() - centre.x);
     }
 
     @Override
@@ -192,6 +245,46 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
         if (state.sinkAge >= 0 && state.sinkAge < SINK_TICKS) {
             sink(state, poseStack, collector, top);
         }
+        if (state.reaching) {
+            reachTowards(state, poseStack, collector, top);
+        }
+        floatingResults(state, poseStack, collector, top);
+    }
+
+    /** Beads of colour drifting from the middle towards the holder and fading at the wall, over and over. */
+    private static void reachTowards(State state, PoseStack poseStack, SubmitNodeCollector collector, float top) {
+        int color = RuneDrawing.mix(state.reachColor, 0xFFFFFF, 0.3F);
+        float dx = Mth.cos(state.reachAngle);
+        float dz = Mth.sin(state.reachAngle);
+        float size = 0.35F / 16;
+        for (int i = 0; i < 6; i++) {
+            float t = ((state.time * 0.025F) + i / 6F) % 1;
+            float side = Mth.sin(i * 2.3F + state.time * 0.05F) * 0.08F;
+            float radius = t * (0.5F - MIN - 0.04F);
+            float x = 0.5F + dx * radius - dz * side;
+            float z = 0.5F + dz * radius + dx * side;
+            LiquidBox.submit(poseStack, collector, x - size, z - size, x + size, z + size, top - 0.15F / 16, top + 0.1F / 16,
+                    RuneDrawing.argb(color, 0.75F * Mth.sin(t * Mth.PI)));
+        }
+    }
+
+    /** Finished results bobbing on the surface, slowly turning, spread round the middle. */
+    private static void floatingResults(State state, PoseStack poseStack, SubmitNodeCollector collector, float top) {
+        for (int i = 0; i < state.floatCount; i++) {
+            ItemStackRenderState item = state.floating.get(i);
+            if (item.isEmpty()) {
+                continue;
+            }
+            float angle = i * Mth.TWO_PI / Math.max(1, state.floatCount) + state.time * 0.01F;
+            float radius = state.floatCount == 1 ? 0 : 0.14F;
+            poseStack.pushPose();
+            poseStack.translate(0.5F + Mth.cos(angle) * radius, top + 0.03F + Mth.sin(state.time * 0.12F + i * 2) * 0.012F, 0.5F + Mth.sin(angle) * radius);
+            poseStack.mulPose(Axis.YP.rotationDegrees(state.time * 1.5F + i * 120));
+            poseStack.mulPose(Axis.XP.rotationDegrees(80));
+            poseStack.scale(0.3F, 0.3F, 0.3F);
+            item.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
+            poseStack.popPose();
+        }
     }
 
     /**
@@ -222,7 +315,8 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
             float y = 1.25F + (rows - 1 - row) * ROW_STEP + bob + Mth.sin(state.time * 0.08F + i * 1.7F) * 0.01F;
             float age = state.grewAge.get(i);
             float pop = age >= 0 && age < GROW_TICKS ? Mth.sin(age / GROW_TICKS * Mth.PI) : 0;
-            int color = RuneDrawing.lighten(essence.color(), 0.15F);
+            // Full strength, never washed towards white: the essence's own hue at full brightness.
+            int color = JarStreamFx.vivid(essence.color());
             poseStack.pushPose();
             poseStack.translate(0.5F, 0, 0.5F);
             if (pop > 0) {
@@ -232,7 +326,9 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
             poseStack.mulPose(camera.orientation);
             poseStack.translate(x, 0, 0);
             float size = ICON_SIZE * (1 + 0.35F * pop);
-            HexFx.sprite(poseStack, collector, facing, HexFx.HALO, size * (1.9F + pop), color, (0.45F + 0.4F * pop) * fade);
+            // A dark backing so the icon reads over bright water and sky, then a soft halo of its colour.
+            HexFx.sprite(poseStack, collector, facing, HexFx.HALO, size * 1.55F, 0x0A0812, 0.55F * fade);
+            HexFx.sprite(poseStack, collector, facing, HexFx.HALO, size * (1.8F + pop), color, (0.22F + 0.4F * pop) * fade);
             icon(poseStack, collector, essence, size, color, fade);
             amount(poseStack, collector, state.amounts.get(i), color, fade, size);
             poseStack.popPose();
@@ -246,7 +342,7 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
         float v0 = essence.ordinal() / ICONS_PER_ROW * 20F / 128;
         float u1 = u0 + ICON_U;
         float v1 = v0 + ICON_V;
-        int tint = RuneDrawing.lighten(color, 0.5F);
+        int tint = color;
         collector.submitCustomGeometry(poseStack, HexFx.glow(ICONS), (pose, consumer) -> {
             HexFx.vertex(consumer, pose, -h, -h, 0.002F, u0, v1, tint, alpha);
             HexFx.vertex(consumer, pose, h, -h, 0.002F, u1, v1, tint, alpha);
@@ -268,7 +364,7 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
         float x = -font.width(text) / 2F;
         float a = Math.max(0.1F, alpha);
         collector.submitText(poseStack, x, 0, FormattedCharSequence.forward(text, Style.EMPTY), false, Font.DisplayMode.NORMAL,
-                LightCoordsUtil.FULL_BRIGHT, RuneDrawing.argb(RuneDrawing.lighten(color, 0.55F), a), 0, RuneDrawing.argb(0x0A0812, a));
+                LightCoordsUtil.FULL_BRIGHT, RuneDrawing.argb(RuneDrawing.lighten(color, 0.3F), a), 0, RuneDrawing.argb(0x0A0812, a));
         poseStack.popPose();
     }
 

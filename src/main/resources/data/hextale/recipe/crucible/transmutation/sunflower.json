@@ -1,0 +1,11 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:lilac",
+  "essences": {
+    "light": 5
+  },
+  "result": {
+    "id": "minecraft:sunflower"
+  },
+  "research": "transmutation"
+}

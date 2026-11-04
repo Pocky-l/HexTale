@@ -72,7 +72,7 @@ public class ChemFuelCategory extends AbstractRecipeCategory<ChemFuelCategory.Re
 
     @Override
     public void createRecipeExtras(IRecipeExtrasBuilder builder, Recipe recipe, IFocusGroup focuses) {
-        builder.addAnimatedRecipeFlame(300).setPosition(3, 20);
+        builder.addAnimatedRecipeFlameWidget(300).setPosition(3, 20);
         for (int i = 0; i < recipe.lines().size(); i++) {
             builder.addText(recipe.lines().get(i), StepCategory.WIDTH - TEXT_X, 10).setPosition(TEXT_X, 2 + i * 12).setColor(StepCategory.NOTE_COLOR);
         }

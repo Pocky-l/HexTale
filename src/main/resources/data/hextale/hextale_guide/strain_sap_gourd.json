@@ -1,0 +1,18 @@
+{
+  "region": "chemtech",
+  "stage": "mid",
+  "icon": "hextale:sap_gourd",
+  "parents": [
+    "steeped_soil",
+    "lab_bench"
+  ],
+  "display": {
+    "kind": "crucible",
+    "result": "hextale:sap_gourd"
+  },
+  "research": "sap_gourd",
+  "pos": [
+    -505,
+    285
+  ]
+}

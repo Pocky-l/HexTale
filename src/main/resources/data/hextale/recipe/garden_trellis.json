@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "N N",
+    " N ",
+    "N N"
+  ],
+  "key": {
+    "N": "minecraft:iron_nugget"
+  },
+  "result": {
+    "id": "hextale:garden_trellis",
+    "count": 4
+  }
+}

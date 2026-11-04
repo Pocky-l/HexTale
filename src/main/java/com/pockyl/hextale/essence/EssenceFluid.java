@@ -29,7 +29,8 @@ import org.jspecify.annotations.Nullable;
  * of essence. Only a single essence ever becomes fluid - mixtures stay in the mod's own vessels and are never split.
  * The fluid without a kind is not essence at all: nothing gives it and nothing takes it.
  * <p>
- * It never stands in the world: no block, no bucket, no flowing form.
+ * It never stands in the world: no block, no flowing form. A bucket of it is a Bucket of Essence
+ * ({@link com.pockyl.hextale.item.EssenceBucketItem}), which only tanks fill and empty.
  */
 public final class EssenceFluid extends Fluid {
     private static volatile FluidResource @Nullable [] resources;
@@ -136,6 +137,13 @@ public final class EssenceFluid extends Fluid {
         public Type() {
             super(Properties.create().canConvertToSource(false).canSwim(false).canDrown(false).canPushEntity(false)
                     .canExtinguish(false).canHydrate(false).supportsBoating(false).lightLevel(10).density(1100).viscosity(1500));
+        }
+
+        /** An empty bucket filled with one essence becomes a Bucket of Essence (nothing else becomes a bucket). */
+        @Override
+        public net.minecraft.world.item.ItemStack getBucket(FluidStack stack) {
+            Essence essence = kind(stack);
+            return essence == null ? net.minecraft.world.item.ItemStack.EMPTY : com.pockyl.hextale.item.EssenceBucketItem.of(essence);
         }
 
         @Override

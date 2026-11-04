@@ -92,7 +92,10 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
                 refuel(level);
             }
             if (burn > 0) {
-                burn--;
+                // A machine that only waits hot (an idle crucible) needs a quarter of the flame.
+                if (!idleAbove() || level.getGameTime() % 4 == 0) {
+                    burn--;
+                }
                 lit = true;
                 dirty = true;
             }
@@ -117,6 +120,11 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
             setChanged();
             sync();
         }
+    }
+
+    /** Whether the machine on top is hot and only waiting. */
+    private boolean idleAbove() {
+        return level != null && level.getBlockEntity(worldPosition.above()) instanceof HeatUser user && user.idle();
     }
 
     /** Whether the machine on top has work for the flame. */

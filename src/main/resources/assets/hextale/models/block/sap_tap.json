@@ -1,0 +1,372 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/chem/chem_iron",
+    "chem_iron": "hextale:block/chem/chem_iron",
+    "chem_copper": "hextale:block/chem/chem_copper",
+    "fittings": "hextale:block/chem/garden_fittings"
+  },
+  "elements": [
+    {
+      "name": "iron_plate",
+      "from": [
+        5,
+        7,
+        0
+      ],
+      "to": [
+        11,
+        13,
+        1
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            3,
+            11,
+            9
+          ],
+          "texture": "#chem_iron",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            15,
+            3,
+            16,
+            9
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            5,
+            3,
+            11,
+            9
+          ],
+          "texture": "#chem_iron"
+        },
+        "west": {
+          "uv": [
+            0,
+            3,
+            1,
+            9
+          ],
+          "texture": "#chem_iron"
+        },
+        "up": {
+          "uv": [
+            5,
+            0,
+            11,
+            1
+          ],
+          "texture": "#chem_iron"
+        },
+        "down": {
+          "uv": [
+            5,
+            15,
+            11,
+            16
+          ],
+          "texture": "#chem_iron"
+        }
+      }
+    },
+    {
+      "name": "copper_spout",
+      "from": [
+        7,
+        9,
+        1
+      ],
+      "to": [
+        9,
+        11,
+        7
+      ],
+      "rotation": {
+        "angle": 22.5,
+        "axis": "x",
+        "origin": [
+          8,
+          10,
+          1
+        ]
+      },
+      "faces": {
+        "east": {
+          "uv": [
+            9,
+            5,
+            15,
+            7
+          ],
+          "texture": "#chem_copper"
+        },
+        "west": {
+          "uv": [
+            1,
+            5,
+            7,
+            7
+          ],
+          "texture": "#chem_copper"
+        },
+        "up": {
+          "uv": [
+            7,
+            1,
+            9,
+            7
+          ],
+          "texture": "#chem_copper"
+        },
+        "down": {
+          "uv": [
+            7,
+            9,
+            9,
+            15
+          ],
+          "texture": "#chem_copper"
+        }
+      }
+    },
+    {
+      "name": "copper_nozzle",
+      "from": [
+        6.97,
+        4.97,
+        4.97
+      ],
+      "to": [
+        9.03,
+        9.03,
+        7.03
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            7,
+            9,
+            11
+          ],
+          "texture": "#chem_copper"
+        },
+        "east": {
+          "uv": [
+            9,
+            7,
+            11,
+            11
+          ],
+          "texture": "#chem_copper"
+        },
+        "south": {
+          "uv": [
+            7,
+            7,
+            9,
+            11
+          ],
+          "texture": "#chem_copper"
+        },
+        "west": {
+          "uv": [
+            5,
+            7,
+            7,
+            11
+          ],
+          "texture": "#chem_copper"
+        },
+        "up": {
+          "uv": [
+            7,
+            5,
+            9,
+            7
+          ],
+          "texture": "#chem_copper"
+        }
+      }
+    },
+    {
+      "name": "iron_valve_stem",
+      "from": [
+        7.97,
+        9.97,
+        1.97
+      ],
+      "to": [
+        9.03,
+        15.03,
+        3.03
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            1,
+            8,
+            6
+          ],
+          "texture": "#chem_iron"
+        },
+        "east": {
+          "uv": [
+            13,
+            1,
+            14,
+            6
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            8,
+            1,
+            9,
+            6
+          ],
+          "texture": "#chem_iron"
+        },
+        "west": {
+          "uv": [
+            2,
+            1,
+            3,
+            6
+          ],
+          "texture": "#chem_iron"
+        },
+        "up": {
+          "uv": [
+            8,
+            2,
+            9,
+            3
+          ],
+          "texture": "#chem_iron"
+        },
+        "down": {
+          "uv": [
+            8,
+            13,
+            9,
+            14
+          ],
+          "texture": "#chem_iron"
+        }
+      }
+    },
+    {
+      "name": "fit_wheel",
+      "from": [
+        6,
+        14,
+        0
+      ],
+      "to": [
+        11,
+        14,
+        5
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            5,
+            5
+          ],
+          "texture": "#fittings"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            5,
+            5
+          ],
+          "texture": "#fittings"
+        }
+      }
+    },
+    {
+      "name": "copper_lip",
+      "from": [
+        6,
+        4,
+        4
+      ],
+      "to": [
+        10,
+        5,
+        8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            11,
+            10,
+            12
+          ],
+          "texture": "#chem_copper"
+        },
+        "east": {
+          "uv": [
+            8,
+            11,
+            12,
+            12
+          ],
+          "texture": "#chem_copper"
+        },
+        "south": {
+          "uv": [
+            6,
+            11,
+            10,
+            12
+          ],
+          "texture": "#chem_copper"
+        },
+        "west": {
+          "uv": [
+            4,
+            11,
+            8,
+            12
+          ],
+          "texture": "#chem_copper"
+        },
+        "up": {
+          "uv": [
+            6,
+            4,
+            10,
+            8
+          ],
+          "texture": "#chem_copper"
+        },
+        "down": {
+          "uv": [
+            9,
+            0,
+            13,
+            4
+          ],
+          "texture": "#fittings"
+        }
+      }
+    }
+  ]
+}

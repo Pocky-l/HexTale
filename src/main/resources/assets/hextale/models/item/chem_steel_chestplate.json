@@ -1,0 +1,6 @@
+{
+  "parent": "hextale:item/bulwark_chestplate",
+  "textures": {
+    "particle": "hextale:item/chem_steel_ingot"
+  }
+}

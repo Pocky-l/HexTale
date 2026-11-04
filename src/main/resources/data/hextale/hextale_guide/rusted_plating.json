@@ -9,14 +9,18 @@
   "display": {
     "kind": "scheme",
     "ingredients": [
-      "minecraft:fermented_spider_eye",
-      "hextale:chem_vial",
+      {
+        "id": "hextale:chem_vial",
+        "components": {
+          "hextale:brew": "acid"
+        }
+      },
       "minecraft:iron_block"
     ],
     "result": "hextale:rusted_plating"
   },
   "pos": [
-    -960,
+    -860,
     -90
   ]
 }

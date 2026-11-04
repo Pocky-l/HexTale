@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "chemtech",
-  "stage": "mid",
-  "icon": "minecraft:iron_trapdoor",
-  "parents": ["chem_burner"],
-  "pos": [-950, -200]
-}

@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "essences",
-  "icon": "minecraft:bundle",
-  "parents": ["arcane_cloth", "essence_bottle"],
-  "pos": [-421, -183]
-}

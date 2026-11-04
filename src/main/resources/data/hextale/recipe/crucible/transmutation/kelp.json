@@ -1,0 +1,11 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:seagrass",
+  "essences": {
+    "plant": 3
+  },
+  "result": {
+    "id": "minecraft:kelp"
+  },
+  "research": "transmutation"
+}

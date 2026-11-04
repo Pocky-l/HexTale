@@ -27,7 +27,7 @@ public final class HextechWorkingCategory {
 
     public static List<StepCategory.Step> all() {
         List<StepCategory.Step> steps = new java.util.ArrayList<>();
-        steps.add(step(List.of(new ItemStack(Items.LIGHTNING_ROD), new ItemStack(Items.AMETHYST_BLOCK)),
+        steps.add(step(List.of(new ItemStack(Items.LIGHTNING_ROD)), new ItemStack(Items.AMETHYST_BLOCK),
                 new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), "lightning"));
         steps.add(step(List.of(new ItemStack(ModItems.UNSTABLE_HEXTECH.get())), new ItemStack(ModItems.HEXTECH_DUST.get(), 2), "throw"));
         // Awakenings are data (recipe type hextale:awakening): one step per recipe whose blocks have items.
@@ -38,21 +38,29 @@ public final class HextechWorkingCategory {
                     .orElse(List.of(new ItemStack(ModItems.HEXTECH_DUST.get())));
             ItemStack result = new ItemStack(recipe.result().asItem());
             if (!blocks.isEmpty() && !result.isEmpty()) {
-                steps.add(new StepCategory.Step(List.of(StepCategory.Input.of(catalyst.toArray(ItemStack[]::new)),
-                        StepCategory.Input.of(blocks.toArray(ItemStack[]::new))), result, Component.translatable("jei.hextale.working.awaken")));
+                steps.add(new StepCategory.Step(List.of(StepCategory.Input.of(catalyst.toArray(ItemStack[]::new))),
+                        StepCategory.Input.of(blocks.toArray(ItemStack[]::new)), StepCategory.Input.of(result),
+                        Component.translatable("jei.hextale.working.awaken")));
             }
         }
-        steps.add(step(List.of(new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), new ItemStack(ModItems.CUTTING_DISC.get())),
+        ItemStack lapidary = new ItemStack(ModItems.HEX_LAPIDARY.get());
+        steps.add(step(List.of(new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), new ItemStack(ModItems.CUTTING_DISC.get())), lapidary,
                 new ItemStack(ModItems.HEXTECH_CRYSTAL.get()), "cut"));
-        steps.add(step(List.of(new ItemStack(ModItems.HEXTECH_CRYSTAL.get()), new ItemStack(ModItems.MASTER_CUTTING_DISC.get())),
+        steps.add(step(List.of(new ItemStack(ModItems.HEXTECH_CRYSTAL.get()), new ItemStack(ModItems.MASTER_CUTTING_DISC.get())), lapidary,
                 new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), "finish"));
-        steps.add(step(List.of(new ItemStack(Items.DIAMOND), new ItemStack(ModItems.MASTER_CUTTING_DISC.get())),
+        steps.add(step(List.of(new ItemStack(Items.DIAMOND), new ItemStack(ModItems.MASTER_CUTTING_DISC.get())), lapidary,
                 new ItemStack(ModItems.ENGRAVED_DIAMOND.get()), "engrave"));
         return steps;
     }
 
     private static StepCategory.Step step(List<ItemStack> inputs, ItemStack result, String note) {
         return new StepCategory.Step(inputs.stream().map(StepCategory.Input::of).toList(), result,
+                Component.translatable("jei.hextale.working." + note));
+    }
+
+    /** A step whose inputs go into a place: a block struck or the device that works them. */
+    private static StepCategory.Step step(List<ItemStack> inputs, ItemStack place, ItemStack result, String note) {
+        return new StepCategory.Step(inputs.stream().map(StepCategory.Input::of).toList(), place, result,
                 Component.translatable("jei.hextale.working." + note));
     }
 }

@@ -1,0 +1,8 @@
+{
+  "type": "hextale:lab_experiment",
+  "topic": "crystal_cane",
+  "target": "crystal",
+  "amount": 8,
+  "purity": 0.65,
+  "sample": "minecraft:sugar_cane"
+}

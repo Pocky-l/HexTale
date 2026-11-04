@@ -56,6 +56,7 @@ public final class Multiblocks {
 
     public static final BigEssenceJar BIG_ESSENCE_JAR = register(new BigEssenceJar());
     public static final HexFoundry HEX_FOUNDRY = register(new HexFoundry());
+    public static final ChemVat CHEM_VAT = register(new ChemVat());
 
     private Multiblocks() {
     }
@@ -117,7 +118,7 @@ public final class Multiblocks {
                 && !(level.isClientSide() ? com.pockyl.hextale.client.ClientKnowledge.get() : Research.of(event.getEntity())).researched(topic)) {
             // Not researched: the structure stays asleep and the click does what it would do anyway.
             if (event.getEntity() instanceof ServerPlayer player) {
-                player.sendOverlayMessage(Component.translatable("research.hextale.locked",
+                player.sendOverlayMessage(Component.translatable(topic.lockedKey(),
                         Component.translatable(topic.translationKey()).withColor(topic.color())));
             }
             return;
@@ -180,7 +181,6 @@ public final class Multiblocks {
         int top = cells.stream().mapToInt(BlockPos::getY).max().orElse(controllerPos.getY());
         WAVES.add(new Wave(level, cells, bottom, top, level.getGameTime()));
         if (player != null) {
-            player.sendOverlayMessage(multiblock.formedMessage());
             multiblock.onFormed(player, controllerPos);
         }
     }

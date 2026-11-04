@@ -73,6 +73,9 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> HEXTECH_ALTAR = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_ALTAR,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> HEXTECH_LAMP = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_LAMP);
+    /** A wisp to set down by hand: the hextech blue one and the sixteen dyed ones. */
+    public static final DeferredItem<BlockItem> HEX_WISP = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_WISP);
+    public static final Map<net.minecraft.world.item.DyeColor, DeferredItem<BlockItem>> DYED_WISPS = dyedWisps();
     public static final DeferredItem<BlockItem> HEXTECH_LAMPPOST = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_LAMPPOST,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> HEX_FURNACE = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_FURNACE,
@@ -98,6 +101,47 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> RIVETED_RUSTED_PLATING = ITEMS.registerSimpleBlockItem(ModBlocks.RIVETED_RUSTED_PLATING);
     public static final DeferredItem<BlockItem> RUSTED_GRATE = ITEMS.registerSimpleBlockItem(ModBlocks.RUSTED_GRATE);
     public static final DeferredItem<BlockItem> CHEM_TUBES = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_TUBES);
+    public static final DeferredItem<BlockItem> CHEM_VAT = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_VAT);
+    /** The Chem Tank: worn on the back (chest slot or the Curios back slot) it feeds chemtech gear; set down it is a block. */
+    public static final DeferredItem<com.pockyl.hextale.item.ChemTankItem> CHEM_TANK = ITEMS.registerItem("chem_tank",
+            properties -> new com.pockyl.hextale.item.ChemTankItem(ModBlocks.CHEM_TANK.get(), properties.stacksTo(1).rarity(Rarity.RARE)
+                    .useBlockDescriptionPrefix()
+                    .component(DataComponents.EQUIPPABLE, Equippable.builder(EquipmentSlot.CHEST)
+                            .setEquipSound(SoundEvents.ARMOR_EQUIP_LEATHER).setDamageOnHurt(false).build())));
+    public static final DeferredItem<Item> CHEM_STEEL_INGOT = ITEMS.registerSimpleItem("chem_steel_ingot");
+    /**
+     * Chemtech tools: registered at full strength (hextech level 4), unbreakable, as strong as the fuel in the tank on
+     * the holder's back really lets them be ({@link com.pockyl.hextale.chem.ChemGear}).
+     */
+    private static final ToolMaterial CHEM_STEEL_TOOLS = com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[3].material(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 15,
+            net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM,
+                    net.minecraft.resources.Identifier.fromNamespaceAndPath("c", "ingots/chem_steel")));
+    public static final DeferredItem<com.pockyl.hextale.item.ChemToolItem> CHEM_STEEL_PICKAXE = ITEMS.registerItem("chem_steel_pickaxe",
+            properties -> new com.pockyl.hextale.item.ChemToolItem(com.pockyl.hextale.chem.ChemGear.Kind.PICKAXE, chemTool(properties.pickaxe(CHEM_STEEL_TOOLS, com.pockyl.hextale.chem.ChemGear.Kind.PICKAXE.extra(com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[3]),
+                    com.pockyl.hextale.chem.ChemGear.Kind.PICKAXE.attackSpeed()))));
+    public static final DeferredItem<com.pockyl.hextale.item.ChemToolItem> CHEM_STEEL_AXE = ITEMS.registerItem("chem_steel_axe",
+            properties -> new com.pockyl.hextale.item.ChemToolItem(com.pockyl.hextale.chem.ChemGear.Kind.AXE, chemTool(properties.axe(CHEM_STEEL_TOOLS, com.pockyl.hextale.chem.ChemGear.Kind.AXE.extra(com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[3]),
+                    com.pockyl.hextale.chem.ChemGear.Kind.AXE.attackSpeed()))));
+    public static final DeferredItem<com.pockyl.hextale.item.ChemToolItem> CHEM_STEEL_SHOVEL = ITEMS.registerItem("chem_steel_shovel",
+            properties -> new com.pockyl.hextale.item.ChemToolItem(com.pockyl.hextale.chem.ChemGear.Kind.SHOVEL, chemTool(properties.shovel(CHEM_STEEL_TOOLS, com.pockyl.hextale.chem.ChemGear.Kind.SHOVEL.extra(com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[3]),
+                    com.pockyl.hextale.chem.ChemGear.Kind.SHOVEL.attackSpeed()))));
+    public static final DeferredItem<com.pockyl.hextale.item.ChemToolItem> CHEM_STEEL_SWORD = ITEMS.registerItem("chem_steel_sword",
+            properties -> new com.pockyl.hextale.item.ChemToolItem(com.pockyl.hextale.chem.ChemGear.Kind.SWORD, chemTool(properties.sword(CHEM_STEEL_TOOLS, com.pockyl.hextale.chem.ChemGear.Kind.SWORD.extra(com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[3]),
+                    com.pockyl.hextale.chem.ChemGear.Kind.SWORD.attackSpeed()))));
+
+    /**
+     * Chemtech gear never breaks; its bar is the tank's level. The attribute lines are hidden: they would always show the
+     * full strength, the item's own tooltip lists what the worn fuel gives.
+     */
+    private static Item.Properties chemTool(Item.Properties properties) {
+        return properties.component(DataComponents.UNBREAKABLE, net.minecraft.util.Unit.INSTANCE).rarity(Rarity.EPIC).fireResistant()
+                .component(DataComponents.TOOLTIP_DISPLAY, net.minecraft.world.item.component.TooltipDisplay.DEFAULT
+                        .withHidden(DataComponents.ATTRIBUTE_MODIFIERS, true));
+    }
+    public static final DeferredItem<BlockItem> CHEM_STEEL_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_STEEL_BLOCK);
+    public static final DeferredItem<BlockItem> CHEM_STEEL_PLATING = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_STEEL_PLATING);
+    public static final DeferredItem<BlockItem> CHEM_STEEL_PLATING_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_STEEL_PLATING_STAIRS);
+    public static final DeferredItem<BlockItem> CHEM_STEEL_PLATING_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_STEEL_PLATING_SLAB);
     public static final DeferredItem<BlockItem> SHIMMERBLOOM = ITEMS.registerSimpleBlockItem(ModBlocks.SHIMMERBLOOM);
     public static final DeferredItem<BlockItem> SHIMMER_MOSS = ITEMS.registerSimpleBlockItem(ModBlocks.SHIMMER_MOSS);
     public static final DeferredItem<BlockItem> SHIMMER_MOSS_CARPET = ITEMS.registerSimpleBlockItem(ModBlocks.SHIMMER_MOSS_CARPET);
@@ -111,6 +155,24 @@ public final class ModItems {
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> PINK_BRAZIER = ITEMS.registerSimpleBlockItem(ModBlocks.PINK_BRAZIER,
             properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> STEEPED_SOIL = ITEMS.registerSimpleBlockItem(ModBlocks.STEEPED_SOIL);
+    public static final DeferredItem<BlockItem> CHEM_PLANTER = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_PLANTER,
+            properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> ESSENCE_SPRINKLER = ITEMS.registerSimpleBlockItem(ModBlocks.ESSENCE_SPRINKLER,
+            properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> SAP_TAP = ITEMS.registerSimpleBlockItem(ModBlocks.SAP_TAP);
+    public static final DeferredItem<BlockItem> GARDEN_TRELLIS = ITEMS.registerSimpleBlockItem(ModBlocks.GARDEN_TRELLIS);
+    /** Strains of the garden: their seeds plant them, their harvest is a reagent. */
+    public static final DeferredItem<BlockItem> SHIMMER_BULB = ITEMS.registerItem("shimmer_bulb",
+            properties -> new BlockItem(ModBlocks.SHIMMER_BULB.get(), properties.useItemDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> EMBER_WHEAT_SEEDS = ITEMS.registerItem("ember_wheat_seeds",
+            properties -> new BlockItem(ModBlocks.EMBER_WHEAT.get(), properties.useItemDescriptionPrefix()));
+    public static final DeferredItem<Item> EMBER_WHEAT = ITEMS.registerSimpleItem("ember_wheat");
+    public static final DeferredItem<BlockItem> SAP_GOURD_SEEDS = ITEMS.registerItem("sap_gourd_seeds",
+            properties -> new BlockItem(ModBlocks.SAP_GOURD_STEM.get(), properties.useItemDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> SAP_GOURD = ITEMS.registerSimpleBlockItem(ModBlocks.SAP_GOURD);
+    public static final DeferredItem<BlockItem> CRYSTAL_CANE = ITEMS.registerSimpleBlockItem(ModBlocks.CRYSTAL_CANE);
+    public static final DeferredItem<Item> CRYSTAL_POD = ITEMS.registerSimpleItem("crystal_pod");
     /** What an axolotl in a tank sheds as it heals: the living half of shimmer. */
     public static final DeferredItem<Item> REGENERATIVE_SLIME = ITEMS.registerSimpleItem("regenerative_slime");
     /** A hextech crystal grown in refined shimmer: cheaper and weaker than a cut one. */
@@ -209,6 +271,9 @@ public final class ModItems {
     /** One essence as an item: what recipes ask for and what items are made of, shown in JEI and the creative tab. */
     public static final DeferredItem<com.pockyl.hextale.item.EssenceItem> ESSENCE = ITEMS.registerItem("essence",
             com.pockyl.hextale.item.EssenceItem::new);
+    /** A bucket of one pure essence, for other mods' tanks and item storage (GitHub issue #8). */
+    public static final DeferredItem<com.pockyl.hextale.item.EssenceBucketItem> ESSENCE_BUCKET = ITEMS.registerItem("essence_bucket",
+            com.pockyl.hextale.item.EssenceBucketItem::new, properties -> properties.stacksTo(1).craftRemainder(net.minecraft.world.item.Items.BUCKET));
     public static final DeferredItem<BlockItem> BRASS_GRATE = ITEMS.registerSimpleBlockItem(ModBlocks.BRASS_GRATE);
     public static final DeferredItem<BlockItem> WHIRL_REAPER = ITEMS.registerSimpleBlockItem(ModBlocks.WHIRL_REAPER,
             properties -> properties.rarity(Rarity.UNCOMMON));
@@ -243,7 +308,7 @@ public final class ModItems {
             properties -> properties.rarity(Rarity.EPIC));
     /** A crafting recipe that uses a bottle of essence (soaking magic stone) gives the glass bottle back. */
     public static final DeferredItem<EssenceFlaskItem> ESSENCE_FLASK = ITEMS.registerItem("essence_flask",
-            properties -> new EssenceFlaskItem(properties.stacksTo(1).craftRemainder(Items.GLASS_BOTTLE)
+            properties -> new EssenceFlaskItem(properties.stacksTo(EssenceFlaskItem.STACK).craftRemainder(Items.GLASS_BOTTLE)
                     .component(net.minecraft.core.component.DataComponents.CONSUMABLE, net.minecraft.world.item.component.Consumables.DEFAULT_DRINK)
                     .usingConvertsTo(Items.GLASS_BOTTLE)));
     public static final DeferredItem<Item> BRASS_INGOT = ITEMS.registerSimpleItem("brass_ingot");
@@ -319,12 +384,15 @@ public final class ModItems {
     public static final DeferredItem<ResearchersDiaryItem> RESEARCHERS_DIARY = ITEMS.registerItem("researchers_diary",
             properties -> new ResearchersDiaryItem(properties.stacksTo(1)));
 
-    /** Tool materials by level: iron, diamond, netherite, beyond; each level mends with its own metal (brass, charged hexsteel, radiant alloy, riftmetal). */
+    /**
+     * Tool materials by level (mining level iron, diamond, netherite, netherite); each level mends with its own metal (brass,
+     * charged hexsteel, radiant alloy, riftmetal). Speed, damage and durability come from com.pockyl.hextale.GearConfig (STARTUP config).
+     */
     private static final ToolMaterial[] PICKAXE_MATERIALS = {
-            new ToolMaterial(BlockTags.INCORRECT_FOR_IRON_TOOL, 750, 7.0F, 2.0F, 14, ModTags.HEXTECH_TOOL_MATERIALS),
-            new ToolMaterial(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 1800, 9.0F, 3.0F, 12, ModTags.REPAIRS_CHARGED_HEXSTEEL),
-            new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 2800, 10.5F, 4.0F, 16, ModTags.REPAIRS_RADIANT_ALLOY),
-            new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 4000, 12.0F, 5.0F, 18, ModTags.REPAIRS_RIFTMETAL)};
+            com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[0].material(BlockTags.INCORRECT_FOR_IRON_TOOL, 14, ModTags.HEXTECH_TOOL_MATERIALS),
+            com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[1].material(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 12, ModTags.REPAIRS_CHARGED_HEXSTEEL),
+            com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[2].material(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 16, ModTags.REPAIRS_RADIANT_ALLOY),
+            com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[3].material(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 18, ModTags.REPAIRS_RIFTMETAL)};
     /** The three hextech pickaxes; runes are burned into them at the altar. */
     public static final Map<HextechPickaxe, DeferredItem<HextechPickaxeItem>> PICKAXES = new EnumMap<>(HextechPickaxe.class);
 
@@ -348,7 +416,7 @@ public final class ModItems {
     public static final DeferredItem<HextechToolItem> HEXTECH_SHOVEL = ITEMS.registerItem("hextech_shovel",
             properties -> new HextechToolItem(properties.shovel(PICKAXE_MATERIALS[0], 1.5F, -3.0F).rarity(Rarity.UNCOMMON)));
     public static final DeferredItem<HextechToolItem> HEXTECH_SWORD = ITEMS.registerItem("hextech_sword",
-            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[0], 3.0F, -2.4F).rarity(Rarity.UNCOMMON)));
+            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[0], com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[0].sword(), -2.4F).rarity(Rarity.UNCOMMON)));
     // The refined (diamond) and radiant (netherite) axe, shovel and sword: refined at the altar like the pickaxe, runes kept.
     public static final DeferredItem<HextechToolItem> REFINED_AXE = ITEMS.registerItem("refined_hextech_axe",
             properties -> new HextechToolItem(properties.axe(PICKAXE_MATERIALS[1], 5.0F, -3.0F).rarity(Rarity.RARE)));
@@ -359,9 +427,9 @@ public final class ModItems {
     public static final DeferredItem<HextechToolItem> RADIANT_SHOVEL = ITEMS.registerItem("radiant_hextech_shovel",
             properties -> new HextechToolItem(properties.shovel(PICKAXE_MATERIALS[2], 1.5F, -3.0F).rarity(Rarity.EPIC).fireResistant()));
     public static final DeferredItem<HextechToolItem> REFINED_SWORD = ITEMS.registerItem("refined_hextech_sword",
-            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[1], 3.0F, -2.4F).rarity(Rarity.RARE)));
+            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[1], com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[1].sword(), -2.4F).rarity(Rarity.RARE)));
     public static final DeferredItem<HextechToolItem> RADIANT_SWORD = ITEMS.registerItem("radiant_hextech_sword",
-            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[2], 3.0F, -2.4F).rarity(Rarity.EPIC).fireResistant()));
+            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[2], com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[2].sword(), -2.4F).rarity(Rarity.EPIC).fireResistant()));
     // The Tendril Dagger in the four levels: quick, fits the off hand, thrown it comes back along a tendril of light.
     public static final DeferredItem<com.pockyl.hextale.runework.TendrilDaggerItem> TENDRIL_DAGGER = ITEMS.registerItem("tendril_dagger",
             properties -> new com.pockyl.hextale.runework.TendrilDaggerItem(properties.sword(PICKAXE_MATERIALS[0], 1.5F, -1.6F).rarity(Rarity.UNCOMMON)));
@@ -380,13 +448,13 @@ public final class ModItems {
     public static final DeferredItem<HextechToolItem> RIFTFORGED_SHOVEL = ITEMS.registerItem("riftforged_shovel",
             properties -> new HextechToolItem(properties.shovel(PICKAXE_MATERIALS[3], 1.5F, -3.0F).rarity(Rarity.EPIC).fireResistant()));
     public static final DeferredItem<HextechToolItem> RIFTFORGED_SWORD = ITEMS.registerItem("riftforged_sword",
-            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[3], 3.0F, -2.4F).rarity(Rarity.EPIC).fireResistant()));
+            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[3], com.pockyl.hextale.GearConfig.HEXTECH_TOOLS[3].sword(), -2.4F).rarity(Rarity.EPIC).fireResistant()));
 
-    /** Hexsteel tools: as strong as diamond ones, repaired with hexsteel. */
-    private static final ToolMaterial HEXSTEEL_TOOLS = new ToolMaterial(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 1561, 8.0F, 3.0F, 10,
+    /** Hexsteel tools: no runes, a cheap step above diamond, repaired with hexsteel. */
+    private static final ToolMaterial HEXSTEEL_TOOLS = com.pockyl.hextale.GearConfig.HEXSTEEL_TOOLS.material(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 10,
             ModTags.REPAIRS_HEXSTEEL);
     public static final DeferredItem<Item> HEXSTEEL_SWORD = ITEMS.registerItem("hexsteel_sword",
-            properties -> new Item(properties.sword(HEXSTEEL_TOOLS, 3.0F, -2.4F)));
+            properties -> new Item(properties.sword(HEXSTEEL_TOOLS, com.pockyl.hextale.GearConfig.HEXSTEEL_TOOLS.sword(), -2.4F)));
     public static final DeferredItem<Item> HEXSTEEL_PICKAXE = ITEMS.registerItem("hexsteel_pickaxe",
             properties -> new Item(properties.pickaxe(HEXSTEEL_TOOLS, 1.0F, -2.8F)));
     public static final DeferredItem<Item> HEXSTEEL_AXE = ITEMS.registerItem("hexsteel_axe",
@@ -396,11 +464,10 @@ public final class ModItems {
     public static final DeferredItem<Item> HEXSTEEL_HOE = ITEMS.registerItem("hexsteel_hoe",
             properties -> new Item(properties.hoe(HEXSTEEL_TOOLS, -3.0F, 0.0F)));
 
-    /** Hexsteel armour: diamond protection, its own worn look. */
+    /** Hexsteel armour: diamond protection, a little tougher, its own worn look. */
     public static final ResourceKey<EquipmentAsset> HEXSTEEL_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, Hextale.id("hexsteel"));
-    private static final ArmorMaterial HEXSTEEL_ARMOR = new ArmorMaterial(33,
-            Map.of(ArmorType.BOOTS, 3, ArmorType.LEGGINGS, 6, ArmorType.CHESTPLATE, 8, ArmorType.HELMET, 3, ArmorType.BODY, 11),
-            10, SoundEvents.ARMOR_EQUIP_DIAMOND, 2.0F, 0.0F, ModTags.REPAIRS_HEXSTEEL, HEXSTEEL_ASSET);
+    private static final ArmorMaterial HEXSTEEL_ARMOR = com.pockyl.hextale.GearConfig.HEXSTEEL_ARMOUR.material(11, 10, SoundEvents.ARMOR_EQUIP_DIAMOND,
+            ModTags.REPAIRS_HEXSTEEL, HEXSTEEL_ASSET);
     public static final DeferredItem<Item> HEXSTEEL_HELMET = ITEMS.registerItem("hexsteel_helmet",
             properties -> new Item(properties.humanoidArmor(HEXSTEEL_ARMOR, ArmorType.HELMET)));
     public static final DeferredItem<Item> HEXSTEEL_CHESTPLATE = ITEMS.registerItem("hexsteel_chestplate",
@@ -410,18 +477,35 @@ public final class ModItems {
     public static final DeferredItem<Item> HEXSTEEL_BOOTS = ITEMS.registerItem("hexsteel_boots",
             properties -> new Item(properties.humanoidArmor(HEXSTEEL_ARMOR, ArmorType.BOOTS)));
 
+    /**
+     * Chem-steel armour: registered at full strength (Bulwark level 4), unbreakable, as protective as the fuel in the tank
+     * on the wearer's back lets it be ({@link com.pockyl.hextale.chem.ChemGear}). The worn look is the hexsteel one for now.
+     */
+    private static final ArmorMaterial CHEM_STEEL_ARMOR = com.pockyl.hextale.GearConfig.BULWARK[3].material(13, 15,
+            SoundEvents.ARMOR_EQUIP_NETHERITE, net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM,
+                    net.minecraft.resources.Identifier.fromNamespaceAndPath("c", "ingots/chem_steel")), HEXSTEEL_ASSET);
+    public static final DeferredItem<com.pockyl.hextale.item.ChemArmourItem> CHEM_STEEL_HELMET = ITEMS.registerItem("chem_steel_helmet",
+            properties -> new com.pockyl.hextale.item.ChemArmourItem(ArmorType.HELMET, chemTool(properties.humanoidArmor(CHEM_STEEL_ARMOR, ArmorType.HELMET))));
+    public static final DeferredItem<com.pockyl.hextale.item.ChemArmourItem> CHEM_STEEL_CHESTPLATE = ITEMS.registerItem("chem_steel_chestplate",
+            properties -> new com.pockyl.hextale.item.ChemArmourItem(ArmorType.CHESTPLATE, chemTool(properties.humanoidArmor(CHEM_STEEL_ARMOR, ArmorType.CHESTPLATE))));
+    public static final DeferredItem<com.pockyl.hextale.item.ChemArmourItem> CHEM_STEEL_LEGGINGS = ITEMS.registerItem("chem_steel_leggings",
+            properties -> new com.pockyl.hextale.item.ChemArmourItem(ArmorType.LEGGINGS, chemTool(properties.humanoidArmor(CHEM_STEEL_ARMOR, ArmorType.LEGGINGS))));
+    /** The chem-steel chestplate with a built-in tank: armour and fuel tank in one piece. */
+    public static final DeferredItem<com.pockyl.hextale.item.ChemTankChestplateItem> CHEM_STEEL_TANK_CHESTPLATE = ITEMS.registerItem(
+            "chem_steel_tank_chestplate", properties -> new com.pockyl.hextale.item.ChemTankChestplateItem(
+                    chemTool(properties.humanoidArmor(CHEM_STEEL_ARMOR, ArmorType.CHESTPLATE))));
+    public static final DeferredItem<com.pockyl.hextale.item.ChemArmourItem> CHEM_STEEL_BOOTS = ITEMS.registerItem("chem_steel_boots",
+            properties -> new com.pockyl.hextale.item.ChemArmourItem(ArmorType.BOOTS, chemTool(properties.humanoidArmor(CHEM_STEEL_ARMOR, ArmorType.BOOTS))));
+
 
     // Bulwark armour in four levels (brass over blued steel, a crystal heart in the chestplate). The look is a placeholder
     // (the hexsteel equipment asset) until its worn models are wired in.
+    // Protection, toughness and durability per level come from com.pockyl.hextale.GearConfig (STARTUP config).
     private static final ArmorMaterial[] BULWARK_ARMOR = {
-            new ArmorMaterial(20, Map.of(ArmorType.BOOTS, 2, ArmorType.LEGGINGS, 5, ArmorType.CHESTPLATE, 6, ArmorType.HELMET, 2, ArmorType.BODY, 5),
-                    14, SoundEvents.ARMOR_EQUIP_IRON, 0.0F, 0.0F, ModTags.HEXTECH_TOOL_MATERIALS, HEXSTEEL_ASSET),
-            new ArmorMaterial(33, Map.of(ArmorType.BOOTS, 3, ArmorType.LEGGINGS, 6, ArmorType.CHESTPLATE, 8, ArmorType.HELMET, 3, ArmorType.BODY, 11),
-                    12, SoundEvents.ARMOR_EQUIP_DIAMOND, 2.0F, 0.0F, ModTags.REPAIRS_CHARGED_HEXSTEEL, HEXSTEEL_ASSET),
-            new ArmorMaterial(37, Map.of(ArmorType.BOOTS, 3, ArmorType.LEGGINGS, 6, ArmorType.CHESTPLATE, 8, ArmorType.HELMET, 3, ArmorType.BODY, 11),
-                    16, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.1F, ModTags.REPAIRS_RADIANT_ALLOY, HEXSTEEL_ASSET),
-            new ArmorMaterial(42, Map.of(ArmorType.BOOTS, 3, ArmorType.LEGGINGS, 7, ArmorType.CHESTPLATE, 9, ArmorType.HELMET, 3, ArmorType.BODY, 13),
-                    18, SoundEvents.ARMOR_EQUIP_NETHERITE, 4.0F, 0.15F, ModTags.REPAIRS_RIFTMETAL, HEXSTEEL_ASSET)};
+            com.pockyl.hextale.GearConfig.BULWARK[0].material(5, 14, SoundEvents.ARMOR_EQUIP_IRON, ModTags.HEXTECH_TOOL_MATERIALS, HEXSTEEL_ASSET),
+            com.pockyl.hextale.GearConfig.BULWARK[1].material(11, 12, SoundEvents.ARMOR_EQUIP_DIAMOND, ModTags.REPAIRS_CHARGED_HEXSTEEL, HEXSTEEL_ASSET),
+            com.pockyl.hextale.GearConfig.BULWARK[2].material(11, 16, SoundEvents.ARMOR_EQUIP_NETHERITE, ModTags.REPAIRS_RADIANT_ALLOY, HEXSTEEL_ASSET),
+            com.pockyl.hextale.GearConfig.BULWARK[3].material(13, 18, SoundEvents.ARMOR_EQUIP_NETHERITE, ModTags.REPAIRS_RIFTMETAL, HEXSTEEL_ASSET)};
     public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> BULWARK_HELMET = ITEMS.registerItem("bulwark_helmet",
             properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.HELMET,
                     properties.humanoidArmor(BULWARK_ARMOR[0], ArmorType.HELMET)));
@@ -607,6 +691,18 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> CRYSTAL_BATTERY = ITEMS.registerSimpleBlockItem(ModBlocks.CRYSTAL_BATTERY,
             properties -> properties.rarity(Rarity.UNCOMMON));
 
+    // Spawn eggs of the Void's creatures: the pre-1.21.5 egg recoloured for each mob.
+    public static final DeferredItem<net.minecraft.world.item.SpawnEggItem> VOID_MITE_SPAWN_EGG = ITEMS.registerItem("void_mite_spawn_egg",
+            properties -> new net.minecraft.world.item.SpawnEggItem(properties.spawnEgg(ModEntities.VOID_MITE.get())));
+    public static final DeferredItem<net.minecraft.world.item.SpawnEggItem> VOIDLING_SPAWN_EGG = ITEMS.registerItem("voidling_spawn_egg",
+            properties -> new net.minecraft.world.item.SpawnEggItem(properties.spawnEgg(ModEntities.VOIDLING.get())));
+    public static final DeferredItem<net.minecraft.world.item.SpawnEggItem> RIB_CRAWLER_SPAWN_EGG = ITEMS.registerItem("rib_crawler_spawn_egg",
+            properties -> new net.minecraft.world.item.SpawnEggItem(properties.spawnEgg(ModEntities.RIB_CRAWLER.get())));
+    public static final DeferredItem<net.minecraft.world.item.SpawnEggItem> PIT_MAW_SPAWN_EGG = ITEMS.registerItem("pit_maw_spawn_egg",
+            properties -> new net.minecraft.world.item.SpawnEggItem(properties.spawnEgg(ModEntities.PIT_MAW.get())));
+    public static final DeferredItem<net.minecraft.world.item.SpawnEggItem> SEER_SPAWN_EGG = ITEMS.registerItem("seer_spawn_egg",
+            properties -> new net.minecraft.world.item.SpawnEggItem(properties.spawnEgg(ModEntities.SEER.get())));
+
     private ModItems() {
     }
 
@@ -619,5 +715,11 @@ public final class ModItems {
     public static boolean isPylon(net.minecraft.world.item.ItemStack stack) {
         return stack.is(GATHERING_PYLON.get()) || stack.is(SENDING_PYLON.get()) || stack.is(RELAY_PYLON.get()) || stack.is(SIPHON_PYLON.get())
                 || stack.is(SORTING_MATRIX.get());
+    }
+
+    private static Map<net.minecraft.world.item.DyeColor, DeferredItem<BlockItem>> dyedWisps() {
+        Map<net.minecraft.world.item.DyeColor, DeferredItem<BlockItem>> wisps = new EnumMap<>(net.minecraft.world.item.DyeColor.class);
+        ModBlocks.DYED_WISPS.forEach((dye, block) -> wisps.put(dye, ITEMS.registerSimpleBlockItem(block)));
+        return java.util.Collections.unmodifiableMap(wisps);
     }
 }

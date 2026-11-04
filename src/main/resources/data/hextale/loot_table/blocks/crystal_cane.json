@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:crystal_cane"
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "hextale:crystal_cane",
+          "properties": {
+            "podded": "true"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:crystal_pod"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "hextale:blocks/crystal_cane"
+}

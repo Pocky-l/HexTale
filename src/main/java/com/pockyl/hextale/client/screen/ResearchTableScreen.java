@@ -172,6 +172,9 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private void setTab(Tab tab) {
         this.tab = tab;
         menu.setSlotsVisible(tab == Tab.DESK);
+        if (tab != Tab.BOOK && book != null) {
+            book.hidden();
+        }
     }
 
     @Nullable
@@ -1032,6 +1035,11 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             return true;
         }
         return super.keyPressed(event);
+    }
+
+    @Override
+    public boolean charTyped(net.minecraft.client.input.CharacterEvent event) {
+        return tab == Tab.BOOK && book.charTyped(event) || super.charTyped(event);
     }
 
     @Override

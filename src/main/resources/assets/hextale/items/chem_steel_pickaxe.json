@@ -1,0 +1,11 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "hextale:item/chem_steel_pickaxe",
+    "tints": [
+      {
+        "type": "hextale:chem_fuel"
+      }
+    ]
+  }
+}

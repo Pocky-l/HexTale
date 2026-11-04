@@ -1,0 +1,11 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:crimson_fungus",
+  "essences": {
+    "cold": 3
+  },
+  "result": {
+    "id": "minecraft:warped_fungus"
+  },
+  "research": "advanced_transmutation"
+}

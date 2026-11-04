@@ -8,5 +8,6 @@
     "result": "hextale:rune_circle"
   },
   "research": "hextech_altar",
+  "station": true,
   "pos": [450, -385]
 }

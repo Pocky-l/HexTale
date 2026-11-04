@@ -1,0 +1,15 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "SSS",
+    "SGS"
+  ],
+  "key": {
+    "S": "#c:ingots/chem_steel",
+    "G": "hextale:chem_glass"
+  },
+  "result": {
+    "id": "hextale:chem_steel_helmet"
+  },
+  "charge": 3
+}

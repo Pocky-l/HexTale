@@ -1,0 +1,12 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:melon_seeds",
+  "essences": {
+    "sap": 4,
+    "plant": 2
+  },
+  "result": {
+    "id": "hextale:sap_gourd_seeds",
+    "count": 2
+  }
+}

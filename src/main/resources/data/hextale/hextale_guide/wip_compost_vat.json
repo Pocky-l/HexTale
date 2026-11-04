@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "essences",
-  "icon": "minecraft:composter",
-  "parents": ["drain_valve"],
-  "pos": [338, 209]
-}

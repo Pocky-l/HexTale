@@ -52,6 +52,8 @@ public final class TableModels {
     public static final StandaloneModelKey<BlockStateModelPart> LAPIDARY_GEAR = model("block/hex_lapidary_gear");
     public static final StandaloneModelKey<BlockStateModelPart> WHIRL_REAPER_VANES = model("block/whirl_reaper_vanes");
     public static final StandaloneModelKey<BlockStateModelPart> HEX_SAW_DISC = model("block/hex_sawmill_disc");
+    /** The Essence Sprinkler's head, turned by its renderer about the riser's axis after each spray. */
+    public static final StandaloneModelKey<BlockStateModelPart> SPRINKLER_HEAD = model("block/essence_sprinkler_head");
     /** The formed Hex Foundry round its heart, facing north, and its glowing parts (drawn at full light while hot). */
     public static final StandaloneModelKey<BlockStateModelPart> HEX_FOUNDRY = model("block/hex_foundry/formed");
     public static final StandaloneModelKey<BlockStateModelPart> HEX_FOUNDRY_GLOW = model("block/hex_foundry/glow");
@@ -75,6 +77,8 @@ public final class TableModels {
     /** The Chem Boiler's gauge needle (built pointing up from {@code ChemBoilerRenderer.NEEDLE_PIVOT}) and safety valve. */
     public static final StandaloneModelKey<BlockStateModelPart> CHEM_BOILER_NEEDLE = model("block/chem_boiler_needle");
     public static final StandaloneModelKey<BlockStateModelPart> CHEM_BOILER_VALVE = model("block/chem_boiler_valve");
+    /** The Chem Tank as worn: shoulder and chest straps, drawn on the player's back by {@link ChemTankLayer}. */
+    public static final StandaloneModelKey<BlockStateModelPart> CHEM_TANK_WORN = model("item/chem_tank_worn");
 
     private TableModels() {
     }
@@ -104,5 +108,14 @@ public final class TableModels {
     public static void submit(PoseStack poseStack, SubmitNodeCollector collector, StandaloneModelKey<BlockStateModelPart> key, int light) {
         BlockStateModelPart part = Minecraft.getInstance().getModelManager().getStandaloneModel(key);
         collector.submitMultiLayerBlockModel(poseStack, List.of(part), false, NO_TINTS, light, OverlayTexture.NO_OVERLAY, 0);
+    }
+
+    /** Draws a block state's own model (any block of the world) at the pose, untinted. */
+    public static void submitState(PoseStack poseStack, SubmitNodeCollector collector, net.minecraft.world.level.block.state.BlockState state,
+                                   int light) {
+        java.util.List<BlockStateModelPart> parts = new java.util.ArrayList<>();
+        Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(state)
+                .collectParts(net.minecraft.util.RandomSource.create(42L), parts);
+        collector.submitMultiLayerBlockModel(poseStack, parts, false, NO_TINTS, light, OverlayTexture.NO_OVERLAY, 0);
     }
 }

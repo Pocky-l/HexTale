@@ -1,0 +1,37 @@
+{
+  "region": "chemtech",
+  "stage": "late",
+  "icon": [
+    "hextale:chem_steel_pickaxe",
+    "hextale:chem_steel_axe",
+    "hextale:chem_steel_shovel",
+    "hextale:chem_steel_sword"
+  ],
+  "parents": [
+    "chem_tank",
+    "lab_bench"
+  ],
+  "display": [
+    {
+      "kind": "hex_crafting",
+      "result": "hextale:chem_steel_pickaxe"
+    },
+    {
+      "kind": "hex_crafting",
+      "result": "hextale:chem_steel_axe"
+    },
+    {
+      "kind": "hex_crafting",
+      "result": "hextale:chem_steel_shovel"
+    },
+    {
+      "kind": "hex_crafting",
+      "result": "hextale:chem_steel_sword"
+    }
+  ],
+  "research": "chem_tools",
+  "pos": [
+    -1350,
+    290
+  ]
+}

@@ -7,4 +7,9 @@ package com.pockyl.hextale.chem;
  */
 public interface HeatUser {
     boolean wantsHeat();
+
+    /** Hot and waiting with nothing to do: the burner only keeps it hot and burns its fuel at a quarter of the rate. */
+    default boolean idle() {
+        return false;
+    }
 }

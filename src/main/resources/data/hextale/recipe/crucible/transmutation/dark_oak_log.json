@@ -1,0 +1,11 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:spruce_log",
+  "essences": {
+    "shadow": 3
+  },
+  "result": {
+    "id": "minecraft:dark_oak_log"
+  },
+  "research": "transmutation"
+}

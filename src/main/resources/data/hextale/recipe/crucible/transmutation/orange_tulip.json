@@ -1,0 +1,11 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:red_tulip",
+  "essences": {
+    "magma": 2
+  },
+  "result": {
+    "id": "minecraft:orange_tulip"
+  },
+  "research": "transmutation"
+}

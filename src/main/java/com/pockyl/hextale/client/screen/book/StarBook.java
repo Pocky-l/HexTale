@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.client.ClientKnowledge;
+import com.pockyl.hextale.client.RecipeLookup;
 import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.quest.Guide;
@@ -86,6 +87,7 @@ public final class StarBook {
     private final RunesPage runes;
     private final GuideEditor editor;
     private final FreshMarks marks = new FreshMarks(this);
+    private final GuideSearch search = new GuideSearch();
     /** Where the sky is flying to after a click on an arrow (map coordinates), or null. */
     private float @Nullable [] glide;
     private long glideFrame;
@@ -243,6 +245,7 @@ public final class StarBook {
         Sky.render(graphics, skyLeft(), skyTop(), skyWidth(), skyHeight(), cameraX, cameraY, zoom(),
                 (GuidePage.minX() + GuidePage.maxX()) / 2.0F, (GuidePage.minY() + GuidePage.maxY()) / 2.0F, trail, mouseX, mouseY, now);
         if (tab == Tab.RUNES) {
+            typing(false);
             List<FormattedCharSequence> tooltip = runes.render(graphics, knowledge, mouseX, mouseY, now);
             PixelArt.flush(graphics);
             List<FormattedCharSequence> tabTip = renderTabs(graphics, mouseX, mouseY);
@@ -261,18 +264,26 @@ public final class StarBook {
         graphics.pose().translate(-cameraX, -cameraY);
         // While a plate is open the map waits behind it; an arrow covers the map under it.
         boolean free = !dragging && overSky(mouseX, mouseY) && guide.selected() == null && !overTabs(mouseX, mouseY)
-                && marks.at(mouseX, mouseY) == null;
+                && marks.at(mouseX, mouseY) == null && !search.over(mouseX, mouseY);
         Quest hovered = free ? guide.questAt(mouseX, mouseY, knowledge) : null;
         if (hovered != null && guide.seenOnMap(hovered, knowledge)) {
             FreshMarks.notice(hovered, knowledge);
         }
         guide.renderMap(graphics, knowledge, now, hovered);
         PixelArt.flush(graphics);
+        search.matches(knowledge, ClientKnowledge.version());
+        search.renderRings(graphics, now);
         graphics.pose().popMatrix();
         List<FormattedCharSequence> markTip = guide.selected() == null ? marks.render(graphics, mouseX, mouseY, now) : null;
         editor.renderHint(graphics, skyLeft() + skyWidth() - 4, skyTop() + skyHeight() - 4, mouseX, mouseY);
 
         List<FormattedCharSequence> tabTip = guide.selected() == null ? renderTabs(graphics, mouseX, mouseY) : null;
+        if (guide.selected() == null) {
+            search.x = skyLeft() + skyWidth() - GuideSearch.WIDTH - 3;
+            search.y = skyTop() + 3;
+            search.render(graphics, font, mouseX, mouseY);
+        }
+        typing(guide.selected() == null);
         List<FormattedCharSequence> tooltip = guide.renderPlate(graphics, knowledge, mouseX, mouseY, now);
         // The pixel art is batched: draw it while the scissor still clips it to the sky.
         PixelArt.flush(graphics);
@@ -428,6 +439,11 @@ public final class StarBook {
         if (button == InputConstants.MOUSE_BUTTON_RIGHT && tab == Tab.QUESTS && guide.selected() == null && overSky(mouseX, mouseY)) {
             return editor.press(mouseX, mouseY);
         }
+        if (button != InputConstants.MOUSE_BUTTON_LEFT && tab == Tab.QUESTS && guide.selected() != null
+                && RecipeLookup.show(InputConstants.Type.MOUSE.getOrCreate(button), guide.pointed())) {
+            // The recipe viewer's "show recipe" / "show uses" may be bound to a mouse button.
+            return true;
+        }
         if (button != InputConstants.MOUSE_BUTTON_LEFT || !overSky(mouseX, mouseY)) {
             return false;
         }
@@ -443,9 +459,12 @@ public final class StarBook {
         if (tab == Tab.RUNES) {
             return true;
         }
-        if (guide.selected() == null && editor.clickWipSwitch(mouseX, mouseY)) {
+        if (guide.selected() == null && search.over(mouseX, mouseY)) {
+            search.focus(true);
+            GuideSearch.click();
             return true;
         }
+        search.focus(false);
         RuneKnowledge knowledge = ClientKnowledge.get();
         if (guide.selected() != null) {
             // The plate is a window over the map: a click inside works it, a click beside it goes back to the map.
@@ -539,13 +558,61 @@ public final class StarBook {
         return true;
     }
 
-    /** Escape closes an open plate before it closes the book. */
+    /** Escape closes an open plate before it closes the book; while the search is focused every key goes there. */
     public boolean keyPressed(KeyEvent event) {
         if (event.isEscape() && tab == Tab.QUESTS && guide.selected() != null) {
             guide.close();
             return true;
         }
-        return tab == Tab.QUESTS && editor.keyPressed(event);
+        if (tab == Tab.QUESTS && guide.selected() != null && RecipeLookup.show(InputConstants.getKey(event), guide.pointed())) {
+            // An item under the mouse in a picture: the recipe viewer's own keys show how it is made or what it is for.
+            return true;
+        }
+        if (tab == Tab.QUESTS && !search.focused() && editor.keyPressed(event)) {
+            // The dev editor's key goes first: a letter over the map would start the search otherwise.
+            return true;
+        }
+        if (tab == Tab.QUESTS && guide.selected() == null && search.keyPressed(event, ClientKnowledge.get())) {
+            if (search.flyTo != null) {
+                glideTo(search.flyTo.x(), search.flyTo.y());
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /** Letters typed over the map go into the search, which flies to the first step found. */
+    public boolean charTyped(net.minecraft.client.input.CharacterEvent event) {
+        if (tab != Tab.QUESTS || guide.selected() != null) {
+            return false;
+        }
+        Quest found = search.charTyped(event, ClientKnowledge.get());
+        if (found != null) {
+            glideTo(found.x(), found.y());
+        }
+        return search.focused();
+    }
+
+    /**
+     * Letters reach a screen only while the window takes text input (SDL, since 26.x), which a vanilla edit box turns on
+     * while it is focused. The map takes typing for the search, so it keeps text input on while the map is shown (the
+     * IME's window beside the field) and lets it go under a plate or on the Runes tab. Asked every frame: changing the
+     * screen (JEI and back) stops it.
+     */
+    private void typing(boolean on) {
+        var input = Minecraft.getInstance().textInputManager();
+        if (on) {
+            input.setTextInputArea(search.x, search.y, search.x + GuideSearch.WIDTH, search.y + GuideSearch.HEIGHT);
+            input.startTextInput();
+        } else {
+            input.stopTextInput();
+        }
+    }
+
+    /** The book is put away (the table's desk tab): it no longer takes typing. */
+    public void hidden() {
+        typing(false);
+        search.focus(false);
     }
 
     private void clampCamera() {

@@ -29,7 +29,9 @@ public enum Brew implements StringRepresentable {
     /** Raw shimmer: a cloudy violet fuel, and what the Chem Still refines. */
     RAW_SHIMMER(0x9A4CD0, false),
     /** Refined shimmer: glowing magenta, drunk for strength; the longest-burning fuel there is. */
-    REFINED_SHIMMER(0xF052D8, false);
+    REFINED_SHIMMER(0xF052D8, false),
+    /** Ember oil: amber oil boiled out of Ember Wheat, a fuel that burns longer than the combustible mix. */
+    EMBER_OIL(0xE8742A, false);
 
     /** Ticks of flame a vial of combustible mix gives a Chem Burner (a blaze rod's worth). */
     public static final int FUEL_TICKS = 2400;
@@ -59,6 +61,7 @@ public enum Brew implements StringRepresentable {
     public int burnTicks() {
         return switch (this) {
             case FUEL -> FUEL_TICKS;
+            case EMBER_OIL -> FUEL_TICKS * 3 / 2;
             case RAW_SHIMMER -> FUEL_TICKS * 2;
             case REFINED_SHIMMER -> FUEL_TICKS * 4;
             default -> 0;

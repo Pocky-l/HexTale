@@ -21,20 +21,6 @@ import org.jspecify.annotations.Nullable;
  * A step opens once all its parents are done; the first parent is the one its link comes from on the page.
  */
 public final class Quest {
-    public enum Kind implements StringRepresentable {
-        /** Something to make or obtain. */
-        ITEM,
-        /** A device still being worked out: never done, it shows where the mod is heading. */
-        WIP;
-
-        public static final Codec<Kind> CODEC = StringRepresentable.fromEnum(Kind::values);
-
-        @Override
-        public String getSerializedName() {
-            return name().toLowerCase(Locale.ROOT);
-        }
-    }
-
     /**
      * The part of the game a step belongs to: the workshop of the first days, the ritual circle in the middle, the Hexcore
      * at the end. The book lays the stages out as bands and dresses each in its own metal.
@@ -100,6 +86,9 @@ public final class Quest {
     /** Made on first use: item components are not bound yet while data packs load. */
     @Nullable
     private List<ItemStack> icons;
+    /** The step's own sign, made on first use (empty: none). */
+    @Nullable
+    private ItemStack sign;
     final List<Quest> parents = new ArrayList<>();
     final List<Quest> children = new ArrayList<>();
     int index;
@@ -123,10 +112,6 @@ public final class Quest {
         return definition;
     }
 
-    public Kind kind() {
-        return definition.kind();
-    }
-
     /** The steps that must be done first; the first is the one this step hangs from. */
     public List<Quest> parents() {
         return Collections.unmodifiableList(parents);
@@ -141,9 +126,12 @@ public final class Quest {
         return Collections.unmodifiableList(children);
     }
 
-    /** The step's sign: its first icon. */
+    /** The step's sign: its own {@code sign}, else its first icon. */
     public ItemStack icon() {
-        return icons().getFirst();
+        if (sign == null) {
+            sign = definition.sign().map(ItemStackTemplate::create).orElse(ItemStack.EMPTY);
+        }
+        return sign.isEmpty() ? icons().getFirst() : sign;
     }
 
     /** Every icon of the step; most have one, a step for a set of things one per thing. */
@@ -159,6 +147,9 @@ public final class Quest {
 
     /** The icon shown at this moment of the wall clock: several icons take turns. */
     public ItemStack icon(long now) {
+        if (definition.sign().isPresent()) {
+            return icon();
+        }
         List<ItemStack> all = icons();
         return all.get((int) ((now / ICON_TICK + index) % all.size()));
     }
@@ -166,12 +157,9 @@ public final class Quest {
     /**
      * Whether an item step's goal is met now. The step that asks for a research is met only by researching it (reading
      * the notes): finding or being given the item teaches nothing. Other steps: their own goal, or by default holding
-     * their icon's item. WIP steps never.
+     * their icon's item.
      */
     public boolean isMet(ServerPlayer player, Guide guide) {
-        if (kind() != Kind.ITEM) {
-            return false;
-        }
         ResearchTopic topic = topic();
         if (topic != null && guide.forTopic(topic) == this) {
             return com.pockyl.hextale.knowledge.Research.of(player).researched(topic);
@@ -182,7 +170,7 @@ public final class Quest {
 
     /** Whether this event (reported by the game) completes the step. */
     public boolean answers(String event) {
-        return kind() == Kind.ITEM && definition.goal().map(goal -> goal.answers(event)).orElse(false);
+        return definition.goal().map(goal -> goal.answers(event)).orElse(false);
     }
 
     /** The step's (first) picture, or null. */

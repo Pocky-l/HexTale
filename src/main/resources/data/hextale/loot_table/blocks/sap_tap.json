@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:sap_tap",
+          "functions": [
+            {
+              "function": "minecraft:copy_components",
+              "include": [
+                "hextale:tap_runes"
+              ],
+              "source": "block_entity"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "random_sequence": "hextale:blocks/sap_tap"
+}

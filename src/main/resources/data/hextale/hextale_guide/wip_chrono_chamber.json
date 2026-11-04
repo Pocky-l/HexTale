@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "forge",
-  "stage": "late",
-  "icon": "minecraft:clock",
-  "parents": ["hexcore"],
-  "pos": [1410, 20]
-}

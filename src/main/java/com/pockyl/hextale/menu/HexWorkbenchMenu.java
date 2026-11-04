@@ -348,7 +348,7 @@ public class HexWorkbenchMenu extends AbstractContainerMenu {
     /** The overlay line for a result that does not show, or null. */
     public static @Nullable Component whyText(Why why, @Nullable ResearchTopic topic) {
         return switch (why) {
-            case LOCKED -> topic == null ? null : Component.translatable("research.hextale.locked",
+            case LOCKED -> topic == null ? null : Component.translatable(topic.lockedKey(),
                     Component.translatable(topic.translationKey()).withColor(topic.color()));
             case NO_CHARGE -> Component.translatable("gui.hextale.hex_workbench.no_charge");
             case NONE -> null;

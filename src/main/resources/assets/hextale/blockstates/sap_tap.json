@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "hextale:block/sap_tap"
+    },
+    "facing=east": {
+      "model": "hextale:block/sap_tap",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "hextale:block/sap_tap",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "hextale:block/sap_tap",
+      "y": 270
+    }
+  }
+}

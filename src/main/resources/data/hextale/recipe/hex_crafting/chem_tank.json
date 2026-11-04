@@ -1,0 +1,18 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    " B ",
+    "SGS",
+    "LSL"
+  ],
+  "key": {
+    "B": "#c:bars/copper",
+    "S": "#c:ingots/chem_steel",
+    "G": "hextale:chem_glass",
+    "L": "minecraft:leather"
+  },
+  "result": {
+    "id": "hextale:chem_tank"
+  },
+  "charge": 4
+}

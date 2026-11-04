@@ -76,6 +76,27 @@ public final class VoidRealmGameTests {
         helper.succeed();
     }
 
+    /**
+     * Nothing of ours makes a world "experimental": every entry the mod's data adds to a data-driven registry (damage
+     * types, biomes, features, the Void's dimension type...) counts as stable, as vanilla's own do.
+     */
+    @HexTest
+    public static void ourDataIsNotExperimental(GameTestHelper helper) {
+        List<String> experimental = new java.util.ArrayList<>();
+        helper.getLevel().getServer().registryAccess().registries().forEach(entry -> experimentalOf(entry.value(), experimental));
+        helper.assertTrue(experimental.isEmpty(), "experimental entries: " + experimental);
+        helper.succeed();
+    }
+
+    private static <T> void experimentalOf(net.minecraft.core.Registry<T> registry, List<String> out) {
+        for (ResourceKey<T> key : registry.registryKeySet()) {
+            if (key.identifier().getNamespace().equals(Hextale.MOD_ID)
+                    && registry.registrationInfo(key).map(info -> info.lifecycle() != com.mojang.serialization.Lifecycle.stable()).orElse(false)) {
+                out.add(key.toString());
+            }
+        }
+    }
+
     /** Over a stretch of the Void: ribs with lit crests, skin with veins and worn patches, flesh - and nothing low down. */
     @HexTest(maxTicks = 200)
     public static void theVoidIsBuiltOfRibsAndSkin(GameTestHelper helper) {
@@ -161,7 +182,6 @@ public final class VoidRealmGameTests {
 
     /** A held breach takes a player through to its gate in the Void; the gate lets them back out beside the breach. */
     @HexTest(maxTicks = 600, padding = 8)
-    @SuppressWarnings("removal")
     public static void aHeldBreachLetsAPlayerThroughAndTheGateOut(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         BlockPos centre = helper.absolutePos(new BlockPos(1, 4, 1));
@@ -176,7 +196,7 @@ public final class VoidRealmGameTests {
             VoidRoadGameTests.clearRing(helper);
             return;
         }
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         player.snapTo(centre.getX() + 0.5, centre.getY() + 0.5 + 40, centre.getZ() + 0.5, 0, 0);
         player.getAbilities().flying = true;
         boolean[] stage = {false, false};
@@ -324,7 +344,7 @@ public final class VoidRealmGameTests {
         BlockPos pod = fronds.below();
         helper.setBlock(fronds, SinewWillow.wildFronds());
         helper.setBlock(pod, ModBlocks.ICHOR_POD.get().defaultBlockState().setValue(SinewWillow.Pod.AGE, SinewWillow.Pod.RIPE));
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         BlockPos absolute = helper.absolutePos(pod);
         var hit = new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(absolute), net.minecraft.core.Direction.DOWN, absolute, false);
         helper.getLevel().getBlockState(absolute).useWithoutItem(helper.getLevel(), player, hit);

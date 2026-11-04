@@ -1,0 +1,11 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:beetroot",
+  "essences": {
+    "sap": 4
+  },
+  "result": {
+    "id": "minecraft:sweet_berries"
+  },
+  "research": "transmutation"
+}

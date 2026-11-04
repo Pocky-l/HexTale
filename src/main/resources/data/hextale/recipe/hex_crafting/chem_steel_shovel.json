@@ -1,0 +1,17 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "S",
+    "G",
+    "R"
+  ],
+  "key": {
+    "S": "#c:ingots/chem_steel",
+    "G": "hextale:chem_glass",
+    "R": "#c:rods/wooden"
+  },
+  "result": {
+    "id": "hextale:chem_steel_shovel"
+  },
+  "charge": 3
+}

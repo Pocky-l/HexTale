@@ -97,6 +97,11 @@ public final class BrewEffects {
         Player player = thrower instanceof Player p ? p : null;
         for (BlockPos pos : BlockPos.betweenClosed(center.offset(-GROWTH_RADIUS, -1, -GROWTH_RADIUS), center.offset(GROWTH_RADIUS, 1, GROWTH_RADIUS))) {
             BlockState state = level.getBlockState(pos);
+            // Farmland it splashes on drinks it in: steeped soil with a couple of doses of the tonic.
+            if (com.pockyl.hextale.garden.SteepedSoilBlock.takesDose(state)) {
+                com.pockyl.hextale.garden.SteepedSoilBlock.steep(level, pos.immutable(), com.pockyl.hextale.garden.Dose.GROWTH, 2);
+                continue;
+            }
             // A plant, not the ground it grows from: grass and nylium would only sprout weeds all over.
             if (!(state.getBlock() instanceof BonemealableBlock) || state.getBlock() instanceof GrassBlock
                     || state.getBlock() instanceof NyliumBlock || state.is(BlockTags.DIRT) || state.is(Blocks.MOSS_BLOCK)) {

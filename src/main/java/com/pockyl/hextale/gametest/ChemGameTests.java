@@ -39,7 +39,7 @@ public final class ChemGameTests {
         helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
         CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
         crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         boolean[] done = {false};
         helper.succeedWhen(() -> {
             helper.assertTrue(crucible.boiling(), "the water boils");
@@ -70,7 +70,7 @@ public final class ChemGameTests {
         burner.feed(ChemVialItem.of(Brew.FUEL, 2));
         CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
         crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         Research.research(player, ResearchTopics.ACID);
         boolean[] done = {false};
         helper.succeedWhen(() -> {
@@ -101,7 +101,6 @@ public final class ChemGameTests {
 
     /** Coolant on hexsteel lying on a lit Chem Burner charges it at once - for a thrower who researched charged hexsteel. */
     @HexTest
-    @SuppressWarnings("removal")
     public static void coolantQuenchesHexsteelOnABurner(GameTestHelper helper) {
         BlockPos burner = new BlockPos(3, 2, 3);
         helper.setBlock(burner, ModBlocks.CHEM_BURNER.get().defaultBlockState().setValue(ChemBurnerBlock.LIT, true));
@@ -110,10 +109,10 @@ public final class ChemGameTests {
                 new ItemStack(com.pockyl.hextale.registry.ModItems.HEXSTEEL_INGOT.get(), 3));
         ingot.setDeltaMovement(Vec3.ZERO);
         helper.getLevel().addFreshEntity(ingot);
-        ServerPlayer novice = helper.makeMockServerPlayerInLevel();
+        ServerPlayer novice = MockPlayers.inLevel(helper);
         BrewEffects.splash(helper.getLevel(), top, Brew.COOLANT, novice, novice);
         helper.assertTrue(ingot.getItem().is(com.pockyl.hextale.registry.ModItems.HEXSTEEL_INGOT.get()), "only a researcher knows the trick");
-        ServerPlayer smith = helper.makeMockServerPlayerInLevel();
+        ServerPlayer smith = MockPlayers.inLevel(helper);
         Research.research(smith, ResearchTopics.CHARGED_HEXSTEEL);
         BrewEffects.splash(helper.getLevel(), top, Brew.COOLANT, smith, smith);
         helper.assertTrue(ingot.getItem().is(com.pockyl.hextale.registry.ModItems.CHARGED_HEXSTEEL_INGOT.get()) && ingot.getItem().getCount() == 3,

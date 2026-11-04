@@ -21,36 +21,40 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Crucible brews: the essences the boiling water must hold, the catalyst thrown in, the vials of brew it gives (one per
- * dose, bottled with glass bottles), and under them the heat it needs.
+ * Crucible brews, drawn as the pot ({@link CruciblePot}): the essences the boiling water must hold, the catalyst thrown
+ * in from above, the vials of brew it gives (one per dose, scooped with the glass bottle over the arrow), and under the
+ * pot the heat it needs.
  */
 public class BrewingCategory extends AbstractRecipeCategory<BrewingCategory.Recipe> {
     public static final IRecipeType<Recipe> TYPE = IRecipeType.create(Hextale.MOD_ID, "brewing", Recipe.class);
 
     public record Recipe(Identifier id, BrewRecipe recipe) {
         List<Map.Entry<Essence, Integer>> essences() {
-            return EssenceColumn.entries(recipe.essences().asMap());
+            return CruciblePot.entries(recipe.essences().asMap());
         }
     }
 
     private final int rows;
 
     public BrewingCategory(IGuiHelper guiHelper) {
-        this(guiHelper, EssenceColumn.rows(BrewRecipe.ALL.get(true).values().stream().map(recipe -> recipe.essences().asMap()).toList()));
+        this(guiHelper, CruciblePot.rows(BrewRecipe.ALL.get(true).values().stream().map(recipe -> recipe.essences().asMap()).toList()));
     }
 
     private BrewingCategory(IGuiHelper guiHelper, int rows) {
         super(TYPE, Component.translatable("jei.hextale.brewing"), guiHelper.createDrawableItemLike(ModItems.CHEM_VIAL.get()),
-                StepCategory.WIDTH, EssenceColumn.height(rows) + 14);
+                StepCategory.WIDTH, CruciblePot.height(rows));
         this.rows = rows;
     }
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, Recipe recipe, IFocusGroup focuses) {
-        EssenceColumn.addEssences(builder, recipe.essences(), rows);
-        int y = EssenceColumn.middle(rows);
-        builder.addInputSlot(EssenceColumn.CATALYST_X, y).setStandardSlotBackground().add(recipe.recipe().catalyst())
+        CruciblePot.addEssences(builder, recipe.essences());
+        int y = CruciblePot.middle(rows) - 8;
+        builder.addInputSlot(CruciblePot.catalystX(), CruciblePot.CATALYST_Y).setStandardSlotBackground().add(recipe.recipe().catalyst())
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.crucible.catalyst")));
+        builder.addInputSlot(CruciblePot.ARROW_X + 4, y - 22).setStandardSlotBackground()
+                .add(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.GLASS_BOTTLE))
+                .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.brewing.bottled")));
         builder.addOutputSlot(StepCategory.RESULT_X, y).setOutputSlotBackground()
                 .add(ChemVialItem.of(recipe.recipe().brew(), recipe.recipe().doses()))
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.brewing.bottled")));
@@ -58,16 +62,16 @@ public class BrewingCategory extends AbstractRecipeCategory<BrewingCategory.Reci
 
     @Override
     public void createRecipeExtras(IRecipeExtrasBuilder builder, Recipe recipe, IFocusGroup focuses) {
-        EssenceColumn.addArrows(builder, rows);
-        int level = recipe.recipe().heat();
-        Component heat = Component.translatable(level >= 5 ? "jei.hextale.brewing.heat_only" : "jei.hextale.brewing.heat",
-                Component.translatable("block.hextale.crucible.heat." + level));
-        builder.addText(heat, StepCategory.WIDTH, 10).setPosition(0, EssenceColumn.height(rows) + 4).setColor(0xFF8A4A1C);
+        builder.addRecipeArrowWidget().setPosition(CruciblePot.ARROW_X, CruciblePot.middle(rows) - 8);
     }
 
     @Override
     public void draw(Recipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
-        EssenceColumn.drawAmounts(graphics, recipe.essences(), rows);
+        int level = recipe.recipe().heat();
+        CruciblePot.draw(graphics, recipe.essences(), rows, level);
+        // The heater's icon says which heat; words only when a hotter one will do too.
+        CruciblePot.drawHeat(graphics, rows, level, level > 1 && level < BrewRecipe.BURNER_HEAT
+                ? Component.translatable("book.hextale.quest.crucible.or_hotter") : null);
     }
 
     @Override

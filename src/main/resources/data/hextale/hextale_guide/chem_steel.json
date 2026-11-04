@@ -1,0 +1,35 @@
+{
+  "region": "chemtech",
+  "stage": "late",
+  "icon": "hextale:chem_steel_ingot",
+  "parents": [
+    "chem_vat",
+    "refined_shimmer"
+  ],
+  "display": {
+    "kind": "scheme",
+    "ingredients": [
+      "minecraft:iron_ingot",
+      "minecraft:iron_ingot",
+      "minecraft:netherite_scrap",
+      {
+        "id": "hextale:chem_vial",
+        "components": {
+          "hextale:brew": "acid"
+        }
+      },
+      {
+        "id": "hextale:chem_vial",
+        "components": {
+          "hextale:brew": "refined_shimmer"
+        }
+      },
+      "hextale:chem_vat"
+    ],
+    "result": "hextale:chem_steel_ingot"
+  },
+  "pos": [
+    -1170,
+    230
+  ]
+}

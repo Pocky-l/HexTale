@@ -103,7 +103,6 @@ public class ChemBoilerBlock extends BaseEntityBlock implements EssenceMachine {
         if (!level.isClientSide()) {
             int taken = boiler.pourIn(bottle);
             if (taken <= 0) {
-                player.sendOverlayMessage(Component.translatable("block.hextale.chem_boiler.say.full"));
                 return InteractionResult.FAIL;
             }
             if (!player.getAbilities().instabuild) {
@@ -116,14 +115,6 @@ public class ChemBoilerBlock extends BaseEntityBlock implements EssenceMachine {
                 }
             }
             level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 0.6F, 0.9F);
-        }
-        return InteractionResult.SUCCESS;
-    }
-
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof ChemBoilerBlockEntity boiler) {
-            player.sendOverlayMessage(boiler.status());
         }
         return InteractionResult.SUCCESS;
     }

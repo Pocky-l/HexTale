@@ -87,6 +87,20 @@
           "type": "minecraft:model",
           "model": "hextale:item/guide/veins_washed"
         }
+      },
+      {
+        "when": "transmutation",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/guide/transmutation"
+        }
+      },
+      {
+        "when": "advanced_transmutation",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/guide/advanced_transmutation"
+        }
       }
     ],
     "fallback": {

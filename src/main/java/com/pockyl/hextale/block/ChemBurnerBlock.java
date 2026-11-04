@@ -110,7 +110,6 @@ public class ChemBurnerBlock extends BaseEntityBlock implements EssenceMachine {
             if (!level.isClientSide()) {
                 int taken = burner.feed(stack);
                 if (taken <= 0) {
-                    player.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("block.hextale.chem_burner.say.full"));
                     return InteractionResult.FAIL;
                 }
                 if (!creative) {
@@ -128,7 +127,6 @@ public class ChemBurnerBlock extends BaseEntityBlock implements EssenceMachine {
             if (!level.isClientSide()) {
                 EssenceMix taken = burner.pour(held);
                 if (taken.isEmpty()) {
-                    player.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("block.hextale.chem_burner.say.full"));
                     return InteractionResult.FAIL;
                 }
                 if (!creative) {
@@ -145,14 +143,6 @@ public class ChemBurnerBlock extends BaseEntityBlock implements EssenceMachine {
             return InteractionResult.SUCCESS;
         }
         return stack.is(Items.FLINT_AND_STEEL) ? InteractionResult.PASS : InteractionResult.TRY_WITH_EMPTY_HAND;
-    }
-
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof ChemBurnerBlockEntity burner) {
-            player.sendOverlayMessage(burner.status());
-        }
-        return InteractionResult.SUCCESS;
     }
 
     /** Behind the front window, where the flame burns. */

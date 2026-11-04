@@ -60,7 +60,12 @@ public record BrewRecipe(Ingredient catalyst, EssenceMix essences, Brew brew, in
      * this same {@code current} one: of the recipes the water can pay, the one asking the most. Null when none.
      */
     public static @Nullable BrewRecipe find(ItemStack stack, EssenceMix essence, int heat, @Nullable Brew current) {
-        return ALL.get(false).values().stream()
+        return find(stack, essence, heat, current, false);
+    }
+
+    /** {@link #find(ItemStack, EssenceMix, int, Brew)} on either side (the client knows the recipes too). */
+    public static @Nullable BrewRecipe find(ItemStack stack, EssenceMix essence, int heat, @Nullable Brew current, boolean clientSide) {
+        return ALL.get(clientSide).values().stream()
                 .filter(recipe -> recipe.catalyst().test(stack) && essence.holds(recipe.essences()) && heat >= recipe.heat()
                         && (current == null || current == recipe.brew()))
                 .max(Comparator.comparingInt(recipe -> recipe.essences().total()))

@@ -58,7 +58,7 @@ public final class ResearchLocks {
                 slot.container.setItem(slot.getContainerSlot(), ItemStack.EMPTY);
                 ResearchTopic topic = ResearchTopics.of(stack.getItem());
                 if (topic != null) {
-                    player.sendOverlayMessage(Component.translatable("research.hextale.locked",
+                    player.sendOverlayMessage(Component.translatable(topic.lockedKey(),
                             Component.translatable(topic.translationKey()).withColor(topic.color())));
                 }
             }

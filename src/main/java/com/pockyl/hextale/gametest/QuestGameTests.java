@@ -64,7 +64,7 @@ public final class QuestGameTests {
             helper.assertTrue(result.getItem() == BuiltInRegistries.ITEM.getValue(id) && result.getCount() == display.count(),
                     quest.id() + ": the result is " + display.count() + " x " + id);
             List<Ingredient> real = recipe.placementInfo().ingredients().stream().filter(i -> !i.isEmpty()).toList();
-            List<String> shown = display.ingredients().stream().filter(i -> !i.isEmpty()).toList();
+            List<String> shown = display.ingredients().stream().filter(i -> !i.isEmpty()).map(QuestDisplay.Part::id).toList();
             helper.assertTrue(real.size() == shown.size(), quest.id() + ": " + shown.size() + " ingredients shown, recipe has " + real.size());
             for (int i = 0; i < real.size(); i++) {
                 helper.assertTrue(real.get(i).test(sample(shown.get(i))), quest.id() + ": ingredient " + i + " is " + shown.get(i));
@@ -88,6 +88,49 @@ public final class QuestGameTests {
         Guide guide = Guide.server();
         helper.assertTrue(guide.all().size() > 100, "the guide's data files were read");
         helper.assertTrue(guide.all().size() == guide.definitions().size(), "every step in the data is in the guide");
+        helper.succeed();
+    }
+
+    /**
+     * Writes the laid-out diary map (places, bows, parents and looks of every step) as JSON to the file named by the
+     * run's {@code hextale.guideMap} property ({@code -PguideMap=<file>}), so the whole map can be looked at outside the
+     * game. Without the property it does nothing.
+     */
+    @HexTest
+    public static void guideMapExport(GameTestHelper helper) throws java.io.IOException {
+        String file = System.getProperty("hextale.guideMap");
+        if (file == null) {
+            helper.succeed();
+            return;
+        }
+        com.google.gson.JsonArray steps = new com.google.gson.JsonArray();
+        for (Quest quest : Guide.server().all()) {
+            com.google.gson.JsonObject step = new com.google.gson.JsonObject();
+            step.addProperty("id", quest.id());
+            step.addProperty("x", quest.x());
+            step.addProperty("y", quest.y());
+            step.addProperty("bow", quest.bow());
+            step.addProperty("region", quest.region().name().toLowerCase(java.util.Locale.ROOT));
+            step.addProperty("stage", quest.stage().getSerializedName());
+            step.addProperty("station", quest.station());
+            step.addProperty("landmark", quest.landmark());
+            step.addProperty("important", quest.important());
+            step.addProperty("secret", quest.secret());
+            step.addProperty("aura", quest.aura().getSerializedName());
+            step.addProperty("placed", quest.definition().pos().isPresent());
+            if (quest.topic() != null) {
+                step.addProperty("topic", quest.topic().id());
+                step.addProperty("lab", quest.topic().lab());
+            }
+            com.google.gson.JsonArray icons = new com.google.gson.JsonArray();
+            quest.icons().forEach(icon -> icons.add(BuiltInRegistries.ITEM.getKey(icon.getItem()).toString()));
+            step.add("icons", icons);
+            com.google.gson.JsonArray parents = new com.google.gson.JsonArray();
+            quest.parents().forEach(parent -> parents.add(parent.id()));
+            step.add("parents", parents);
+            steps.add(step);
+        }
+        java.nio.file.Files.writeString(java.nio.file.Path.of(file), new com.google.gson.GsonBuilder().setPrettyPrinting().create().toJson(steps));
         helper.succeed();
     }
 
@@ -164,17 +207,22 @@ public final class QuestGameTests {
     }
 
     /** What else a step gives besides its own result: things crafted straight from it. */
-    private static final Map<String, List<String>> ALSO = Map.of(
-            "brass", List.of("hextale:brass_nugget", "hextale:brass_block", "hextale:brass_grate"),
-            "sphalerite", List.of("hextale:raw_zinc", "hextale:raw_zinc_block", "hextale:deepslate_sphalerite_ore"),
-            "zinc", List.of("hextale:zinc_nugget", "hextale:zinc_block"),
-            "hexsteel", List.of("hextale:hexsteel_block"),
+    private static final Map<String, List<String>> ALSO = Map.ofEntries(
+            Map.entry("brass", List.of("hextale:brass_nugget", "hextale:brass_block", "hextale:brass_grate")),
+            Map.entry("sphalerite", List.of("hextale:raw_zinc", "hextale:raw_zinc_block", "hextale:deepslate_sphalerite_ore")),
+            Map.entry("zinc", List.of("hextale:zinc_nugget", "hextale:zinc_block")),
+            // The Void's own growths are found once one stands in it.
+            Map.entry("step_through", List.of("hextale:void_crystal_cluster")),
+            Map.entry("hexsteel", List.of("hextale:hexsteel_block")),
+            // Grown strains bear their harvest: pods on Crystal Cane, ears on Ember Wheat.
+            Map.entry("strain_crystal_cane", List.of("hextale:crystal_pod")),
+            Map.entry("strain_ember_wheat", List.of("hextale:ember_wheat")),
             // One research opens the four runed tools and the dagger together.
-            "hextech_pickaxe", List.of("hextale:hextech_axe", "hextale:hextech_shovel", "hextale:hextech_sword", "hextale:tendril_dagger"),
-            "fire_bricks", List.of("hextale:fire_brick", "hextale:fire_bricks", "hextale:fire_brick_stairs", "hextale:fire_brick_slab",
-                    "hextale:fire_brick_wall"),
-            "magic_stone", List.of("hextale:polished_magic_stone", "hextale:magic_bricks", "hextale:magic_brick_slab",
-                    "hextale:magic_brick_stairs", "hextale:magic_brick_wall", "hextale:chiseled_magic_bricks", "hextale:magic_stone_pillar"));
+            Map.entry("hextech_pickaxe", List.of("hextale:hextech_axe", "hextale:hextech_shovel", "hextale:hextech_sword", "hextale:tendril_dagger")),
+            Map.entry("fire_bricks", List.of("hextale:fire_brick", "hextale:fire_bricks", "hextale:fire_brick_stairs", "hextale:fire_brick_slab",
+                    "hextale:fire_brick_wall")),
+            Map.entry("magic_stone", List.of("hextale:polished_magic_stone", "hextale:magic_bricks", "hextale:magic_brick_slab",
+                    "hextale:magic_brick_stairs", "hextale:magic_brick_wall", "hextale:chiseled_magic_bricks", "hextale:magic_stone_pillar")));
 
     /** Every picture of a step, the ones under the others included. */
     private static List<QuestDisplay> pictures(Quest quest) {
@@ -212,6 +260,13 @@ public final class QuestGameTests {
                         out.add(BuiltInRegistries.ITEM.getKey(recipe.result().item().value()));
                     }
                 }
+                case CRUCIBLE -> {
+                    var recipe = com.pockyl.hextale.crafting.CrucibleRecipe.ALL.named(id, false);
+                    if (recipe != null) {
+                        out.add(BuiltInRegistries.ITEM.getKey(recipe.result().item().value()));
+                    }
+                }
+                case BREW -> out.add(BuiltInRegistries.ITEM.getKey(ModItems.CHEM_VIAL.get()));
                 default -> {
                     if (id != null) {
                         out.add(id);
@@ -257,7 +312,7 @@ public final class QuestGameTests {
             List<Identifier> needed = new ArrayList<>();
             for (QuestDisplay display : pictures(quest)) {
             switch (display.kind()) {
-                case SHAPED, SHAPELESS, SCHEME -> display.ingredients().stream().filter(id -> !id.isEmpty() && !id.startsWith("#"))
+                case SHAPED, SHAPELESS, SCHEME -> display.ingredients().stream().map(QuestDisplay.Part::id).filter(id -> !id.isEmpty() && !id.startsWith("#"))
                         .map(Identifier::parse).forEach(needed::add);
                 case INFUSION -> {
                     InfusionRecipe recipe = InfusionRecipes.ALL.named(Identifier.parse(display.result()), false);
@@ -279,6 +334,15 @@ public final class QuestGameTests {
                     for (var cell : recipe.grid()) {
                         cell.flatMap(part -> part.items().findFirst()).ifPresent(item -> needed.add(BuiltInRegistries.ITEM.getKey(item.value())));
                     }
+                }
+                case CRUCIBLE, BREW -> {
+                    Identifier id = Identifier.parse(display.result());
+                    Ingredient catalyst = display.kind() == QuestDisplay.Kind.BREW
+                            ? java.util.Optional.ofNullable(com.pockyl.hextale.crafting.BrewRecipe.ALL.named(id, false)).map(r -> r.catalyst()).orElse(null)
+                            : java.util.Optional.ofNullable(com.pockyl.hextale.crafting.CrucibleRecipe.ALL.named(id, false)).map(r -> r.catalyst()).orElse(null);
+                    helper.assertTrue(catalyst != null, quest.id() + ": crucible recipe " + display.result() + " exists");
+                    helper.assertTrue(before.contains(step("crucible")), quest.id() + " comes after the Crucible");
+                    catalyst.items().findFirst().ifPresent(item -> needed.add(BuiltInRegistries.ITEM.getKey(item.value())));
                 }
                 case ALLOY -> {
                     var recipe = com.pockyl.hextale.crafting.AlloyRecipe.ALL.named(Identifier.parse(display.result()), false);
@@ -303,7 +367,7 @@ public final class QuestGameTests {
 
     @HexTest
     public static void questsNoticeTheirGoals(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         RuneKnowledge knowledge = Research.of(player);
         Quests.check(player);
         helper.assertFalse(knowledge.questDone(step("research_table")), "nothing is done with empty hands");
@@ -342,7 +406,7 @@ public final class QuestGameTests {
     /** A step that asks for research is done by researching it: holding the item (found, given) teaches nothing. */
     @HexTest
     public static void researchStepsWantTheResearch(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         RuneKnowledge knowledge = Research.of(player);
         for (Quest quest : ancestors(step("separator"))) {
             knowledge.completeQuest(quest);
@@ -412,7 +476,7 @@ public final class QuestGameTests {
     /** Runes come after the altar: once it stands, a found scroll opens the rune lore, and the blank scroll with it. */
     @HexTest
     public static void aFoundScrollOpensTheRuneLore(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         RuneKnowledge knowledge = Research.of(player);
         for (Quest quest : ancestors(step("hextech_altar"))) {
             knowledge.completeQuest(quest);
@@ -433,7 +497,7 @@ public final class QuestGameTests {
      */
     @HexTest
     public static void theVoidBranchOpensWithTheHaze(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         RuneKnowledge knowledge = Research.of(player);
         var level = helper.getLevel();
         var chunk = level.getChunkAt(player.blockPosition());
@@ -463,7 +527,7 @@ public final class QuestGameTests {
         Quests.fire(player, Quests.BREACH_OPENED);
         helper.assertTrue(knowledge.questDone(step("void_breach")) && Guide.visible(step("void_chitin"), knowledge),
                 "a breach seen tearing open is written down and opens what came out of it");
-        ServerPlayer other = helper.makeMockServerPlayerInLevel();
+        ServerPlayer other = MockPlayers.inLevel(helper);
         RuneKnowledge late = Research.of(other);
         for (Quest quest : ancestors(step("void_breach"))) {
             late.completeQuest(quest);
@@ -487,7 +551,7 @@ public final class QuestGameTests {
      */
     @HexTest
     public static void newStepsWaitToBeLookedAt(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         RuneKnowledge knowledge = Research.of(player);
         knowledge.forgetQuests();
         helper.assertTrue(Guide.fresh(step("researchers_diary"), knowledge) == Guide.Fresh.OPENED, "a new reader's first steps are new");
@@ -517,9 +581,8 @@ public final class QuestGameTests {
     /** A step of the guide the server loaded, by id. */
     /** A strange find opens its step once it is studied under the loupe - holding it is not enough. */
     @HexTest
-    @SuppressWarnings("removal")
     public static void aStrangeFindWantsTheLoupe(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.inLevel(helper);
         Quest chitin = step("void_chitin");
         player.getInventory().add(new ItemStack(ModItems.VOID_CHITIN.get()));
         helper.assertFalse(chitin.isMet(player, Guide.server()), "holding the chitin is not enough");

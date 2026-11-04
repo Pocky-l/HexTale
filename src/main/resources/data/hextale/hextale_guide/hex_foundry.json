@@ -23,9 +23,8 @@
     }
   },
   "research": "hex_foundry",
-  "station": true,
   "pos": [
-    560,
-    40
+    524,
+    80
   ]
 }

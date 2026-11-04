@@ -1,0 +1,12 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:glow_berries",
+  "essences": {
+    "rift": 4,
+    "sap": 2
+  },
+  "result": {
+    "id": "hextale:shimmer_bulb",
+    "count": 2
+  }
+}

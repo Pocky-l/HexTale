@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "chemtech",
-  "stage": "mid",
-  "icon": "minecraft:spider_eye",
-  "parents": ["chem_vial", "concentrate"],
-  "pos": [-790, -200]
-}

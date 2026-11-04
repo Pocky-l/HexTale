@@ -67,7 +67,6 @@ public final class ImpulseAim {
             aims(level).remove(player.getUUID());
             if (!level.isClientSide() && level.getBlockEntity(plate) instanceof ImpulsePlateBlock.Plate found) {
                 found.setTarget(null);
-                player.sendOverlayMessage(ImpulsePlateBlock.message("cleared"));
                 level.playSound(null, plate, ModSounds.PYLON_UNLINK.get(), SoundSource.BLOCKS, 0.5F, 1.2F);
             }
             return;
@@ -103,7 +102,6 @@ public final class ImpulseAim {
         }
         aims(level).remove(player.getUUID());
         found.setTarget(target);
-        player.sendOverlayMessage(ImpulsePlateBlock.message("aimed"));
         if (level instanceof ServerLevel server) {
             Vec3 landing = ImpulseArc.landing(level, target);
             server.sendParticles(ModParticles.ring(ModParticles.HEXTECH), landing.x, landing.y + 0.05, landing.z, 0, 0.8, 1, 0, 1);

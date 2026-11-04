@@ -133,6 +133,16 @@
     "hextale:gnawed_planks",
     "hextale:void_sac",
     "hextale:pearl_sac",
-    "hextale:mimic_sac"
+    "hextale:mimic_sac",
+    "hextale:chem_planter",
+    "hextale:essence_sprinkler",
+    "hextale:garden_trellis",
+    "hextale:sap_tap",
+    "hextale:steeped_soil",
+    "hextale:sap_gourd",
+    "hextale:chem_vat",
+    "hextale:chem_steel_block",
+    "hextale:chem_steel_plating",
+    "hextale:chem_tank"
   ]
 }

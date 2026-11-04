@@ -8,13 +8,8 @@
   },
   "parents": ["lab_bench", "crucible"],
   "display": {
-    "kind": "scheme",
-    "ingredients": [
-      "minecraft:coal",
-      "hextale:crucible",
-      "minecraft:glass_bottle"
-    ],
-    "result": "hextale:chem_vial"
+    "kind": "brew",
+    "result": "hextale:combustible_mix"
   },
   "research": "combustible_mix",
   "pos": [-610, -150]
