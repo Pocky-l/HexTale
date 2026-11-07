@@ -354,6 +354,20 @@ modifiers are removed and nothing else happens. A bottle of essence with at leas
 With [Curios](https://www.curseforge.com/minecraft/mc-mods/curios) installed, the Researcher's Goggles also work from
 a Curios head slot (item tag `curios:head`) and show on the head, over a helmet too.
 
+## ProjectE
+
+On Minecraft 1.21.1. `data/hextale/pe_custom_conversions/hextale.json` sets the base EMC of what the world gives; a pack
+overrides it with its own `pe_custom_conversions` file. Recipes of `hextale:hex_crafting`, `infusion`, `alloying`,
+`crucible`, `tempering` and `awakening` count too. Only items are priced: essence and workbench charge are left out,
+because essence boils out of cheap items and a price on it would turn them into EMC. Only `hextale` results are mapped,
+so a Crucible transmutation never moves a vanilla value.
+
+## Hostile Neural Networks
+
+On Minecraft 1.21.1 and 26.1.2: data models for the Void Mite, Voidling, Rib Crawler, Pit Maw and Seer, in
+`data/hextale/data_models` (1.21.1) and `data/hextale/hostilenetworks/data_models` (26.1.2). A pack replaces a file of
+the same path to change its cost or drops.
+
 ## Stable ids
 
 `docs/released-ids.txt` lists every item and block id HexTale has released. They never disappear: a renamed id keeps

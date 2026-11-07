@@ -4,6 +4,10 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- [Hostile Neural Networks](https://www.curseforge.com/minecraft/mc-mods/hostile-neural-networks) (#8): data models for the Void Mite, Voidling, Rib Crawler, Pit Maw and Seer.
+
 ## [1.9.0+26.1.2] - 2026-11-04
 ### Added
 - Buckets of Essence (#8): an empty bucket fills with 1000 mB of one pure essence from a Big Essence Jar or another
