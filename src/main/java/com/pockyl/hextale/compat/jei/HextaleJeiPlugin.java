@@ -279,6 +279,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.BLANK_SCROLL.get(), "blank_scroll");
         info(registration, ModItems.RUNE_SCROLL.get(), "rune_scroll");
         info(registration, ModItems.RESEARCH_NOTES.get(), "research_notes");
+        info(registration, ModItems.SEERS_EYE.get(), "seers_eye");
         registration.addRecipes(NotesCategory.TYPE, NotesCategory.pages(List.of(new ItemStack(ModItems.ESSENCE_FLASK.get())),
                 Component.translatable("jei.hextale.info.essence_flask")));
     }

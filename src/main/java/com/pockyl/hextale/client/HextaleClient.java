@@ -135,6 +135,8 @@ public final class HextaleClient {
                 com.pockyl.hextale.client.render.PitMawModel.LAYER, com.pockyl.hextale.client.render.PitMawModel::createBodyLayer));
         modBus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> event.registerLayerDefinition(
                 com.pockyl.hextale.client.render.SeerModel.LAYER, com.pockyl.hextale.client.render.SeerModel::createBodyLayer));
+        modBus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> event.registerLayerDefinition(
+                com.pockyl.hextale.client.render.ProsectorModel.LAYER, com.pockyl.hextale.client.render.ProsectorModel::createBodyLayer));
         modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::registerLayers);
         modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::bake);
         modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::registerExtensions);
@@ -157,6 +159,8 @@ public final class HextaleClient {
         VoidFogBanks.register();
         com.pockyl.hextale.client.render.StrikeGauntletClient.register();
         com.pockyl.hextale.client.render.BiterBlastFx.register();
+        com.pockyl.hextale.client.render.ProsectorFx.register();
+        com.pockyl.hextale.client.ProsectorSounds.register();
         modBus.addListener(com.pockyl.hextale.client.render.BulwarkHeartLayer::addLayers);
         modBus.addListener((net.neoforged.neoforge.client.event.EntityRenderersEvent.AddLayers event) -> com.pockyl.hextale.client.render.BulwarkAuraLayer.addLayers(event));
         modBus.addListener(com.pockyl.hextale.client.render.BulwarkHeartLayer::registerModifier);
@@ -354,6 +358,18 @@ public final class HextaleClient {
                 com.pockyl.hextale.client.render.PitMawRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.SEER.get(),
                 com.pockyl.hextale.client.render.SeerRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.PROSECTOR.get(),
+                com.pockyl.hextale.client.render.ProsectorRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.SPECIMEN.get(),
+                com.pockyl.hextale.client.render.SpecimenRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.PROOF.get(),
+                com.pockyl.hextale.client.render.ProofRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.HEX_PLUG.get(),
+                com.pockyl.hextale.client.render.ProsectorProps.Plug::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.QUILL.get(),
+                com.pockyl.hextale.client.render.ProsectorProps.QuillLook::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.CYST.get(),
+                context -> new net.minecraft.client.renderer.entity.ThrownItemRenderer<>(context, 1.8F, true));
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.GRAPPLE_HOOK.get(),
                 com.pockyl.hextale.client.render.GrappleHookRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.BREACH_CAMERA.get(),

@@ -2254,6 +2254,43 @@
         "spark": 2
       },
       "tier": 3
+    },
+    "hextale:seers_eye": {
+      "essences": {
+        "rift": 4,
+        "shadow": 3,
+        "light": 2
+      },
+      "tier": 3
+    },
+    "hextale:watching_eye": {
+      "essences": {
+        "rift": 3,
+        "light": 2,
+        "beast": 1
+      },
+      "tier": 3
+    },
+    "hextale:theatre_tiles": {
+      "essences": {
+        "rift": 2,
+        "earth": 2
+      },
+      "tier": 3
+    },
+    "hextale:theatre_tile_stairs": {
+      "essences": {
+        "rift": 2,
+        "earth": 2
+      },
+      "tier": 3
+    },
+    "hextale:theatre_tile_slab": {
+      "essences": {
+        "rift": 1,
+        "earth": 1
+      },
+      "tier": 3
     }
   }
 }

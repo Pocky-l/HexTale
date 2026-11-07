@@ -54,6 +54,9 @@
 <p align="center"><img src="docs/showcase/realm.gif" alt="Inside the Void: a gate home and Sinew Willows" width="720"></p>
 <p align="center"><i>Once the breach was held, I stepped through. There is no ground in there, only old shells drifting in a violet haze,<br>trees made of sinew and something that watches from the dark. The gate home stays open behind me. I won't stay long.</i></p>
 
+<h3 align="center">Page 33. The heart of the vortex</h3>
+<p align="center"><i>Something behind the Seers was taking notes on me. I built an Eye from what they left and called it up, and whatever I hurt it with<br>it wrote down, kept in a jar and turned on me. Then I learned what happens when the jar breaks.</i></p>
+
 <h3 align="center">Every page. The diary</h3>
 <p align="center"><img src="docs/showcase/diary.gif" alt="The Researcher's Diary" width="720"></p>
 <p align="center"><i>I write down every step in my diary so I don't forget anything.</i></p>

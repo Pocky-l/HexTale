@@ -239,6 +239,9 @@ public final class ModItems {
     /** A black pearl the Void grows in its sacs (and some maws carry): it keeps the Void's turning inside. */
     public static final DeferredItem<com.pockyl.hextale.item.NotedItem> VOID_PEARL = ITEMS.registerItem("void_pearl",
             properties -> new com.pockyl.hextale.item.NotedItem(properties.rarity(Rarity.RARE)));
+    /** The key to a vortex heart: shows the way there and opens the seal, once. */
+    public static final DeferredItem<com.pockyl.hextale.thevoid.boss.SeersEyeItem> SEERS_EYE = ITEMS.registerItem("seers_eye",
+            properties -> new com.pockyl.hextale.thevoid.boss.SeersEyeItem(properties.rarity(Rarity.EPIC).stacksTo(16)));
     /** Void Chitin softened in the crucible and pressed into a plate: the riftforged armour's shell. */
     public static final DeferredItem<Item> VOID_CARAPACE = ITEMS.registerItem("void_carapace", properties -> new Item(properties.rarity(Rarity.RARE)));
     /** Level 2 gem: a diamond cut to a brilliant with a groove that holds hextech. */
@@ -660,6 +663,10 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> POLISHED_HUSK_CHITIN = ITEMS.registerSimpleBlockItem(ModBlocks.POLISHED_HUSK_CHITIN);
     public static final DeferredItem<BlockItem> POLISHED_HUSK_CHITIN_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.POLISHED_HUSK_CHITIN_STAIRS);
     public static final DeferredItem<BlockItem> POLISHED_HUSK_CHITIN_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.POLISHED_HUSK_CHITIN_SLAB);
+    public static final DeferredItem<BlockItem> THEATRE_TILES = ITEMS.registerSimpleBlockItem(ModBlocks.THEATRE_TILES);
+    public static final DeferredItem<BlockItem> THEATRE_TILE_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.THEATRE_TILE_STAIRS);
+    public static final DeferredItem<BlockItem> THEATRE_TILE_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.THEATRE_TILE_SLAB);
+    public static final DeferredItem<BlockItem> WATCHING_EYE = ITEMS.registerSimpleBlockItem(ModBlocks.WATCHING_EYE);
     public static final DeferredItem<BlockItem> HUSK_CHITIN_TILES = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_TILES);
     public static final DeferredItem<BlockItem> HUSK_CHITIN_TILES_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_TILES_STAIRS);
     public static final DeferredItem<BlockItem> HUSK_CHITIN_TILES_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_TILES_SLAB);

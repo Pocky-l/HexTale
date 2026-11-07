@@ -7,7 +7,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class ModNetwork {
-    private static final String PROTOCOL_VERSION = "22";
+    private static final String PROTOCOL_VERSION = "23";
 
     private ModNetwork() {
     }
@@ -36,6 +36,7 @@ public final class ModNetwork {
         registrar.playToClient(RuneEffectPayload.TYPE, RuneEffectPayload.STREAM_CODEC);
         registrar.playToClient(WeaponFxPayload.TYPE, WeaponFxPayload.STREAM_CODEC);
         registrar.playToClient(BiterBlastPayload.TYPE, BiterBlastPayload.STREAM_CODEC);
+        registrar.playToClient(ProsectorMarkerPayload.TYPE, ProsectorMarkerPayload.STREAM_CODEC);
         registrar.playToClient(StrikeDashPayload.TYPE, StrikeDashPayload.STREAM_CODEC);
         registrar.playToServer(ShockwavePayload.TYPE, ShockwavePayload.STREAM_CODEC, ShockwavePayload::handle);
         registrar.playToClient(PylonLinkPayload.TYPE, PylonLinkPayload.STREAM_CODEC);

@@ -318,6 +318,47 @@ public final class ModSounds {
     /** The Thinning eating into the ground (its own voice instead of the vanilla sculk spread). */
     public static final DeferredHolder<SoundEvent, SoundEvent> THINNING_BLIGHT = register("thinning.blight");
 
+    /** The Prosector and its fight. Vanilla sounds stand in for all of these in sounds.json until their own are made. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_AMBIENT = register("prosector.ambient");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_HURT = register("prosector.hurt");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_DEATH = register("prosector.death");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_DULL = register("prosector.dull");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_WAKE = register("prosector.wake");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PREPARE_INCISION = register("prosector.prepare.incision");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PREPARE_PROBE = register("prosector.prepare.probe");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PREPARE_RETRACTOR = register("prosector.prepare.retractor");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PREPARE_EXCISION = register("prosector.prepare.excision");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PREPARE_SECTION = register("prosector.prepare.section");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PREPARE_RIPOSTE = register("prosector.prepare.riposte");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PREPARE_VOLLEY = register("prosector.prepare.volley");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PREPARE_CHARGE = register("prosector.prepare.charge");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PREPARE_CIRCLE = register("prosector.prepare.circle");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_CUT = register("prosector.cut");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_BEAM = register("prosector.beam");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_HOOK = register("prosector.hook");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_SNAG = register("prosector.snag");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PLUG_RISE = register("prosector.plug_rise");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PLUG_SLAM = register("prosector.plug_slam");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_FLOOR_DROP = register("prosector.floor_drop");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_SWEEP = register("prosector.sweep");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_QUILL = register("prosector.quill");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_CYST_BURST = register("prosector.cyst_burst");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_CIRCLE = register("prosector.circle");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_WRITE = register("prosector.write");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_SPECIMEN_HIT = register("prosector.specimen_hit");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_SPECIMEN_BREAK = register("prosector.specimen_break");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_FORGET = register("prosector.forget");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_TURN_DISSECTION = register("prosector.turn_dissection");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_TURN_PROOF = register("prosector.turn_proof");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PROOF_FORM = register("prosector.proof_form");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PROOF_HURT = register("prosector.proof_hurt");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PROOF_DEATH = register("prosector.proof_death");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_FALL = register("prosector.fall");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_LOOP = register("prosector.loop");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_SUMMON = register("prosector.summon");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_SUMMON_RING = register("prosector.summon_ring");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_EYE_WAY = register("prosector.eye_way");
+
     private ModSounds() {
     }
 

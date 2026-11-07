@@ -170,6 +170,8 @@ public final class ResearchTopics {
     public static final ResearchTopic RIFTMETAL = add("riftmetal", 3, Essence.SHADOW, Essence.METAL, ModItems.RIFTMETAL_INGOT);
     public static final ResearchTopic SEALED_VOID_CRYSTAL = add("sealed_void_crystal", 3, Essence.SHADOW, Essence.EARTH,
             ModItems.SEALED_VOID_CRYSTAL);
+    /** The key to a vortex heart. */
+    public static final ResearchTopic SEERS_EYE = add("seers_eye", 3, Essence.SHADOW, Essence.LIGHT, ModItems.SEERS_EYE);
     // One armour research opens the whole set of its level (owner, 2026-10-30).
     public static final ResearchTopic BULWARK = add("bulwark", 2, Essence.METAL, Essence.EARTH,
             ModItems.BULWARK_HELMET, ModItems.BULWARK_CHESTPLATE, ModItems.BULWARK_LEGGINGS, ModItems.BULWARK_BOOTS);

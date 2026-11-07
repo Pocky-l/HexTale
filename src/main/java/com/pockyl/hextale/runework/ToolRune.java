@@ -67,7 +67,10 @@ public enum ToolRune implements HolderRune {
     /** A blow from behind strikes harder. */
     BACKSTAB("shadow_light", Tool.SWORD),
     /** A blow may open a wound that keeps bleeding. */
-    BLEEDING("shadow_metal", Tool.SWORD);
+    BLEEDING("shadow_metal", Tool.SWORD),
+    // Only the Prosector leaves this one
+    /** The more of a kind of creature this sword has killed, the harder it strikes that kind. */
+    ANATOMY("metal_life", Tool.SWORD);
 
     /** Chance of Haste per block (shared with the pickaxe's). */
     public static final float[] HASTE_CHANCE = {0.04F, 0.07F, 0.10F, 0.13F};
@@ -91,6 +94,10 @@ public enum ToolRune implements HolderRune {
     public static final float[] FIRST_STRIKE = {0.3F, 0.5F, 0.75F, 1.0F};
     /** Backstab: extra damage of a blow from behind. */
     public static final float[] BACK_BONUS = {0.25F, 0.4F, 0.6F, 0.8F};
+    /** Anatomy: what every {@link #ANATOMY_KILLS} kills of a kind add to blows against that kind, and where it stops. */
+    public static final float[] ANATOMY_STEP = {0.01F, 0.02F, 0.03F, 0.04F};
+    public static final int ANATOMY_KILLS = 10;
+    public static final float ANATOMY_CAP = 0.3F;
     /** Bleeding: chance a blow opens a wound, and how long it bleeds (ticks). */
     public static final float[] BLEED_CHANCE = {0.2F, 0.3F, 0.4F, 0.5F};
     public static final int[] BLEED_TICKS = {60, 80, 100, 120};
@@ -196,6 +203,7 @@ public enum ToolRune implements HolderRune {
             case WHIRLWIND -> HolderRune.factor(HolderRune.at(SWEEP_RADIUS, i));
             case BACKSTAB -> "+" + HolderRune.percent(HolderRune.at(BACK_BONUS, i));
             case BLEEDING -> HolderRune.percent(HolderRune.at(BLEED_CHANCE, i));
+            case ANATOMY -> "+" + HolderRune.percent(HolderRune.at(ANATOMY_STEP, i));
         };
     }
 

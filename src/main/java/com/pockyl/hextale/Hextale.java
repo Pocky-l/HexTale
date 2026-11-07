@@ -69,6 +69,7 @@ public final class Hextale {
         com.pockyl.hextale.chem.ChemJets.register();
         com.pockyl.hextale.entity.ZiplineTrolley.register();
         com.pockyl.hextale.runework.ToolEffects.register();
+        com.pockyl.hextale.thevoid.boss.ProsectorEvents.register();
         com.pockyl.hextale.runework.WeaponRunes.register();
         com.pockyl.hextale.farm.FunnelEvents.register();
         com.pockyl.hextale.farm.ShackleEvents.register();
@@ -85,6 +86,7 @@ public final class Hextale {
         PockyModsTab.register(modBus, () -> new ItemStack(ModItems.HEXCORE.get()), Hextale::fillCreativeTab);
 
         container.registerConfig(ModConfig.Type.SYNCED, Config.SPEC);
+        container.registerConfig(ModConfig.Type.SYNCED, com.pockyl.hextale.thevoid.boss.ProsectorConfig.SPEC, "hextale-prosector.toml");
         container.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
     }
 
@@ -291,6 +293,7 @@ public final class Hextale {
         output.accept(ModItems.RIFTMETAL_INGOT);
         output.accept(ModItems.HOLLOW_CRYSTAL);
         output.accept(ModItems.VOID_PEARL);
+        output.accept(ModItems.SEERS_EYE);
         output.accept(ModItems.VOID_CRYSTAL_CLUSTER);
         output.accept(ModItems.VOID_CRYSTAL);
         output.accept(ModItems.SEALED_VOID_CRYSTAL);
@@ -423,6 +426,10 @@ public final class Hextale {
         output.accept(ModItems.HUSK_CHITIN_TILES_STAIRS);
         output.accept(ModItems.HUSK_CHITIN_TILES_SLAB);
         output.accept(ModItems.HUSK_CHITIN_PILLAR);
+        output.accept(ModItems.THEATRE_TILES);
+        output.accept(ModItems.THEATRE_TILE_STAIRS);
+        output.accept(ModItems.THEATRE_TILE_SLAB);
+        output.accept(ModItems.WATCHING_EYE);
         output.accept(ModItems.GNAWED_COBBLESTONE);
         output.accept(ModItems.GNAWED_STONE_BRICKS);
         output.accept(ModItems.GNAWED_BRICKS);

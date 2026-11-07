@@ -20,6 +20,12 @@ public final class ModDataComponents {
             DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Hextale.MOD_ID);
 
     /** The complex rune written on a rune scroll. */
+    /** The rune Anatomy's tally on a sword: kills by creature type. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<java.util.Map<net.minecraft.resources.Identifier, Integer>>> ANATOMY =
+            COMPONENTS.registerComponentType("anatomy", builder -> builder
+                    .persistent(com.mojang.serialization.Codec.unboundedMap(net.minecraft.resources.Identifier.CODEC, com.mojang.serialization.Codec.INT))
+                    .networkSynchronized(net.minecraft.network.codec.ByteBufCodecs.map(java.util.HashMap::new, net.minecraft.resources.Identifier.STREAM_CODEC,
+                            net.minecraft.network.codec.ByteBufCodecs.VAR_INT)));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<ComplexRune>> RUNE =
             COMPONENTS.registerComponentType("rune", builder -> builder
                     .persistent(ComplexRunes.CODEC).networkSynchronized(ComplexRunes.STREAM_CODEC));

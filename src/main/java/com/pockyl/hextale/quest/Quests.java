@@ -58,6 +58,7 @@ public final class Quests {
     public static final String VOID_MARKED = "void_marked";
     public static final String NURSERY_HATCHED = "nursery_hatched";
     public static final String SWALLOWED_RUIN = "swallowed_ruin";
+    public static final String PROSECTOR_SLAIN = "prosector_slain";
     /** A brew poured on farmland: the first Steeped Soil. */
     public static final String STEEPED_SOIL = "steeped_soil";
 

@@ -2648,5 +2648,357 @@
         "volume": 1.0
       }
     ]
+  },
+  "prosector.ambient": {
+    "subtitle": "subtitles.hextale.prosector.ambient",
+    "sounds": [
+      {
+        "name": "hextale:prosector_ambient",
+        "volume": 0.5
+      }
+    ]
+  },
+  "prosector.hurt": {
+    "subtitle": "subtitles.hextale.prosector.hurt",
+    "sounds": [
+      {
+        "name": "hextale:prosector_hurt",
+        "volume": 0.6
+      }
+    ]
+  },
+  "prosector.death": {
+    "subtitle": "subtitles.hextale.prosector.death",
+    "sounds": [
+      {
+        "name": "hextale:prosector_death",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.dull": {
+    "subtitle": "subtitles.hextale.prosector.dull",
+    "sounds": [
+      {
+        "name": "hextale:prosector_dull",
+        "volume": 0.5
+      }
+    ]
+  },
+  "prosector.wake": {
+    "subtitle": "subtitles.hextale.prosector.wake",
+    "sounds": [
+      {
+        "name": "hextale:prosector_wake",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.prepare.incision": {
+    "subtitle": "subtitles.hextale.prosector.prepare.incision",
+    "sounds": [
+      {
+        "name": "hextale:prosector_prepare_incision",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.prepare.probe": {
+    "subtitle": "subtitles.hextale.prosector.prepare.probe",
+    "sounds": [
+      {
+        "name": "hextale:prosector_prepare_probe",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.prepare.retractor": {
+    "subtitle": "subtitles.hextale.prosector.prepare.retractor",
+    "sounds": [
+      {
+        "name": "hextale:prosector_prepare_retractor",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.prepare.excision": {
+    "subtitle": "subtitles.hextale.prosector.prepare.excision",
+    "sounds": [
+      {
+        "name": "hextale:prosector_prepare_excision",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.prepare.section": {
+    "subtitle": "subtitles.hextale.prosector.prepare.section",
+    "sounds": [
+      {
+        "name": "hextale:prosector_prepare_section",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.prepare.riposte": {
+    "subtitle": "subtitles.hextale.prosector.prepare.riposte",
+    "sounds": [
+      {
+        "name": "hextale:prosector_prepare_riposte",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.prepare.volley": {
+    "subtitle": "subtitles.hextale.prosector.prepare.volley",
+    "sounds": [
+      {
+        "name": "hextale:prosector_prepare_volley",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.prepare.charge": {
+    "subtitle": "subtitles.hextale.prosector.prepare.charge",
+    "sounds": [
+      {
+        "name": "hextale:prosector_prepare_charge",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.prepare.circle": {
+    "subtitle": "subtitles.hextale.prosector.prepare.circle",
+    "sounds": [
+      {
+        "name": "hextale:prosector_prepare_circle",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.cut": {
+    "subtitle": "subtitles.hextale.prosector.cut",
+    "sounds": [
+      {
+        "name": "hextale:prosector_cut",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.beam": {
+    "subtitle": "subtitles.hextale.prosector.beam",
+    "sounds": [
+      {
+        "name": "hextale:prosector_beam",
+        "volume": 0.5
+      }
+    ]
+  },
+  "prosector.hook": {
+    "subtitle": "subtitles.hextale.prosector.hook",
+    "sounds": [
+      {
+        "name": "hextale:prosector_hook",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.snag": {
+    "subtitle": "subtitles.hextale.prosector.snag",
+    "sounds": [
+      {
+        "name": "hextale:prosector_snag",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.plug_rise": {
+    "subtitle": "subtitles.hextale.prosector.plug_rise",
+    "sounds": [
+      {
+        "name": "hextale:prosector_plug_rise",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.plug_slam": {
+    "subtitle": "subtitles.hextale.prosector.plug_slam",
+    "sounds": [
+      {
+        "name": "hextale:prosector_plug_slam",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.floor_drop": {
+    "subtitle": "subtitles.hextale.prosector.floor_drop",
+    "sounds": [
+      {
+        "name": "hextale:prosector_floor_drop",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.sweep": {
+    "subtitle": "subtitles.hextale.prosector.sweep",
+    "sounds": [
+      {
+        "name": "hextale:prosector_sweep",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.quill": {
+    "subtitle": "subtitles.hextale.prosector.quill",
+    "sounds": [
+      {
+        "name": "hextale:prosector_quill",
+        "volume": 0.45
+      }
+    ]
+  },
+  "prosector.cyst_burst": {
+    "subtitle": "subtitles.hextale.prosector.cyst_burst",
+    "sounds": [
+      {
+        "name": "hextale:prosector_cyst_burst",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.circle": {
+    "subtitle": "subtitles.hextale.prosector.circle",
+    "sounds": [
+      {
+        "name": "hextale:prosector_circle",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.write": {
+    "subtitle": "subtitles.hextale.prosector.write",
+    "sounds": [
+      {
+        "name": "hextale:prosector_write",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.specimen_hit": {
+    "subtitle": "subtitles.hextale.prosector.specimen_hit",
+    "sounds": [
+      {
+        "name": "hextale:prosector_specimen_hit",
+        "volume": 0.55
+      }
+    ]
+  },
+  "prosector.specimen_break": {
+    "subtitle": "subtitles.hextale.prosector.specimen_break",
+    "sounds": [
+      {
+        "name": "hextale:prosector_specimen_break",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.forget": {
+    "subtitle": "subtitles.hextale.prosector.forget",
+    "sounds": [
+      {
+        "name": "hextale:prosector_forget",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.turn_dissection": {
+    "subtitle": "subtitles.hextale.prosector.turn_dissection",
+    "sounds": [
+      {
+        "name": "hextale:prosector_turn_dissection",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.turn_proof": {
+    "subtitle": "subtitles.hextale.prosector.turn_proof",
+    "sounds": [
+      {
+        "name": "hextale:prosector_turn_proof",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.proof_form": {
+    "subtitle": "subtitles.hextale.prosector.proof_form",
+    "sounds": [
+      {
+        "name": "hextale:prosector_proof_form",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.proof_hurt": {
+    "subtitle": "subtitles.hextale.prosector.proof_hurt",
+    "sounds": [
+      {
+        "name": "hextale:prosector_proof_hurt",
+        "volume": 0.55
+      }
+    ]
+  },
+  "prosector.proof_death": {
+    "subtitle": "subtitles.hextale.prosector.proof_death",
+    "sounds": [
+      {
+        "name": "hextale:prosector_proof_death",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.fall": {
+    "subtitle": "subtitles.hextale.prosector.fall",
+    "sounds": [
+      {
+        "name": "hextale:prosector_fall",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.loop": {
+    "subtitle": "subtitles.hextale.prosector.loop",
+    "sounds": [
+      {
+        "name": "hextale:prosector_loop",
+        "volume": 0.45,
+        "stream": true
+      }
+    ]
+  },
+  "prosector.summon": {
+    "subtitle": "subtitles.hextale.prosector.summon",
+    "sounds": [
+      {
+        "name": "hextale:prosector_summon",
+        "volume": 0.8
+      }
+    ]
+  },
+  "prosector.summon_ring": {
+    "subtitle": "subtitles.hextale.prosector.summon_ring",
+    "sounds": [
+      {
+        "name": "hextale:prosector_summon_ring",
+        "volume": 0.6
+      }
+    ]
+  },
+  "prosector.eye_way": {
+    "subtitle": "subtitles.hextale.prosector.eye_way",
+    "sounds": [
+      {
+        "name": "hextale:prosector_eye_way",
+        "volume": 0.8
+      }
+    ]
   }
 }

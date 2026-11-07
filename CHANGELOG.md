@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- The Prosector, the first boss. Research and make a Seer's Eye on the altar, then right click the ground anywhere in your world: the
+  ground is marked ring by ring and it comes up through it. The Eye is spent. Refused on Peaceful.
+- It hits hard and heals: every living Specimen gives it health back, up to its last milestone. More players make it tougher.
+- What hurts it, it studies. Damage of one kind (blade, shot, blast or magic) fills that kind's sac; then it writes the kind down as a
+  Specimen that hangs in the air nearby. While that jar lives the kind does little damage, and it answers with a mimic of your own
+  tool, a copy of which it holds up: a giant sweep, quills fired back, a lobbed cyst, a rune circle under your feet. Break the
+  jar, with anything, and it forgets and drops low and open.
+- Three phases: Observation, Dissection, where hexagon cells of the ground open in patterns and throw off whoever stands on them, and
+  Proof, where it hides behind a wrong-jointed copy of the player who hurt it most. Its moves all start with their own sound and show on the
+  ground first, laid over the hills. Excision pays for its power by sticking its scalpel in the ground, and a raised shield snags the Retractor's hooks.
+- It fights round the spot it was called to and breaks no block. Hits from outside the fight do nothing. Leaving is safe: with nobody
+  left it keeps the last milestone and sleeps at that spot until someone comes near. Every number is in `hextale-prosector.toml`.
+- A kill drops random loot: Riftmetal, Void Pearls, Hextech Gemstones and other high materials, something rare like a Nether Star or a
+  totem, three star rune scrolls, a step in the diary and, rarely, the rune Anatomy for swords: the more of one creature kind a sword has killed, the harder it hits that kind.
+- Theatre Tiles with stairs and a slab, and the Watching Eye.
 - Hex Vault (research after the Hexcore, made on the Hexcore only): a store of items behind a floating door. Its gate is a
   stone platform 7 wide and 5 deep with two White Gold Pillars and a White Gold Inlay under the door. Set the vault between
   the pillars and use Hextech Dust on the gate: the vault rises and unfolds into a hexagon of six bars and six petals held by
@@ -110,6 +125,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Vault screen: left and right click take items again; JEI's recipe view stays on the keyboard keys over the grid.
+- Hex Vault: a right click only opens the screen and never puts the held item in, sneaking or not. Items go in on the screen, by
+  Shift + click, by dragging or with Store the inventory, and through hoppers, pipes and pylons.
+- Hex Vault: Unstable Hextech used while sneaking now works anywhere on the door, not only on the block's own cell.
+- Hex Vault: the shut gate no longer flickers. The petals, the cover and the hub no longer share planes where they overlap.
+- Hex Vault with a shader pack: the arcs from the pillars are added over the pack's picture like a breach's glow, and neither they,
+  the lamps nor the drifting items go into the pack's shadows.
 - Chain Launcher rides: the grip no longer jerks, the client runs the line itself. Up to 19 blocks a second downhill, the motor gives
   9, 12 or 15 by fuel. Mounting keeps your speed along the line, letting go coasts far, the brake slows steadily in about a second,
   and a last end slows you softly and sets you down still moving. Your body swings behind the grip when the speed changes.

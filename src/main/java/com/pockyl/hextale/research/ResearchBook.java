@@ -40,8 +40,8 @@ public final class ResearchBook {
         return ComplexRunes.all().stream().filter(rune -> chapter(rune) == chapter).toList();
     }
 
-    /** The runes of a chapter that can be found: the ones in use. */
+    /** The runes of a chapter that can be found: the ones in use, but for the one only the Prosector leaves. */
     public static List<ComplexRune> findable(int chapter) {
-        return runes(chapter).stream().filter(ComplexRune::inUse).toList();
+        return runes(chapter).stream().filter(ComplexRune::inUse).filter(rune -> rune != com.pockyl.hextale.runework.ToolRune.ANATOMY.rune()).toList();
     }
 }

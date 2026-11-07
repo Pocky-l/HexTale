@@ -151,6 +151,10 @@
     "hextale:white_gold_tiles_stairs",
     "hextale:white_gold_tiles_slab",
     "hextale:white_gold_inlay",
-    "hextale:white_gold_pillar"
+    "hextale:white_gold_pillar",
+    "hextale:theatre_tiles",
+    "hextale:theatre_tile_stairs",
+    "hextale:theatre_tile_slab",
+    "hextale:watching_eye"
   ]
 }

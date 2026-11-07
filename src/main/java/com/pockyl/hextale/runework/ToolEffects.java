@@ -603,6 +603,14 @@ public final class ToolEffects {
             event.setAmount(event.getAmount() * (1 + HolderRune.at(ToolRune.BACK_BONUS, backstab)));
             puff(level, target.position().add(0, target.getBbHeight() * 0.6, 0), ToolRune.BACKSTAB.rune(), 8, 0.3);
         }
+        int anatomy = strength(weapon, ToolRune.Tool.SWORD, ToolRune.ANATOMY);
+        if (anatomy > 0) {
+            float bonus = anatomyBonus(weapon, target, anatomy);
+            if (bonus > 0) {
+                event.setAmount(event.getAmount() * (1 + bonus));
+                puff(level, target.position().add(0, target.getBbHeight() * 0.6, 0), ToolRune.ANATOMY.rune(), 6, 0.3);
+            }
+        }
         int bleeding = strength(weapon, ToolRune.Tool.SWORD, ToolRune.BLEEDING);
         if (bleeding > 0 && event.getSource().getEntity() instanceof Player striker && mayStrike(target, striker)
                 && level.getRandom().nextFloat() < HolderRune.at(ToolRune.BLEED_CHANCE, bleeding)) {
@@ -745,9 +753,29 @@ public final class ToolEffects {
         return source.getEntity() instanceof Player player ? player.getMainHandItem() : ItemStack.EMPTY;
     }
 
+    /** Anatomy: what this sword's kills of the target's kind add to a blow. */
+    public static float anatomyBonus(ItemStack sword, LivingEntity target, int strength) {
+        var kills = sword.get(com.pockyl.hextale.registry.ModDataComponents.ANATOMY.get());
+        if (kills == null) {
+            return 0;
+        }
+        int steps = kills.getOrDefault(net.minecraft.world.entity.EntityType.getKey(target.getType()), 0) / ToolRune.ANATOMY_KILLS;
+        return Math.min(ToolRune.ANATOMY_CAP, steps * HolderRune.at(ToolRune.ANATOMY_STEP, strength));
+    }
+
+    /** One more of this kind on the sword's tally. */
+    public static void anatomyTally(ItemStack sword, LivingEntity dead) {
+        var kills = new java.util.HashMap<>(sword.getOrDefault(com.pockyl.hextale.registry.ModDataComponents.ANATOMY.get(), java.util.Map.of()));
+        kills.merge(net.minecraft.world.entity.EntityType.getKey(dead.getType()), 1, Integer::sum);
+        sword.set(com.pockyl.hextale.registry.ModDataComponents.ANATOMY.get(), kills);
+    }
+
     private static void onDeath(LivingDeathEvent event) {
         if (!(event.getEntity().level() instanceof ServerLevel level) || !(event.getSource().getEntity() instanceof Player player)) {
             return;
+        }
+        if (strength(killer(event.getSource()), ToolRune.Tool.SWORD, ToolRune.ANATOMY) > 0) {
+            anatomyTally(killer(event.getSource()), event.getEntity());
         }
         int bellows = strength(killer(event.getSource()), ToolRune.Tool.SWORD, ToolRune.BELLOWS);
         if (bellows > 0 && level.getRandom().nextFloat() < HolderRune.at(ToolRune.RAGE, bellows)) {

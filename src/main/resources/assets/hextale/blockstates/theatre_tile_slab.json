@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "hextale:block/theatre_tile_slab"
+    },
+    "type=double": {
+      "model": "hextale:block/theatre_tiles"
+    },
+    "type=top": {
+      "model": "hextale:block/theatre_tile_slab_top"
+    }
+  }
+}

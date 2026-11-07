@@ -763,6 +763,15 @@ public final class ModBlocks {
 
     // The Void itself (the dimension): the ribs' chitin, the skin between them, the stone it swallowed, its ores.
     public static final DeferredBlock<Block> HUSK_CHITIN = BLOCKS.registerBlock("husk_chitin", Block::new, ModBlocks::huskChitinProperties);
+    // Decorative blocks that came with the Prosector.
+    public static final DeferredBlock<Block> THEATRE_TILES = BLOCKS.registerBlock("theatre_tiles", Block::new, () -> huskChitinProperties().isValidSpawn(Blocks::never));
+    public static final DeferredBlock<StairBlock> THEATRE_TILE_STAIRS = BLOCKS.registerBlock("theatre_tile_stairs",
+            properties -> new StairBlock(THEATRE_TILES.get().defaultBlockState(), properties), () -> huskChitinProperties());
+    public static final DeferredBlock<SlabBlock> THEATRE_TILE_SLAB = BLOCKS.registerBlock("theatre_tile_slab", SlabBlock::new, ModBlocks::huskChitinProperties);
+    /** One of the Seers' eyes. */
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.boss.ProsectorBlocks.Eye> WATCHING_EYE = BLOCKS.registerBlock("watching_eye",
+            com.pockyl.hextale.thevoid.boss.ProsectorBlocks.Eye::new, () -> huskChitinProperties().isValidSpawn(Blocks::never)
+                    .lightLevel(state -> state.getValue(com.pockyl.hextale.thevoid.boss.ProsectorBlocks.Eye.OPEN) ? 5 : 0));
     /** The gold-lit crest along the top of a rib. */
     public static final DeferredBlock<Block> HUSK_CHITIN_RIDGE = BLOCKS.registerBlock("husk_chitin_ridge", Block::new,
             () -> huskChitinProperties().lightLevel(state -> 6));

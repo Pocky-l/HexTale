@@ -1,0 +1,21 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:seers_eye",
+  "parents": [
+    "void_pearl",
+    "the_seer",
+    "hollow_crystal",
+    "riftmetal",
+    "void_chitin"
+  ],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:seers_eye"
+  },
+  "research": "seers_eye",
+  "pos": [
+    470,
+    1330
+  ]
+}
