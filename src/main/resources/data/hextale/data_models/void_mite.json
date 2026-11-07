@@ -1,0 +1,20 @@
+{
+  "entity": "hextale:void_mite",
+  "variants": [],
+  "name_color": "#B080EC",
+  "display": {},
+  "sim_cost": 128,
+  "input": {
+    "item": "hostilenetworks:prediction_matrix"
+  },
+  "base_drop": {
+    "id": "hostilenetworks:end_prediction"
+  },
+  "trivia": "hextale.hostilenetworks.trivia.void_mite",
+  "fabricator_drops": [
+    {
+      "id": "hextale:void_chitin",
+      "count": 2
+    }
+  ]
+}

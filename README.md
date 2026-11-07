@@ -87,11 +87,15 @@ land around a base (the Thinning); `thinning = false` in `hextale-synced.toml` t
   <a href="https://www.curseforge.com/minecraft/mc-mods/jei"><img src="docs/compat/jei.png" width="48" height="48" alt="JEI" title="JEI - every recipe of the mod"></a>
   <a href="https://www.curseforge.com/minecraft/mc-mods/jade"><img src="docs/compat/jade.png" width="48" height="48" alt="Jade" title="Jade - what jars, machines and mechanisms hold and do"></a>
   <a href="https://www.curseforge.com/minecraft/mc-mods/curios"><img src="docs/compat/curios.png" width="48" height="48" alt="Curios" title="Curios - the Researcher's Goggles in a head slot"></a>
+  <a href="https://www.curseforge.com/minecraft/mc-mods/projecte"><img src="docs/compat/projecte.png" width="48" height="48" alt="ProjectE" title="ProjectE (Minecraft 1.21.1) - EMC values for items and recipes"></a>
+  <a href="https://www.curseforge.com/minecraft/mc-mods/hostile-neural-networks"><img src="docs/compat/hostile_neural_networks.png" width="48" height="48" alt="Hostile Neural Networks" title="Hostile Neural Networks (Minecraft 1.21.1 and 26.1.2) - data models for the creatures of the Void"></a>
 </p>
 
 All optional: [JEI](https://www.curseforge.com/minecraft/mc-mods/jei) shows every recipe of the mod,
 [Jade](https://www.curseforge.com/minecraft/mc-mods/jade) what jars and machines hold and do,
 [Curios](https://www.curseforge.com/minecraft/mc-mods/curios) puts the Researcher's Goggles in a head slot.
+On Minecraft 1.21.1 [ProjectE](https://www.curseforge.com/minecraft/mc-mods/projecte) gives the items EMC values and counts the mod's recipes. On 1.21.1 and 26.1.2
+[Hostile Neural Networks](https://www.curseforge.com/minecraft/mc-mods/hostile-neural-networks) has data models for the creatures of the Void.
 
 ## Installation
 

@@ -1,0 +1,20 @@
+{
+  "entity": "hextale:voidling",
+  "variants": [],
+  "name_color": "#B080EC",
+  "display": {},
+  "sim_cost": 256,
+  "input": {
+    "item": "hostilenetworks:prediction_matrix"
+  },
+  "base_drop": {
+    "id": "hostilenetworks:end_prediction"
+  },
+  "trivia": "hextale.hostilenetworks.trivia.voidling",
+  "fabricator_drops": [
+    {
+      "id": "hextale:void_chitin",
+      "count": 4
+    }
+  ]
+}

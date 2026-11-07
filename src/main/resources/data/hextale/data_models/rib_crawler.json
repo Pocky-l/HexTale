@@ -1,0 +1,22 @@
+{
+  "entity": "hextale:rib_crawler",
+  "variants": [],
+  "name_color": "#B080EC",
+  "display": {
+    "scale": 0.8
+  },
+  "sim_cost": 256,
+  "input": {
+    "item": "hostilenetworks:prediction_matrix"
+  },
+  "base_drop": {
+    "id": "hostilenetworks:end_prediction"
+  },
+  "trivia": "hextale.hostilenetworks.trivia.rib_crawler",
+  "fabricator_drops": [
+    {
+      "id": "hextale:void_chitin",
+      "count": 6
+    }
+  ]
+}

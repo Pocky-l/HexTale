@@ -279,6 +279,44 @@ public final class ModGameTests {
         }
     }
 
+    /** What the integrations' data files name must exist: the mods reading them only log a bad id, and only with them installed. */
+    @HexTest
+    public static void integrationDataNamesRealThings(GameTestHelper helper) {
+        var resources = helper.getLevel().getServer().getResourceManager();
+        List<String> wrong = new java.util.ArrayList<>();
+        var models = resources.listResources("data_models", id -> id.getNamespace().equals(Hextale.MOD_ID) && id.getPath().endsWith(".json"));
+        models.forEach((file, resource) -> {
+            try (var reader = resource.openAsReader()) {
+                var model = com.google.gson.JsonParser.parseReader(reader).getAsJsonObject();
+                if (!net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.containsKey(net.minecraft.resources.ResourceLocation.parse(model.get("entity").getAsString()))) {
+                    wrong.add(file.toString());
+                }
+                for (var drop : model.getAsJsonArray("fabricator_drops")) {
+                    String id = drop.getAsJsonObject().get("id").getAsString();
+                    if (!net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(net.minecraft.resources.ResourceLocation.parse(id))) {
+                        wrong.add(id);
+                    }
+                }
+            } catch (java.io.IOException e) {
+                throw new IllegalStateException(file.toString(), e);
+            }
+        });
+        var values = resources.getResource(Hextale.id("pe_custom_conversions/hextale.json")).orElseThrow();
+        try (var reader = values.openAsReader()) {
+            for (var value : com.google.gson.JsonParser.parseReader(reader).getAsJsonObject().getAsJsonObject("values").getAsJsonArray("before")) {
+                String id = value.getAsJsonObject().get("id").getAsString();
+                if (!net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(net.minecraft.resources.ResourceLocation.parse(id))) {
+                    wrong.add(id);
+                }
+            }
+        } catch (java.io.IOException e) {
+            throw new IllegalStateException(e);
+        }
+        helper.assertTrue(models.size() == 5, "a data model for each creature of the Void: " + models.keySet());
+        helper.assertTrue(wrong.isEmpty(), "names nothing: " + wrong);
+        helper.succeed();
+    }
+
     @HexTest
     public static void dataFilesLoad(GameTestHelper helper) {
         MinecraftServer server = helper.getLevel().getServer();

@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- [ProjectE](https://www.curseforge.com/minecraft/mc-mods/projecte) (#8): HexTale items have EMC values, and recipes of the workbench, altar, alloys, Crucible and Chem Vat
+  count for them. Only items are priced, essence is left out.
+- [Hostile Neural Networks](https://www.curseforge.com/minecraft/mc-mods/hostile-neural-networks) (#8): data models for the Void Mite, Voidling, Rib Crawler, Pit Maw and Seer.
 ### Fixed
 - The Multiblocks category of [JEI](https://www.curseforge.com/minecraft/mc-mods/jei) shows the 3D model again; its frame
   stayed empty, and the model stood still on one frame (#10).

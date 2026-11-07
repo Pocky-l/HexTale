@@ -1,0 +1,26 @@
+{
+  "entity": "hextale:seer",
+  "variants": [],
+  "name_color": "#B080EC",
+  "display": {
+    "scale": 0.7
+  },
+  "sim_cost": 768,
+  "input": {
+    "item": "hostilenetworks:prediction_matrix"
+  },
+  "base_drop": {
+    "id": "hostilenetworks:end_prediction"
+  },
+  "trivia": "hextale.hostilenetworks.trivia.seer",
+  "fabricator_drops": [
+    {
+      "id": "hextale:void_chitin",
+      "count": 6
+    },
+    {
+      "id": "hextale:hollow_crystal",
+      "count": 2
+    }
+  ]
+}

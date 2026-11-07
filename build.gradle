@@ -69,6 +69,14 @@ repositories {
             includeGroup 'top.theillusivec4.curios'
         }
     }
+    maven {
+        // ProjectE (optional integration; published only on CurseForge).
+        name = 'CurseMaven'
+        url = 'https://cursemaven.com'
+        content {
+            includeGroup 'curse.maven'
+        }
+    }
     exclusiveContent {
         // Jade (optional integration).
         forRepository {
@@ -163,6 +171,7 @@ dependencies {
     compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
     compileOnly "maven.modrinth:jade:${jade_version}"
+    compileOnly "curse.maven:projecte-226410:${projecte_file}"
     compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
 }
 

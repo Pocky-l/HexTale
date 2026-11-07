@@ -1,0 +1,332 @@
+{
+  "comment": "What the world gives. Everything made from these gets its value from the recipes.",
+  "values": {
+    "before": [
+      {
+        "type": "projecte:item",
+        "id": "hextale:zinc_ingot",
+        "emc_value": 128
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:unstable_hextech",
+        "emc_value": 2048
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:hextech_dust",
+        "emc_value": 128
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:hextech_crystal",
+        "emc_value": 4096
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:hextech_gemstone",
+        "emc_value": 16384
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:dormant_hextech",
+        "emc_value": 256
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:small_hextech_bud",
+        "emc_value": 128
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:medium_hextech_bud",
+        "emc_value": 256
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:large_hextech_bud",
+        "emc_value": 512
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:hextech_cluster",
+        "emc_value": 2048
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:gemstone_dust",
+        "emc_value": 1024
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:engraved_diamond",
+        "emc_value": 8192
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:fulgurite",
+        "emc_value": 64
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:fulgurite_spike",
+        "emc_value": 64
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:shimmerbloom",
+        "emc_value": 64
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:shimmer_moss",
+        "emc_value": 8
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:regenerative_slime",
+        "emc_value": 128
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:rusted_plating",
+        "emc_value": 256
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:synthetic_crystal",
+        "emc_value": 1024
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:ember_wheat",
+        "emc_value": 32
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:sap_gourd",
+        "emc_value": 64
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:crystal_pod",
+        "emc_value": 64
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:steeped_soil",
+        "emc_value": 16
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:chem_vial",
+        "emc_value": 64
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:chem_tubes",
+        "emc_value": 32
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:radiant_hextech_sword",
+        "emc_value": 49152
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:riftforged_sword",
+        "emc_value": 90112
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:hollowbloom",
+        "emc_value": 64
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:void_soil",
+        "emc_value": 1
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:void_rock",
+        "emc_value": 2
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:gnawed_stone",
+        "emc_value": 1
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:gnawed_cobblestone",
+        "emc_value": 1
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:gnawed_stone_bricks",
+        "emc_value": 1
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:gnawed_bricks",
+        "emc_value": 1
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:gnawed_planks",
+        "emc_value": 2
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:husk_chitin",
+        "emc_value": 16
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:husk_chitin_ridge",
+        "emc_value": 24
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:husk_crust",
+        "emc_value": 8
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:void_membrane",
+        "emc_value": 64
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:veined_void_membrane",
+        "emc_value": 64
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:worn_void_membrane",
+        "emc_value": 64
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:void_chitin",
+        "emc_value": 256
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:clouded_crystal",
+        "emc_value": 256
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:hollow_crystal",
+        "emc_value": 1024
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:hollow_crystal_cluster",
+        "emc_value": 1024
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:void_crystal",
+        "emc_value": 4096
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:void_crystal_cluster",
+        "emc_value": 4096
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:void_pearl",
+        "emc_value": 8192
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:breach_heart",
+        "emc_value": 16384
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:void_ichor_bucket",
+        "emc_value": 1024
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:raw_riftmetal",
+        "emc_value": 4096
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:void_cilia",
+        "emc_value": 1
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:tall_void_cilia",
+        "emc_value": 2
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:void_tendrils",
+        "emc_value": 4
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:void_roots",
+        "emc_value": 2
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:void_coral",
+        "emc_value": 4
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:void_bulb",
+        "emc_value": 8
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:spore_puff",
+        "emc_value": 4
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:sinew_curtain",
+        "emc_value": 4
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:spring_blister",
+        "emc_value": 16
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:sinew_willow_sprout",
+        "emc_value": 32
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:ichor_pod",
+        "emc_value": 16
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:void_sac",
+        "emc_value": 64
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:pearl_sac",
+        "emc_value": 64
+      },
+      {
+        "type": "projecte:item",
+        "id": "hextale:mimic_sac",
+        "emc_value": 64
+      }
+    ]
+  }
+}
