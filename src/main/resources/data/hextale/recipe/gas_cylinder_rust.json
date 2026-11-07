@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "#hextale:gas_cylinders",
+    "#c:dyes/brown"
+  ],
+  "result": {
+    "id": "hextale:gas_cylinder_rust"
+  }
+}

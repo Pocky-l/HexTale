@@ -1,0 +1,15 @@
+{
+  "model": {
+    "type": "minecraft:composite",
+    "models": [
+      {
+        "type": "minecraft:model",
+        "model": "hextale:block/valve_wheel"
+      },
+      {
+        "type": "minecraft:model",
+        "model": "hextale:block/valve_wheel_handle"
+      }
+    ]
+  }
+}

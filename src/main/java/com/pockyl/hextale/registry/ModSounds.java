@@ -154,6 +154,10 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> WHIRL_LAUNCH = register("whirl.launch");
     /** A whirl reaps a plant. */
     public static final DeferredHolder<SoundEvent, SoundEvent> WHIRL_REAP = register("whirl.reap");
+    /** A Herdkeeper's bell, when it tends an animal. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> HERDKEEPER_BELL = register("herdkeeper.bell");
+    /** Produce settles into a Herdkeeper's trough. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> HERDKEEPER_GATHER = register("herdkeeper.gather");
     /** A Hex Sawmill's saw flies out. */
     public static final DeferredHolder<SoundEvent, SoundEvent> SAW_LAUNCH = register("saw.launch");
     /** The saw bites into a trunk. */
@@ -175,6 +179,20 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> GRAPPLE_ATTACH = register("grapple.attach");
     public static final DeferredHolder<SoundEvent, SoundEvent> GRAPPLE_REEL = register("grapple.reel");
     public static final DeferredHolder<SoundEvent, SoundEvent> GRAPPLE_RELEASE = register("grapple.release");
+    /** The Biter Grenade: the jaw biting in, its ticking fuse, the blast, and a miss clattering down. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> BITER_GRENADE_BITE = register("biter_grenade.bite");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BITER_GRENADE_FUSE = register("biter_grenade.fuse");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BITER_GRENADE_BLAST = register("biter_grenade.blast");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BITER_GRENADE_CLATTER = register("biter_grenade.clatter");
+    /** The Strike Gauntlet: the piston throwing its wearer off, the end of the flight, a fist's blow on the ground. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> STRIKE_GAUNTLET_DASH = register("strike_gauntlet.dash");
+    public static final DeferredHolder<SoundEvent, SoundEvent> STRIKE_GAUNTLET_IMPACT = register("strike_gauntlet.impact");
+    public static final DeferredHolder<SoundEvent, SoundEvent> STRIKE_GAUNTLET_FIST = register("strike_gauntlet.fist");
+    /** The Chain Launcher: the pneumatic shot, the claw biting in, the trolley rolling along the chain and braking. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHAIN_LAUNCHER_FIRE = register("chain_launcher.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHAIN_CLAW_BITE = register("chain_launcher.bite");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ZIPLINE_RIDE = register("zipline.ride");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ZIPLINE_BRAKE = register("zipline.brake");
     /** The Impulse Plate fires; what it threw at a target lands softly. */
     public static final DeferredHolder<SoundEvent, SoundEvent> IMPULSE_LAUNCH = register("impulse.launch");
     public static final DeferredHolder<SoundEvent, SoundEvent> IMPULSE_LAND = register("impulse.land");
@@ -192,6 +210,10 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> CHALK_CLOSE = register("binding_chalk.close");
     /** A Miasma Vent breathes out its fumes. */
     public static final DeferredHolder<SoundEvent, SoundEvent> MIASMA_HISS = register("miasma.hiss");
+    /** Chem-steel gear: the boots' jump in the air, a fall they soften, a respirator's breath under water. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHEM_BOOTS_PUFF = register("chem_boots.puff");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHEM_BOOTS_HISS = register("chem_boots.hiss");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHEM_HELMET_BREATH = register("chem_helmet.breath");
     /** A rune doing its work (every proc, played by ToolEffects.puff; throttled per place). */
     public static final DeferredHolder<SoundEvent, SoundEvent> RUNE_PROC = register("rune.proc");
     /** A rune learned from a scroll or notes. */

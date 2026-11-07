@@ -1,0 +1,18 @@
+{
+  "region": "chemtech",
+  "stage": "mid",
+  "icon": "hextale:biter_grenade",
+  "parents": [
+    "rusted_plating",
+    "lab_bench"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:biter_grenade"
+  },
+  "research": "biter_grenade",
+  "pos": [
+    -1030,
+    -125
+  ]
+}

@@ -51,6 +51,10 @@ public final class ModAttachments {
     public static final Supplier<AttachmentType<Long>> SLUMBER = ATTACHMENT_TYPES.register("slumber",
             () -> AttachmentType.builder(() -> 0L).serialize(com.mojang.serialization.Codec.LONG.fieldOf("until"), until -> until > 0).build());
 
+    /** The tick an animal a Herdkeeper tended may be tended again (see {@link com.pockyl.hextale.farm.Herding}); saved while set. */
+    public static final Supplier<AttachmentType<Long>> HERD_REST = ATTACHMENT_TYPES.register("herd_rest",
+            () -> AttachmentType.builder(() -> 0L).serialize(com.mojang.serialization.Codec.LONG.fieldOf("until"), until -> until > 0).build());
+
     /** Where a player in the Void came in from (see {@link com.pockyl.hextale.thevoid.realm.VoidPassage}); saved while set. */
     public static final Supplier<AttachmentType<com.pockyl.hextale.thevoid.realm.VoidPassage.Return>> VOID_RETURN = ATTACHMENT_TYPES.register(
             "void_return", () -> AttachmentType.builder(() -> com.pockyl.hextale.thevoid.realm.VoidPassage.Return.NONE)

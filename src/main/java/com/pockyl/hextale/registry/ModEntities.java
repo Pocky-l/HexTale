@@ -37,10 +37,22 @@ public final class ModEntities {
                     .noLootTable().sized(0.4F, 0.4F).eyeHeight(0.13F).clientTrackingRange(4).updateInterval(20)
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 
+    /** The trolley hook a player rides a Chain Launcher's line on. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.entity.ZiplineTrolley>> ZIPLINE_TROLLEY =
+            ENTITIES.register("zipline_trolley", id -> EntityType.Builder.<com.pockyl.hextale.entity.ZiplineTrolley>of(
+                            com.pockyl.hextale.entity.ZiplineTrolley::new, MobCategory.MISC).noLootTable().sized(0.4F, 0.4F)
+                    .clientTrackingRange(8).updateInterval(1).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+
     /** A Chem Vial thrown like a splash potion: it shatters and splashes its brew. */
     public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.entity.ThrownChemVial>> THROWN_CHEM_VIAL =
             ENTITIES.register("thrown_chem_vial", id -> EntityType.Builder.<com.pockyl.hextale.entity.ThrownChemVial>of(
                             com.pockyl.hextale.entity.ThrownChemVial::new, MobCategory.MISC).noLootTable().sized(0.25F, 0.25F)
+                    .clientTrackingRange(4).updateInterval(10).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+
+    /** A thrown Biter Grenade: it bites the first creature it hits, rides it and bursts. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.entity.BiterGrenade>> BITER_GRENADE =
+            ENTITIES.register("biter_grenade", id -> EntityType.Builder.<com.pockyl.hextale.entity.BiterGrenade>of(
+                            com.pockyl.hextale.entity.BiterGrenade::new, MobCategory.MISC).noLootTable().sized(0.3F, 0.3F)
                     .clientTrackingRange(4).updateInterval(10).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 
     /** The Void hanging in the world: a breach the depth shows through. Big and static, seen from afar. */

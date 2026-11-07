@@ -1,0 +1,11 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:brick",
+  "essences": {
+    "decay": 2
+  },
+  "result": {
+    "id": "minecraft:clay_ball"
+  },
+  "research": "unmaking"
+}

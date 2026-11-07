@@ -1,6 +1,7 @@
 package com.pockyl.hextale.block;
 
 import com.pockyl.hextale.chem.Brew;
+import com.pockyl.hextale.chem.CarboyReach;
 import com.pockyl.hextale.chem.ChemFuel;
 import com.pockyl.hextale.chem.ChemTank;
 import com.pockyl.hextale.chem.ChemVialItem;
@@ -16,14 +17,17 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
 
 import org.jspecify.annotations.Nullable;
 
@@ -40,6 +44,23 @@ public class ChemTankBlockEntity extends BlockEntity implements WorldlyContainer
 
     public ChemTankBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CHEM_TANK.get(), pos, state);
+    }
+
+    public static void serverTick(Level level, BlockPos pos, BlockState state, ChemTankBlockEntity tank) {
+        if (CarboyReach.due(level, pos)) {
+            tank.drawFuel((ServerLevel) level);
+        }
+    }
+
+    /** With room for a vial, it takes one of its fuel from the carboys around (any fuel while it is empty). */
+    private void drawFuel(ServerLevel level) {
+        TankFuel held = contents;
+        if (held.isEmpty() || ChemTank.room(held, held.fuel().brew()) > 0) {
+            Brew drawn = CarboyReach.draw(level, worldPosition, Vec3.atCenterOf(worldPosition), brew -> ChemTank.room(held, brew) > 0);
+            if (drawn != null) {
+                setContents(ChemTank.poured(held, drawn, 1));
+            }
+        }
     }
 
     public TankFuel contents() {

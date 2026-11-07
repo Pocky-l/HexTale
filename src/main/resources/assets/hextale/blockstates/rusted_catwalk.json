@@ -1,0 +1,18 @@
+{
+  "variants": {
+    "axis=z,half=bottom": {
+      "model": "hextale:block/rusted_catwalk"
+    },
+    "axis=z,half=top": {
+      "model": "hextale:block/rusted_catwalk_top"
+    },
+    "axis=x,half=bottom": {
+      "model": "hextale:block/rusted_catwalk",
+      "y": 90
+    },
+    "axis=x,half=top": {
+      "model": "hextale:block/rusted_catwalk_top",
+      "y": 90
+    }
+  }
+}

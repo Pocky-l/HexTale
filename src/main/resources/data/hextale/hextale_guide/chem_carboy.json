@@ -1,0 +1,19 @@
+{
+  "region": "chemtech",
+  "stage": "mid",
+  "icon": "hextale:chem_carboy",
+  "parents": [
+    "chem_still",
+    "rusted_plating",
+    "lab_bench"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:chem_carboy"
+  },
+  "research": "chem_carboy",
+  "pos": [
+    -960,
+    110
+  ]
+}

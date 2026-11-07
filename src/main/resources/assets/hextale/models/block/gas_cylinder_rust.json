@@ -1,0 +1,6 @@
+{
+  "parent": "hextale:block/gas_cylinder",
+  "textures": {
+    "band": "hextale:block/gas_cylinder_band_rust"
+  }
+}

@@ -129,6 +129,19 @@
     "hextale:chem_steel_plating",
     "hextale:chem_steel_plating_stairs",
     "hextale:chem_steel_plating_slab",
-    "hextale:chem_tank"
+    "hextale:chem_tank",
+    "hextale:chain_post",
+    "hextale:chain_claw",
+    "hextale:chem_carboy",
+    "hextale:vial_rack",
+    "hextale:chem_lumen",
+    "hextale:gas_cylinder",
+    "hextale:gas_cylinder_rust",
+    "hextale:gas_cylinder_shimmer",
+    "hextale:valve_wheel",
+    "hextale:rusted_catwalk",
+    "hextale:rusted_railing",
+    "hextale:hazard_plating",
+    "hextale:rusted_ladder"
   ]
 }

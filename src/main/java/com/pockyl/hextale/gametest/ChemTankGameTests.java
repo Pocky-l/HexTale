@@ -118,4 +118,104 @@ public final class ChemTankGameTests {
         helper.assertTrue(com.pockyl.hextale.chem.ChemGear.power(player) == ChemFuel.RAW_SHIMMER, "the gear runs on its shimmer");
         helper.succeed();
     }
+
+    /** A survival player with this tank on the back. */
+    private static ServerPlayer wearer(GameTestHelper helper, ItemStack tank) {
+        ServerPlayer player = MockPlayers.inLevel(helper);
+        player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        player.setItemSlot(EquipmentSlot.CHEST, tank);
+        return player;
+    }
+
+    private static ItemStack tank(Brew brew, int vials) {
+        ItemStack tank = new ItemStack(ModItems.CHEM_TANK.get());
+        ChemTank.setContents(tank, ChemTank.poured(TankFuel.EMPTY, brew, vials));
+        return tank;
+    }
+
+    /** The helmet keeps the air bar up under water for one action per ten seconds; an empty tank lets it drop. */
+    @HexTest
+    public static void theRespiratorBreathesOnFuel(GameTestHelper helper) {
+        helper.setBlock(AT, net.minecraft.world.level.block.Blocks.WATER);
+        helper.setBlock(AT.above(), net.minecraft.world.level.block.Blocks.WATER);
+        ItemStack tank = tank(Brew.EMBER_OIL, 1);
+        ServerPlayer player = wearer(helper, tank);
+        player.setItemSlot(EquipmentSlot.HEAD, new ItemStack(ModItems.CHEM_STEEL_HELMET.get()));
+        net.minecraft.world.phys.Vec3 at = helper.absoluteVec(net.minecraft.world.phys.Vec3.atBottomCenterOf(AT));
+        player.setPos(at.x, at.y, at.z);
+        player.setAirSupply(100);
+        int before = ChemTank.contents(tank).units();
+        for (int i = 0; i < com.pockyl.hextale.chem.Respirator.SIP_TICKS; i++) {
+            player.baseTick();
+        }
+        helper.assertTrue(player.getAirSupply() >= 100, "the air bar does not drop, it is at " + player.getAirSupply());
+        helper.assertTrue(ChemTank.contents(tank).units() == before - 1, "ten seconds cost one action");
+
+        ChemTank.setContents(tank, TankFuel.EMPTY);
+        int air = player.getAirSupply();
+        player.baseTick();
+        helper.assertTrue(player.getAirSupply() < air, "with an empty tank the air runs out");
+        helper.succeed();
+    }
+
+    /** One jump per time in the air, one action each, as high as the fuel allows; nothing on the ground or without fuel. */
+    @HexTest
+    public static void theBootsJumpOnFuel(GameTestHelper helper) {
+        for (ChemFuel fuel : ChemFuel.values()) {
+            double height = 0;
+            for (double speed = com.pockyl.hextale.chem.PneumaticBoots.jumpSpeed(fuel); speed > 0; speed = (speed - 0.08) * 0.98) {
+                height += speed;
+            }
+            helper.assertTrue(Math.abs(height - com.pockyl.hextale.chem.PneumaticBoots.jumpHeight(fuel)) < 0.01, fuel + " rises " + height);
+        }
+        ItemStack tank = tank(Brew.RAW_SHIMMER, 1);
+        ServerPlayer player = wearer(helper, tank);
+        int before = ChemTank.contents(tank).units();
+        player.setOnGround(false);
+        helper.assertFalse(com.pockyl.hextale.chem.PneumaticBoots.jump(player), "no boots, no jump");
+
+        player.setItemSlot(EquipmentSlot.FEET, new ItemStack(ModItems.CHEM_STEEL_BOOTS.get()));
+        player.setOnGround(true);
+        helper.assertFalse(com.pockyl.hextale.chem.PneumaticBoots.jump(player), "not from the ground");
+        player.setOnGround(false);
+        player.fallDistance = 6;
+        helper.assertTrue(com.pockyl.hextale.chem.PneumaticBoots.jump(player), "a jump in the air");
+        helper.assertTrue(ChemTank.contents(tank).units() == before - 1, "it costs one action");
+        helper.assertTrue(player.fallDistance == 0, "the fall so far is forgotten");
+        helper.assertFalse(com.pockyl.hextale.chem.PneumaticBoots.jump(player), "only one until the next landing");
+        helper.assertTrue(ChemTank.contents(tank).units() == before - 1, "a refused jump costs nothing");
+
+        player.setOnGround(true);
+        com.pockyl.hextale.chem.PneumaticBoots.refresh(player);
+        player.setOnGround(false);
+        ChemTank.setContents(tank, TankFuel.EMPTY);
+        helper.assertFalse(com.pockyl.hextale.chem.PneumaticBoots.jump(player), "nothing with an empty tank");
+        ChemTank.setContents(tank, ChemTank.poured(TankFuel.EMPTY, Brew.RAW_SHIMMER, 1));
+        helper.assertTrue(com.pockyl.hextale.chem.PneumaticBoots.jump(player), "a landing gives the jump back");
+        helper.succeed();
+    }
+
+    /** A fall in the boots hurts less by the fuel's share for one action in all; an empty tank softens nothing. */
+    @HexTest
+    public static void theBootsSoftenAFall(GameTestHelper helper) {
+        var level = helper.getLevel();
+        var zombie = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityTypes.ZOMBIE, AT);
+        ItemStack tank = tank(Brew.REFINED_SHIMMER, 1);
+        zombie.setItemSlot(EquipmentSlot.CHEST, tank);
+        zombie.setItemSlot(EquipmentSlot.FEET, new ItemStack(ModItems.CHEM_STEEL_BOOTS.get()));
+        int before = ChemTank.contents(tank).units();
+        float full = zombie.getHealth();
+        zombie.hurtServer(level, level.damageSources().fall(), 10);
+        float expected = 10 * (1 - com.pockyl.hextale.chem.PneumaticBoots.cushion(ChemFuel.REFINED_SHIMMER));
+        helper.assertTrue(Math.abs(full - zombie.getHealth() - expected) < 0.01, "the fall took " + (full - zombie.getHealth()));
+        helper.assertTrue(ChemTank.contents(tank).units() == before - 1, "one action for the hit, not two");
+
+        var bare = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityTypes.ZOMBIE, AT);
+        bare.setItemSlot(EquipmentSlot.CHEST, new ItemStack(ModItems.CHEM_TANK.get()));
+        bare.setItemSlot(EquipmentSlot.FEET, new ItemStack(ModItems.CHEM_STEEL_BOOTS.get()));
+        float health = bare.getHealth();
+        bare.hurtServer(level, level.damageSources().fall(), 10);
+        helper.assertTrue(Math.abs(health - bare.getHealth() - 10) < 0.01, "an empty tank softens nothing");
+        helper.succeed();
+    }
 }

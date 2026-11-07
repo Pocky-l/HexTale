@@ -1,0 +1,828 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/valve_wheel",
+    "sheet": "hextale:block/valve_wheel"
+  },
+  "elements": [
+    {
+      "name": "wheel_rim_n",
+      "from": [
+        5,
+        12,
+        8
+      ],
+      "to": [
+        11,
+        14,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            9.5,
+            4.5,
+            11,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            11.25,
+            4.5,
+            11.75,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            12,
+            4.5,
+            13.5,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            13.75,
+            4.5,
+            14.25,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            9.5,
+            5.25,
+            11,
+            5.75
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            11.25,
+            5.25,
+            12.75,
+            5.75
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "wheel_rim_s",
+      "from": [
+        5,
+        2,
+        8
+      ],
+      "to": [
+        11,
+        4,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            4.75,
+            1.5,
+            5.25
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            1.75,
+            4.75,
+            2.25,
+            5.25
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            2.5,
+            4.75,
+            4,
+            5.25
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            4.25,
+            4.75,
+            4.75,
+            5.25
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            5.5,
+            1.5,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            1.75,
+            5.5,
+            3.25,
+            6
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "wheel_rim_e",
+      "from": [
+        12,
+        5,
+        8
+      ],
+      "to": [
+        14,
+        11,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4.5,
+            0,
+            5,
+            1.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            5.25,
+            0,
+            5.75,
+            1.5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            6,
+            0,
+            6.5,
+            1.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            6.75,
+            0,
+            7.25,
+            1.5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            4.5,
+            1.75,
+            5,
+            2.25
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            5.25,
+            1.75,
+            5.75,
+            2.25
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "wheel_rim_w",
+      "from": [
+        2,
+        5,
+        8
+      ],
+      "to": [
+        4,
+        11,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7.5,
+            0,
+            8,
+            1.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            8.25,
+            0,
+            8.75,
+            1.5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            9,
+            0,
+            9.5,
+            1.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            9.75,
+            0,
+            10.25,
+            1.5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            7.5,
+            1.75,
+            8,
+            2.25
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            8.25,
+            1.75,
+            8.75,
+            2.25
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "wheel_rim_ne",
+      "from": [
+        4.9,
+        11.9,
+        7.9
+      ],
+      "to": [
+        11.1,
+        14.1,
+        10.1
+      ],
+      "rotation": {
+        "angle": -45,
+        "axis": "z",
+        "origin": [
+          8,
+          8,
+          9
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            6,
+            6.5,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            6.75,
+            6,
+            7.25,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            7.5,
+            6,
+            9,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            9.25,
+            6,
+            9.75,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            5,
+            6.75,
+            6.5,
+            7.25
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            6.75,
+            6.75,
+            8.25,
+            7.25
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "wheel_rim_nw",
+      "from": [
+        4.9,
+        11.9,
+        7.9
+      ],
+      "to": [
+        11.1,
+        14.1,
+        10.1
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "z",
+        "origin": [
+          8,
+          8,
+          9
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            10,
+            6,
+            11.5,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            11.75,
+            6,
+            12.25,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            12.5,
+            6,
+            14,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            14.25,
+            6,
+            14.75,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            10,
+            6.75,
+            11.5,
+            7.25
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            11.75,
+            6.75,
+            13.25,
+            7.25
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "wheel_rim_se",
+      "from": [
+        4.9,
+        1.9,
+        7.9
+      ],
+      "to": [
+        11.1,
+        4.1,
+        10.1
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "z",
+        "origin": [
+          8,
+          8,
+          9
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            6.25,
+            1.5,
+            6.75
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            1.75,
+            6.25,
+            2.25,
+            6.75
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            2.5,
+            6.25,
+            4,
+            6.75
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            4.25,
+            6.25,
+            4.75,
+            6.75
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            7,
+            1.5,
+            7.5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            1.75,
+            7,
+            3.25,
+            7.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "wheel_rim_sw",
+      "from": [
+        4.9,
+        1.9,
+        7.9
+      ],
+      "to": [
+        11.1,
+        4.1,
+        10.1
+      ],
+      "rotation": {
+        "angle": -45,
+        "axis": "z",
+        "origin": [
+          8,
+          8,
+          9
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            7.5,
+            6.5,
+            8
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            6.75,
+            7.5,
+            7.25,
+            8
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            7.5,
+            7.5,
+            9,
+            8
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            9.25,
+            7.5,
+            9.75,
+            8
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            5,
+            8.25,
+            6.5,
+            8.75
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            6.75,
+            8.25,
+            8.25,
+            8.75
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "wheel_spoke_v",
+      "from": [
+        7,
+        4,
+        8
+      ],
+      "to": [
+        9,
+        12,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            2.5,
+            7.5,
+            4.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            7.75,
+            2.5,
+            8,
+            4.5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            8.25,
+            2.5,
+            8.75,
+            4.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            9,
+            2.5,
+            9.25,
+            4.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "wheel_spoke_h",
+      "from": [
+        4,
+        7,
+        8
+      ],
+      "to": [
+        12,
+        9,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            10,
+            7.5,
+            12,
+            8
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            12.25,
+            7.5,
+            14.25,
+            8
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            10,
+            8.25,
+            12,
+            8.5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            12.25,
+            8.25,
+            14.25,
+            8.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "wheel_hub",
+      "from": [
+        6,
+        6,
+        7
+      ],
+      "to": [
+        10,
+        10,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            10.5,
+            2.25,
+            11.5,
+            3.25
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            11.75,
+            2.25,
+            12.5,
+            3.25
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            12.75,
+            2.25,
+            13.75,
+            3.25
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            14,
+            2.25,
+            14.75,
+            3.25
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            10.5,
+            3.5,
+            11.5,
+            4.25
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            11.75,
+            3.5,
+            12.75,
+            4.25
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "wheel_nut",
+      "from": [
+        7,
+        7,
+        6
+      ],
+      "to": [
+        9,
+        9,
+        7
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            14.5,
+            7.5,
+            15,
+            8
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            15.25,
+            7.5,
+            15.5,
+            8
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            15.75,
+            7.5,
+            16,
+            8
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            14.5,
+            8.25,
+            15,
+            8.5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            15.25,
+            8.25,
+            15.75,
+            8.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    }
+  ]
+}

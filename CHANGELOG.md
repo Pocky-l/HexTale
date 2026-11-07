@@ -4,6 +4,57 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- Chem Carboy (chemtech, Lab Bench research): a two-block flask that holds one brew, 256 doses. Vials, hoppers and a crucible
+  beside it fill it, and an empty bottle takes a vial at the tap. Chem Burners, Stills, Vats, Pink Braziers and set-down
+  Chem Tanks within 5 blocks draw from it by themselves; burners and braziers take the weakest fuel in reach first. The
+  brew shows in the windows with a level line and bubbles, shimmer glows, and the plate on the neck shows the brew. A
+  comparator reads the level, Jade and the goggles show the doses, and a broken carboy keeps its brew. A creative carboy
+  comes with it: a vial picks the brew, and it never runs out.
+- Vial Rack (chemtech, Lab Bench research): shows 8 vials of any brew, standing on a floor or hung on a wall. Each place is
+  clicked by itself, like a chiseled bookshelf. Hoppers fill and empty it, a comparator counts the vials.
+- Chem Lumen (chemtech, Lab Bench research): a gas street lamp for a floor, a wall or a ceiling. Light 15 with a green flame
+  and a thread of smoke, and it needs no fuel.
+- Chem Fittings (chemtech, one Lab Bench research for the whole set): Gas Cylinders with a green, rust or shimmer band
+  (sneak to lay one down, dye changes the band), a Wall Valve Wheel that turns on a click and does nothing else, Rusted
+  Catwalks in the lower or upper half of a block, Rusted Railings along a block's edges with posts on their free ends,
+  Hazard Plating and a Rusted Ladder.
+- Herdkeeper (hextech, Lab Bench research): a trough with a crook and a bell. For a little life essence from nearby jars
+  it gathers from grown passive animals around it what they would drop, without hurting or breeding them: leather and
+  beef from cows, feathers, chicken and eggs from chickens, and so on, modded animals too. Each animal then rests for
+  5 minutes, so a bigger herd gives more. Produce goes into a container touching it, or pops out of the trough. Takes runes.
+- Chain Launcher (chemtech, Lab Bench research): a hand-held pneumatic harpoon that shoots ziplines of 4 to 50 blocks,
+  at most 60 degrees steep. While you hold it, a hologram shows the line. A Chain Post rises where you stand; the chain
+  raises another post on a floor or a ceiling, and bites into a wall with a claw. Shoot again from a post to join a
+  second line to it: rides run on through a post where lines meet. It takes no chains and lasts six lines. Click the
+  chain or an end to hang on a trolley: downhill rides are free, forward drives the trolley's motor on the fuel of a
+  worn Chem Tank (faster with better fuel), back brakes, Shift lets go and keeps your speed. Over low ground you draw
+  up towards the chain and ride on. You walk through Chain Posts. Breaking an end takes its lines down.
+- Biter Grenades (chemtech, Lab Bench research): thrown, a grenade clamps its jaw onto the first creature it hits, rides
+  along with it and bursts 2 seconds later. The blast hurts everything close by, you too, but breaks no blocks and spares
+  your pets. A throw that hits nobody lands unspent and can be picked up again.
+- Unmaking (chemtech, Lab Bench research after Transmutation): a little essence in the Crucible takes made things
+  apart again: wool into string, glass into sand, bricks and terracotta into clay, quartz and amethyst blocks into their
+  shards, and more. The diary and JEI show all of them.
+- Transmutation: leather and rotten flesh turn into each other.
+- Chem-Steel Helmet: a respirator. While your worn tank holds fuel you breathe under water, for 1 action every 10 seconds
+  there, and bubbles rise from the filters.
+- Chem-Steel Boots: pneumatics. While your worn tank holds fuel you can jump once more in the air for 1 action, 1 to 1.5
+  blocks high by fuel, with steam from the heels. Falls hurt 50 to 80% less by fuel. Press jump again to open a glider.
+
+### Changed
+- Strike Gauntlet: the charge is now a dash. Release it and you fly where you look, like a Riptide trident without the
+  rain; a longer charge flies further. Every enemy on the way is hurt, and the end of the flight still breaks rock and
+  throws creatures back. Falling does not hurt during the flight or at the landing after it. Fist blows now hit hard
+  and also hurt what stands round the target. One gauntlet in each hand doubles all its damage. On a mount it still
+  punches on the spot.
+- Nullstone is now called Dampstone, and the Null Lantern the Dampening Lantern, so the names say what they do. Blocks
+  already in your world stay as they are.
+
+### Fixed
+- Grapple Gauntlet: a fall caught by a rope you reeled in no longer hurts.
+
 ## [1.9.0] - 2026-11-04
 ### Added
 - Buckets of Essence (#8): an empty bucket fills with 1000 mB of one pure essence from a Big Essence Jar or another

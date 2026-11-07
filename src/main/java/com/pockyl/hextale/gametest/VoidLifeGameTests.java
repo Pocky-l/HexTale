@@ -115,7 +115,7 @@ public final class VoidLifeGameTests {
         helper.succeed();
     }
 
-    /** A creature on husk crust: it cracks, and the patch falls in. */
+    /** A creature standing on husk crust: it cracks, and the patch falls in. Who keeps walking gets across, so this one stands. */
     @HexTest(maxTicks = 200)
     public static void huskCrustGivesWayUnderACreature(GameTestHelper helper) {
         for (int dx = 0; dx < 3; dx++) {
@@ -123,7 +123,7 @@ public final class VoidLifeGameTests {
                 helper.setBlock(new BlockPos(dx, 2, dz), ModBlocks.HUSK_CRUST.get());
             }
         }
-        var pig = helper.spawn(EntityTypes.PIG, new BlockPos(1, 4, 1));
+        var pig = helper.spawnWithNoFreeWill(EntityTypes.PIG, new BlockPos(1, 4, 1));
         helper.succeedWhen(() -> {
             boolean fallen = false;
             for (int dx = 0; dx < 3; dx++) {

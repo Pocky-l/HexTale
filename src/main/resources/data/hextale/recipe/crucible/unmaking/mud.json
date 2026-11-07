@@ -1,0 +1,12 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:mud",
+  "essences": {
+    "plant": 1,
+    "decay": 2
+  },
+  "result": {
+    "id": "minecraft:dirt"
+  },
+  "research": "unmaking"
+}

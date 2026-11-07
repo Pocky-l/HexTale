@@ -96,6 +96,13 @@
         }
       },
       {
+        "when": "unmaking",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/guide/unmaking"
+        }
+      },
+      {
         "when": "advanced_transmutation",
         "model": {
           "type": "minecraft:model",

@@ -186,7 +186,7 @@ public final class ModGameTests {
      */
     @HexTest
     public static void recipesNeverWantCreativeOnlyItems(GameTestHelper helper) {
-        Set<String> creativeOnly = Set.of("hextale:void_shard", "hextale:creative_essence_tank",
+        Set<String> creativeOnly = Set.of("hextale:void_shard", "hextale:creative_essence_tank", "hextale:creative_chem_carboy",
                 "hextale:scroll_of_omniscience", "hextale:scroll_of_oblivion");
         List<String> wanting = new java.util.ArrayList<>();
         var resources = helper.getLevel().getServer().getResourceManager();

@@ -1,4 +1,34 @@
 {
+  "herdkeeper.bell": {
+    "subtitle": "subtitles.hextale.herdkeeper.bell",
+    "sounds": [
+      {
+        "name": "hextale:herdkeeper_bell1",
+        "volume": 0.5
+      },
+      {
+        "name": "hextale:herdkeeper_bell2",
+        "volume": 0.5
+      },
+      {
+        "name": "hextale:herdkeeper_bell3",
+        "volume": 0.5
+      }
+    ]
+  },
+  "herdkeeper.gather": {
+    "subtitle": "subtitles.hextale.herdkeeper.gather",
+    "sounds": [
+      {
+        "name": "hextale:herdkeeper_gather1",
+        "volume": 0.5
+      },
+      {
+        "name": "hextale:herdkeeper_gather2",
+        "volume": 0.5
+      }
+    ]
+  },
   "brush.stroke": {
     "subtitle": "subtitles.hextale.brush.stroke",
     "sounds": [
@@ -1512,6 +1542,78 @@
       }
     ]
   },
+  "chem_boots.puff": {
+    "subtitle": "subtitles.hextale.chem_boots.puff",
+    "sounds": [
+      {"name": "hextale:chem_boots_puff1", "volume": 0.3},
+      {"name": "hextale:chem_boots_puff2", "volume": 0.3}
+    ]
+  },
+  "chem_boots.hiss": {
+    "subtitle": "subtitles.hextale.chem_boots.hiss",
+    "sounds": [
+      {"name": "hextale:chem_boots_hiss1", "volume": 0.3},
+      {"name": "hextale:chem_boots_hiss2", "volume": 0.3}
+    ]
+  },
+  "chem_helmet.breath": {
+    "subtitle": "subtitles.hextale.chem_helmet.breath",
+    "sounds": [
+      {"name": "hextale:chem_helmet_breath1", "volume": 0.18, "attenuation_distance": 10},
+      {"name": "hextale:chem_helmet_breath2", "volume": 0.18, "attenuation_distance": 10}
+    ]
+  },
+  "strike_gauntlet.dash": {
+    "subtitle": "subtitles.hextale.strike_gauntlet.dash",
+    "sounds": [
+      {"name": "hextale:strike_gauntlet_dash1", "volume": 0.7},
+      {"name": "hextale:strike_gauntlet_dash2", "volume": 0.7}
+    ]
+  },
+  "strike_gauntlet.impact": {
+    "subtitle": "subtitles.hextale.strike_gauntlet.impact",
+    "sounds": [
+      {"name": "hextale:strike_gauntlet_impact1", "volume": 0.8, "attenuation_distance": 24},
+      {"name": "hextale:strike_gauntlet_impact2", "volume": 0.8, "attenuation_distance": 24}
+    ]
+  },
+  "strike_gauntlet.fist": {
+    "subtitle": "subtitles.hextale.strike_gauntlet.fist",
+    "sounds": [
+      {"name": "hextale:strike_gauntlet_fist1", "volume": 0.6},
+      {"name": "hextale:strike_gauntlet_fist2", "volume": 0.6},
+      {"name": "hextale:strike_gauntlet_fist3", "volume": 0.6}
+    ]
+  },
+  "biter_grenade.bite": {
+    "subtitle": "subtitles.hextale.biter_grenade.bite",
+    "sounds": [
+      {"name": "hextale:biter_grenade_bite1", "volume": 0.8},
+      {"name": "hextale:biter_grenade_bite2", "volume": 0.8},
+      {"name": "hextale:biter_grenade_bite3", "volume": 0.8}
+    ]
+  },
+  "biter_grenade.fuse": {
+    "subtitle": "subtitles.hextale.biter_grenade.fuse",
+    "sounds": [
+      {"name": "hextale:biter_grenade_fuse", "volume": 0.5}
+    ]
+  },
+  "biter_grenade.blast": {
+    "subtitle": "subtitles.hextale.biter_grenade.blast",
+    "sounds": [
+      {"name": "hextale:biter_grenade_blast1", "volume": 0.9, "attenuation_distance": 32},
+      {"name": "hextale:biter_grenade_blast2", "volume": 0.9, "attenuation_distance": 32},
+      {"name": "hextale:biter_grenade_blast3", "volume": 0.9, "attenuation_distance": 32}
+    ]
+  },
+  "biter_grenade.clatter": {
+    "subtitle": "subtitles.hextale.biter_grenade.clatter",
+    "sounds": [
+      {"name": "hextale:biter_grenade_clatter1", "volume": 0.6},
+      {"name": "hextale:biter_grenade_clatter2", "volume": 0.6}
+    ]
+  },
   "dust_charge.fuse": {
     "subtitle": "subtitles.hextale.dust_charge.fuse",
     "sounds": [
@@ -2276,6 +2378,62 @@
     "sounds": [
       {
         "name": "hextale:void_passage_arrive",
+        "volume": 0.6
+      }
+    ]
+  },
+  "chain_launcher.fire": {
+    "subtitle": "subtitles.hextale.chain_launcher.fire",
+    "sounds": [
+      {
+        "name": "hextale:chain_launcher_fire1",
+        "volume": 0.8
+      },
+      {
+        "name": "hextale:chain_launcher_fire2",
+        "volume": 0.8
+      },
+      {
+        "name": "hextale:chain_launcher_fire3",
+        "volume": 0.8
+      }
+    ]
+  },
+  "chain_launcher.bite": {
+    "subtitle": "subtitles.hextale.chain_launcher.bite",
+    "sounds": [
+      {
+        "name": "hextale:chain_launcher_bite1",
+        "volume": 0.8
+      },
+      {
+        "name": "hextale:chain_launcher_bite2",
+        "volume": 0.8
+      },
+      {
+        "name": "hextale:chain_launcher_bite3",
+        "volume": 0.8
+      }
+    ]
+  },
+  "zipline.ride": {
+    "subtitle": "subtitles.hextale.zipline.ride",
+    "sounds": [
+      {
+        "name": "hextale:zipline_ride",
+        "volume": 0.7
+      }
+    ]
+  },
+  "zipline.brake": {
+    "subtitle": "subtitles.hextale.zipline.brake",
+    "sounds": [
+      {
+        "name": "hextale:zipline_brake1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:zipline_brake2",
         "volume": 0.6
       }
     ]

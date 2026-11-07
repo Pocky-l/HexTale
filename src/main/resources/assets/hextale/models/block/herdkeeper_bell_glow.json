@@ -1,0 +1,272 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/herdkeeper",
+    "sheet": "hextale:block/herdkeeper"
+  },
+  "elements": [
+    {
+      "name": "glow_core",
+      "from": [
+        5,
+        18,
+        6
+      ],
+      "to": [
+        9,
+        21,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1.75,
+            5.625,
+            2.25,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            2.375,
+            5.625,
+            2.875,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            3,
+            5.625,
+            3.5,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            3.625,
+            5.625,
+            4.125,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            1.75,
+            6.125,
+            2.25,
+            6.625
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            2.375,
+            6.125,
+            2.875,
+            6.625
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "glow_clapper_a",
+      "from": [
+        5,
+        11,
+        8
+      ],
+      "to": [
+        9,
+        16,
+        8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            9.625,
+            6.875,
+            10.125,
+            7.5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            10.25,
+            6.875,
+            10.75,
+            7.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "glow_clapper_b",
+      "from": [
+        7,
+        11,
+        6
+      ],
+      "to": [
+        7,
+        16,
+        10
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            10.875,
+            6.875,
+            11.375,
+            7.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            11.5,
+            6.875,
+            12,
+            7.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    }
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        1.5,
+        0
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        1.5,
+        0
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        -1,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        -135,
+        0
+      ],
+      "translation": [
+        0,
+        -1,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.2,
+        0.2,
+        0.2
+      ]
+    },
+    "gui": {
+      "rotation": [
+        25,
+        135,
+        0
+      ],
+      "translation": [
+        0,
+        -3.5,
+        0
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
+      ]
+    },
+    "head": {
+      "translation": [
+        0,
+        8,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        -180,
+        0
+      ],
+      "translation": [
+        0,
+        -3.5,
+        0
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
+      ]
+    }
+  }
+}

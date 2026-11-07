@@ -1,0 +1,113 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_straight"
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_straight",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_straight",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_straight",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "east": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_corner"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "south": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_corner",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "west": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_corner",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "north": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_corner",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "post_ne": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_post"
+      }
+    },
+    {
+      "when": {
+        "post_se": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_post",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "post_sw": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_post",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "post_nw": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_post",
+        "y": 270
+      }
+    }
+  ]
+}

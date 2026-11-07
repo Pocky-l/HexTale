@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "hextale:block/valve_wheel"
+    },
+    "facing=east": {
+      "model": "hextale:block/valve_wheel",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "hextale:block/valve_wheel",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "hextale:block/valve_wheel",
+      "y": 270
+    }
+  }
+}

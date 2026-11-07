@@ -28,6 +28,7 @@
     "hextale:hex_furnace",
     "hextale:hex_lapidary",
     "hextale:hex_sawmill",
+    "hextale:herdkeeper",
     "hextale:hex_workbench",
     "hextale:hexcore",
     "hextale:hexsteel_block",
@@ -143,6 +144,18 @@
     "hextale:chem_vat",
     "hextale:chem_steel_block",
     "hextale:chem_steel_plating",
-    "hextale:chem_tank"
+    "hextale:chem_tank",
+    "hextale:chem_carboy",
+    "hextale:creative_chem_carboy",
+    "hextale:vial_rack",
+    "hextale:chem_lumen",
+    "hextale:gas_cylinder",
+    "hextale:gas_cylinder_rust",
+    "hextale:gas_cylinder_shimmer",
+    "hextale:valve_wheel",
+    "hextale:rusted_catwalk",
+    "hextale:rusted_railing",
+    "hextale:hazard_plating",
+    "hextale:rusted_ladder"
   ]
 }

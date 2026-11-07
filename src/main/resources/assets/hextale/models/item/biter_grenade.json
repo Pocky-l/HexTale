@@ -1,0 +1,1510 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/biter_grenade",
+    "sheet": "hextale:block/biter_grenade"
+  },
+  "elements": [
+    {
+      "name": "jaw_shell",
+      "from": [
+        3,
+        9,
+        0
+      ],
+      "to": [
+        13,
+        12,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            1.25,
+            0.375
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            1.375,
+            0,
+            2.625,
+            0.375
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            2.75,
+            0,
+            4,
+            0.375
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            4.125,
+            0,
+            5.375,
+            0.375
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            0.5,
+            1.25,
+            1.75
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            1.375,
+            0.5,
+            2.625,
+            1.75
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "jaw_crown",
+      "from": [
+        4,
+        12,
+        1
+      ],
+      "to": [
+        12,
+        13,
+        8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5.25,
+            1.875,
+            6.25,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            6.375,
+            1.875,
+            7.25,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            7.375,
+            1.875,
+            8.375,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            8.5,
+            1.875,
+            9.375,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            5.25,
+            2.125,
+            6.25,
+            3
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "jaw_gum",
+      "from": [
+        4,
+        6,
+        1
+      ],
+      "to": [
+        12,
+        9,
+        8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            9.125,
+            0,
+            10.125,
+            0.375
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            10.25,
+            0,
+            11.125,
+            0.375
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            11.25,
+            0,
+            12.25,
+            0.375
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            12.375,
+            0,
+            13.25,
+            0.375
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            9.125,
+            0.5,
+            10.125,
+            1.375
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "jaw_teeth_front",
+      "from": [
+        3,
+        6,
+        0
+      ],
+      "to": [
+        13,
+        9,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1.125,
+            4.375,
+            2.375,
+            4.75
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            2.375,
+            4.375,
+            1.125,
+            4.75
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "jaw_teeth_r",
+      "from": [
+        13,
+        6,
+        0
+      ],
+      "to": [
+        13,
+        9,
+        8
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            2.5,
+            4.375,
+            3.5,
+            4.75
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            3.5,
+            4.375,
+            2.5,
+            4.75
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "jaw_teeth_l",
+      "from": [
+        3,
+        6,
+        0
+      ],
+      "to": [
+        3,
+        9,
+        8
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            3.625,
+            4.375,
+            4.625,
+            4.75
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            4.625,
+            4.375,
+            3.625,
+            4.75
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "shell_lower",
+      "from": [
+        4,
+        3,
+        1
+      ],
+      "to": [
+        12,
+        6,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5.5,
+            0,
+            6.5,
+            0.375
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            6.625,
+            0,
+            7.75,
+            0.375
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            7.875,
+            0,
+            9,
+            0.375
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            5.5,
+            0.5,
+            6.5,
+            1.625
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            6.625,
+            0.5,
+            7.625,
+            1.625
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "shell_chin",
+      "from": [
+        5,
+        2,
+        2
+      ],
+      "to": [
+        11,
+        3,
+        8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            9.5,
+            1.875,
+            10.25,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            10.375,
+            1.875,
+            11.125,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            11.25,
+            1.875,
+            12,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            9.5,
+            2.125,
+            10.25,
+            2.875
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "gum_lower",
+      "from": [
+        6,
+        6,
+        3
+      ],
+      "to": [
+        10,
+        7,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12.125,
+            1.875,
+            12.625,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            12.75,
+            1.875,
+            13.5,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            13.625,
+            1.875,
+            14.375,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            12.125,
+            2.125,
+            12.625,
+            2.875
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "teeth_lower_front",
+      "from": [
+        5,
+        6,
+        2
+      ],
+      "to": [
+        11,
+        9,
+        2
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4.75,
+            4.375,
+            5.5,
+            4.75
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            5.5,
+            4.375,
+            4.75,
+            4.75
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "teeth_lower_r",
+      "from": [
+        11,
+        6,
+        2
+      ],
+      "to": [
+        11,
+        9,
+        8
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            5.625,
+            4.375,
+            6.375,
+            4.75
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            6.375,
+            4.375,
+            5.625,
+            4.75
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "teeth_lower_l",
+      "from": [
+        5,
+        6,
+        2
+      ],
+      "to": [
+        5,
+        9,
+        8
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            6.5,
+            4.375,
+            7.25,
+            4.75
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            7.25,
+            4.375,
+            6.5,
+            4.75
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "throat_wall",
+      "from": [
+        4,
+        6,
+        9
+      ],
+      "to": [
+        12,
+        9,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            9.75,
+            3.25,
+            10.75,
+            3.625
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            10.875,
+            3.25,
+            11,
+            3.625
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            11.125,
+            3.25,
+            11.25,
+            3.625
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            9.75,
+            3.75,
+            10.75,
+            3.875
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "glow_throat",
+      "from": [
+        6,
+        7,
+        8
+      ],
+      "to": [
+        10,
+        9,
+        9
+      ],
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            13.125,
+            3.25,
+            13.625,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            13.75,
+            3.25,
+            13.875,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            14,
+            3.25,
+            14.125,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            13.125,
+            3.625,
+            13.625,
+            3.75
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "copper_saddle",
+      "from": [
+        3,
+        2,
+        8
+      ],
+      "to": [
+        13,
+        5,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1.75,
+            3.25,
+            3,
+            3.625
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            3.125,
+            3.25,
+            3.375,
+            3.625
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            3.5,
+            3.25,
+            4.75,
+            3.625
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            4.875,
+            3.25,
+            5.125,
+            3.625
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            1.75,
+            3.75,
+            3,
+            4
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            3.125,
+            3.75,
+            4.375,
+            4
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "copper_lug_r",
+      "from": [
+        13,
+        4,
+        9
+      ],
+      "to": [
+        14,
+        11,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2.75,
+            1.875,
+            2.875,
+            2.75
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            3,
+            1.875,
+            3.25,
+            2.75
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            3.375,
+            1.875,
+            3.5,
+            2.75
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            3.625,
+            1.875,
+            3.875,
+            2.75
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            2.75,
+            2.875,
+            2.875,
+            3.125
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            3,
+            2.875,
+            3.125,
+            3.125
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "copper_lug_l",
+      "from": [
+        2,
+        4,
+        9
+      ],
+      "to": [
+        3,
+        11,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            1.875,
+            4.125,
+            2.75
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            4.25,
+            1.875,
+            4.5,
+            2.75
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            4.625,
+            1.875,
+            4.75,
+            2.75
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            4.875,
+            1.875,
+            5.125,
+            2.75
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            4,
+            2.875,
+            4.125,
+            3.125
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            4.25,
+            2.875,
+            4.375,
+            3.125
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "copper_pin_r",
+      "from": [
+        14,
+        9,
+        9
+      ],
+      "to": [
+        15,
+        11,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            11.375,
+            3.25,
+            11.5,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            11.625,
+            3.25,
+            11.875,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            12,
+            3.25,
+            12.125,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            11.375,
+            3.625,
+            11.5,
+            3.875
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            11.625,
+            3.625,
+            11.75,
+            3.875
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "iron_ring",
+      "from": [
+        4,
+        3,
+        10
+      ],
+      "to": [
+        12,
+        11,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            1.875,
+            1,
+            2.875
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            1.125,
+            1.875,
+            1.25,
+            2.875
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            1.375,
+            1.875,
+            2.375,
+            2.875
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            2.5,
+            1.875,
+            2.625,
+            2.875
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            3,
+            1,
+            3.125
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            1.125,
+            3,
+            2.125,
+            3.125
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "glow_core",
+      "from": [
+        5,
+        4,
+        10
+      ],
+      "to": [
+        11,
+        10,
+        14
+      ],
+      "light_emission": 15,
+      "faces": {
+        "east": {
+          "uv": [
+            13.375,
+            0,
+            13.875,
+            0.75
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            14,
+            0,
+            14.5,
+            0.75
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            13.375,
+            0.875,
+            14.125,
+            1.375
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            14.25,
+            0.875,
+            15,
+            1.375
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "iron_rail_top",
+      "from": [
+        7,
+        10,
+        11
+      ],
+      "to": [
+        9,
+        11,
+        15
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            5.25,
+            3.25,
+            5.75,
+            3.375
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            5.875,
+            3.25,
+            6.125,
+            3.375
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            6.25,
+            3.25,
+            6.75,
+            3.375
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            5.25,
+            3.5,
+            5.5,
+            4
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "iron_rail_bottom",
+      "from": [
+        7,
+        3,
+        11
+      ],
+      "to": [
+        9,
+        4,
+        15
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            6.875,
+            3.25,
+            7.375,
+            3.375
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            7.5,
+            3.25,
+            7.75,
+            3.375
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            7.875,
+            3.25,
+            8.375,
+            3.375
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            6.875,
+            3.5,
+            7.125,
+            4
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "iron_cap",
+      "from": [
+        5,
+        4,
+        14
+      ],
+      "to": [
+        11,
+        10,
+        15
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            0,
+            3.25,
+            0.125,
+            4
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            0.25,
+            3.25,
+            1,
+            4
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            1.125,
+            3.25,
+            1.25,
+            4
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            4.125,
+            0.75,
+            4.25
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            0.875,
+            4.125,
+            1.625,
+            4.25
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "iron_cap_button",
+      "from": [
+        6,
+        5,
+        15
+      ],
+      "to": [
+        10,
+        9,
+        16
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            8.5,
+            3.25,
+            8.625,
+            3.75
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            8.75,
+            3.25,
+            9.25,
+            3.75
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            9.375,
+            3.25,
+            9.5,
+            3.75
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            8.5,
+            3.875,
+            9,
+            4
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            9.125,
+            3.875,
+            9.625,
+            4
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "rust_grip_r",
+      "from": [
+        13,
+        1,
+        0
+      ],
+      "to": [
+        13,
+        5,
+        8
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            14.25,
+            3.25,
+            15.25,
+            3.75
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            15.25,
+            3.25,
+            14.25,
+            3.75
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "rust_grip_l",
+      "from": [
+        3,
+        1,
+        0
+      ],
+      "to": [
+        3,
+        5,
+        8
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            0,
+            4.375,
+            1,
+            4.875
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            1,
+            4.375,
+            0,
+            4.875
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "copper_pin_l",
+      "from": [
+        1,
+        9,
+        9
+      ],
+      "to": [
+        2,
+        11,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12.25,
+            3.25,
+            12.375,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            12.5,
+            3.25,
+            12.625,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            12.75,
+            3.25,
+            13,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            12.25,
+            3.625,
+            12.375,
+            3.875
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            12.5,
+            3.625,
+            12.625,
+            3.875
+          ],
+          "texture": "#sheet"
+        }
+      }
+    }
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "translation": [
+        0,
+        3,
+        1
+      ],
+      "scale": [
+        0.45,
+        0.45,
+        0.45
+      ]
+    },
+    "thirdperson_lefthand": {
+      "translation": [
+        0,
+        3,
+        1
+      ],
+      "scale": [
+        0.45,
+        0.45,
+        0.45
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        -10,
+        0
+      ],
+      "translation": [
+        1.5,
+        3,
+        -1
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        10,
+        0
+      ],
+      "translation": [
+        -1.5,
+        3,
+        -1
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.35,
+        0.35,
+        0.35
+      ]
+    },
+    "gui": {
+      "rotation": [
+        15,
+        -110,
+        0
+      ],
+      "translation": [
+        0,
+        0.5,
+        0
+      ],
+      "scale": [
+        0.72,
+        0.72,
+        0.72
+      ]
+    },
+    "head": {
+      "translation": [
+        0,
+        10,
+        0
+      ],
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ]
+    }
+  }
+}

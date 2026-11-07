@@ -180,6 +180,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.DISINTEGRATOR.get(), "disintegrator");
         info(registration, ModItems.RECALL_CHARM.get(), "recall_charm");
         info(registration, ModItems.GRAPPLE_GAUNTLET.get(), "grapple_gauntlet");
+        info(registration, ModItems.STRIKE_GAUNTLET.get(), "strike_gauntlet");
         info(registration, ModItems.SOUL_FLASK.get(), "soul_flask");
         info(registration, ModItems.SPAWNER_CAGE.get(), "spawner_cage");
         info(registration, ModItems.WARD_GLASS.get(), "ward_glass");
@@ -213,6 +214,17 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.CHEM_STILL.get(), "chem_still");
         info(registration, ModItems.CHEM_VAT.get(), "chem_vat");
         info(registration, ModItems.CHEM_TANK.get(), "chem_tank");
+        info(registration, ModItems.CHEM_CARBOY.get(), "chem_carboy");
+        info(registration, ModItems.CREATIVE_CHEM_CARBOY.get(), "creative_chem_carboy");
+        info(registration, ModItems.VIAL_RACK.get(), "vial_rack");
+        info(registration, ModItems.CHEM_LUMEN.get(), "chem_lumen");
+        info(registration, ModItems.GAS_CYLINDER.get(), "gas_cylinder");
+        info(registration, ModItems.GAS_CYLINDER_RUST.get(), "gas_cylinder");
+        info(registration, ModItems.GAS_CYLINDER_SHIMMER.get(), "gas_cylinder");
+        info(registration, ModItems.RUSTED_CATWALK.get(), "rusted_catwalk");
+        info(registration, ModItems.RUSTED_RAILING.get(), "rusted_railing");
+        info(registration, ModItems.CHAIN_LAUNCHER.get(), "chain_launcher");
+        info(registration, ModItems.BITER_GRENADE.get(), "biter_grenade");
         info(registration, ModItems.CHEM_BOILER.get(), "chem_boiler");
         info(registration, ModItems.HEXTECH_LAMPPOST.get(), "hextech_lamppost");
         info(registration, ModItems.LAB_BENCH.get(), "lab_bench");
@@ -233,6 +245,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.HEXCORE.get(), "hexcore");
         info(registration, ModItems.WHIRL_REAPER.get(), "whirl_reaper");
         info(registration, ModItems.HEX_SAWMILL.get(), "hex_sawmill");
+        info(registration, ModItems.HERDKEEPER.get(), "herdkeeper");
         info(registration, ModItems.GREEDY_FUNNEL.get(), "greedy_funnel");
         info(registration, ModItems.ARC_SPIRE.get(), "arc_spire");
         info(registration, ModItems.BINDING_CHALK.get(), "binding_chalk");

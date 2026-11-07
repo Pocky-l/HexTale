@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    " B ",
+    "BPB",
+    " B "
+  ],
+  "key": {
+    "B": "#c:bars/copper",
+    "P": "hextale:rusted_plating"
+  },
+  "result": {
+    "id": "hextale:valve_wheel",
+    "count": 2
+  }
+}

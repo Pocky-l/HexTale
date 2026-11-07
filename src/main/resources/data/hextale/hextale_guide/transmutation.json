@@ -32,7 +32,8 @@
     "minecraft:jungle_log",
     "minecraft:cherry_log",
     "minecraft:vine",
-    "minecraft:kelp"
+    "minecraft:kelp",
+    "minecraft:rotten_flesh"
   ],
   "parents": [
     "lab_bench"
@@ -212,6 +213,14 @@
       "then": {
         "kind": "crucible",
         "result": "hextale:transmutation/kelp"
+      }
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:transmutation/leather",
+      "then": {
+        "kind": "crucible",
+        "result": "hextale:transmutation/rotten_flesh"
       }
     }
   ],

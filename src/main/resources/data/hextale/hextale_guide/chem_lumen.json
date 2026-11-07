@@ -1,0 +1,19 @@
+{
+  "region": "chemtech",
+  "stage": "mid",
+  "icon": "hextale:chem_lumen",
+  "parents": [
+    "chain_launcher",
+    "lab_bench",
+    "chem_glass"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:chem_lumen"
+  },
+  "research": "chem_lumen",
+  "pos": [
+    -1040,
+    -60
+  ]
+}

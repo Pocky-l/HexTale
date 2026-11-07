@@ -66,11 +66,26 @@ public final class ResearchTopics {
     public static final ResearchTopic AXOLOTL_TANK = lab("axolotl_tank", 1, Essence.WATER, Essence.LIFE, ModItems.AXOLOTL_TANK);
     public static final ResearchTopic CHEM_STILL = lab("chem_still", 2, Essence.FIRE, Essence.EARTH, ModItems.CHEM_STILL);
     public static final ResearchTopic CHEM_BOILER = lab("chem_boiler", 2, Essence.FIRE, Essence.WATER, ModItems.CHEM_BOILER);
+    /** The pneumatic zipline: chemtech's way to move about (every other movement device is hextech). */
+    public static final ResearchTopic CHAIN_LAUNCHER = lab("chain_launcher", 2, Essence.AIR, Essence.METAL, ModItems.CHAIN_LAUNCHER);
+    /** Hextech worked out with the chemists' flask: what an animal holds can be drawn off without hurting it. */
+    public static final ResearchTopic HERDKEEPER = lab("herdkeeper", 2, Essence.LIFE, Essence.EARTH, ModItems.HERDKEEPER);
+    /** Chemtech's thrown weapon: it bites and bursts. */
+    public static final ResearchTopic BITER_GRENADE = lab("biter_grenade", 2, Essence.FIRE, Essence.METAL, ModItems.BITER_GRENADE);
     /** Late chemtech: the vat that tempers chem-steel, the metal of chemtech gear (its decor blocks come with it). */
     public static final ResearchTopic CHEM_VAT = lab("chem_vat", 3, Essence.METAL, Essence.SHADOW, ModItems.CHEM_VAT, ModItems.CHEM_STEEL_INGOT,
             ModItems.CHEM_STEEL_BLOCK, ModItems.CHEM_STEEL_PLATING, ModItems.CHEM_STEEL_PLATING_STAIRS, ModItems.CHEM_STEEL_PLATING_SLAB);
     /** The fuel tank worn on the back that feeds chemtech gear. */
     public static final ResearchTopic CHEM_TANK = lab("chem_tank", 3, Essence.WATER, Essence.METAL, ModItems.CHEM_TANK);
+    /** Brew by the barrel: the flask the devices around it draw from. */
+    public static final ResearchTopic CHEM_CARBOY = lab("chem_carboy", 2, Essence.WATER, Essence.METAL, ModItems.CHEM_CARBOY);
+    public static final ResearchTopic VIAL_RACK = lab("vial_rack", 1, Essence.METAL, Essence.WATER, ModItems.VIAL_RACK);
+    /** A gas lamp that needs no fuel: build once. */
+    public static final ResearchTopic CHEM_LUMEN = lab("chem_lumen", 1, Essence.LIGHT, Essence.FIRE, ModItems.CHEM_LUMEN);
+    /** The chemtech yard's ironwork: one research opens the whole decor set. */
+    public static final ResearchTopic CHEM_FITTINGS = named("chem_fittings", 1, Essence.METAL, Essence.AIR, ModItems.GAS_CYLINDER, ModItems.GAS_CYLINDER_RUST,
+            ModItems.GAS_CYLINDER_SHIMMER, ModItems.VALVE_WHEEL, ModItems.RUSTED_CATWALK, ModItems.RUSTED_RAILING, ModItems.HAZARD_PLATING,
+            ModItems.RUSTED_LADDER);
     /** Chemtech tools: one research opens all four (owner rule: one research per tool level). */
     public static final ResearchTopic CHEM_TOOLS = lab("chem_tools", 3, Essence.METAL, Essence.FIRE, ModItems.CHEM_STEEL_PICKAXE,
             ModItems.CHEM_STEEL_AXE, ModItems.CHEM_STEEL_SHOVEL, ModItems.CHEM_STEEL_SWORD);
@@ -92,6 +107,7 @@ public final class ResearchTopics {
     // Crucible recipes name them ("research"), so plain sand or a poppy is never locked anywhere else.
     public static final ResearchTopic TRANSMUTATION = transmutation("transmutation", 1, Essence.EARTH, Essence.METAL);
     public static final ResearchTopic ADVANCED_TRANSMUTATION = transmutation("advanced_transmutation", 2, Essence.LIGHT, Essence.SPARK);
+    public static final ResearchTopic UNMAKING = transmutation("unmaking", 1, Essence.DECAY, Essence.EARTH);
     public static final ResearchTopic SYNTHETIC_CRYSTAL = lab("synthetic_crystal", 2, Essence.LIGHT, Essence.EARTH, ModItems.SYNTHETIC_CRYSTAL);
     // Chemtech reactions: each brew is worked out at the Lab Bench before the Crucible brews it for the researcher.
     public static final ResearchTopic COMBUSTIBLE_MIX = brew("combustible_mix", 1, Brew.FUEL, Essence.FIRE, Essence.SHADOW);
@@ -179,6 +195,12 @@ public final class ResearchTopics {
     @SafeVarargs
     private static ResearchTopic lab(String id, int tier, Essence action, Essence target, Supplier<? extends ItemLike>... items) {
         return register(new ResearchTopic(id, List.of(items), action, target, tier, ResearchTopic.Bench.LAB, null, null, null));
+    }
+
+    /** A set of chemtech things worked out at the Lab Bench under a name of its own ({@code research.hextale.topic.<id>}). */
+    @SafeVarargs
+    private static ResearchTopic named(String id, int tier, Essence action, Essence target, Supplier<? extends ItemLike>... items) {
+        return register(new ResearchTopic(id, List.of(items), action, target, tier, ResearchTopic.Bench.LAB, null, "research.hextale.topic." + id, null));
     }
 
     /**

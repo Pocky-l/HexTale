@@ -1,0 +1,1679 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/chem_tank",
+    "tank": "hextale:block/chem_tank"
+  },
+  "elements": [
+    {
+      "name": "iron_boot",
+      "from": [
+        5,
+        0,
+        5
+      ],
+      "to": [
+        11,
+        2,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            5.25,
+            1.5,
+            5.75
+          ],
+          "texture": "#tank"
+        },
+        "east": {
+          "uv": [
+            5.25,
+            5.25,
+            6.75,
+            5.75
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            1.75,
+            5.25,
+            3.25,
+            5.75
+          ],
+          "texture": "#tank"
+        },
+        "west": {
+          "uv": [
+            3.5,
+            5.25,
+            5,
+            5.75
+          ],
+          "texture": "#tank"
+        },
+        "up": {
+          "uv": [
+            0,
+            3.5,
+            1.5,
+            5
+          ],
+          "texture": "#tank"
+        },
+        "down": {
+          "uv": [
+            9.5,
+            3,
+            11,
+            4.5
+          ],
+          "texture": "#tank",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "glass_tube",
+      "from": [
+        4,
+        2,
+        4
+      ],
+      "to": [
+        12,
+        15,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            2,
+            3.25
+          ],
+          "texture": "#tank"
+        },
+        "east": {
+          "uv": [
+            6.75,
+            0,
+            8.75,
+            3.25
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            2.25,
+            0,
+            4.25,
+            3.25
+          ],
+          "texture": "#tank"
+        },
+        "west": {
+          "uv": [
+            4.5,
+            0,
+            6.5,
+            3.25
+          ],
+          "texture": "#tank"
+        },
+        "up": {
+          "uv": [
+            13,
+            2.25,
+            15,
+            4.25
+          ],
+          "texture": "#tank"
+        },
+        "down": {
+          "uv": [
+            13,
+            0,
+            15,
+            2
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "copper_cap",
+      "from": [
+        5,
+        15,
+        5
+      ],
+      "to": [
+        11,
+        16,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6.75,
+            6.5,
+            8.25,
+            6.75
+          ],
+          "texture": "#tank"
+        },
+        "east": {
+          "uv": [
+            12,
+            6.75,
+            13.5,
+            7
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            8.5,
+            6.5,
+            10,
+            6.75
+          ],
+          "texture": "#tank"
+        },
+        "west": {
+          "uv": [
+            10.25,
+            6.5,
+            11.75,
+            6.75
+          ],
+          "texture": "#tank"
+        },
+        "up": {
+          "uv": [
+            3.5,
+            3.5,
+            5,
+            5
+          ],
+          "texture": "#tank",
+          "cullface": "up"
+        },
+        "down": {
+          "uv": [
+            1.75,
+            3.5,
+            3.25,
+            5
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "iron_valve",
+      "from": [
+        7,
+        16,
+        7
+      ],
+      "to": [
+        9,
+        18,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            11.75,
+            5,
+            12.25,
+            5.5
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            7,
+            5.25,
+            7.5,
+            5.75
+          ],
+          "texture": "#tank"
+        },
+        "west": {
+          "uv": [
+            7.75,
+            5.25,
+            8.25,
+            5.75
+          ],
+          "texture": "#tank"
+        },
+        "up": {
+          "uv": [
+            8.5,
+            5.25,
+            9,
+            5.75
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "iron_knob",
+      "from": [
+        9,
+        16,
+        7
+      ],
+      "to": [
+        10,
+        18,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12.5,
+            5,
+            12.75,
+            5.5
+          ],
+          "texture": "#tank"
+        },
+        "east": {
+          "uv": [
+            10,
+            5.75,
+            10.5,
+            6.25
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            10.75,
+            5.75,
+            11,
+            6.25
+          ],
+          "texture": "#tank"
+        },
+        "up": {
+          "uv": [
+            11.75,
+            5.75,
+            12,
+            6.25
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "copper_outlet",
+      "from": [
+        6,
+        16,
+        7
+      ],
+      "to": [
+        7,
+        17,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5.25,
+            7,
+            5.5,
+            7.25
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            5.75,
+            7,
+            6,
+            7.25
+          ],
+          "texture": "#tank"
+        },
+        "west": {
+          "uv": [
+            0,
+            7,
+            0.5,
+            7.25
+          ],
+          "texture": "#tank"
+        },
+        "up": {
+          "uv": [
+            12.25,
+            5.75,
+            12.5,
+            6.25
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "leather_band_top",
+      "from": [
+        3.8,
+        11.8,
+        3.8
+      ],
+      "to": [
+        12.2,
+        13.2,
+        12.2
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            6,
+            2,
+            6.25
+          ],
+          "texture": "#tank"
+        },
+        "east": {
+          "uv": [
+            6.75,
+            6,
+            8.75,
+            6.25
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            2.25,
+            6,
+            4.25,
+            6.25
+          ],
+          "texture": "#tank"
+        },
+        "west": {
+          "uv": [
+            4.5,
+            6,
+            6.5,
+            6.25
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "leather_band_low",
+      "from": [
+        3.8,
+        3.8,
+        3.8
+      ],
+      "to": [
+        12.2,
+        5.2,
+        12.2
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12.75,
+            6.25,
+            14.75,
+            6.5
+          ],
+          "texture": "#tank"
+        },
+        "east": {
+          "uv": [
+            4.5,
+            6.5,
+            6.5,
+            6.75
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            0,
+            6.5,
+            2,
+            6.75
+          ],
+          "texture": "#tank"
+        },
+        "west": {
+          "uv": [
+            2.25,
+            6.5,
+            4.25,
+            6.75
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "iron_spine",
+      "from": [
+        7,
+        3,
+        12
+      ],
+      "to": [
+        9,
+        14,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            9,
+            0,
+            9.5,
+            2.75
+          ],
+          "texture": "#tank"
+        },
+        "east": {
+          "uv": [
+            11,
+            0,
+            11.25,
+            2.75
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            9.75,
+            0,
+            10.25,
+            2.75
+          ],
+          "texture": "#tank"
+        },
+        "west": {
+          "uv": [
+            10.5,
+            0,
+            10.75,
+            2.75
+          ],
+          "texture": "#tank"
+        },
+        "up": {
+          "uv": [
+            1.5,
+            7,
+            2,
+            7.25
+          ],
+          "texture": "#tank"
+        },
+        "down": {
+          "uv": [
+            0.75,
+            7,
+            1.25,
+            7.25
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "leather_harness_l",
+      "from": [
+        9,
+        3,
+        12
+      ],
+      "to": [
+        10,
+        13,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            11.5,
+            0,
+            11.75,
+            2.5
+          ],
+          "texture": "#tank"
+        },
+        "east": {
+          "uv": [
+            12.5,
+            0,
+            12.75,
+            2.5
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            12,
+            0,
+            12.25,
+            2.5
+          ],
+          "texture": "#tank"
+        },
+        "up": {
+          "uv": [
+            6.75,
+            7,
+            7,
+            7.25
+          ],
+          "texture": "#tank"
+        },
+        "down": {
+          "uv": [
+            6.25,
+            7,
+            6.5,
+            7.25
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "leather_harness_r",
+      "from": [
+        6,
+        7,
+        12
+      ],
+      "to": [
+        7,
+        13,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6.75,
+            3.5,
+            7,
+            5
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            7.25,
+            3.5,
+            7.5,
+            5
+          ],
+          "texture": "#tank"
+        },
+        "west": {
+          "uv": [
+            7.75,
+            3.5,
+            8,
+            5
+          ],
+          "texture": "#tank"
+        },
+        "up": {
+          "uv": [
+            7.75,
+            7,
+            8,
+            7.25
+          ],
+          "texture": "#tank"
+        },
+        "down": {
+          "uv": [
+            7.25,
+            7,
+            7.5,
+            7.25
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "leather_hang_r",
+      "from": [
+        6,
+        2,
+        12
+      ],
+      "to": [
+        7,
+        7,
+        13
+      ],
+      "rotation": {
+        "angle": -22.5,
+        "axis": "z",
+        "origin": [
+          6.5,
+          7,
+          12.5
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            14.5,
+            4.5,
+            14.75,
+            5.75
+          ],
+          "texture": "#tank"
+        },
+        "east": {
+          "uv": [
+            9.5,
+            4.75,
+            9.75,
+            6
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            15,
+            4.5,
+            15.25,
+            5.75
+          ],
+          "texture": "#tank"
+        },
+        "west": {
+          "uv": [
+            15.5,
+            4.5,
+            15.75,
+            5.75
+          ],
+          "texture": "#tank"
+        },
+        "up": {
+          "uv": [
+            8.75,
+            7,
+            9,
+            7.25
+          ],
+          "texture": "#tank"
+        },
+        "down": {
+          "uv": [
+            8.25,
+            7,
+            8.5,
+            7.25
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "copper_bell_rim_l",
+      "from": [
+        0,
+        1,
+        6
+      ],
+      "to": [
+        4,
+        3,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            7.5,
+            1,
+            8
+          ],
+          "texture": "#tank"
+        },
+        "east": {
+          "uv": [
+            1.25,
+            7.5,
+            2.25,
+            8
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            2.5,
+            7.5,
+            3.5,
+            8
+          ],
+          "texture": "#tank"
+        },
+        "west": {
+          "uv": [
+            3.75,
+            7.5,
+            4.75,
+            8
+          ],
+          "texture": "#tank",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            5,
+            7.5,
+            6,
+            8.5
+          ],
+          "texture": "#tank"
+        },
+        "down": {
+          "uv": [
+            6.25,
+            7.5,
+            7.25,
+            8.5
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "copper_bell_rim_r",
+      "from": [
+        12,
+        1,
+        6
+      ],
+      "to": [
+        16,
+        3,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1,
+            7.5,
+            0,
+            8
+          ],
+          "texture": "#tank"
+        },
+        "east": {
+          "uv": [
+            3.75,
+            7.5,
+            4.75,
+            8
+          ],
+          "texture": "#tank",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            3.5,
+            7.5,
+            2.5,
+            8
+          ],
+          "texture": "#tank"
+        },
+        "west": {
+          "uv": [
+            1.25,
+            7.5,
+            2.25,
+            8
+          ],
+          "texture": "#tank"
+        },
+        "up": {
+          "uv": [
+            6,
+            7.5,
+            5,
+            8.5
+          ],
+          "texture": "#tank"
+        },
+        "down": {
+          "uv": [
+            7.25,
+            7.5,
+            6.25,
+            8.5
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "copper_bell_mid_l",
+      "from": [
+        0.5,
+        3,
+        6.5
+      ],
+      "to": [
+        3.5,
+        5,
+        9.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7.5,
+            7.5,
+            8.25,
+            8
+          ],
+          "texture": "#tank"
+        },
+        "east": {
+          "uv": [
+            8.5,
+            7.5,
+            9.25,
+            8
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            9.5,
+            7.5,
+            10.25,
+            8
+          ],
+          "texture": "#tank"
+        },
+        "west": {
+          "uv": [
+            10.5,
+            7.5,
+            11.25,
+            8
+          ],
+          "texture": "#tank"
+        },
+        "up": {
+          "uv": [
+            11.5,
+            7.5,
+            12.25,
+            8.25
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "copper_bell_mid_r",
+      "from": [
+        12.5,
+        3,
+        6.5
+      ],
+      "to": [
+        15.5,
+        5,
+        9.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            8.25,
+            7.5,
+            7.5,
+            8
+          ],
+          "texture": "#tank"
+        },
+        "east": {
+          "uv": [
+            10.5,
+            7.5,
+            11.25,
+            8
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            10.25,
+            7.5,
+            9.5,
+            8
+          ],
+          "texture": "#tank"
+        },
+        "west": {
+          "uv": [
+            8.5,
+            7.5,
+            9.25,
+            8
+          ],
+          "texture": "#tank"
+        },
+        "up": {
+          "uv": [
+            12.25,
+            7.5,
+            11.5,
+            8.25
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "iron_clip_l",
+      "from": [
+        3,
+        3.5,
+        7
+      ],
+      "to": [
+        4,
+        4.5,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12.5,
+            7.5,
+            12.75,
+            7.75
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            13,
+            7.5,
+            13.25,
+            7.75
+          ],
+          "texture": "#tank"
+        },
+        "up": {
+          "uv": [
+            13.5,
+            7.5,
+            13.75,
+            8
+          ],
+          "texture": "#tank"
+        },
+        "down": {
+          "uv": [
+            14,
+            7.5,
+            14.25,
+            8
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "iron_clip_r",
+      "from": [
+        12,
+        3.5,
+        7
+      ],
+      "to": [
+        13,
+        4.5,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12.75,
+            7.5,
+            12.5,
+            7.75
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            13.25,
+            7.5,
+            13,
+            7.75
+          ],
+          "texture": "#tank"
+        },
+        "up": {
+          "uv": [
+            13.75,
+            7.5,
+            13.5,
+            8
+          ],
+          "texture": "#tank"
+        },
+        "down": {
+          "uv": [
+            14.25,
+            7.5,
+            14,
+            8
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "dark_ring_l",
+      "from": [
+        1,
+        5,
+        7
+      ],
+      "to": [
+        3,
+        6,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            8.75,
+            0.5,
+            9
+          ],
+          "texture": "#tank"
+        },
+        "east": {
+          "uv": [
+            0.75,
+            8.75,
+            1.25,
+            9
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            1.5,
+            8.75,
+            2,
+            9
+          ],
+          "texture": "#tank"
+        },
+        "west": {
+          "uv": [
+            2.25,
+            8.75,
+            2.75,
+            9
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "dark_ring_r",
+      "from": [
+        13,
+        5,
+        7
+      ],
+      "to": [
+        15,
+        6,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0.5,
+            8.75,
+            0,
+            9
+          ],
+          "texture": "#tank"
+        },
+        "east": {
+          "uv": [
+            2.25,
+            8.75,
+            2.75,
+            9
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            2,
+            8.75,
+            1.5,
+            9
+          ],
+          "texture": "#tank"
+        },
+        "west": {
+          "uv": [
+            0.75,
+            8.75,
+            1.25,
+            9
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "iron_chamber_l",
+      "from": [
+        0.5,
+        6,
+        6.5
+      ],
+      "to": [
+        3.5,
+        9,
+        9.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            8.75,
+            3.75,
+            9.5
+          ],
+          "texture": "#tank"
+        },
+        "east": {
+          "uv": [
+            4,
+            8.75,
+            4.75,
+            9.5
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            5,
+            8.75,
+            5.75,
+            9.5
+          ],
+          "texture": "#tank"
+        },
+        "west": {
+          "uv": [
+            6,
+            8.75,
+            6.75,
+            9.5
+          ],
+          "texture": "#tank"
+        },
+        "up": {
+          "uv": [
+            7,
+            8.75,
+            7.75,
+            9.5
+          ],
+          "texture": "#tank"
+        },
+        "down": {
+          "uv": [
+            8,
+            8.75,
+            8.75,
+            9.5
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "iron_chamber_r",
+      "from": [
+        12.5,
+        6,
+        6.5
+      ],
+      "to": [
+        15.5,
+        9,
+        9.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3.75,
+            8.75,
+            3,
+            9.5
+          ],
+          "texture": "#tank"
+        },
+        "east": {
+          "uv": [
+            6,
+            8.75,
+            6.75,
+            9.5
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            5.75,
+            8.75,
+            5,
+            9.5
+          ],
+          "texture": "#tank"
+        },
+        "west": {
+          "uv": [
+            4,
+            8.75,
+            4.75,
+            9.5
+          ],
+          "texture": "#tank"
+        },
+        "up": {
+          "uv": [
+            7.75,
+            8.75,
+            7,
+            9.5
+          ],
+          "texture": "#tank"
+        },
+        "down": {
+          "uv": [
+            8.75,
+            8.75,
+            8,
+            9.5
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "copper_line_l",
+      "from": [
+        2,
+        9,
+        8
+      ],
+      "to": [
+        3,
+        15,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            9,
+            8.75,
+            9.25,
+            10.25
+          ],
+          "texture": "#tank"
+        },
+        "east": {
+          "uv": [
+            9.5,
+            8.75,
+            9.75,
+            10.25
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            10,
+            8.75,
+            10.25,
+            10.25
+          ],
+          "texture": "#tank"
+        },
+        "west": {
+          "uv": [
+            10.5,
+            8.75,
+            10.75,
+            10.25
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "copper_line_r",
+      "from": [
+        13,
+        9,
+        8
+      ],
+      "to": [
+        14,
+        15,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            9.25,
+            8.75,
+            9,
+            10.25
+          ],
+          "texture": "#tank"
+        },
+        "east": {
+          "uv": [
+            10.5,
+            8.75,
+            10.75,
+            10.25
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            10.25,
+            8.75,
+            10,
+            10.25
+          ],
+          "texture": "#tank"
+        },
+        "west": {
+          "uv": [
+            9.5,
+            8.75,
+            9.75,
+            10.25
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "copper_run_l",
+      "from": [
+        2,
+        15,
+        8
+      ],
+      "to": [
+        5,
+        16,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            11,
+            8.75,
+            11.75,
+            9
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            12.25,
+            8.75,
+            13,
+            9
+          ],
+          "texture": "#tank"
+        },
+        "west": {
+          "uv": [
+            13.5,
+            8.75,
+            13.75,
+            9
+          ],
+          "texture": "#tank"
+        },
+        "up": {
+          "uv": [
+            14,
+            8.75,
+            14.75,
+            9
+          ],
+          "texture": "#tank",
+          "cullface": "up"
+        },
+        "down": {
+          "uv": [
+            11,
+            9.25,
+            11.75,
+            9.5
+          ],
+          "texture": "#tank"
+        }
+      }
+    },
+    {
+      "name": "copper_run_r",
+      "from": [
+        11,
+        15,
+        8
+      ],
+      "to": [
+        14,
+        16,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            11.75,
+            8.75,
+            11,
+            9
+          ],
+          "texture": "#tank"
+        },
+        "east": {
+          "uv": [
+            13.5,
+            8.75,
+            13.75,
+            9
+          ],
+          "texture": "#tank"
+        },
+        "south": {
+          "uv": [
+            13,
+            8.75,
+            12.25,
+            9
+          ],
+          "texture": "#tank"
+        },
+        "up": {
+          "uv": [
+            14.75,
+            8.75,
+            14,
+            9
+          ],
+          "texture": "#tank",
+          "cullface": "up"
+        },
+        "down": {
+          "uv": [
+            11.75,
+            9.25,
+            11,
+            9.5
+          ],
+          "texture": "#tank"
+        }
+      }
+    }
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "scale": [
+        0.45,
+        0.45,
+        0.45
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        -135,
+        0
+      ],
+      "scale": [
+        0.45,
+        0.45,
+        0.45
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "gui": {
+      "rotation": [
+        30,
+        -135,
+        0
+      ],
+      "translation": [
+        0,
+        -0.75,
+        0
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ]
+    },
+    "head": {
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        -180,
+        0
+      ],
+      "translation": [
+        0,
+        -0.5,
+        0
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ]
+    }
+  }
+}

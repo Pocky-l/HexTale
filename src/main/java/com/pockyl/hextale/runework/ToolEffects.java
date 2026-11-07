@@ -710,7 +710,7 @@ public final class ToolEffects {
      * Whether a weapon rune that strikes round about (a wave, a blast, a sweep) may hurt this creature: never players,
      * villagers, tamed animals, named peaceful creatures or armour stands.
      */
-    static boolean mayStrike(LivingEntity entity, Player player) {
+    public static boolean mayStrike(LivingEntity entity, Player player) {
         return entity != player && entity.isAlive() && !(entity instanceof Player) && !entity.isSpectator()
                 && !(entity instanceof net.minecraft.world.entity.decoration.ArmorStand)
                 && !(entity instanceof net.minecraft.world.entity.npc.villager.AbstractVillager)

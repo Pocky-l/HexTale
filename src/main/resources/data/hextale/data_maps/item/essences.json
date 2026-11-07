@@ -1214,6 +1214,13 @@
       },
       "tier": 1
     },
+    "hextale:creative_chem_carboy": {
+      "essences": {
+        "magic": 16,
+        "water": 4
+      },
+      "tier": 3
+    },
     "hextale:creative_essence_tank": {
       "essences": {
         "magic": 16,
@@ -1292,6 +1299,14 @@
     "hextale:hex_sawmill": {
       "essences": {
         "metal": 4,
+        "plant": 3,
+        "magic": 1
+      },
+      "tier": 2
+    },
+    "hextale:herdkeeper": {
+      "essences": {
+        "beast": 4,
         "plant": 3,
         "magic": 1
       },
@@ -1957,6 +1972,22 @@
       },
       "tier": 3
     },
+    "hextale:biter_grenade": {
+      "essences": {
+        "metal": 2,
+        "fire": 2,
+        "air": 1
+      },
+      "tier": 2
+    },
+    "hextale:chain_launcher": {
+      "essences": {
+        "metal": 3,
+        "air": 2,
+        "fire": 1
+      },
+      "tier": 2
+    },
     "hextale:chem_vat": {
       "essences": {
         "metal": 3,
@@ -1970,6 +2001,91 @@
         "decay": 1
       },
       "tier": 3
+    },
+    "hextale:chem_carboy": {
+      "essences": {
+        "water": 3,
+        "metal": 2
+      },
+      "tier": 2
+    },
+    "hextale:chem_lumen": {
+      "essences": {
+        "metal": 3,
+        "light": 4,
+        "fire": 2
+      },
+      "tier": 1
+    },
+    "hextale:gas_cylinder": {
+      "essences": {
+        "metal": 4,
+        "air": 3,
+        "decay": 1
+      },
+      "tier": 1
+    },
+    "hextale:gas_cylinder_rust": {
+      "essences": {
+        "metal": 4,
+        "air": 3,
+        "decay": 2
+      },
+      "tier": 1
+    },
+    "hextale:gas_cylinder_shimmer": {
+      "essences": {
+        "metal": 4,
+        "air": 3,
+        "shadow": 1
+      },
+      "tier": 1
+    },
+    "hextale:valve_wheel": {
+      "essences": {
+        "metal": 3,
+        "water": 1,
+        "decay": 1
+      },
+      "tier": 1
+    },
+    "hextale:rusted_catwalk": {
+      "essences": {
+        "metal": 2,
+        "decay": 1,
+        "air": 1
+      },
+      "tier": 1
+    },
+    "hextale:rusted_railing": {
+      "essences": {
+        "metal": 2,
+        "decay": 1,
+        "earth": 1
+      },
+      "tier": 1
+    },
+    "hextale:hazard_plating": {
+      "essences": {
+        "metal": 4,
+        "decay": 2,
+        "light": 1
+      },
+      "tier": 1
+    },
+    "hextale:rusted_ladder": {
+      "essences": {
+        "metal": 1,
+        "decay": 1,
+        "air": 1
+      },
+      "tier": 1
+    },
+    "hextale:vial_rack": {
+      "essences": {
+        "metal": 2
+      },
+      "tier": 1
     },
     "hextale:chem_tank": {
       "essences": {

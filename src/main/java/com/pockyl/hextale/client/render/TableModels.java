@@ -52,6 +52,9 @@ public final class TableModels {
     public static final StandaloneModelKey<BlockStateModelPart> LAPIDARY_GEAR = model("block/hex_lapidary_gear");
     public static final StandaloneModelKey<BlockStateModelPart> WHIRL_REAPER_VANES = model("block/whirl_reaper_vanes");
     public static final StandaloneModelKey<BlockStateModelPart> HEX_SAW_DISC = model("block/hex_sawmill_disc");
+    /** The Herdkeeper's bell and its lit parts, swung by its renderer about the hook at (7, 25, 8) px. */
+    public static final StandaloneModelKey<BlockStateModelPart> HERDKEEPER_BELL = model("block/herdkeeper_bell");
+    public static final StandaloneModelKey<BlockStateModelPart> HERDKEEPER_BELL_GLOW = model("block/herdkeeper_bell_glow");
     /** The Essence Sprinkler's head, turned by its renderer about the riser's axis after each spray. */
     public static final StandaloneModelKey<BlockStateModelPart> SPRINKLER_HEAD = model("block/essence_sprinkler_head");
     /** The formed Hex Foundry round its heart, facing north, and its glowing parts (drawn at full light while hot). */
@@ -69,6 +72,9 @@ public final class TableModels {
     public static final StandaloneModelKey<BlockStateModelPart> LEVITATION_RING = model("block/levitation_plate_ring");
     /** A Dust Charge stuck on a wall: base on its -Z face at (8, 8, 0) px. */
     public static final StandaloneModelKey<BlockStateModelPart> DUST_CHARGE_STUCK = model("item/dust_charge_stuck");
+    /** A Biter Grenade, shut (in flight, and on each beat of its fuse) and with its jaw open (latched). */
+    public static final StandaloneModelKey<BlockStateModelPart> BITER_GRENADE = model("item/biter_grenade");
+    public static final StandaloneModelKey<BlockStateModelPart> BITER_GRENADE_OPEN = model("item/biter_grenade_open");
     /** A Rune Stele's body, both halves, plain and lit: drawn by its renderer turned to the circle it serves. */
     public static final StandaloneModelKey<BlockStateModelPart> STELE_LOWER = model("block/rune_stele_lower");
     public static final StandaloneModelKey<BlockStateModelPart> STELE_UPPER = model("block/rune_stele_upper");
@@ -77,8 +83,13 @@ public final class TableModels {
     /** The Chem Boiler's gauge needle (built pointing up from {@code ChemBoilerRenderer.NEEDLE_PIVOT}) and safety valve. */
     public static final StandaloneModelKey<BlockStateModelPart> CHEM_BOILER_NEEDLE = model("block/chem_boiler_needle");
     public static final StandaloneModelKey<BlockStateModelPart> CHEM_BOILER_VALVE = model("block/chem_boiler_valve");
+    /** The Wall Valve Wheel's turning wheel, on the spindle through (8, 8) px. */
+    public static final StandaloneModelKey<BlockStateModelPart> VALVE_WHEEL_HANDLE = model("block/valve_wheel_handle");
     /** The Chem Tank as worn: shoulder and chest straps, drawn on the player's back by {@link ChemTankLayer}. */
     public static final StandaloneModelKey<BlockStateModelPart> CHEM_TANK_WORN = model("item/chem_tank_worn");
+    /** The Chain Claw (also the flying harpoon head of a shot) and the zipline trolley. */
+    public static final StandaloneModelKey<BlockStateModelPart> CHAIN_CLAW = model("block/chain_claw");
+    public static final StandaloneModelKey<BlockStateModelPart> ZIPLINE_TROLLEY = model("block/zipline_trolley");
 
     private TableModels() {
     }

@@ -45,10 +45,11 @@ import java.util.function.ToIntFunction;
  * through the bottom and up the other side under gravity. Jump reels in, sneak lets out, and letting go of the button
  * frees you with all the speed you had - a fling; throw again mid-air to chain swings.
  *
- * <p>The rope works on the side that moves the wearer ({@link net.minecraft.world.entity.Entity#canSimulateMovement()}:
- * their own client) in {@link #rope}; the server only keeps the falls from hurting while the rope bears the weight and
- * tells the flying check that a hanging player is not cheating. Takes runes (Shift, Motor, Breath, Gravity,
- * Blades).
+ * <p>The rope works in {@link #rope} wherever the wearer is simulated
+ * ({@link net.minecraft.world.entity.Entity#canSimulateMovement()}): their own client, which really moves them and owns
+ * the rope's length, and the server, whose copy of them would otherwise fall between the client's positions. The server
+ * also keeps the falls from hurting while the rope bears the weight and tells the flying check that a hanging player is
+ * not cheating. Takes runes (Shift, Motor, Breath, Gravity, Blades).
  */
 @EventBusSubscriber(modid = Hextale.MOD_ID)
 public class GrappleGauntletItem extends Item {
@@ -180,7 +181,9 @@ public class GrappleGauntletItem extends Item {
         Vec3 grip = grip(player);
         if (!hook.measured()) {
             hook.setLength(grip.distanceTo(anchor));
-            reportLength.accept(hook, hook.length());
+            if (player.level().isClientSide()) {
+                reportLength.accept(hook, hook.length());
+            }
         }
         double length = hook.length();
         if (input > 0) {

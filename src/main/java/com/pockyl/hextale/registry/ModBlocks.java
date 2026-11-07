@@ -332,6 +332,11 @@ public final class ModBlocks {
             com.pockyl.hextale.block.HexSawmillBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).strength(2.5F, 6.0F).sound(SoundType.WOOD).noOcclusion()
                     .lightLevel(state -> 4));
+    /** A feed trough with a crook and a bell: gathers from the passive animals around it without hurting them. */
+    public static final DeferredBlock<com.pockyl.hextale.block.HerdkeeperBlock> HERDKEEPER = BLOCKS.registerBlock("herdkeeper",
+            com.pockyl.hextale.block.HerdkeeperBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).strength(2.5F, 6.0F).sound(SoundType.WOOD).noOcclusion()
+                    .lightLevel(state -> state.getValue(com.pockyl.hextale.block.HerdkeeperBlock.ACTIVE) ? 6 : 2));
     /** A two-block brass-and-walnut street lamp whose gem burns off the dirt of the work around it. */
     public static final DeferredBlock<com.pockyl.hextale.block.HextechLamppostBlock> HEXTECH_LAMPPOST = BLOCKS.registerBlock("hextech_lamppost",
             com.pockyl.hextale.block.HextechLamppostBlock::new,
@@ -474,6 +479,58 @@ public final class ModBlocks {
             com.pockyl.hextale.block.ChemTankBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F, 6.0F).sound(SoundType.COPPER).noOcclusion()
                     .requiresCorrectToolForDrops());
+    /** The Chem Carboy: a two-block flask holding one brew for the devices around it. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ChemCarboyBlock> CHEM_CARBOY = BLOCKS.registerBlock("chem_carboy",
+            com.pockyl.hextale.block.ChemCarboyBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F, 6.0F).sound(SoundType.COPPER).noOcclusion()
+                    .requiresCorrectToolForDrops());
+    public static final DeferredBlock<com.pockyl.hextale.block.CreativeChemCarboyBlock> CREATIVE_CHEM_CARBOY = BLOCKS.registerBlock(
+            "creative_chem_carboy", com.pockyl.hextale.block.CreativeChemCarboyBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).strength(-1.0F, 3600000.0F).sound(SoundType.COPPER)
+                    .noOcclusion().noLootTable());
+    /** The Vial Rack: eight vials of any brew on show, on a floor or a wall. */
+    public static final DeferredBlock<com.pockyl.hextale.block.VialRackBlock> VIAL_RACK = BLOCKS.registerBlock("vial_rack",
+            com.pockyl.hextale.block.VialRackBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F, 6.0F).sound(SoundType.COPPER).noOcclusion()
+                    .requiresCorrectToolForDrops());
+    /** The Chem Lumen: a gas street lamp burning for good on a floor, a wall or a ceiling. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ChemLumenBlock> CHEM_LUMEN = BLOCKS.registerBlock("chem_lumen",
+            com.pockyl.hextale.block.ChemLumenBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F, 6.0F).sound(SoundType.LANTERN).noOcclusion()
+                    .requiresCorrectToolForDrops().lightLevel(state -> 15).pushReaction(PushReaction.POPPED));
+    /** Gas Cylinders: decor, one block per band colour. */
+    public static final DeferredBlock<com.pockyl.hextale.block.GasCylinderBlock> GAS_CYLINDER = BLOCKS.registerBlock("gas_cylinder",
+            com.pockyl.hextale.block.GasCylinderBlock::new, ModBlocks::cylinderProperties);
+    public static final DeferredBlock<com.pockyl.hextale.block.GasCylinderBlock> GAS_CYLINDER_RUST = BLOCKS.registerBlock("gas_cylinder_rust",
+            com.pockyl.hextale.block.GasCylinderBlock::new, ModBlocks::cylinderProperties);
+    public static final DeferredBlock<com.pockyl.hextale.block.GasCylinderBlock> GAS_CYLINDER_SHIMMER = BLOCKS.registerBlock("gas_cylinder_shimmer",
+            com.pockyl.hextale.block.GasCylinderBlock::new, ModBlocks::cylinderProperties);
+    /** A Wall Valve Wheel: decor whose wheel turns on a click. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ValveWheelBlock> VALVE_WHEEL = BLOCKS.registerBlock("valve_wheel",
+            com.pockyl.hextale.block.ValveWheelBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F, 6.0F).sound(SoundType.COPPER).noOcclusion()
+                    .requiresCorrectToolForDrops().pushReaction(PushReaction.POPPED));
+    /** The walkway of a chemtech yard: a grate deck in the lower or upper half of the cell. */
+    public static final DeferredBlock<com.pockyl.hextale.block.RustedCatwalkBlock> RUSTED_CATWALK = BLOCKS.registerBlock("rusted_catwalk",
+            com.pockyl.hextale.block.RustedCatwalkBlock::new, ModBlocks::openPlatingProperties);
+    /** Rails along the edges of a cell. */
+    public static final DeferredBlock<com.pockyl.hextale.block.RustedRailingBlock> RUSTED_RAILING = BLOCKS.registerBlock("rusted_railing",
+            com.pockyl.hextale.block.RustedRailingBlock::new, ModBlocks::openPlatingProperties);
+    public static final DeferredBlock<Block> HAZARD_PLATING = BLOCKS.registerBlock("hazard_plating", Block::new, ModBlocks::platingProperties);
+    public static final DeferredBlock<net.minecraft.world.level.block.LadderBlock> RUSTED_LADDER = BLOCKS.registerBlock("rusted_ladder",
+            net.minecraft.world.level.block.LadderBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).strength(1.5F, 6.0F).sound(SoundType.COPPER).noOcclusion()
+                    .requiresCorrectToolForDrops().pushReaction(PushReaction.POPPED));
+    /** A Chain Launcher line's end where its user stood or on a floor / ceiling: a two-block pole; joins lines. No item. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ChainPostBlock> CHAIN_POST = BLOCKS.registerBlock("chain_post",
+            com.pockyl.hextale.block.ChainPostBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F, 6.0F).sound(SoundType.CHAIN).noOcclusion()
+                    .noLootTable().pushReaction(net.minecraft.world.level.material.PushReaction.IMMOVEABLE));
+    /** A launcher line's end in a wall: the harpoon head bitten into a block. No item, drops nothing. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ChainClawBlock> CHAIN_CLAW = BLOCKS.registerBlock("chain_claw",
+            com.pockyl.hextale.block.ChainClawBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.0F, 6.0F).sound(SoundType.CHAIN).noOcclusion()
+                    .noCollision().noLootTable().pushReaction(net.minecraft.world.level.material.PushReaction.POPPED));
     /** Chem-steel: iron tempered in acid and shimmer, the metal of chemtech gear; its block and plating are decor. */
     public static final DeferredBlock<Block> CHEM_STEEL_BLOCK = BLOCKS.registerBlock("chem_steel_block", Block::new,
             () -> platingProperties().strength(6.0F, 12.0F).sound(SoundType.NETHERITE_BLOCK));
@@ -888,6 +945,17 @@ public final class ModBlocks {
     private static BlockBehaviour.Properties platingProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
                 .requiresCorrectToolForDrops().strength(4.0F, 6.0F).sound(SoundType.COPPER);
+    }
+
+    private static BlockBehaviour.Properties cylinderProperties() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.METAL).instrument(NoteBlockInstrument.IRON_XYLOPHONE).strength(2.0F, 6.0F)
+                .sound(SoundType.COPPER).noOcclusion().requiresCorrectToolForDrops();
+    }
+
+    /** Thin rusted ironwork: nothing spawns on it, it carries no signal and suffocates nobody. */
+    private static BlockBehaviour.Properties openPlatingProperties() {
+        return platingProperties().strength(2.0F, 6.0F).sound(SoundType.COPPER_GRATE).noOcclusion().isValidSpawn((state, level, pos, type) -> false)
+                .isRedstoneConductor((state, level, pos) -> false).isSuffocating((state, level, pos) -> false);
     }
 
     private static BlockBehaviour.Properties fireBrickProperties() {

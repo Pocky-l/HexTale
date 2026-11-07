@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PPP",
+    "PDP",
+    "PPP"
+  ],
+  "key": {
+    "P": "hextale:rusted_plating",
+    "D": "#c:dyes/yellow"
+  },
+  "result": {
+    "id": "hextale:hazard_plating",
+    "count": 8
+  }
+}

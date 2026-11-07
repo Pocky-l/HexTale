@@ -1,0 +1,14 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:prismarine",
+  "essences": {
+    "water": 1,
+    "crystal": 1,
+    "decay": 2
+  },
+  "result": {
+    "id": "minecraft:prismarine_shard",
+    "count": 4
+  },
+  "research": "unmaking"
+}

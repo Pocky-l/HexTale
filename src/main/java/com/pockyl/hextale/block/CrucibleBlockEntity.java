@@ -1,6 +1,7 @@
 package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -90,6 +91,8 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
     public static final float INSIDE_MIN = 3F / 16;
     public static final float INSIDE_MAX = 13F / 16;
     private static final int STEAM = 0xE8EEF2;
+    /** How often the brew pours a dose into a carboy beside the crucible. */
+    private static final int CARBOY_POUR_TICKS = 10;
     /** Doses of one brew the water holds at most. */
     public static final int MAX_DOSES = 12;
     /** Stacks of finished results that float on the surface; more are thrown out over the rim. */
@@ -241,6 +244,9 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
         }
         if (now % SCAN_TICKS == 0 && liquid() > 0) {
             takeItems(level);
+        }
+        if (brew != null && now % CARBOY_POUR_TICKS == 0) {
+            pourIntoCarboy(level);
         }
         if (phase() != before || dirty && now % SYNC_TICKS == 0) {
             dirty = false;
@@ -474,6 +480,24 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
         playAt(SoundEvents.BOTTLE_FILL, 0.8F, 1.0F);
         changed();
         return vial;
+    }
+
+    /** A carboy beside the crucible (its upper half too) takes the brew, a dose at a time. */
+    private void pourIntoCarboy(ServerLevel level) {
+        for (Direction side : Direction.Plane.HORIZONTAL) {
+            ChemCarboyBlockEntity carboy = ChemCarboyBlockEntity.at(level, worldPosition.relative(side));
+            if (carboy != null && carboy.fill(brew, 1) > 0) {
+                int color = brew.color();
+                if (--doses <= 0) {
+                    brew = null;
+                    doses = 0;
+                }
+                com.pockyl.hextale.network.EssenceFxPayload.pour(level, Vec3.atCenterOf(worldPosition).add(0, 0.4, 0), carboy.stopper(), color, CARBOY_POUR_TICKS + 4);
+                playAt(SoundEvents.BOTTLE_EMPTY, 0.15F, 0.8F);
+                changed();
+                return;
+            }
+        }
     }
 
     /** It keeps its water hot while there is any. */

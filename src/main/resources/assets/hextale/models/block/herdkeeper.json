@@ -1,0 +1,2101 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/herdkeeper",
+    "sheet": "hextale:block/herdkeeper"
+  },
+  "elements": [
+    {
+      "name": "wood_board_n",
+      "from": [
+        1,
+        3,
+        5
+      ],
+      "to": [
+        13,
+        11,
+        7
+      ],
+      "rotation": {
+        "angle": -22.5,
+        "axis": "x",
+        "origin": [
+          7,
+          3,
+          6
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            8,
+            4,
+            9.5,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            9.625,
+            4,
+            9.875,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            10,
+            4,
+            11.5,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            11.625,
+            4,
+            11.875,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            8,
+            5.125,
+            9.5,
+            5.375
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "wood_board_s",
+      "from": [
+        1,
+        3,
+        9
+      ],
+      "to": [
+        13,
+        11,
+        11
+      ],
+      "rotation": {
+        "angle": 22.5,
+        "axis": "x",
+        "origin": [
+          7,
+          3,
+          10
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            12,
+            4,
+            13.5,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            13.625,
+            4,
+            13.875,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            14,
+            4,
+            15.5,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            15.625,
+            4,
+            15.875,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            12,
+            5.125,
+            13.5,
+            5.375
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "wood_end_e",
+      "from": [
+        10,
+        0,
+        3
+      ],
+      "to": [
+        12,
+        10,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1.5,
+            0,
+            1.75,
+            1.25
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            1.875,
+            0,
+            3.125,
+            1.25
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            3.25,
+            0,
+            3.5,
+            1.25
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            3.625,
+            0,
+            4.875,
+            1.25
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            1.5,
+            1.375,
+            1.75,
+            2.625
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            1.875,
+            1.375,
+            2.125,
+            2.625
+          ],
+          "texture": "#sheet",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "wood_end_w",
+      "from": [
+        2,
+        0,
+        3
+      ],
+      "to": [
+        4,
+        10,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            0,
+            5.25,
+            1.25
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            5.375,
+            0,
+            6.625,
+            1.25
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            6.75,
+            0,
+            7,
+            1.25
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            7.125,
+            0,
+            8.375,
+            1.25
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            5,
+            1.375,
+            5.25,
+            2.625
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            5.375,
+            1.375,
+            5.625,
+            2.625
+          ],
+          "texture": "#sheet",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "wood_floor",
+      "from": [
+        4,
+        2,
+        5
+      ],
+      "to": [
+        10,
+        4,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            5.625,
+            0.75,
+            5.875
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            0.875,
+            5.625,
+            1.625,
+            5.875
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            0,
+            6,
+            0.75,
+            6.75
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "feed_hay",
+      "from": [
+        4,
+        4,
+        5
+      ],
+      "to": [
+        10,
+        8,
+        11
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            7,
+            6.875,
+            7.75,
+            7.625
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "feed_mound",
+      "from": [
+        5,
+        8,
+        6
+      ],
+      "to": [
+        9,
+        9,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12.75,
+            5.625,
+            13.25,
+            5.75
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            13.375,
+            5.625,
+            13.875,
+            5.75
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            14,
+            5.625,
+            14.5,
+            5.75
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            14.625,
+            5.625,
+            15.125,
+            5.75
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            12.75,
+            5.875,
+            13.25,
+            6.375
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_rim_n",
+      "from": [
+        0.8,
+        9.8,
+        4.8
+      ],
+      "to": [
+        13.2,
+        11.2,
+        7.2
+      ],
+      "rotation": {
+        "angle": -22.5,
+        "axis": "x",
+        "origin": [
+          7,
+          3,
+          6
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            7.75,
+            1.5,
+            7.875
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            1.625,
+            7.75,
+            1.875,
+            7.875
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            2,
+            7.75,
+            3.5,
+            7.875
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            3.625,
+            7.75,
+            3.875,
+            7.875
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            8,
+            1.5,
+            8.25
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            1.625,
+            8,
+            3.125,
+            8.25
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_rim_s",
+      "from": [
+        0.8,
+        9.8,
+        8.8
+      ],
+      "to": [
+        13.2,
+        11.2,
+        11.2
+      ],
+      "rotation": {
+        "angle": 22.5,
+        "axis": "x",
+        "origin": [
+          7,
+          3,
+          10
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            7.75,
+            5.5,
+            7.875
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            5.625,
+            7.75,
+            5.875,
+            7.875
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            6,
+            7.75,
+            7.5,
+            7.875
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            7.625,
+            7.75,
+            7.875,
+            7.875
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            4,
+            8,
+            5.5,
+            8.25
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            5.625,
+            8,
+            7.125,
+            8.25
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_strap_n1",
+      "from": [
+        2.9,
+        2.9,
+        4.9
+      ],
+      "to": [
+        4.1,
+        10.1,
+        7.1
+      ],
+      "rotation": {
+        "angle": -22.5,
+        "axis": "x",
+        "origin": [
+          7,
+          3,
+          6
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            10.25,
+            5.625,
+            10.375,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            10.5,
+            5.625,
+            10.75,
+            6.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_strap_n2",
+      "from": [
+        9.9,
+        2.9,
+        4.9
+      ],
+      "to": [
+        11.1,
+        10.1,
+        7.1
+      ],
+      "rotation": {
+        "angle": -22.5,
+        "axis": "x",
+        "origin": [
+          7,
+          3,
+          6
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            10.875,
+            5.625,
+            11,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            11.125,
+            5.625,
+            11.375,
+            6.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_strap_s1",
+      "from": [
+        2.9,
+        2.9,
+        8.9
+      ],
+      "to": [
+        4.1,
+        10.1,
+        11.1
+      ],
+      "rotation": {
+        "angle": 22.5,
+        "axis": "x",
+        "origin": [
+          7,
+          3,
+          10
+        ]
+      },
+      "faces": {
+        "east": {
+          "uv": [
+            11.5,
+            5.625,
+            11.75,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            11.875,
+            5.625,
+            12,
+            6.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_strap_s2",
+      "from": [
+        9.9,
+        2.9,
+        8.9
+      ],
+      "to": [
+        11.1,
+        10.1,
+        11.1
+      ],
+      "rotation": {
+        "angle": 22.5,
+        "axis": "x",
+        "origin": [
+          7,
+          3,
+          10
+        ]
+      },
+      "faces": {
+        "south": {
+          "uv": [
+            12.125,
+            5.625,
+            12.25,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            12.375,
+            5.625,
+            12.625,
+            6.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_plate",
+      "from": [
+        5,
+        5,
+        4
+      ],
+      "to": [
+        9,
+        9,
+        5
+      ],
+      "rotation": {
+        "angle": -22.5,
+        "axis": "x",
+        "origin": [
+          7,
+          3,
+          6
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            5.75,
+            6.875,
+            6.25,
+            7.375
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            6.375,
+            6.875,
+            6.5,
+            7.375
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            6.625,
+            6.875,
+            6.75,
+            7.375
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            5.75,
+            7.5,
+            6.25,
+            7.625
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            6.375,
+            7.5,
+            6.875,
+            7.625
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "glow_lens",
+      "from": [
+        5.8,
+        5.8,
+        3.8
+      ],
+      "to": [
+        8.2,
+        8.2,
+        5.2
+      ],
+      "rotation": {
+        "angle": -22.5,
+        "axis": "x",
+        "origin": [
+          7,
+          3,
+          6
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            8,
+            7.75,
+            8.25,
+            8
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            8.375,
+            7.75,
+            8.5,
+            8
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            8.625,
+            7.75,
+            8.75,
+            8
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            8,
+            8.125,
+            8.25,
+            8.25
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            8.375,
+            8.125,
+            8.625,
+            8.25
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_cap_e",
+      "from": [
+        10,
+        10,
+        3
+      ],
+      "to": [
+        12,
+        11,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            8.5,
+            0,
+            8.75,
+            0.125
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            8.875,
+            0,
+            10.125,
+            0.125
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            10.25,
+            0,
+            10.5,
+            0.125
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            10.625,
+            0,
+            11.875,
+            0.125
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            8.5,
+            0.25,
+            8.75,
+            1.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_cap_w",
+      "from": [
+        2,
+        10,
+        3
+      ],
+      "to": [
+        4,
+        11,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12,
+            0,
+            12.25,
+            0.125
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            12.375,
+            0,
+            13.625,
+            0.125
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            13.75,
+            0,
+            14,
+            0.125
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            14.125,
+            0,
+            15.375,
+            0.125
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            12,
+            0.25,
+            12.25,
+            1.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "wood_staff",
+      "from": [
+        13,
+        0,
+        7
+      ],
+      "to": [
+        15,
+        28,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            0.25,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            0.375,
+            0,
+            0.625,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            0.75,
+            0,
+            1,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            1.125,
+            0,
+            1.375,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            0,
+            3.625,
+            0.25,
+            3.875
+          ],
+          "texture": "#sheet",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "brass_clamp_lo",
+      "from": [
+        11,
+        3,
+        6
+      ],
+      "to": [
+        16,
+        4,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            6.875,
+            0.625,
+            7
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            0.75,
+            6.875,
+            1.25,
+            7
+          ],
+          "texture": "#sheet",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            1.375,
+            6.875,
+            2,
+            7
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            7.125,
+            0.625,
+            7.625
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            0.75,
+            7.125,
+            1.375,
+            7.625
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_clamp_hi",
+      "from": [
+        11,
+        8,
+        6
+      ],
+      "to": [
+        16,
+        9,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2.125,
+            6.875,
+            2.75,
+            7
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            2.875,
+            6.875,
+            3.375,
+            7
+          ],
+          "texture": "#sheet",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            3.5,
+            6.875,
+            4.125,
+            7
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            2.125,
+            7.125,
+            2.75,
+            7.625
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            2.875,
+            7.125,
+            3.5,
+            7.625
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_ferrule",
+      "from": [
+        12.8,
+        23.8,
+        6.8
+      ],
+      "to": [
+        15.2,
+        28.2,
+        9.2
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7.25,
+            5.625,
+            7.5,
+            6.125
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            7.625,
+            5.625,
+            7.875,
+            6.125
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            8,
+            5.625,
+            8.25,
+            6.125
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            8.375,
+            5.625,
+            8.625,
+            6.125
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            7.25,
+            6.25,
+            7.5,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            7.625,
+            6.25,
+            7.875,
+            6.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_hook_rise",
+      "from": [
+        12.95,
+        25.95,
+        6.95
+      ],
+      "to": [
+        15.05,
+        31.05,
+        9.05
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "z",
+        "origin": [
+          14,
+          27,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            4.25,
+            5.625,
+            4.5,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            4.625,
+            5.625,
+            4.875,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            5,
+            5.625,
+            5.25,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            5.375,
+            5.625,
+            5.625,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            4.25,
+            6.375,
+            4.5,
+            6.625
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_hook_top",
+      "from": [
+        8.9,
+        28.9,
+        6.9
+      ],
+      "to": [
+        12.1,
+        31.1,
+        9.1
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7.875,
+            6.875,
+            8.25,
+            7.125
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            8.375,
+            6.875,
+            8.625,
+            7.125
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            8.75,
+            6.875,
+            9.125,
+            7.125
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            9.25,
+            6.875,
+            9.5,
+            7.125
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            7.875,
+            7.25,
+            8.25,
+            7.5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            8.375,
+            7.25,
+            8.75,
+            7.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_hook_fall",
+      "from": [
+        5.95,
+        25.95,
+        6.95
+      ],
+      "to": [
+        8.05,
+        31.05,
+        9.05
+      ],
+      "rotation": {
+        "angle": -45,
+        "axis": "z",
+        "origin": [
+          7,
+          27,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            5.75,
+            5.625,
+            6,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            6.125,
+            5.625,
+            6.375,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            6.5,
+            5.625,
+            6.75,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            6.875,
+            5.625,
+            7.125,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            5.75,
+            6.375,
+            6,
+            6.625
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_hook_tip",
+      "from": [
+        6,
+        24,
+        7
+      ],
+      "to": [
+        8,
+        28,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            8.75,
+            5.625,
+            9,
+            6.125
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            9.125,
+            5.625,
+            9.375,
+            6.125
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            9.5,
+            5.625,
+            9.75,
+            6.125
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            9.875,
+            5.625,
+            10.125,
+            6.125
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            8.75,
+            6.25,
+            9,
+            6.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "bell_crown",
+      "from": [
+        5.9,
+        21.9,
+        6.9
+      ],
+      "to": [
+        8.1,
+        25.1,
+        9.1
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4.25,
+            6.875,
+            4.5,
+            7.25
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            4.625,
+            6.875,
+            4.875,
+            7.25
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            5,
+            6.875,
+            5.25,
+            7.25
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            5.375,
+            6.875,
+            5.625,
+            7.25
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            4.25,
+            7.375,
+            4.5,
+            7.625
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            4.625,
+            7.375,
+            4.875,
+            7.625
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "bell_shoulder",
+      "from": [
+        5,
+        22,
+        6
+      ],
+      "to": [
+        9,
+        24,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            8.5,
+            0.5,
+            8.75
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            0.625,
+            8.5,
+            1.125,
+            8.75
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            1.25,
+            8.5,
+            1.75,
+            8.75
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            1.875,
+            8.5,
+            2.375,
+            8.75
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            2.5,
+            8.5,
+            3,
+            9
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "bell_body",
+      "from": [
+        4,
+        17,
+        5
+      ],
+      "to": [
+        10,
+        22,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            4,
+            0.75,
+            4.625
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            0.875,
+            4,
+            1.625,
+            4.625
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            1.75,
+            4,
+            2.5,
+            4.625
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            2.625,
+            4,
+            3.375,
+            4.625
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            4.75,
+            0.75,
+            5.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "bell_lip",
+      "from": [
+        3,
+        15,
+        4
+      ],
+      "to": [
+        11,
+        17,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3.5,
+            4,
+            4.5,
+            4.25
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            4.625,
+            4,
+            5.625,
+            4.25
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            5.75,
+            4,
+            6.75,
+            4.25
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            6.875,
+            4,
+            7.875,
+            4.25
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            3.5,
+            4.375,
+            4.5,
+            5.375
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            4.625,
+            4.375,
+            5.625,
+            5.375
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "glow_core",
+      "from": [
+        5,
+        18,
+        6
+      ],
+      "to": [
+        9,
+        21,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1.75,
+            5.625,
+            2.25,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            2.375,
+            5.625,
+            2.875,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            3,
+            5.625,
+            3.5,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            3.625,
+            5.625,
+            4.125,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            1.75,
+            6.125,
+            2.25,
+            6.625
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            2.375,
+            6.125,
+            2.875,
+            6.625
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "glow_clapper_a",
+      "from": [
+        5,
+        11,
+        8
+      ],
+      "to": [
+        9,
+        16,
+        8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            9.625,
+            6.875,
+            10.125,
+            7.5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            10.25,
+            6.875,
+            10.75,
+            7.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "glow_clapper_b",
+      "from": [
+        7,
+        11,
+        6
+      ],
+      "to": [
+        7,
+        16,
+        10
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            10.875,
+            6.875,
+            11.375,
+            7.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            11.5,
+            6.875,
+            12,
+            7.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "feed_tuft_a",
+      "from": [
+        4,
+        8,
+        7
+      ],
+      "to": [
+        8,
+        11,
+        7
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            8.875,
+            7.75,
+            9.375,
+            8.125
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            9.5,
+            7.75,
+            10,
+            8.125
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "feed_tuft_b",
+      "from": [
+        6,
+        8,
+        9
+      ],
+      "to": [
+        10,
+        11,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            10.125,
+            7.75,
+            10.625,
+            8.125
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            10.75,
+            7.75,
+            11.25,
+            8.125
+          ],
+          "texture": "#sheet"
+        }
+      }
+    }
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        1.5,
+        0
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        1.5,
+        0
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        -1,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        -135,
+        0
+      ],
+      "translation": [
+        0,
+        -1,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.2,
+        0.2,
+        0.2
+      ]
+    },
+    "gui": {
+      "rotation": [
+        25,
+        135,
+        0
+      ],
+      "translation": [
+        0,
+        -3.5,
+        0
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
+      ]
+    },
+    "head": {
+      "translation": [
+        0,
+        8,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        -180,
+        0
+      ],
+      "translation": [
+        0,
+        -3.5,
+        0
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
+      ]
+    }
+  }
+}

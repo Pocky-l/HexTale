@@ -64,6 +64,10 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> SAWMILL_RUNES =
             COMPONENTS.registerComponentType("sawmill_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    /** The runes burned into a Herdkeeper. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> HERDKEEPER_RUNES =
+            COMPONENTS.registerComponentType("herdkeeper_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
 
     /** The runes burned into a Greedy Funnel. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> FUNNEL_RUNES =
@@ -114,6 +118,11 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.chem.Brew>> BREW =
             COMPONENTS.registerComponentType("brew", builder -> builder
                     .persistent(com.pockyl.hextale.chem.Brew.CODEC).networkSynchronized(com.pockyl.hextale.chem.Brew.STREAM_CODEC));
+
+    /** The brew in a Chem Carboy (item and placed block). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.chem.CarboyContents>> CHEM_CARBOY =
+            COMPONENTS.registerComponentType("chem_carboy", builder -> builder
+                    .persistent(com.pockyl.hextale.chem.CarboyContents.CODEC).networkSynchronized(com.pockyl.hextale.chem.CarboyContents.STREAM_CODEC));
 
     /** The fuel in a Chem Tank (item and placed block). */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.chem.TankFuel>> CHEM_TANK =

@@ -1,0 +1,12 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:hay_block",
+  "essences": {
+    "decay": 2
+  },
+  "result": {
+    "id": "minecraft:wheat",
+    "count": 9
+  },
+  "research": "unmaking"
+}

@@ -102,12 +102,32 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> RUSTED_GRATE = ITEMS.registerSimpleBlockItem(ModBlocks.RUSTED_GRATE);
     public static final DeferredItem<BlockItem> CHEM_TUBES = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_TUBES);
     public static final DeferredItem<BlockItem> CHEM_VAT = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_VAT);
+    /** Thrown, it bites the first creature it hits and bursts on it. */
+    public static final DeferredItem<com.pockyl.hextale.item.BiterGrenadeItem> BITER_GRENADE = ITEMS.registerItem("biter_grenade",
+            properties -> new com.pockyl.hextale.item.BiterGrenadeItem(properties.stacksTo(16)));
+    /** The Chain Launcher: a hand-held harpoon that shoots ziplines between Chain Posts; wears out after a few lines. */
+    public static final DeferredItem<com.pockyl.hextale.item.ChainLauncherItem> CHAIN_LAUNCHER = ITEMS.registerItem("chain_launcher",
+            properties -> new com.pockyl.hextale.item.ChainLauncherItem(properties.durability(com.pockyl.hextale.item.ChainLauncherItem.SHOTS)
+                    .rarity(Rarity.UNCOMMON)));
     /** The Chem Tank: worn on the back (chest slot or the Curios back slot) it feeds chemtech gear; set down it is a block. */
     public static final DeferredItem<com.pockyl.hextale.item.ChemTankItem> CHEM_TANK = ITEMS.registerItem("chem_tank",
             properties -> new com.pockyl.hextale.item.ChemTankItem(ModBlocks.CHEM_TANK.get(), properties.stacksTo(1).rarity(Rarity.RARE)
                     .useBlockDescriptionPrefix()
                     .component(DataComponents.EQUIPPABLE, Equippable.builder(EquipmentSlot.CHEST)
                             .setEquipSound(SoundEvents.ARMOR_EQUIP_LEATHER).setDamageOnHurt(false).build())));
+    public static final DeferredItem<com.pockyl.hextale.item.ChemCarboyItem> CHEM_CARBOY = ITEMS.registerItem("chem_carboy",
+            properties -> new com.pockyl.hextale.item.ChemCarboyItem(ModBlocks.CHEM_CARBOY.get(), properties.stacksTo(16).useBlockDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> CREATIVE_CHEM_CARBOY = ITEMS.registerSimpleBlockItem(ModBlocks.CREATIVE_CHEM_CARBOY);
+    public static final DeferredItem<BlockItem> VIAL_RACK = ITEMS.registerSimpleBlockItem(ModBlocks.VIAL_RACK);
+    public static final DeferredItem<BlockItem> CHEM_LUMEN = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_LUMEN);
+    public static final DeferredItem<BlockItem> GAS_CYLINDER = ITEMS.registerSimpleBlockItem(ModBlocks.GAS_CYLINDER);
+    public static final DeferredItem<BlockItem> GAS_CYLINDER_RUST = ITEMS.registerSimpleBlockItem(ModBlocks.GAS_CYLINDER_RUST);
+    public static final DeferredItem<BlockItem> GAS_CYLINDER_SHIMMER = ITEMS.registerSimpleBlockItem(ModBlocks.GAS_CYLINDER_SHIMMER);
+    public static final DeferredItem<BlockItem> VALVE_WHEEL = ITEMS.registerSimpleBlockItem(ModBlocks.VALVE_WHEEL);
+    public static final DeferredItem<BlockItem> RUSTED_CATWALK = ITEMS.registerSimpleBlockItem(ModBlocks.RUSTED_CATWALK);
+    public static final DeferredItem<BlockItem> RUSTED_RAILING = ITEMS.registerSimpleBlockItem(ModBlocks.RUSTED_RAILING);
+    public static final DeferredItem<BlockItem> HAZARD_PLATING = ITEMS.registerSimpleBlockItem(ModBlocks.HAZARD_PLATING);
+    public static final DeferredItem<BlockItem> RUSTED_LADDER = ITEMS.registerSimpleBlockItem(ModBlocks.RUSTED_LADDER);
     public static final DeferredItem<Item> CHEM_STEEL_INGOT = ITEMS.registerSimpleItem("chem_steel_ingot");
     /**
      * Chemtech tools: registered at full strength (hextech level 4), unbreakable, as strong as the fuel in the tank on
@@ -279,6 +299,8 @@ public final class ModItems {
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> HEX_SAWMILL = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_SAWMILL,
             properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> HERDKEEPER = ITEMS.registerSimpleBlockItem(ModBlocks.HERDKEEPER,
+            properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> GREEDY_FUNNEL = ITEMS.registerSimpleBlockItem(ModBlocks.GREEDY_FUNNEL,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> ARC_SPIRE = ITEMS.registerSimpleBlockItem(ModBlocks.ARC_SPIRE,
@@ -441,7 +463,9 @@ public final class ModItems {
             properties -> new com.pockyl.hextale.runework.TendrilDaggerItem(properties.sword(PICKAXE_MATERIALS[3], 1.5F, -1.6F).rarity(Rarity.EPIC).fireResistant()));
     /** The Strike Gauntlet: a charged punch that breaks rock or throws creatures back (late, radiant level). */
     public static final DeferredItem<com.pockyl.hextale.runework.StrikeGauntletItem> STRIKE_GAUNTLET = ITEMS.registerItem("strike_gauntlet",
-            properties -> new com.pockyl.hextale.runework.StrikeGauntletItem(properties.durability(1800).rarity(Rarity.EPIC).fireResistant()));
+            properties -> new com.pockyl.hextale.runework.StrikeGauntletItem(properties.durability(1800).rarity(Rarity.EPIC).fireResistant()
+                    .attributes(com.pockyl.hextale.runework.StrikeGauntletItem.attributes())
+                    .component(net.minecraft.core.component.DataComponents.WEAPON, new net.minecraft.world.item.component.Weapon(1))));
     // Level 4, forged with the Void on the Hexcore.
     public static final DeferredItem<HextechToolItem> RIFTFORGED_AXE = ITEMS.registerItem("riftforged_axe",
             properties -> new HextechToolItem(properties.axe(PICKAXE_MATERIALS[3], 5.0F, -3.0F).rarity(Rarity.EPIC).fireResistant()));

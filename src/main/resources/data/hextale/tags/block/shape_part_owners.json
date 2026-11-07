@@ -6,6 +6,9 @@
     "hextale:hex_lapidary",
     "hextale:pink_brazier",
     "hextale:world_anchor",
-    "hextale:rune_circle"
+    "hextale:rune_circle",
+    "hextale:herdkeeper",
+    "hextale:chem_carboy",
+    "hextale:creative_chem_carboy"
   ]
 }

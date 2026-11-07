@@ -1,0 +1,419 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/rusted_plating",
+    "grate": "hextale:block/chem/rusted_catwalk_grate",
+    "plating": "hextale:block/rusted_plating"
+  },
+  "elements": [
+    {
+      "name": "deck_grate",
+      "from": [
+        0,
+        7,
+        0
+      ],
+      "to": [
+        16,
+        8,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            3,
+            16,
+            4
+          ],
+          "texture": "#grate",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            0,
+            3,
+            16,
+            4
+          ],
+          "texture": "#grate",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            0,
+            11,
+            16,
+            12
+          ],
+          "texture": "#grate",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            0,
+            11,
+            16,
+            12
+          ],
+          "texture": "#grate",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#grate"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#grate"
+        }
+      }
+    },
+    {
+      "name": "frame_west",
+      "from": [
+        0,
+        5,
+        0
+      ],
+      "to": [
+        2,
+        7,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ],
+          "texture": "#plating",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            0,
+            14,
+            16,
+            16
+          ],
+          "texture": "#plating"
+        },
+        "south": {
+          "uv": [
+            8,
+            0,
+            10,
+            2
+          ],
+          "texture": "#plating",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            0,
+            6,
+            16,
+            8
+          ],
+          "texture": "#plating",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            2
+          ],
+          "rotation": 90,
+          "texture": "#plating"
+        },
+        "down": {
+          "uv": [
+            0,
+            14,
+            16,
+            16
+          ],
+          "rotation": 90,
+          "texture": "#plating"
+        }
+      }
+    },
+    {
+      "name": "frame_east",
+      "from": [
+        14,
+        5,
+        0
+      ],
+      "to": [
+        16,
+        7,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ],
+          "texture": "#plating",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            0,
+            6,
+            16,
+            8
+          ],
+          "texture": "#plating",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            8,
+            0,
+            10,
+            2
+          ],
+          "texture": "#plating",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            0,
+            14,
+            16,
+            16
+          ],
+          "texture": "#plating"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            2
+          ],
+          "rotation": 90,
+          "texture": "#plating"
+        },
+        "down": {
+          "uv": [
+            0,
+            14,
+            16,
+            16
+          ],
+          "rotation": 90,
+          "texture": "#plating"
+        }
+      }
+    },
+    {
+      "name": "beam_north",
+      "from": [
+        2,
+        5,
+        3
+      ],
+      "to": [
+        14,
+        7,
+        5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            6,
+            14,
+            8
+          ],
+          "texture": "#plating"
+        },
+        "south": {
+          "uv": [
+            2,
+            6,
+            14,
+            8
+          ],
+          "texture": "#plating"
+        },
+        "down": {
+          "uv": [
+            2,
+            14,
+            14,
+            16
+          ],
+          "texture": "#plating"
+        }
+      }
+    },
+    {
+      "name": "beam_south",
+      "from": [
+        2,
+        5,
+        11
+      ],
+      "to": [
+        14,
+        7,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            14,
+            14,
+            16
+          ],
+          "texture": "#plating"
+        },
+        "south": {
+          "uv": [
+            2,
+            14,
+            14,
+            16
+          ],
+          "texture": "#plating"
+        },
+        "down": {
+          "uv": [
+            2,
+            14,
+            14,
+            16
+          ],
+          "texture": "#plating"
+        }
+      }
+    },
+    {
+      "name": "trim_north",
+      "from": [
+        2,
+        5,
+        0
+      ],
+      "to": [
+        14,
+        7,
+        1
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            6,
+            14,
+            8
+          ],
+          "texture": "#plating",
+          "cullface": "north"
+        },
+        "south": {
+          "uv": [
+            2,
+            14,
+            14,
+            16
+          ],
+          "texture": "#plating"
+        },
+        "up": {
+          "uv": [
+            2,
+            1,
+            14,
+            2
+          ],
+          "texture": "#plating"
+        },
+        "down": {
+          "uv": [
+            2,
+            15,
+            14,
+            16
+          ],
+          "texture": "#plating"
+        }
+      }
+    },
+    {
+      "name": "trim_south",
+      "from": [
+        2,
+        5,
+        15
+      ],
+      "to": [
+        14,
+        7,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            14,
+            14,
+            16
+          ],
+          "texture": "#plating"
+        },
+        "south": {
+          "uv": [
+            2,
+            6,
+            14,
+            8
+          ],
+          "texture": "#plating",
+          "cullface": "south"
+        },
+        "up": {
+          "uv": [
+            2,
+            1,
+            14,
+            2
+          ],
+          "texture": "#plating"
+        },
+        "down": {
+          "uv": [
+            2,
+            15,
+            14,
+            16
+          ],
+          "texture": "#plating"
+        }
+      }
+    }
+  ]
+}

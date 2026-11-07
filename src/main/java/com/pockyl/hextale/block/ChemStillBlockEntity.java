@@ -26,6 +26,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.chem.Brew;
+import com.pockyl.hextale.chem.CarboyReach;
 import com.pockyl.hextale.chem.ChemVialItem;
 import com.pockyl.hextale.chem.HeatUser;
 import com.pockyl.hextale.registry.ModBlockEntities;
@@ -76,6 +77,9 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
     }
 
     private void tick(ServerLevel level, BlockState state) {
+        if (CarboyReach.due(level, worldPosition)) {
+            drawRaw(level);
+        }
         boolean working = wantsHeat() && ChemBurnerBlockEntity.under(level, worldPosition) != null;
         if (working) {
             progress++;
@@ -90,6 +94,22 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
         }
         if (dirty && level.getGameTime() % SYNC_TICKS == 0) {
             dirty = false;
+            changed();
+        }
+    }
+
+    /** With a pod in and too little raw shimmer to boil, the carboys around top it up. */
+    private void drawRaw(ServerLevel level) {
+        if (!isClarifier(clarifier) || output.getCount() >= output.getMaxStackSize() || !input.isEmpty() && !isRaw(input)) {
+            return;
+        }
+        while (input.getCount() < RAW_PER_REFINED
+                && CarboyReach.draw(level, worldPosition, Vec3.atCenterOf(worldPosition), brew -> brew == Brew.RAW_SHIMMER) != null) {
+            if (input.isEmpty()) {
+                input = ChemVialItem.of(Brew.RAW_SHIMMER);
+            } else {
+                input.grow(1);
+            }
             changed();
         }
     }

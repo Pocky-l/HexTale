@@ -1,0 +1,465 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/gas_cylinder",
+    "sheet": "hextale:block/gas_cylinder",
+    "band": "hextale:block/gas_cylinder_band"
+  },
+  "elements": [
+    {
+      "name": "iron_foot",
+      "from": [
+        4,
+        0,
+        15
+      ],
+      "to": [
+        12,
+        8,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            0.5,
+            9,
+            2.5
+          ],
+          "rotation": 180,
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            9.25,
+            0,
+            11.25,
+            0.25
+          ],
+          "rotation": 90,
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            9.25,
+            0.5,
+            11.25,
+            2.5
+          ],
+          "texture": "#sheet",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            13.75,
+            0,
+            15.75,
+            0.25
+          ],
+          "rotation": 270,
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            11.5,
+            0,
+            13.5,
+            0.25
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            7,
+            0,
+            9,
+            0.25
+          ],
+          "rotation": 180,
+          "texture": "#sheet",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "steel_body",
+      "from": [
+        5,
+        1,
+        4
+      ],
+      "to": [
+        11,
+        7,
+        15
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            3,
+            1.5,
+            4.5
+          ],
+          "rotation": 180,
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            1.75,
+            0,
+            3.25,
+            2.75
+          ],
+          "rotation": 90,
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            5.25,
+            0,
+            6.75,
+            2.75
+          ],
+          "rotation": 270,
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            3.5,
+            0,
+            5,
+            2.75
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            1.5,
+            2.75
+          ],
+          "rotation": 180,
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "band_ring",
+      "from": [
+        4.8,
+        0.8,
+        5.8
+      ],
+      "to": [
+        11.2,
+        7.2,
+        8.2
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            7,
+            0,
+            13,
+            2
+          ],
+          "rotation": 90,
+          "texture": "#band"
+        },
+        "west": {
+          "uv": [
+            7,
+            3,
+            13,
+            5
+          ],
+          "rotation": 270,
+          "texture": "#band"
+        },
+        "up": {
+          "uv": [
+            0,
+            3,
+            6,
+            5
+          ],
+          "texture": "#band"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            6,
+            2
+          ],
+          "rotation": 180,
+          "texture": "#band"
+        }
+      }
+    },
+    {
+      "name": "iron_cap",
+      "from": [
+        6,
+        2,
+        1
+      ],
+      "to": [
+        10,
+        6,
+        4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            3.75,
+            8,
+            4.75
+          ],
+          "rotation": 180,
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            8.25,
+            2.75,
+            9.25,
+            3.5
+          ],
+          "rotation": 90,
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            10.75,
+            2.75,
+            11.75,
+            3.5
+          ],
+          "rotation": 270,
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            9.5,
+            2.75,
+            10.5,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            7,
+            2.75,
+            8,
+            3.5
+          ],
+          "rotation": 180,
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "copper_stem",
+      "from": [
+        7,
+        3,
+        0
+      ],
+      "to": [
+        9,
+        5,
+        1
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12,
+            3.25,
+            12.5,
+            3.75
+          ],
+          "rotation": 180,
+          "texture": "#sheet",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            12.75,
+            2.75,
+            13.25,
+            3
+          ],
+          "rotation": 90,
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            14.25,
+            2.75,
+            14.75,
+            3
+          ],
+          "rotation": 270,
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            13.5,
+            2.75,
+            14,
+            3
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            12,
+            2.75,
+            12.5,
+            3
+          ],
+          "rotation": 180,
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "copper_outlet",
+      "from": [
+        10,
+        3,
+        2
+      ],
+      "to": [
+        11,
+        5,
+        3
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12,
+            4.5,
+            12.25,
+            5
+          ],
+          "rotation": 180,
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            12.5,
+            4,
+            13,
+            4.25
+          ],
+          "rotation": 90,
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            12.5,
+            4.5,
+            12.75,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            13.25,
+            4,
+            13.5,
+            4.25
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            12,
+            4,
+            12.25,
+            4.25
+          ],
+          "rotation": 180,
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "iron_saddle",
+      "from": [
+        4,
+        0,
+        9
+      ],
+      "to": [
+        12,
+        2,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            4.75,
+            2,
+            5.25
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            2.25,
+            4.75,
+            2.75,
+            5.25
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            3,
+            4.75,
+            5,
+            5.25
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            5.25,
+            4.75,
+            5.75,
+            5.25
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            5.5,
+            2,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            2.25,
+            5.5,
+            4.25,
+            6
+          ],
+          "texture": "#sheet",
+          "cullface": "down"
+        }
+      }
+    }
+  ]
+}

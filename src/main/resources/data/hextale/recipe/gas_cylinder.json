@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "B",
+    "P",
+    "P"
+  ],
+  "key": {
+    "B": "#c:bars/copper",
+    "P": "hextale:rusted_plating"
+  },
+  "result": {
+    "id": "hextale:gas_cylinder",
+    "count": 2
+  }
+}

@@ -589,6 +589,18 @@ public final class GadgetGameTests {
         });
     }
 
+    /** The server keeps the rope as long as the wearer's client says, or a reeled-in rope would no longer catch a fall. */
+    @HexTest
+    public static void aReeledRopeIsAsLongAsTheClientSays(GameTestHelper helper) {
+        net.minecraft.server.level.ServerPlayer player = MockPlayers.inLevel(helper);
+        com.pockyl.hextale.entity.GrappleHook hook = new com.pockyl.hextale.entity.GrappleHook(helper.getLevel(), player, player.position(),
+                new Vec3(0, 1, 0), 20, 1, false, 0, 0);
+        hook.setLength(12);
+        hook.reportLength(4);
+        helper.assertTrue(hook.length() == 4, "the report replaces the server's own measure: " + hook.length());
+        helper.succeed();
+    }
+
     /**
      * A player that moves itself on the server (as a client moves its own player): its ticks are run by the test,
      * through a connection of its own that goes nowhere.

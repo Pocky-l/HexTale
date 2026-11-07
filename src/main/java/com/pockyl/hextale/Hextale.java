@@ -64,6 +64,9 @@ public final class Hextale {
                 event.register(com.pockyl.hextale.block.WorldAnchorBlock.TICKETS));
         PickaxeEffects.register();
         com.pockyl.hextale.chem.ChemGear.register();
+        com.pockyl.hextale.chem.Respirator.register();
+        com.pockyl.hextale.chem.PneumaticBoots.register();
+        com.pockyl.hextale.entity.ZiplineTrolley.register();
         com.pockyl.hextale.runework.ToolEffects.register();
         com.pockyl.hextale.runework.WeaponRunes.register();
         com.pockyl.hextale.farm.FunnelEvents.register();
@@ -137,6 +140,19 @@ public final class Hextale {
         output.accept(ModItems.CHEM_STILL);
         output.accept(ModItems.CHEM_VAT);
         output.accept(ModItems.CHEM_TANK);
+        output.accept(ModItems.CHEM_CARBOY);
+        output.accept(ModItems.VIAL_RACK);
+        output.accept(ModItems.CHEM_LUMEN);
+        output.accept(ModItems.GAS_CYLINDER);
+        output.accept(ModItems.GAS_CYLINDER_RUST);
+        output.accept(ModItems.GAS_CYLINDER_SHIMMER);
+        output.accept(ModItems.VALVE_WHEEL);
+        output.accept(ModItems.RUSTED_CATWALK);
+        output.accept(ModItems.RUSTED_RAILING);
+        output.accept(ModItems.HAZARD_PLATING);
+        output.accept(ModItems.RUSTED_LADDER);
+        output.accept(ModItems.CHAIN_LAUNCHER);
+        output.accept(ModItems.BITER_GRENADE);
         output.accept(ModItems.CHEM_STEEL_PICKAXE);
         output.accept(ModItems.CHEM_STEEL_AXE);
         output.accept(ModItems.CHEM_STEEL_SHOVEL);
@@ -174,6 +190,7 @@ public final class Hextale {
         // Automation: farms, mob handling, defence.
         output.accept(ModItems.WHIRL_REAPER);
         output.accept(ModItems.HEX_SAWMILL);
+        output.accept(ModItems.HERDKEEPER);
         output.accept(ModItems.GREEDY_FUNNEL);
         output.accept(ModItems.XP_CONDENSER);
         output.accept(ModItems.ARC_SPIRE);
@@ -455,6 +472,7 @@ public final class Hextale {
 
         // Creative only: the Creative Essence Jar (every essence, endless) is the one jar of essence.
         output.accept(ModItems.CREATIVE_ESSENCE_TANK);
+        output.accept(ModItems.CREATIVE_CHEM_CARBOY);
         output.accept(ModItems.SCROLL_OF_OMNISCIENCE);
         output.accept(ModItems.SCROLL_OF_OBLIVION);
         output.accept(ModItems.VOID_SHARD);
@@ -587,6 +605,7 @@ public final class Hextale {
             event.accept(ModItems.RADIANT_TENDRIL_DAGGER);
             event.accept(ModItems.RIFTFORGED_TENDRIL_DAGGER);
             event.accept(ModItems.STRIKE_GAUNTLET);
+            event.accept(ModItems.BITER_GRENADE);
             event.accept(ModItems.HEXSTEEL_SWORD);
             event.accept(ModItems.HEXSTEEL_AXE);
             event.accept(ModItems.HEXSTEEL_HELMET);

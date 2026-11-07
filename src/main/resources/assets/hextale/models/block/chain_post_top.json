@@ -1,0 +1,319 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/chem/chem_iron",
+    "chem_iron": "hextale:block/chem/chem_iron",
+    "chem_copper": "hextale:block/chem/chem_copper"
+  },
+  "elements": [
+    {
+      "name": "iron_pole",
+      "from": [
+        7,
+        0,
+        7
+      ],
+      "to": [
+        9,
+        13,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            3,
+            9,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "east": {
+          "uv": [
+            7,
+            3,
+            9,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            7,
+            3,
+            9,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "west": {
+          "uv": [
+            7,
+            3,
+            9,
+            16
+          ],
+          "texture": "#chem_iron"
+        }
+      }
+    },
+    {
+      "name": "copper_band",
+      "from": [
+        6,
+        5,
+        6
+      ],
+      "to": [
+        10,
+        6,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            10,
+            10,
+            11
+          ],
+          "texture": "#chem_copper"
+        },
+        "east": {
+          "uv": [
+            6,
+            10,
+            10,
+            11
+          ],
+          "texture": "#chem_copper"
+        },
+        "south": {
+          "uv": [
+            6,
+            10,
+            10,
+            11
+          ],
+          "texture": "#chem_copper"
+        },
+        "west": {
+          "uv": [
+            6,
+            10,
+            10,
+            11
+          ],
+          "texture": "#chem_copper"
+        },
+        "up": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#chem_copper"
+        },
+        "down": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#chem_copper"
+        }
+      }
+    },
+    {
+      "name": "copper_cap",
+      "from": [
+        6,
+        13,
+        6
+      ],
+      "to": [
+        10,
+        15,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            1,
+            10,
+            3
+          ],
+          "texture": "#chem_copper"
+        },
+        "east": {
+          "uv": [
+            6,
+            1,
+            10,
+            3
+          ],
+          "texture": "#chem_copper"
+        },
+        "south": {
+          "uv": [
+            6,
+            1,
+            10,
+            3
+          ],
+          "texture": "#chem_copper"
+        },
+        "west": {
+          "uv": [
+            6,
+            1,
+            10,
+            3
+          ],
+          "texture": "#chem_copper"
+        },
+        "up": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#chem_copper"
+        },
+        "down": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#chem_copper"
+        }
+      }
+    },
+    {
+      "name": "iron_neck",
+      "from": [
+        7,
+        15,
+        7
+      ],
+      "to": [
+        9,
+        19,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            1,
+            9,
+            5
+          ],
+          "texture": "#chem_iron"
+        },
+        "east": {
+          "uv": [
+            7,
+            1,
+            9,
+            5
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            7,
+            1,
+            9,
+            5
+          ],
+          "texture": "#chem_iron"
+        },
+        "west": {
+          "uv": [
+            7,
+            1,
+            9,
+            5
+          ],
+          "texture": "#chem_iron"
+        }
+      }
+    },
+    {
+      "name": "iron_flange",
+      "from": [
+        6,
+        19,
+        6
+      ],
+      "to": [
+        10,
+        20,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            0,
+            10,
+            1
+          ],
+          "texture": "#chem_iron"
+        },
+        "east": {
+          "uv": [
+            6,
+            0,
+            10,
+            1
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            6,
+            0,
+            10,
+            1
+          ],
+          "texture": "#chem_iron"
+        },
+        "west": {
+          "uv": [
+            6,
+            0,
+            10,
+            1
+          ],
+          "texture": "#chem_iron"
+        },
+        "up": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#chem_iron"
+        },
+        "down": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#chem_iron"
+        }
+      }
+    }
+  ]
+}

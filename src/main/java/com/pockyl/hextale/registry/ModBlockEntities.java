@@ -58,9 +58,22 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.LapidaryBlockEntity>> LAPIDARY =
             BLOCK_ENTITIES.register("hex_lapidary", () -> new BlockEntityType<>(com.pockyl.hextale.block.LapidaryBlockEntity::new,
                     ModBlocks.HEX_LAPIDARY.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChemCarboyBlockEntity>> CHEM_CARBOY =
+            BLOCK_ENTITIES.register("chem_carboy", () -> new BlockEntityType<>(com.pockyl.hextale.block.ChemCarboyBlockEntity::new,
+                    ModBlocks.CHEM_CARBOY.get(), ModBlocks.CREATIVE_CHEM_CARBOY.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ValveWheelBlockEntity>> VALVE_WHEEL =
+            BLOCK_ENTITIES.register("valve_wheel", () -> new BlockEntityType<>(com.pockyl.hextale.block.ValveWheelBlockEntity::new,
+                    ModBlocks.VALVE_WHEEL.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.VialRackBlockEntity>> VIAL_RACK =
+            BLOCK_ENTITIES.register("vial_rack", () -> new BlockEntityType<>(com.pockyl.hextale.block.VialRackBlockEntity::new,
+                    ModBlocks.VIAL_RACK.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChemTankBlockEntity>> CHEM_TANK =
             BLOCK_ENTITIES.register("chem_tank", () -> new BlockEntityType<>(com.pockyl.hextale.block.ChemTankBlockEntity::new,
                     ModBlocks.CHEM_TANK.get()));
+    /** The lines of a Chain Post (its base half) or a Chain Claw. */
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChainAnchorBlockEntity>> CHAIN_ANCHOR =
+            BLOCK_ENTITIES.register("chain_anchor", () -> new BlockEntityType<>(com.pockyl.hextale.block.ChainAnchorBlockEntity::new,
+                    ModBlocks.CHAIN_POST.get(), ModBlocks.CHAIN_CLAW.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChemVatBlockEntity>> CHEM_VAT =
             BLOCK_ENTITIES.register("chem_vat", () -> new BlockEntityType<>(com.pockyl.hextale.block.ChemVatBlockEntity::new,
                     ModBlocks.CHEM_VAT.get()));
@@ -75,6 +88,9 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexSawmillBlockEntity>> HEX_SAWMILL =
             BLOCK_ENTITIES.register("hex_sawmill", () -> new BlockEntityType<>(com.pockyl.hextale.block.HexSawmillBlockEntity::new,
                     ModBlocks.HEX_SAWMILL.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HerdkeeperBlockEntity>> HERDKEEPER =
+            BLOCK_ENTITIES.register("herdkeeper", () -> new BlockEntityType<>(com.pockyl.hextale.block.HerdkeeperBlockEntity::new,
+                    ModBlocks.HERDKEEPER.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexWispBlock.Glow>> HEX_WISP =
             BLOCK_ENTITIES.register("hex_wisp", () -> new BlockEntityType<>(com.pockyl.hextale.block.HexWispBlock.Glow::new,
                     java.util.Set.copyOf(ModBlocks.wisps())));
