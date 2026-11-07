@@ -158,10 +158,23 @@ public final class ModBlocks {
                     .requiresCorrectToolForDrops().strength(1.0F, 3.0F).sound(SoundType.POINTED_DRIPSTONE).noOcclusion()
                     .dynamicShape().offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.POPPED));
     /** Void Crystals: grow on Void Rock round a held breach (level 4 gem; sealed in nullstone before any craft). */
-    public static final DeferredBlock<net.minecraft.world.level.block.AmethystClusterBlock> VOID_CRYSTAL_CLUSTER = BLOCKS.registerBlock(
-            "void_crystal_cluster", properties -> new net.minecraft.world.level.block.AmethystClusterBlock(7.0F, 3.0F, properties),
-            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).forceSolidOn().noOcclusion().strength(1.5F)
-                    .requiresCorrectToolForDrops().lightLevel(state -> 5).sound(SoundType.AMETHYST_CLUSTER).pushReaction(PushReaction.POPPED));
+    public static final DeferredBlock<com.pockyl.hextale.block.VoidCrystalBudBlock> VOID_CRYSTAL_CLUSTER = BLOCKS.registerBlock(
+            "void_crystal_cluster", properties -> new com.pockyl.hextale.block.VoidCrystalBudBlock(7.0F, 3.0F, properties),
+            () -> voidCrystalProperties(5).sound(SoundType.AMETHYST_CLUSTER));
+    public static final DeferredBlock<com.pockyl.hextale.block.VoidCrystalBudBlock> LARGE_VOID_CRYSTAL_BUD = BLOCKS.registerBlock("large_void_crystal_bud",
+            properties -> new com.pockyl.hextale.block.VoidCrystalBudBlock(5.0F, 3.0F, properties),
+            () -> voidCrystalProperties(4).sound(SoundType.LARGE_AMETHYST_BUD));
+    public static final DeferredBlock<com.pockyl.hextale.block.VoidCrystalBudBlock> MEDIUM_VOID_CRYSTAL_BUD = BLOCKS.registerBlock("medium_void_crystal_bud",
+            properties -> new com.pockyl.hextale.block.VoidCrystalBudBlock(4.0F, 3.0F, properties),
+            () -> voidCrystalProperties(2).sound(SoundType.MEDIUM_AMETHYST_BUD));
+    public static final DeferredBlock<com.pockyl.hextale.block.VoidCrystalBudBlock> SMALL_VOID_CRYSTAL_BUD = BLOCKS.registerBlock("small_void_crystal_bud",
+            properties -> new com.pockyl.hextale.block.VoidCrystalBudBlock(3.0F, 4.0F, properties),
+            () -> voidCrystalProperties(1).sound(SoundType.SMALL_AMETHYST_BUD));
+    /** Grows those buds on its open sides; found in the Void past the Threshold, gives nothing when broken, no piston moves it. */
+    public static final DeferredBlock<com.pockyl.hextale.block.BuddingVoidCrystalBlock> BUDDING_VOID_CRYSTAL = BLOCKS.registerBlock("budding_void_crystal",
+            com.pockyl.hextale.block.BuddingVoidCrystalBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).randomTicks().strength(3.0F).requiresCorrectToolForDrops()
+                    .lightLevel(state -> 3).sound(SoundType.AMETHYST).pushReaction(PushReaction.IMMOVEABLE));
     // Hextech crystals: amethyst the strike woke all the way, in the four amethyst sizes (sizes and sounds as vanilla).
     public static final DeferredBlock<com.pockyl.hextale.block.HextechClusterBlock> HEXTECH_CLUSTER = BLOCKS.registerBlock("hextech_cluster",
             properties -> new com.pockyl.hextale.block.HextechClusterBlock(7.0F, 3.0F, properties),
@@ -1010,6 +1023,11 @@ public final class ModBlocks {
         return BlockBehaviour.Properties.of().mapColor(MapColor.NONE).strength(0.6F).sound(SoundType.GLASS).noOcclusion().dynamicShape()
                 .isValidSpawn((state, level, pos, type) -> false).isRedstoneConductor((state, level, pos) -> false)
                 .isSuffocating((state, level, pos) -> false).isViewBlocking((state, level, pos, box) -> false);
+    }
+
+    private static BlockBehaviour.Properties voidCrystalProperties(int light) {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).forceSolidOn().noOcclusion().strength(1.5F)
+                .requiresCorrectToolForDrops().lightLevel(state -> light).pushReaction(PushReaction.POPPED);
     }
 
     private static BlockBehaviour.Properties hextechCrystalProperties(int light) {

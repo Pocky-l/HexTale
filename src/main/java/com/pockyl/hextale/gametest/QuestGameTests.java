@@ -213,7 +213,7 @@ public final class QuestGameTests {
             Map.entry("sphalerite", List.of("hextale:raw_zinc", "hextale:raw_zinc_block", "hextale:deepslate_sphalerite_ore")),
             Map.entry("zinc", List.of("hextale:zinc_nugget", "hextale:zinc_block")),
             // The Void's own growths are found once one stands in it.
-            Map.entry("step_through", List.of("hextale:void_crystal_cluster")),
+            Map.entry("step_through", List.of("hextale:void_crystal_cluster", "hextale:budding_void_crystal", "hextale:small_void_crystal_bud")),
             Map.entry("hexsteel", List.of("hextale:hexsteel_block")),
             // Grown strains bear their harvest: pods on Crystal Cane, ears on Ember Wheat.
             Map.entry("strain_crystal_cane", List.of("hextale:crystal_pod")),

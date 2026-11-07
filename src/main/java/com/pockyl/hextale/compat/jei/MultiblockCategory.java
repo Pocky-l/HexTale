@@ -16,6 +16,7 @@ import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.ItemStack;
 
 import com.pockyl.hextale.Hextale;
@@ -87,7 +88,7 @@ public class MultiblockCategory extends AbstractRecipeCategory<Multiblock> {
 
         @Override
         public void drawWidget(GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
-            preview.render(graphics, 0, 0, WIDTH, SCENE, (int) mouseX, (int) mouseY, System.currentTimeMillis() / 50F);
+            preview.render(graphics, 0, 0, WIDTH, SCENE, (int) mouseX, (int) mouseY, Util.getMillis() / 50F);
         }
 
         @Override

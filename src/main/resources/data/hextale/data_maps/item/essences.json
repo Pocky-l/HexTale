@@ -680,6 +680,36 @@
       },
       "tier": 3
     },
+    "hextale:small_void_crystal_bud": {
+      "essences": {
+        "crystal": 1,
+        "rift": 1
+      },
+      "tier": 2
+    },
+    "hextale:medium_void_crystal_bud": {
+      "essences": {
+        "crystal": 2,
+        "rift": 1
+      },
+      "tier": 2
+    },
+    "hextale:large_void_crystal_bud": {
+      "essences": {
+        "crystal": 2,
+        "rift": 2,
+        "magic": 1
+      },
+      "tier": 2
+    },
+    "hextale:budding_void_crystal": {
+      "essences": {
+        "crystal": 4,
+        "rift": 4,
+        "magic": 2
+      },
+      "tier": 3
+    },
     "hextale:void_crystal_cluster": {
       "essences": {
         "crystal": 3,

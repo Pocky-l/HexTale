@@ -104,6 +104,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Chem-Steel Boots: pneumatics. While your worn tank holds fuel you can jump once more in the air for 1 action, 1 to 1.5
   blocks high by fuel, with steam from the heels. Falls hurt 50 to 80% less by fuel. Press jump again to open a glider.
 
+- Budding Void Crystal (#8): rock that grows Void Crystal buds on its free sides, up to full clusters, slower than budding
+  amethyst. It lies in clutches in the Void past the Threshold, more of them further in. No piston moves it and it drops
+  nothing, so it is farmed where it lies. The Void Lens shows it, and `buddingVoidCrystalGrowth` in `hextale-synced.toml` sets the speed.
 ### Changed
 - A set-down Chem Tank or Chem Jet Tank takes fuel vials from pylons and other mods' pipes, not only from hoppers.
 - The Crystal Battery is retired. The Awakened Workbench now takes runes at the altar, up to three: Hoard (holds 150, 300 or
@@ -124,6 +127,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   already in your world stay as they are.
 
 ### Fixed
+- The 3D model in the Multiblocks category of [JEI](https://www.curseforge.com/minecraft/mc-mods/jei) turns and builds
+  itself again; it stood still on one frame (#10).
 - Vault screen: left and right click take items again; JEI's recipe view stays on the keyboard keys over the grid.
 - Hex Vault: a right click only opens the screen and never puts the held item in, sneaking or not. Items go in on the screen, by
   Shift + click, by dragging or with Store the inventory, and through hoppers, pipes and pylons.

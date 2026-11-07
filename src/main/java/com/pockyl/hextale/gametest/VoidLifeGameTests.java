@@ -5,10 +5,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.level.block.AmethystClusterBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
+import com.pockyl.hextale.block.BuddingVoidCrystalBlock;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModEffects;
 import com.pockyl.hextale.registry.ModEntities;
@@ -89,6 +91,70 @@ public final class VoidLifeGameTests {
         helper.assertTrue(found > 20, "shoals to look at: " + found);
         helper.assertTrue(chests > 0 && gnawed > 20, "swallowed ruins with a chest: " + chests + " chests, " + gnawed + " gnawed blocks");
         helper.assertTrue(crusts > 0, "crust over hollows");
+        helper.succeed();
+    }
+
+    /** Clutches of Budding Void Crystal: none at the Threshold, more the deeper in, each one already grown. */
+    @HexTest(maxTicks = 1200)
+    public static void theVoidGrowsClutchesOfBuddingCrystal(GameTestHelper helper) {
+        VoidShapes shapes = new VoidShapes(20261031L);
+        int limit = 400;
+        java.util.Map<VoidZones.Zone, int[]> seen = new java.util.EnumMap<>(VoidZones.Zone.class);
+        for (VoidZones.Zone zone : VoidZones.Zone.values()) {
+            seen.put(zone, new int[3]);
+        }
+        for (int cx = -192; cx < 192; cx += 3) {
+            for (int cz = -192; cz < 192; cz += 3) {
+                int[] counts = seen.get(VoidZones.zone((cx << 4) + 8, (cz << 4) + 8));
+                if (counts[0] >= limit) {
+                    continue;
+                }
+                counts[0]++;
+                for (BlockState state : VoidChunkGenerator.chunkStates(shapes, cx, cz)) {
+                    counts[1] += state.is(ModBlocks.BUDDING_VOID_CRYSTAL.get()) ? 1 : 0;
+                    counts[2] += state.is(ModBlocks.SMALL_VOID_CRYSTAL_BUD.get()) || state.is(ModBlocks.MEDIUM_VOID_CRYSTAL_BUD.get())
+                            || state.is(ModBlocks.LARGE_VOID_CRYSTAL_BUD.get()) ? 1 : 0;
+                }
+            }
+        }
+        StringBuilder report = new StringBuilder();
+        seen.forEach((zone, counts) -> report.append(' ').append(zone.id()).append(' ').append(counts[0]).append('/').append(counts[1])
+                .append('/').append(counts[2]));
+        int[] threshold = seen.get(VoidZones.Zone.THRESHOLD);
+        int[] reach = seen.get(VoidZones.Zone.REACH);
+        int[] drift = seen.get(VoidZones.Zone.DRIFT);
+        helper.assertTrue(threshold[0] > 50 && threshold[1] == 0, "no clutch at the Threshold:" + report);
+        helper.assertTrue(reach[1] > 0 && reach[2] > 0, "clutches with buds in the Reach:" + report);
+        helper.assertTrue(drift[1] / (float) drift[0] > reach[1] / (float) reach[0], "more of them deeper in:" + report);
+        helper.succeed();
+    }
+
+    /** Each open side grows through the four stages and stops; rock stays rock, water is kept, nothing moves it or drops it. */
+    @HexTest
+    public static void aBuddingVoidCrystalGrowsItsSidesIntoClusters(GameTestHelper helper) {
+        var level = helper.getLevel();
+        BlockPos pos = helper.absolutePos(new BlockPos(2, 2, 2));
+        BlockState budding = ModBlocks.BUDDING_VOID_CRYSTAL.get().defaultBlockState();
+        level.setBlock(pos, budding, 3);
+        for (Direction side : Direction.values()) {
+            level.setBlock(pos.relative(side), Blocks.AIR.defaultBlockState(), 3);
+        }
+        BlockPos top = pos.above();
+        for (var stage : java.util.List.of(ModBlocks.SMALL_VOID_CRYSTAL_BUD, ModBlocks.MEDIUM_VOID_CRYSTAL_BUD, ModBlocks.LARGE_VOID_CRYSTAL_BUD,
+                ModBlocks.VOID_CRYSTAL_CLUSTER)) {
+            helper.assertTrue(BuddingVoidCrystalBlock.grow(level, pos, Direction.UP), "a stage grows into " + stage.getId());
+            BlockState grown = level.getBlockState(top);
+            helper.assertTrue(grown.is(stage.get()) && grown.getValue(AmethystClusterBlock.FACING) == Direction.UP, "stands on its side: " + grown);
+        }
+        helper.assertFalse(BuddingVoidCrystalBlock.grow(level, pos, Direction.UP), "a full cluster grows no further");
+        level.setBlock(pos.north(), Blocks.STONE.defaultBlockState(), 3);
+        helper.assertFalse(BuddingVoidCrystalBlock.grow(level, pos, Direction.NORTH), "no bud pushes into rock");
+        level.setBlock(pos.east(), Blocks.WATER.defaultBlockState(), 3);
+        helper.assertTrue(BuddingVoidCrystalBlock.grow(level, pos, Direction.EAST), "a bud grows in water");
+        helper.assertTrue(level.getBlockState(pos.east()).getValue(AmethystClusterBlock.WATERLOGGED), "and keeps the water");
+        helper.assertTrue(budding.getPistonPushReaction() == net.minecraft.world.level.material.PushReaction.IMMOVEABLE, "no piston moves it");
+        helper.assertTrue(budding.is(com.pockyl.hextale.registry.ModTags.VOID_IMMUNE), "carrying mods leave it alone");
+        helper.assertTrue(net.minecraft.world.level.block.Block.getDrops(budding, level, pos, null).isEmpty(), "it drops nothing");
         helper.succeed();
     }
 

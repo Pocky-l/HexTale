@@ -268,6 +268,7 @@ chances. The modifiers check the queried loot table, so per-player chests (Lootr
 | `voidlingsSpawn` | true | Breaches send out voidlings (wild and fed). |
 | `breaches` | true | Land worn all the way thin tears open into a breach by itself. Off = the only breaches are those a Breach Heart unfolds (the way into the Void then starts with the Crystal Purifier). |
 | `breachCooldownMinutes` | 20 | Rest after a breach is gone before a new one may open within 1000 blocks. |
+| `buddingVoidCrystalGrowth` | 0.1 | Chance that a random tick of a Budding Void Crystal grows one of its sides by a stage (0-1; budding amethyst: 0.2). |
 | `minOrbs` / `maxOrbs` | 1 / 1 | Unstable Hextech per amethyst block a lightning wave shatters. |
 | `chainRadius` / `maxChain` | 5 / 125 | How far and how much amethyst one strike runs through. |
 
@@ -415,6 +416,20 @@ HexTale overrides vanilla rider methods on cats, parrots and horses by mixin (`g
 
 With [Curios](https://www.curseforge.com/minecraft/mc-mods/curios) installed, the Researcher's Goggles also work from
 a Curios head slot (item tag `curios:head`) and show on the head, over a helmet too.
+
+## ProjectE
+
+On Minecraft 1.21.1. `data/hextale/pe_custom_conversions/hextale.json` sets the base EMC of what the world gives; a pack
+overrides it with its own `pe_custom_conversions` file. Recipes of `hextale:hex_crafting`, `infusion`, `alloying`,
+`crucible`, `tempering` and `awakening` count too. Only items are priced: essence and workbench charge are left out,
+because essence boils out of cheap items and a price on it would turn them into EMC. Only `hextale` results are mapped,
+so a Crucible transmutation never moves a vanilla value.
+
+## Hostile Neural Networks
+
+On Minecraft 1.21.1 and 26.1.2: data models for the Void Mite, Voidling, Rib Crawler, Pit Maw and Seer, in
+`data/hextale/data_models` (1.21.1) and `data/hextale/hostilenetworks/data_models` (26.1.2). A pack replaces a file of
+the same path to change its cost or drops.
 
 ## Stable ids
 

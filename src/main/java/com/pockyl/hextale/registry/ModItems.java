@@ -222,6 +222,10 @@ public final class ModItems {
     public static final DeferredItem<Item> RADIANT_ALLOY_INGOT = ITEMS.registerItem("radiant_alloy_ingot",
             properties -> new Item(properties.rarity(Rarity.RARE)));
     public static final DeferredItem<BlockItem> VOID_CRYSTAL_CLUSTER = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_CRYSTAL_CLUSTER);
+    public static final DeferredItem<BlockItem> LARGE_VOID_CRYSTAL_BUD = ITEMS.registerSimpleBlockItem(ModBlocks.LARGE_VOID_CRYSTAL_BUD);
+    public static final DeferredItem<BlockItem> MEDIUM_VOID_CRYSTAL_BUD = ITEMS.registerSimpleBlockItem(ModBlocks.MEDIUM_VOID_CRYSTAL_BUD);
+    public static final DeferredItem<BlockItem> SMALL_VOID_CRYSTAL_BUD = ITEMS.registerSimpleBlockItem(ModBlocks.SMALL_VOID_CRYSTAL_BUD);
+    public static final DeferredItem<BlockItem> BUDDING_VOID_CRYSTAL = ITEMS.registerSimpleBlockItem(ModBlocks.BUDDING_VOID_CRYSTAL);
     /** Level 4 gem, raw: broken off a cluster round a held breach. Too hungry to use as it is. */
     public static final DeferredItem<Item> VOID_CRYSTAL = ITEMS.registerItem("void_crystal", properties -> new Item(properties.rarity(Rarity.RARE)));
     /** A Void Crystal held in a nullstone setting: the stone drinks what it pulls, so it can go into a craft. */

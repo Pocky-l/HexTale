@@ -294,6 +294,10 @@ public final class Hextale {
         output.accept(ModItems.HOLLOW_CRYSTAL);
         output.accept(ModItems.VOID_PEARL);
         output.accept(ModItems.SEERS_EYE);
+        output.accept(ModItems.BUDDING_VOID_CRYSTAL);
+        output.accept(ModItems.SMALL_VOID_CRYSTAL_BUD);
+        output.accept(ModItems.MEDIUM_VOID_CRYSTAL_BUD);
+        output.accept(ModItems.LARGE_VOID_CRYSTAL_BUD);
         output.accept(ModItems.VOID_CRYSTAL_CLUSTER);
         output.accept(ModItems.VOID_CRYSTAL);
         output.accept(ModItems.SEALED_VOID_CRYSTAL);
