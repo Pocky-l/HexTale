@@ -1,4 +1,5 @@
 {
+  "gui_light": "front",
   "textures": {
     "particle": "hextale:item/strike_gauntlet",
     "sheet": "hextale:item/strike_gauntlet"

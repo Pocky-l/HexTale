@@ -8,6 +8,24 @@
         "class": "com/pockyl/hextale/client/render/StrikeGauntletPose",
         "field": "CHARGE"
       }
+    },
+    {
+      "enum": "net/minecraft/client/model/HumanoidModel$ArmPose",
+      "name": "HEXTALE_STRIKE_GAUNTLET_DASH",
+      "constructor": "(ZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
+      "parameters": {
+        "class": "com/pockyl/hextale/client/render/StrikeGauntletPose",
+        "field": "DASH"
+      }
+    },
+    {
+      "enum": "net/minecraft/client/model/HumanoidModel$ArmPose",
+      "name": "HEXTALE_ZIPLINE_HANG",
+      "constructor": "(ZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
+      "parameters": {
+        "class": "com/pockyl/hextale/client/render/ZiplinePose",
+        "field": "HANG"
+      }
     }
   ]
 }

@@ -1,0 +1,24 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:budding_void_crystal",
+  "parents": [
+    "void_crystal"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "void_crystal_cut"
+  },
+  "display": {
+    "kind": "scheme",
+    "ingredients": [
+      "hextale:small_void_crystal_bud",
+      "hextale:budding_void_crystal"
+    ],
+    "result": "hextale:void_crystal_cluster"
+  },
+  "pos": [
+    560,
+    860
+  ]
+}

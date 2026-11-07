@@ -1,0 +1,242 @@
+{
+  "gui_light": "front",
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/valve_wheel",
+    "sheet": "hextale:block/valve_wheel"
+  },
+  "elements": [
+    {
+      "name": "iron_flange",
+      "from": [
+        4,
+        4,
+        15
+      ],
+      "to": [
+        12,
+        12,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            2.25,
+            0,
+            2.5,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            2.75,
+            0,
+            3,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            2.25,
+            2,
+            2.5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            2.25,
+            2.25,
+            4.25,
+            2.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "copper_stub",
+      "from": [
+        6,
+        6,
+        12
+      ],
+      "to": [
+        10,
+        10,
+        15
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            4.5,
+            2.5,
+            5.25,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            5.5,
+            2.5,
+            6.25,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            4.5,
+            3.75,
+            5.5,
+            4.5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            5.75,
+            3.75,
+            6.75,
+            4.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "iron_gland",
+      "from": [
+        5,
+        5,
+        11
+      ],
+      "to": [
+        11,
+        11,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            10.5,
+            0,
+            12,
+            1.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            12.25,
+            0,
+            12.5,
+            1.5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            12.75,
+            0,
+            14.25,
+            1.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            14.5,
+            0,
+            14.75,
+            1.5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            10.5,
+            1.75,
+            12,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            12.25,
+            1.75,
+            13.75,
+            2
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "copper_spindle",
+      "from": [
+        7,
+        7,
+        8
+      ],
+      "to": [
+        9,
+        9,
+        11
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            0,
+            2.75,
+            0.75,
+            3.25
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            1,
+            2.75,
+            1.75,
+            3.25
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            3.5,
+            0.5,
+            4.25
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            0.75,
+            3.5,
+            1.25,
+            4.25
+          ],
+          "texture": "#sheet"
+        }
+      }
+    }
+  ],
+  "render_type": "minecraft:cutout"
+}

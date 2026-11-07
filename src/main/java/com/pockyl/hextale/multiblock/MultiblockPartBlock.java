@@ -43,7 +43,7 @@ public class MultiblockPartBlock extends BaseEntityBlock implements EssenceMachi
             if (multiblock != null) {
                 MultiblockPattern.Placement placement = core.formed().placement();
                 BlockPos offset = pos.subtract(part.controller()).rotate(Multiblocks.inverse(placement.rotation()));
-                return multiblock.partShape(offset);
+                return multiblock.partShape(offset, placement.rotation());
             }
         }
         return Shapes.block();

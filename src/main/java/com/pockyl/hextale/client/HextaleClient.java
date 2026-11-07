@@ -104,6 +104,8 @@ public final class HextaleClient {
         });
         modBus.addListener(GogglesView::registerLayer);
         modBus.addListener(TankGauge::registerLayer);
+        ChainAim.register(modBus);
+        ZiplineClient.register(modBus);
         com.pockyl.hextale.compat.curios.CuriosClientCompat.register(modBus);
         modBus.addListener(com.pockyl.hextale.client.render.SkypackLayer::addLayers);
         com.pockyl.hextale.chem.ChemGear.clientTank = () -> {
@@ -123,6 +125,8 @@ public final class HextaleClient {
                 com.pockyl.hextale.client.render.PitMawModel.LAYER, com.pockyl.hextale.client.render.PitMawModel::createBodyLayer));
         modBus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> event.registerLayerDefinition(
                 com.pockyl.hextale.client.render.SeerModel.LAYER, com.pockyl.hextale.client.render.SeerModel::createBodyLayer));
+        modBus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> event.registerLayerDefinition(
+                com.pockyl.hextale.client.render.ProsectorModel.LAYER, com.pockyl.hextale.client.render.ProsectorModel::createBodyLayer));
         modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::registerLayers);
         modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::bake);
         modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::registerExtensions);
@@ -144,6 +148,9 @@ public final class HextaleClient {
         com.pockyl.hextale.client.render.StrikeGauntletClient.register();
         // 1.21.1: the port's special item models read the use time off the entity being drawn.
         com.pockyl.hextale.port.client.SpecialItemModels.registerRenderTracking();
+        com.pockyl.hextale.client.render.BiterBlastFx.register();
+        com.pockyl.hextale.client.render.ProsectorFx.register();
+        com.pockyl.hextale.client.ProsectorSounds.register();
         modBus.addListener(com.pockyl.hextale.client.render.BulwarkHeartLayer::addLayers);
         modBus.addListener((net.neoforged.neoforge.client.event.EntityRenderersEvent.AddLayers event) -> com.pockyl.hextale.client.render.BulwarkAuraLayer.addLayers(event));
         com.pockyl.hextale.port.client.SpecialItemModels.register(
@@ -153,12 +160,16 @@ public final class HextaleClient {
                 com.pockyl.hextale.client.render.ResearcherClothesItemRenderer.ID,
                 com.pockyl.hextale.client.render.ResearcherClothesItemRenderer.Unbaked.MAP_CODEC);
         SkypackClient.register();
+        ChemGearClient.register();
+        ChemJetsClient.register(modBus);
+        ShimmerMutationClient.register(modBus);
         com.pockyl.hextale.client.screen.book.RuneCircleDiorama.register();
         com.pockyl.hextale.client.screen.book.CircleDiorama.register();
         com.pockyl.hextale.client.screen.MultiblockDiorama.register();
         com.pockyl.hextale.port.client.SubmitCustomGeometryEvent.register();
 
         modBus.addListener(com.pockyl.hextale.client.render.VoidPipelines::registerShaders);
+        modBus.addListener(com.pockyl.hextale.client.render.VaultSpacePipeline::registerShaders);
         modBus.addListener((net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) -> event.enqueueWork(IrisCompat::init));
         NeoForge.EVENT_BUS.addListener(com.pockyl.hextale.client.render.RuneFx::submit);
         NeoForge.EVENT_BUS.addListener(com.pockyl.hextale.client.render.EssenceFx::submit);
@@ -205,6 +216,13 @@ public final class HextaleClient {
             if (stack.getItem() instanceof net.minecraft.world.item.BlockItem wisp && wisp.getBlock() instanceof com.pockyl.hextale.block.HexWispBlock) {
                 event.getToolTip().add(Component.translatable("block.hextale.hex_wisp.hint").withStyle(ChatFormatting.GRAY));
             }
+            if (stack.is(ModItems.CHAIN_LAUNCHER.get())) {
+                event.getToolTip().add(Component.translatable("item.hextale.chain_launcher.hint").withStyle(ChatFormatting.GRAY));
+            } else if (stack.is(ModItems.STORAGE_CUBE.get())) {
+                event.getToolTip().add(Component.translatable("block.hextale.storage_cube.hint").withStyle(ChatFormatting.GRAY));
+            } else if (stack.is(ModItems.HEX_TERMINAL.get())) {
+                event.getToolTip().add(Component.translatable("block.hextale.hex_terminal.hint").withStyle(ChatFormatting.GRAY));
+            }
             if (stack.is(ModItems.HEX_SAWMILL.get())) {
                 event.getToolTip().add(Component.translatable("block.hextale.hex_sawmill.hint").withStyle(ChatFormatting.GRAY));
             }
@@ -228,6 +246,9 @@ public final class HextaleClient {
             }
             if (stack.is(ModItems.GREEDY_FUNNEL.get())) {
                 event.getToolTip().add(Component.translatable("block.hextale.greedy_funnel.hint").withStyle(ChatFormatting.GRAY));
+            }
+            if (stack.is(ModItems.HERDKEEPER.get())) {
+                event.getToolTip().add(Component.translatable("block.hextale.herdkeeper.hint").withStyle(ChatFormatting.GRAY));
             }
             if (stack.is(ModItems.WHIRL_REAPER.get())) {
                 event.getToolTip().add(Component.translatable("block.hextale.whirl_reaper.hint").withStyle(ChatFormatting.GRAY));
@@ -261,6 +282,7 @@ public final class HextaleClient {
             com.pockyl.hextale.client.render.EssenceFx.forget();
             com.pockyl.hextale.client.render.RuneEffects.forget();
             com.pockyl.hextale.client.render.WeaponFx.forget();
+            com.pockyl.hextale.runework.StrikeDash.forget();
             com.pockyl.hextale.entity.GrappleHook.forget(true);
             ClientPylons.forget();
         });
@@ -293,6 +315,7 @@ public final class HextaleClient {
         event.register(ModMenus.LAPIDARY.get(), com.pockyl.hextale.client.screen.machine.LapidaryScreen::new);
         event.register(ModMenus.LAB_BENCH.get(), com.pockyl.hextale.client.screen.machine.LabBenchScreen::new);
         event.register(ModMenus.HEX_WORKBENCH.get(), com.pockyl.hextale.client.screen.machine.HexWorkbenchScreen::new);
+        event.register(ModMenus.VAULT.get(), com.pockyl.hextale.client.screen.VaultScreen::new);
         event.register(ModMenus.HEX_FURNACE.get(), com.pockyl.hextale.client.screen.machine.HexFurnaceScreen::new);
         event.register(ModMenus.HEX_FOUNDRY.get(), com.pockyl.hextale.client.screen.machine.HexFoundryScreen::new);
         event.register(ModMenus.ITEM_FILTER.get(), com.pockyl.hextale.client.screen.ItemFilterScreen::new);
@@ -304,10 +327,14 @@ public final class HextaleClient {
                 net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.DUST_CHARGE.get(),
                 com.pockyl.hextale.client.render.DustChargeRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.BITER_GRENADE.get(),
+                com.pockyl.hextale.client.render.BiterGrenadeRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.THROWN_DAGGER.get(),
                 com.pockyl.hextale.client.render.ThrownDaggerRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.THROWN_CHEM_VIAL.get(),
                 net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.ZIPLINE_TROLLEY.get(),
+                com.pockyl.hextale.client.render.ZiplineTrolleyRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.THE_VOID.get(),
                 com.pockyl.hextale.client.render.TheVoidRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.VOID_MITE.get(),
@@ -320,6 +347,18 @@ public final class HextaleClient {
                 com.pockyl.hextale.client.render.PitMawRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.SEER.get(),
                 com.pockyl.hextale.client.render.SeerRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.PROSECTOR.get(),
+                com.pockyl.hextale.client.render.ProsectorRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.SPECIMEN.get(),
+                com.pockyl.hextale.client.render.SpecimenRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.PROOF.get(),
+                com.pockyl.hextale.client.render.ProofRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.HEX_PLUG.get(),
+                com.pockyl.hextale.client.render.ProsectorProps.Plug::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.QUILL.get(),
+                com.pockyl.hextale.client.render.ProsectorProps.QuillLook::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.CYST.get(),
+                context -> new net.minecraft.client.renderer.entity.ThrownItemRenderer<>(context, 1.8F, true));
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.GRAPPLE_HOOK.get(),
                 com.pockyl.hextale.client.render.GrappleHookRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.BREACH_CAMERA.get(),
@@ -337,15 +376,21 @@ public final class HextaleClient {
         event.registerBlockEntityRenderer(ModBlockEntities.LAPIDARY.get(), com.pockyl.hextale.client.render.LapidaryRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.WHIRL_REAPER.get(), com.pockyl.hextale.client.render.WhirlReaperRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_SAWMILL.get(), com.pockyl.hextale.client.render.HexSawmillRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.HERDKEEPER.get(), com.pockyl.hextale.client.render.HerdkeeperRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_FOUNDRY.get(), com.pockyl.hextale.client.render.HexFoundryRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CHEM_VAT.get(), com.pockyl.hextale.client.render.ChemVatRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CHEM_TANK.get(), com.pockyl.hextale.client.render.ChemTankRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.CHEM_CARBOY.get(), com.pockyl.hextale.client.render.ChemCarboyRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.VIAL_RACK.get(), com.pockyl.hextale.client.render.VialRackRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.VALVE_WHEEL.get(), com.pockyl.hextale.client.render.ValveWheelRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.CHAIN_ANCHOR.get(), com.pockyl.hextale.client.render.ChainAnchorRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.GREEDY_FUNNEL.get(), com.pockyl.hextale.client.render.GreedyFunnelRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.ARC_SPIRE.get(), com.pockyl.hextale.client.render.ArcSpireRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEXTECH_PURIFIER.get(), com.pockyl.hextale.client.render.HextechPurifierRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.VOID_ANCHOR.get(), com.pockyl.hextale.client.render.VoidAnchorRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.XP_CONDENSER.get(), com.pockyl.hextale.client.render.XpCondenserRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_WORKBENCH.get(), com.pockyl.hextale.client.render.HexWorkbenchRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.HEX_VAULT.get(), com.pockyl.hextale.client.render.HexVaultRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.AXOLOTL_TANK.get(), com.pockyl.hextale.client.render.AxolotlTankRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CHEM_STILL.get(), com.pockyl.hextale.client.render.ChemStillRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CHEM_BOILER.get(), com.pockyl.hextale.client.render.ChemBoilerRenderer::new);

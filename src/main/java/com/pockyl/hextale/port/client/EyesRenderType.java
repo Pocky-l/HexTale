@@ -12,7 +12,7 @@ import java.util.function.Function;
  * 26.x's eyes layer: full bright and painted over the body with the texture's alpha (its pipeline blends translucent).
  * 1.21.1's {@link RenderType#eyes} adds its colour instead, so a glow texture made for 26.x came out overbright.
  *
- * <p>port-of: net.minecraft.client.renderer.RenderPipelines#EYES
+ * <p>26.x: {@code RenderPipelines#EYES}.
  */
 final class EyesRenderType extends RenderType {
     private static final Function<ResourceLocation, RenderType> EYES = Util.memoize(texture -> create("hextale_eyes",

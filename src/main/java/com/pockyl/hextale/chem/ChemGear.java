@@ -196,10 +196,11 @@ public final class ChemGear {
         setModifier(player, Attributes.KNOCKBACK_RESISTANCE, KNOCKBACK, armour[2]);
     }
 
-    /** Every hit taken in chemtech armour spends one action of fuel. */
+    /** Every hit taken in chemtech armour spends one action of fuel; the boots soften a fall on that same action. */
     private static void onIncomingDamage(LivingIncomingDamageEvent event) {
         LivingEntity entity = event.getEntity();
         if (!entity.level().isClientSide() && event.getAmount() > 0 && wearsArmour(entity)) {
+            PneumaticBoots.soften(event);
             spend(entity, 1);
         }
     }

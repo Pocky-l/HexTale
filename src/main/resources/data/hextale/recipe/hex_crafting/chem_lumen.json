@@ -1,0 +1,24 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    " P ",
+    "BGB",
+    " P "
+  ],
+  "key": {
+    "P": {
+      "item": "hextale:rusted_plating"
+    },
+    "B": {
+      "item": "minecraft:iron_bars"
+    },
+    "G": {
+      "item": "hextale:chem_glass"
+    }
+  },
+  "result": {
+    "id": "hextale:chem_lumen",
+    "count": 2
+  },
+  "charge": 1
+}

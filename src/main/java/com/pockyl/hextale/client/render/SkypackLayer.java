@@ -118,32 +118,7 @@ public class SkypackLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<
         float fade = Math.min(1, worn.boostLeft() / (float) FADE_TICKS);
         float cough = worn.low() && Mth.sin(t * 0.9F) > 0.4F ? 0.45F : 1;
         float strength = fade * cough;
-        float flicker = 0.92F + 0.08F * Mth.sin(t * 2.3F) * Mth.sin(t * 1.1F + 1);
-        float length = (0.75F + Mth.clamp(worn.speed() / 2.0F, 0, 1) * 0.55F) * flicker * (0.35F + 0.65F * strength);
-        int frame = Mth.floor(t * 0.7F) % JET_FRAMES;
-        Quaternionf camera = facing(poseStack);
-
-        // The plume: three planes crossed on the jet's axis, slowly turning; a wide blue body, then a narrower white core.
-        collector.submitCustomGeometry(poseStack, HexGlow.textured(JET), (pose, consumer) -> {
-            for (int k = 0; k < 3; k++) {
-                float angle = k * Mth.PI / 3 + t * 0.05F;
-                plume(consumer, pose, angle, 0.62F, length, frame, FLAME, 0.85F * strength);
-                plume(consumer, pose, angle, 0.3F, length * 0.7F, (frame + 3) % JET_FRAMES, CORE, 0.7F * strength);
-            }
-        });
-        // A hot glow sitting in the nozzle's mouth.
-        HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.42F + 0.04F * Mth.sin(t * 3.1F), FLAME, 0.75F * strength);
-        HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.18F, CORE, 0.9F * strength);
-        // Glints carried down the flame, shrinking as they go.
-        List<float[]> glints = new ArrayList<>();
-        for (int g = 0; g < GLINTS; g++) {
-            float along = frac(t * 0.07F + g / (float) GLINTS + index * 0.13F);
-            float spin = g * 2.4F + t * 0.2F;
-            float wide = 0.05F * along;
-            glints.add(HexFx.quad(Mth.cos(spin) * wide, -along * length, Mth.sin(spin) * wide, 0.05F * (1 - along * 0.7F),
-                    (g + frame) % HexFx.GLINT_FRAMES, spin, strength * (1 - along), CORE));
-        }
-        HexFx.sheet(poseStack, collector, camera, HexFx.GLINT, HexFx.GLINT_FRAMES, glints);
+        flame(poseStack, collector, t, strength, 0.75F + Mth.clamp(worn.speed() / 2.0F, 0, 1) * 0.55F, index, FLAME, CORE);
         // The ignition: a ring of light bursting out of the nozzle across the jet.
         int age = SkypackFlight.BOOST_TICKS - worn.boostLeft();
         if (age < RING_TICKS) {
@@ -154,6 +129,39 @@ public class SkypackLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<
             HexFx.sigilRing(poseStack, collector, 0.08F + u * 0.32F, 6, FLAME, 1 - u);
             poseStack.popPose();
         }
+    }
+
+    /**
+     * A jet's flame from the current pose down the model, in two colours; {@code t} = time with the nozzle's offset, also
+     * used by the Chem Jet Tank's nozzles. Plume, hot glow at the mouth, glints carried down.
+     */
+    static void flame(PoseStack poseStack, SubmitNodeCollector collector, float t, float strength, float reach, int index, int flame, int core) {
+        float flicker = 0.92F + 0.08F * Mth.sin(t * 2.3F) * Mth.sin(t * 1.1F + 1);
+        float length = reach * flicker * (0.35F + 0.65F * strength);
+        int frame = Mth.floor(t * 0.7F) % JET_FRAMES;
+        Quaternionf camera = facing(poseStack);
+
+        // The plume: three planes crossed on the jet's axis, slowly turning; a wide blue body, then a narrower white core.
+        collector.submitCustomGeometry(poseStack, HexGlow.textured(JET), (pose, consumer) -> {
+            for (int k = 0; k < 3; k++) {
+                float angle = k * Mth.PI / 3 + t * 0.05F;
+                plume(consumer, pose, angle, 0.62F, length, frame, flame, 0.85F * strength);
+                plume(consumer, pose, angle, 0.3F, length * 0.7F, (frame + 3) % JET_FRAMES, core, 0.7F * strength);
+            }
+        });
+        // A hot glow sitting in the nozzle's mouth.
+        HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.42F + 0.04F * Mth.sin(t * 3.1F), flame, 0.75F * strength);
+        HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.18F, core, 0.9F * strength);
+        // Glints carried down the flame, shrinking as they go.
+        List<float[]> glints = new ArrayList<>();
+        for (int g = 0; g < GLINTS; g++) {
+            float along = frac(t * 0.07F + g / (float) GLINTS + index * 0.13F);
+            float spin = g * 2.4F + t * 0.2F;
+            float wide = 0.05F * along;
+            glints.add(HexFx.quad(Mth.cos(spin) * wide, -along * length, Mth.sin(spin) * wide, 0.05F * (1 - along * 0.7F),
+                    (g + frame) % HexFx.GLINT_FRAMES, spin, strength * (1 - along), core));
+        }
+        HexFx.sheet(poseStack, collector, camera, HexFx.GLINT, HexFx.GLINT_FRAMES, glints);
     }
 
     /** One plane of the plume through the jet's axis at {@code angle}: the sprite's top at the nozzle, its tip below. */

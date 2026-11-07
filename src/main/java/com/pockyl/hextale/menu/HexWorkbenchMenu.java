@@ -63,11 +63,11 @@ public class HexWorkbenchMenu extends AbstractContainerMenu {
     private int seenRevision = -1;
 
     public HexWorkbenchMenu(int containerId, Inventory inventory, RegistryFriendlyByteBuf buf) {
-        this(containerId, inventory, new SimpleContainer(HexWorkbenchBlockEntity.SIZE), new SimpleContainerData(3), buf.readBlockPos());
+        this(containerId, inventory, new SimpleContainer(HexWorkbenchBlockEntity.SIZE), new SimpleContainerData(4), buf.readBlockPos());
     }
 
     public HexWorkbenchMenu(int containerId, Inventory inventory, HexWorkbenchBlockEntity bench, BlockPos pos) {
-        this(containerId, inventory, bench, new SimpleContainerData(3), pos);
+        this(containerId, inventory, bench, new SimpleContainerData(4), pos);
     }
 
     private HexWorkbenchMenu(int containerId, Inventory inventory, Container bench, ContainerData data, BlockPos pos) {
@@ -125,6 +125,11 @@ public class HexWorkbenchMenu extends AbstractContainerMenu {
         return data.get(0);
     }
 
+    /** The charge the bench holds at most. */
+    public int capacity() {
+        return Math.max(1, data.get(3));
+    }
+
     public int cost() {
         return data.get(1);
     }
@@ -147,6 +152,7 @@ public class HexWorkbenchMenu extends AbstractContainerMenu {
     /** Finds the recipe in the grid and shows its result if this researcher may make it and the bench can pay. */
     private void refresh(HexWorkbenchBlockEntity entity) {
         data.set(0, entity.charge());
+        data.set(3, entity.capacity());
         Map.Entry<ResourceLocation, HexCraftingRecipe> found = HexCraftingRecipe.find(entity.input().input(), false);
         ItemStack shown = ItemStack.EMPTY;
         Why why = Why.NONE;
@@ -154,7 +160,7 @@ public class HexWorkbenchMenu extends AbstractContainerMenu {
         if (found != null) {
             HexCraftingRecipe recipe = found.getValue();
             cost = recipe.charge();
-            ItemStack made = recipe.result().create();
+            ItemStack made = recipe.assemble(entity.input().input());
             if (!ResearchTopics.mayMake(player, made, Research.of(player))) {
                 why = Why.LOCKED;
             } else if (entity.chargeAvailable() < cost && !player.getAbilities().instabuild) {
@@ -193,7 +199,7 @@ public class HexWorkbenchMenu extends AbstractContainerMenu {
         Map.Entry<ResourceLocation, HexCraftingRecipe> found = HexCraftingRecipe.find(input, false);
         if (found != null) {
             int cost = found.getValue().charge();
-            return ItemStack.matches(found.getValue().result().create(), shown)
+            return ItemStack.matches(found.getValue().assemble(input), shown)
                     && (entity.chargeAvailable() >= cost || taker.getAbilities().instabuild);
         }
         RecipeHolder<CraftingRecipe> plain = plainRecipe(level, input);

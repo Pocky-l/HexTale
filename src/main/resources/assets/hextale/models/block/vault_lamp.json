@@ -1,0 +1,77 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "#vault_lamp",
+    "vault_lamp": "hextale:block/vault_lamp"
+  },
+  "elements": [
+    {
+      "name": "lamp",
+      "from": [
+        7,
+        7,
+        7
+      ],
+      "to": [
+        9,
+        9,
+        8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ],
+          "texture": "#vault_lamp",
+          "tintindex": 0
+        },
+        "east": {
+          "uv": [
+            9,
+            0,
+            10,
+            2
+          ],
+          "texture": "#vault_lamp",
+          "tintindex": 0
+        },
+        "west": {
+          "uv": [
+            11,
+            0,
+            12,
+            2
+          ],
+          "texture": "#vault_lamp",
+          "tintindex": 0
+        },
+        "up": {
+          "uv": [
+            3,
+            0,
+            5,
+            1
+          ],
+          "texture": "#vault_lamp",
+          "tintindex": 0
+        },
+        "down": {
+          "uv": [
+            6,
+            0,
+            8,
+            1
+          ],
+          "texture": "#vault_lamp",
+          "tintindex": 0
+        }
+      },
+      "neoforge_data": {
+        "block_light": 15
+      }
+    }
+  ]
+}

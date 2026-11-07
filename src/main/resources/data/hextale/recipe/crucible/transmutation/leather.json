@@ -1,0 +1,13 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:rotten_flesh"
+  },
+  "essences": {
+    "ash": 2
+  },
+  "result": {
+    "id": "minecraft:leather"
+  },
+  "research": "transmutation"
+}

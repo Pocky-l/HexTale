@@ -1,0 +1,35 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "item": "hextale:void_pearl"
+  },
+  "pedestals": [
+    {
+      "item": "hextale:hollow_crystal"
+    },
+    {
+      "item": "hextale:hollow_crystal"
+    },
+    {
+      "item": "hextale:riftmetal_ingot"
+    },
+    {
+      "item": "hextale:riftmetal_ingot"
+    },
+    {
+      "item": "hextale:void_chitin"
+    },
+    {
+      "item": "hextale:void_chitin"
+    },
+    {
+      "item": "minecraft:ender_eye"
+    }
+  ],
+  "essences": {
+    "rift": 32,
+    "shadow": 24,
+    "light": 16
+  },
+  "result": "hextale:seers_eye"
+}

@@ -1,0 +1,20 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    " S ",
+    "CSC",
+    "C C"
+  ],
+  "key": {
+    "S": {
+      "tag": "c:ingots/chem_steel"
+    },
+    "C": {
+      "tag": "c:ingots/copper"
+    }
+  },
+  "result": {
+    "id": "hextale:jet_nozzle"
+  },
+  "charge": 2
+}

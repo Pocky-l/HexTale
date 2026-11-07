@@ -37,11 +37,23 @@ public final class ModEntities {
                     .sized(0.4F, 0.4F).eyeHeight(0.13F).clientTrackingRange(4).updateInterval(20)
                     .build(id.toString()));
 
+    /** The trolley hook a player rides a Chain Launcher's line on. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.entity.ZiplineTrolley>> ZIPLINE_TROLLEY =
+            ENTITIES.register("zipline_trolley", id -> EntityType.Builder.<com.pockyl.hextale.entity.ZiplineTrolley>of(
+                            com.pockyl.hextale.entity.ZiplineTrolley::new, MobCategory.MISC).sized(0.4F, 0.4F)
+                    .clientTrackingRange(8).updateInterval(1).build(id.toString()));
+
     /** A Chem Vial thrown like a splash potion: it shatters and splashes its brew. */
     public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.entity.ThrownChemVial>> THROWN_CHEM_VIAL =
             ENTITIES.register("thrown_chem_vial", id -> EntityType.Builder.<com.pockyl.hextale.entity.ThrownChemVial>of(
                             com.pockyl.hextale.entity.ThrownChemVial::new, MobCategory.MISC).sized(0.25F, 0.25F)
                     .clientTrackingRange(4).updateInterval(10).build(id.toString()));
+
+    /** A thrown Biter Grenade: it bites the first creature it hits, rides it and bursts. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.entity.BiterGrenade>> BITER_GRENADE =
+            ENTITIES.register("biter_grenade", id -> EntityType.Builder.<com.pockyl.hextale.entity.BiterGrenade>of(
+                            com.pockyl.hextale.entity.BiterGrenade::new, MobCategory.MISC).sized(0.3F, 0.3F)
+                    .clientTrackingRange(4).updateInterval(2).build(id.toString()));
 
     /** The Void hanging in the world: a breach the depth shows through. Big and static, seen from afar. */
     public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.TheVoid>> THE_VOID =
@@ -79,6 +91,42 @@ public final class ModEntities {
                             com.pockyl.hextale.thevoid.realm.Seer::new, MobCategory.MONSTER).sized(0.8F, 0.8F)
                     .eyeHeight(0.4F).clientTrackingRange(10).build(id.toString()));
 
+    /** The Prosector, the boss of the vortex hearts. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.boss.Prosector>> PROSECTOR =
+            ENTITIES.register("prosector", id -> EntityType.Builder.<com.pockyl.hextale.thevoid.boss.Prosector>of(
+                            com.pockyl.hextale.thevoid.boss.Prosector::new, MobCategory.MONSTER).sized(3.0F, 4.5F)
+                    .eyeHeight(3.2F).clientTrackingRange(10).updateInterval(1).build(id.toString()));
+
+    /** What the Prosector wrote down: a jar on a shelf that holds a kind of damage away from it. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.boss.Specimen>> SPECIMEN =
+            ENTITIES.register("specimen", id -> EntityType.Builder.<com.pockyl.hextale.thevoid.boss.Specimen>of(
+                            com.pockyl.hextale.thevoid.boss.Specimen::new, MobCategory.MISC).sized(1.0F, 1.2F)
+                    .eyeHeight(0.6F).clientTrackingRange(10).updateInterval(2).build(id.toString()));
+
+    /** The Prosector's conclusion: a wrong-jointed copy of the player who hurt it most. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.boss.Proof>> PROOF =
+            ENTITIES.register("proof", id -> EntityType.Builder.<com.pockyl.hextale.thevoid.boss.Proof>of(
+                            com.pockyl.hextale.thevoid.boss.Proof::new, MobCategory.MONSTER).sized(0.6F, 2.1F)
+                    .eyeHeight(1.9F).clientTrackingRange(10).build(id.toString()));
+
+    /** The plug of floor Excision lifts and brings down. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.boss.HexPlug>> HEX_PLUG =
+            ENTITIES.register("hex_plug", id -> EntityType.Builder.<com.pockyl.hextale.thevoid.boss.HexPlug>of(
+                            com.pockyl.hextale.thevoid.boss.HexPlug::new, MobCategory.MISC).noSave().noSummon().sized(6.0F, 1.0F)
+                    .clientTrackingRange(10).updateInterval(1).build(id.toString()));
+
+    /** A quill of a Return Volley. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.boss.Quill>> QUILL =
+            ENTITIES.register("quill", id -> EntityType.Builder.<com.pockyl.hextale.thevoid.boss.Quill>of(
+                            com.pockyl.hextale.thevoid.boss.Quill::new, MobCategory.MISC).noSave().noSummon().sized(0.3F, 0.3F)
+                    .clientTrackingRange(8).updateInterval(1).build(id.toString()));
+
+    /** A cyst of a Returned Charge. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.boss.Cyst>> CYST =
+            ENTITIES.register("cyst", id -> EntityType.Builder.<com.pockyl.hextale.thevoid.boss.Cyst>of(
+                            com.pockyl.hextale.thevoid.boss.Cyst::new, MobCategory.MISC).noSave().noSummon().sized(0.5F, 0.5F)
+                    .clientTrackingRange(8).updateInterval(1).build(id.toString()));
+
     /** The eye a player watches a breach open through (client only, never in a level's entity list). */
     public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.BreachCamera>> BREACH_CAMERA =
             ENTITIES.register("breach_camera", id -> EntityType.Builder.<com.pockyl.hextale.thevoid.BreachCamera>of(
@@ -98,6 +146,9 @@ public final class ModEntities {
             event.put(RIB_CRAWLER.get(), com.pockyl.hextale.thevoid.realm.RibCrawler.createAttributes().build());
             event.put(PIT_MAW.get(), com.pockyl.hextale.thevoid.realm.PitMaw.createAttributes().build());
             event.put(SEER.get(), com.pockyl.hextale.thevoid.realm.Seer.createAttributes().build());
+            event.put(PROSECTOR.get(), com.pockyl.hextale.thevoid.boss.Prosector.createAttributes().build());
+            event.put(SPECIMEN.get(), com.pockyl.hextale.thevoid.boss.Specimen.createAttributes().build());
+            event.put(PROOF.get(), com.pockyl.hextale.thevoid.boss.Proof.createAttributes().build());
         });
         // In the Void its own creatures come out of the dark of their own accord (the Void's biomes list them).
         modBus.addListener((net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent event) -> {

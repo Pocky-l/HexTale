@@ -97,10 +97,10 @@ public final class TransmutationGameTests {
         helper.succeed();
     }
 
-    /** The diary step of each topic shows every one of its transmutations: a picture per pair, there and back. */
+    /** The diary step of each topic shows every one of its recipes: a picture per pair, there and back (unmaking: there). */
     @HexTest
     public static void theDiaryShowsEveryTransmutation(GameTestHelper helper) {
-        for (ResearchTopic topic : List.of(ResearchTopics.TRANSMUTATION, ResearchTopics.ADVANCED_TRANSMUTATION)) {
+        for (ResearchTopic topic : List.of(ResearchTopics.TRANSMUTATION, ResearchTopics.ADVANCED_TRANSMUTATION, ResearchTopics.UNMAKING)) {
             Quest step = Guide.server().forTopic(topic);
             helper.assertTrue(step != null, topic.id() + " has a diary step");
             helper.assertTrue(step.icon().is(ModItems.GUIDE_MARK.get()), topic.id() + " keeps its own sign on the map");

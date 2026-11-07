@@ -3,6 +3,7 @@
     {
       "id": "#c:relocation_not_supported",
       "required": false
-    }
+    },
+    "hextale:watching_eye"
   ]
 }

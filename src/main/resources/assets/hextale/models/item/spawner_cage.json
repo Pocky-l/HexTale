@@ -1,4 +1,5 @@
 {
+  "gui_light": "front",
   "textures": {
     "particle": "hextale:block/brass",
     "brass": "hextale:block/brass",

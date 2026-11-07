@@ -95,6 +95,9 @@ the water can pay wins).
 }
 ```
 
+An optional `research` names the topic that opens the recipe, when it is not the result's own: the Unmaking recipes
+(`recipe/crucible/unmaking/`) use `"research": "unmaking"`, the transmutations theirs. A catalyst has one recipe only.
+
 ### `hextale:brewing`
 
 A catalyst in water with these essences, over at least `heat` (1-5; a Chem Burner gives 5), starts a brew; `doses` =
@@ -215,6 +218,9 @@ Tuning Fork hears), `hextale:blastable` (what a Dust Charge breaks), `hextale:ac
 `hextale:blights_to_soil`, `hextale:blights_to_rock`, `hextale:void_ground`, `hextale:sorting_storage` (storage the
 Sorting Matrix fills by itself), `hextale:whirl_crops`, `hextale:whirl_gourds`, `hextale:whirl_stalks`.
 
+Items: `hextale:gas_cylinders` (the three bands). Damage types: `hextale:vault_survives` (what the item of a Hex
+Vault survives lying on the ground: fire, blasts, lightning, cactus, anvils and a few more).
+
 ## World generation
 
 | Feature | Biome tag (default: the overworld) |
@@ -263,8 +269,11 @@ chances. The modifiers check the queried loot table, so per-player chests (Lootr
 | `voidlingsSpawn` | true | Breaches send out voidlings (wild and fed). |
 | `breaches` | true | Land worn all the way thin tears open into a breach by itself. Off = the only breaches are those a Breach Heart unfolds (the way into the Void then starts with the Crystal Purifier). |
 | `breachCooldownMinutes` | 20 | Rest after a breach is gone before a new one may open within 1000 blocks. |
-| `minOrbs` / `maxOrbs` | 1 / 1 | Unstable hextech orbs per amethyst block a lightning wave shatters. |
+| `buddingVoidCrystalGrowth` | 0.1 | Chance that a random tick of a Budding Void Crystal grows one of its sides by a stage (0-1; budding amethyst: 0.2). |
+| `minOrbs` / `maxOrbs` | 1 / 1 | Unstable Hextech per amethyst block a lightning wave shatters. |
 | `chainRadius` / `maxChain` | 5 / 125 | How far and how much amethyst one strike runs through. |
+
+`hextale-prosector.toml` (server, synced to clients): every number of the Prosector, its attack table, where it fights and its reward.
 
 `hextale-client.toml`: `breachCinematic` (the camera flight when a breach opens near you).
 
@@ -295,7 +304,7 @@ Other mods' pipes, tanks and hoppers:
 |---|---|---|
 | Crucible | water in (any side) | catalysts and things to dissolve in, as if thrown in (not from below) |
 | Alembic | water in (sides) | its sided slots, as before |
-| Crystal Battery | - | crystals in |
+| Crystal Battery (retired, old worlds only) | - | crystals in |
 | Awakened Workbench | - | crystals into the socket (the grid is not exposed) |
 | Lapidary | - | crystal in from the top, disc from the sides, finished stone out from the bottom |
 | Experience Condenser | liquid experience out (the first fluid in `c:experience`, 20 mB per point) | - |
@@ -304,6 +313,10 @@ Other mods' pipes, tanks and hoppers:
 | Creative Essence Jar | every essence fluid out, endless | - |
 | Crystal Purifier, Void Anchor | - | a hextech or synthetic crystal in from the top and the sides, a clouded one out from below |
 | Chem Boiler | - (mixtures come in through brass pipes, bottles, or out of the unstickered jars around it) | - |
+| Chem Carboy | - | vials in from every side, through both halves, the bottles are lost; nothing comes out. A creative carboy takes nothing |
+| Chem Tank, Chem Jet Tank (set down) | - | fuel vials in from every side, the bottles are lost; nothing comes out |
+| Vial Rack | - | a normal inventory of 8 vials, one per place: in and out from every side |
+| Herdkeeper | - | puts produce into a container touching it; it takes life essence from jars in reach |
 | Separator, Awakened Furnace, Foundry, Research Table, Lab Bench, Pedestal, Disintegrator, ... | - | as before (sided slots) |
 
 Essence as a fluid: `hextale:essence` with the data component `hextale:essence_kind` (the essence id, e.g. `fire`);
@@ -316,6 +329,39 @@ any tank empties it back. Item storage keeps the buckets as items.
 Research still holds: hoppers and pipes never count as a researcher, so what they bring only makes what needs no
 research. The Sorting Matrix fills any storage with an item handler; it finds chests, barrels and drawers by itself
 through the block tag `hextale:sorting_storage`.
+
+### Chem Carboy
+
+One brew, 256 doses, a dose being one Chem Vial. The item and the placed block carry the data component
+`hextale:chem_carboy`, so a broken carboy keeps its brew:
+
+```json
+{"hextale:chem_carboy": {"brew": "refined_shimmer", "doses": 64}}
+```
+
+- `brew` is a brew id (see `hextale:brewing`), `doses` 0-256. A crucible beside it pours its brew in, a dose per half second.
+- Chem Burners, Stills, Vats, Pink Braziers and set-down Chem Tanks within 5 blocks draw from it. Fires never draw
+  `refined_shimmer` by themselves; a tank does.
+- A comparator reads any brew as at least 1 and only a full carboy as 15.
+- `hextale:creative_chem_carboy` takes its brew from a vial and never runs out; hoppers, pipes, pylons and crucibles pour nothing in.
+
+### Hex Vault
+
+The Hex Vault is a normal item handler (`Capabilities.Item.BLOCK`) on its own cell and on the door cells of its gate, free
+in both directions, while it stands in its finished gate. Out of it, it offers no handler at all. A Storage Terminal has no item handler.
+
+- Items are kept in the world saved data `hextale:vaults`, by vault id. The block and its item only carry the id
+  (component `hextale:vault_memory`), so `/setblock` or another mod breaking the block still drops the item.
+- An item weighs the sum of its essence points, at least 1, so changing `hextale:essences` changes how much fits; what is
+  already inside stays, a vault over its capacity only stops taking items in.
+- Capacity: 65,536 points, and 32,768 more for each Storage Cube in a closed ring, twelve cubes at most. Hoard runes add to it.
+- `hextale:vault_memory` holds `vault` (a UUID), `kinds` and `used`. A pressed crystal and a Pocket Terminal hold
+  `hextale:vault_link`: `vault` and `pos`. Runes are in `hextale:vault_runes`.
+- A take through a Storage Terminal or Pocket Terminal costs 1/8 mB of rift essence from jars nearby and a little Thinning;
+  with dry jars takes slow down to one every 3 seconds. Taking at the vault and all automation are free.
+- Refused: items holding items (`minecraft:container`, `minecraft:bundle_contents`, the item capability of other mods'
+  backpacks) and vaults that remember a store. 4,096 different entries at most; items with different data are different entries.
+- Entries of items whose mod was removed stay in the file and come back with the mod.
 
 ## Quests and advancements
 
@@ -332,10 +378,16 @@ Criteria triggers (each also takes the usual `player` condition):
 ```json
 {
   "criteria": {
-    "battery": {"trigger": "hextale:research_completed", "conditions": {"topic": "crystal_battery"}}
+    "core": {"trigger": "hextale:research_completed", "conditions": {"topic": "hexcore"}}
   }
 }
 ```
+
+Topics added with the vault and the chemtech gear: `hex_vault`, `herdkeeper`, `chain_launcher`, `biter_grenade`, `unmaking`,
+`chem_carboy`, `vial_rack`, `chem_lumen`, `chem_fittings`, `chem_jets`, `shimmer_mutation`.
+
+The topic `crystal_battery` stays valid for commands and triggers, but the block is retired: no recipe, no diary step, so
+it is only completed by `/hextale research grant` or by players who researched it before.
 
 Commands (permission level 2), e.g. for quest rewards:
 
@@ -349,6 +401,17 @@ Every vial of refined shimmer drunk adds a vein (player attachment `hextale:shim
 modifiers `hextale:shimmer_veins_health` (+2 max health per vein), `hextale:shimmer_veins_damage` (+0.5 attack damage)
 and `hextale:shimmer_veins_size` (+0.02 scale), Night Vision in the dark from 3 veins and Haste at 5. Unfed, the
 modifiers are removed and nothing else happens. A bottle of essence with at least 8 mB of light essence removes a vein.
+
+## Shimmer on animals
+
+A Shimmer Injector (component `hextale:shimmer_doses`, 0-4) doses an adult animal its user tamed. The state is the entity
+attachment `hextale:shimmer_mutation` (`kind`, `until`, `stamina`), and its gifts are transient attribute modifiers under
+`hextale:shimmer_mutation`. Wolves, horses, donkeys, mules, camels, cats and parrots take it, and it fades after 5 in-game
+days. A dose adds a little Thinning.
+
+HexTale overrides vanilla rider methods on cats, parrots and horses by mixin (`getControllingPassenger`, `tickRidden`,
+`getRiddenInput`, `getRiddenSpeed`, `updateControlFlags`, `onClimbable`, `canSitOnShoulder`, `dismountsUnderwater`), and on
+`LivingEntityRenderer.setupRotations` for the lean. Another mod doing the same to these animals may clash.
 
 ## Curios
 
@@ -373,3 +436,19 @@ the same path to change its cost or drops.
 
 `docs/released-ids.txt` lists every item and block id HexTale has released. They never disappear: a renamed id keeps
 working as an alias of its new name, so quests, recipes and worlds made for one version keep working in the next.
+
+Display names can change while ids stay: `hextale:nullstone` is Dampstone (with `polished_nullstone`, `nullstone_bricks`),
+`hextale:null_lantern` the Dampening Lantern, `hextale:hex_vault` the Hex Vault, `hextale:hex_terminal` the Storage Terminal.
+
+Ids new in the next version (they join the list when it is released):
+
+- Storage: `hex_vault`, `storage_cube`, `hex_terminal`, `pocket_terminal`, `white_gold_tiles`, `white_gold_tiles_stairs`,
+  `white_gold_tiles_slab`, `white_gold_inlay`, `white_gold_pillar`.
+- Chemtech: `chem_carboy`, `creative_chem_carboy`, `vial_rack`, `chem_lumen`, `gas_cylinder`, `gas_cylinder_rust`, `gas_cylinder_shimmer`,
+  `valve_wheel`, `rusted_catwalk`, `rusted_railing`, `hazard_plating`, `rusted_ladder`, `jet_nozzle`, `chem_jet_tank`,
+  `chem_jet_tank_chestplate`, `shimmer_injector`, `biter_grenade`, `chain_launcher`, `chain_post`, `chain_claw`.
+- Farms: `herdkeeper`.
+
+The Crystal Battery is retired and keeps its id, `hextale:crystal_battery`. New data components: `hextale:chem_carboy`,
+`hextale:vault_memory`, `hextale:vault_link`, `hextale:vault_runes`, `hextale:workbench_runes`, `hextale:workbench_charge`,
+`hextale:herdkeeper_runes`, `hextale:shimmer_doses`.

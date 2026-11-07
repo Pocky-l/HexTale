@@ -35,6 +35,10 @@ public final class Config {
             .comment("Minutes after a breach is gone (starved, folded or closed) before a new one may tear open within 1000 blocks of it.")
             .translation("hextale.configuration.breachCooldown")
             .defineInRange("breachCooldownMinutes", 20, 0, 1440);
+    public static final ModConfigSpec.DoubleValue BUDDING_VOID_CRYSTAL_GROWTH = BUILDER
+            .comment("Chance that a random tick of a Budding Void Crystal grows one of its sides by a stage (budding amethyst: 0.2).")
+            .translation("hextale.configuration.buddingVoidCrystalGrowth")
+            .defineInRange("buddingVoidCrystalGrowth", 0.1, 0.0, 1.0);
 
     public static final ModConfigSpec.BooleanValue BLIGHT_CHANGES_BLOCKS = BUILDER
             .comment("Whether blighted land changes blocks: grass and stone turn to Void soil and rock, "

@@ -15,6 +15,9 @@ import org.jspecify.annotations.Nullable;
  */
 public final class ItemResource {
     public static final ItemResource EMPTY = new ItemResource(ItemStack.EMPTY);
+    public static final com.mojang.serialization.Codec<ItemResource> CODEC = ItemStack.SINGLE_ITEM_CODEC.xmap(ItemResource::of, ItemResource::toStack);
+    public static final net.minecraft.network.codec.StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf, ItemResource> STREAM_CODEC =
+            ItemStack.OPTIONAL_STREAM_CODEC.map(ItemResource::of, ItemResource::toStack);
 
     private final ItemStack prototype;
 
@@ -28,6 +31,10 @@ public final class ItemResource {
 
     public static ItemResource of(ItemLike item) {
         return of(new ItemStack(item));
+    }
+
+    public net.minecraft.core.component.DataComponentMap getComponents() {
+        return prototype.getComponents();
     }
 
     public ItemStack toStack(int count) {

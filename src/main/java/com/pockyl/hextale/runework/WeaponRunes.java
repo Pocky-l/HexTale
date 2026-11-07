@@ -191,6 +191,33 @@ public final class WeaponRunes {
         return NO_GROUND;
     }
 
+    /** The ground round a heavy blow heaves out in rings, the same way a Shockwave heaves it. Nothing over a gap. */
+    public static void quake(ServerLevel level, Vec3 centre, int radius, int color, float force) {
+        int cx = Mth.floor(centre.x);
+        int cz = Mth.floor(centre.z);
+        int y = ground(level, cx, cz, Mth.floor(centre.y - 0.2));
+        if (y == NO_GROUND) {
+            return;
+        }
+        List<BlockPos> blocks = new ArrayList<>();
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dz = -radius; dz <= radius; dz++) {
+                int gy = dx * dx + dz * dz > radius * radius ? NO_GROUND : ground(level, cx + dx, cz + dz, y);
+                if (gy != NO_GROUND) {
+                    blocks.add(new BlockPos(cx + dx, gy, cz + dz));
+                }
+            }
+        }
+        // The middle first: the crack of light runs along the first block of every ring.
+        blocks.sort(java.util.Comparator.comparingInt(pos -> (pos.getX() - cx) * (pos.getX() - cx) + (pos.getZ() - cz) * (pos.getZ() - cz)));
+        List<Integer> steps = new ArrayList<>();
+        for (BlockPos pos : blocks) {
+            steps.add((int) Math.round(Math.sqrt((pos.getX() - cx) * (pos.getX() - cx) + (pos.getZ() - cz) * (pos.getZ() - cz))));
+        }
+        Vec3 at = new Vec3(centre.x, y + 1, centre.z);
+        WeaponFxPayload.send(level, WeaponFxPayload.Kind.WAVE, at, at, blocks, steps, color, force);
+    }
+
     private static void tickWave(ServerLevel level, Wave wave, Player player) {
         int step = wave.age;
         Vec3 c = wave.steps.get(step);

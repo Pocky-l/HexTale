@@ -1,12 +1,14 @@
 package com.pockyl.hextale.block;
 
 import com.pockyl.hextale.chem.Brew;
+import com.pockyl.hextale.chem.CarboyReach;
 import com.pockyl.hextale.chem.ChemFuel;
 import com.pockyl.hextale.chem.ChemTank;
 import com.pockyl.hextale.chem.ChemVialItem;
 import com.pockyl.hextale.chem.TankFuel;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModDataComponents;
+import com.pockyl.hextale.transport.ItemIntake;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -15,34 +17,86 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import com.pockyl.hextale.port.ValueInput;
 import com.pockyl.hextale.port.ValueOutput;
+import net.minecraft.world.phys.Vec3;
+import com.pockyl.hextale.port.ItemResource;
+
+import java.util.List;
+import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 
 /**
- * A placed Chem Tank's fuel ({@link TankFuel}). Hoppers pour fuel vials in through one slot that empties at once. The fuel
- * goes with the tank when it is broken (item component {@code hextale:chem_tank}). The client keeps the time of the last
- * pump for the hose animation.
+ * A placed Chem Tank's fuel ({@link TankFuel}). Hoppers pour fuel vials in through one slot that empties at once, pylons
+ * and other mods' pipes through {@link #intake()}. The fuel goes with the tank when it is broken (item component
+ * {@code hextale:chem_tank}). The client keeps the time of the last pump for the hose animation.
  */
 public class ChemTankBlockEntity extends BlockEntity implements WorldlyContainer {
     private static final int[] SLOTS = {0};
     private TankFuel contents = TankFuel.EMPTY;
     private long pumpedAt = -1000;
     private int pumpedTo = -1;
+    private final CarboyReach.Look look = new CarboyReach.Look();
+    /** Never a wrapper of the slot below: it keeps nothing, so a pylon's trial could not be undone and would really pour. */
+    private final ItemIntake intake = new ItemIntake(new ItemIntake.Mouth() {
+        @Override
+        public int room(ItemResource resource, List<ItemIntake.Arrival> pending, @Nullable UUID deliverer) {
+            Brew brew = ChemVialItem.brew(resource.toStack(1));
+            if (brew == null) {
+                return 0;
+            }
+            TankFuel promised = contents;
+            for (ItemIntake.Arrival arrival : pending) {
+                promised = ChemTank.poured(promised, ChemVialItem.brew(arrival.resource().toStack(1)), arrival.count());
+            }
+            return ChemTank.room(promised, brew);
+        }
+
+        @Override
+        public void arrive(ItemStack stack, @Nullable UUID deliverer) {
+            setItem(0, stack);
+        }
+    });
 
     public ChemTankBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CHEM_TANK.get(), pos, state);
     }
 
+    public static void serverTick(Level level, BlockPos pos, BlockState state, ChemTankBlockEntity tank) {
+        if (tank.hasRoom() && tank.look.due(level, pos)) {
+            tank.drawFuel((ServerLevel) level);
+        }
+    }
+
+    /** With room for a vial, it takes one of its fuel from the carboys around (any fuel while it is empty). */
+    private void drawFuel(ServerLevel level) {
+        TankFuel held = contents;
+        Brew drawn = look.draw(level, worldPosition, Vec3.atCenterOf(worldPosition), brew -> ChemTank.room(held, brew) > 0);
+        if (drawn != null) {
+            setContents(ChemTank.poured(held, drawn, 1));
+        }
+    }
+
+    private boolean hasRoom() {
+        return contents.isEmpty() || ChemTank.room(contents, contents.fuel().brew()) > 0;
+    }
+
     public TankFuel contents() {
         return contents;
+    }
+
+    /** Fuel vials in for whatever moves items, the bottles lost as with a hopper; nothing comes out. */
+    public ItemIntake intake() {
+        return intake;
     }
 
     public void setContents(TankFuel contents) {

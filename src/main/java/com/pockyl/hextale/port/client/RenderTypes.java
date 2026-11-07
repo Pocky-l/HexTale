@@ -16,6 +16,11 @@ public final class RenderTypes {
         return RenderType.entityCutout(texture);
     }
 
+    /** 26.x's culling cutout is what 1.21.1 calls plain {@code entityCutout}. */
+    public static RenderType entityCutoutCull(ResourceLocation texture) {
+        return RenderType.entityCutout(texture);
+    }
+
     public static RenderType entityTranslucent(ResourceLocation texture) {
         return RenderType.entityTranslucent(texture);
     }

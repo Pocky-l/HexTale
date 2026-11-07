@@ -14,9 +14,17 @@ import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+import com.pockyl.hextale.block.ChemCarboyBlockEntity;
+import com.pockyl.hextale.block.ChemTankBlockEntity;
 import com.pockyl.hextale.block.HexPylonBlockEntity;
+import com.pockyl.hextale.block.ShapeParts;
+import com.pockyl.hextale.block.VialRackBlockEntity;
+import com.pockyl.hextale.chem.Brew;
+import com.pockyl.hextale.chem.CarboyContents;
+import com.pockyl.hextale.chem.ChemVialItem;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModDataComponents;
+import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.PylonRune;
 import com.pockyl.hextale.transport.PylonFlight;
@@ -43,7 +51,7 @@ public final class PylonGameTests {
         helper.getLevel().getEntitiesOfClass(ItemEntity.class, area).forEach(ItemEntity::discard);
     }
 
-    private static HexPylonBlockEntity place(GameTestHelper helper, net.minecraft.world.level.block.Block pylon, BlockPos pos) {
+    static HexPylonBlockEntity place(GameTestHelper helper, net.minecraft.world.level.block.Block pylon, BlockPos pos) {
         helper.setBlock(pos, pylon);
         return helper.<HexPylonBlockEntity>getBlockEntity(pos);
     }
@@ -54,7 +62,7 @@ public final class PylonGameTests {
         return entity;
     }
 
-    private static int count(Container container, Item item) {
+    static int count(Container container, Item item) {
         int total = 0;
         for (int i = 0; i < container.getContainerSize(); i++) {
             if (container.getItem(i).is(item)) {
@@ -64,7 +72,7 @@ public final class PylonGameTests {
         return total;
     }
 
-    private static PylonLink link(GameTestHelper helper, BlockPos pos, Direction face) {
+    static PylonLink link(GameTestHelper helper, BlockPos pos, Direction face) {
         return new PylonLink(helper.absolutePos(pos), face);
     }
 
@@ -709,5 +717,92 @@ public final class PylonGameTests {
         helper.assertTrue(holder.takes(sending, PylonRune.SMELTING.rune()), "a sending pylon takes them all");
         helper.assertTrue(com.pockyl.hextale.infusion.Ritual.runesFor(relay, false).size() == 1, "the stele offers a relay one rune");
         helper.succeed();
+    }
+
+    private static int vials(Container container, Brew brew) {
+        int total = 0;
+        for (int i = 0; i < container.getContainerSize(); i++) {
+            if (ChemVialItem.brew(container.getItem(i)) == brew) {
+                total += container.getItem(i).getCount();
+            }
+        }
+        return total;
+    }
+
+    /** Linked through its upper half, a carboy takes the vials of its brew; other brews and other items stay in the chest. */
+    @HexTest(maxTicks = 300)
+    public static void sendingPylonPoursVialsIntoACarboy(GameTestHelper helper) {
+        clear(helper, 6);
+        helper.setBlock(BASE, Blocks.CHEST);
+        Container from = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(BASE);
+        from.setItem(0, ChemVialItem.of(Brew.ACID, 4));
+        from.setItem(1, ChemVialItem.of(Brew.GROWTH, 2));
+        from.setItem(2, new ItemStack(Items.DIRT));
+        BlockPos target = BASE.offset(4, 0, 0);
+        helper.setBlock(target, ModBlocks.CHEM_CARBOY.get());
+        ShapeParts.refresh(helper.getLevel(), helper.absolutePos(target), null);
+        ChemCarboyBlockEntity carboy = helper.<ChemCarboyBlockEntity>getBlockEntity(target);
+        carboy.setContents(new CarboyContents(Brew.ACID, 1));
+        HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
+        helper.assertTrue(pylon.toggleLink(link(helper, target.above(), Direction.UP)), "linked");
+        helper.succeedWhen(() -> {
+            helper.assertTrue(carboy.contents().doses() == 5 && vials(from, Brew.ACID) == 0, "the acid was poured in");
+            helper.assertTrue(vials(from, Brew.GROWTH) == 2 && count(from, Items.DIRT) == 1, "the rest stays");
+        });
+    }
+
+    /** A gathering pylon on the stand-in over a carboy pours what lies around into it and leaves what it cannot take. */
+    @HexTest(maxTicks = 300)
+    public static void gatheringPylonFillsACarboyThroughItsUpperHalf(GameTestHelper helper) {
+        clear(helper, 6);
+        helper.setBlock(BASE, ModBlocks.CHEM_CARBOY.get());
+        ShapeParts.refresh(helper.getLevel(), helper.absolutePos(BASE), null);
+        ChemCarboyBlockEntity carboy = helper.<ChemCarboyBlockEntity>getBlockEntity(BASE);
+        place(helper, ModBlocks.GATHERING_PYLON.get(), BASE.above(2));
+        drop(helper, ModItems.CHEM_VIAL.get(), 1, Vec3.atCenterOf(BASE.east(2))).setItem(ChemVialItem.of(Brew.GLOW, 3));
+        ItemEntity dirt = drop(helper, Items.DIRT, 1, Vec3.atCenterOf(BASE.west(2)));
+        helper.succeedWhen(() -> {
+            helper.assertTrue(carboy.contents().brew() == Brew.GLOW && carboy.contents().doses() == 3, "the vials were poured in");
+            helper.assertTrue(dirt.isAlive(), "the dirt stays where it lies");
+        });
+    }
+
+    /** One pylon fills a rack, the next one standing on it empties it. */
+    @HexTest(maxTicks = 400)
+    public static void pylonsFillAndEmptyAVialRack(GameTestHelper helper) {
+        clear(helper, 6);
+        helper.setBlock(BASE, Blocks.CHEST);
+        Container from = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(BASE);
+        from.setItem(0, ChemVialItem.of(Brew.ACID, 3));
+        BlockPos rackAt = BASE.offset(3, 0, 0);
+        BlockPos end = BASE.offset(6, 0, 0);
+        helper.setBlock(rackAt, ModBlocks.VIAL_RACK.get());
+        helper.setBlock(end, Blocks.CHEST);
+        Container to = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(end);
+        VialRackBlockEntity rack = helper.<VialRackBlockEntity>getBlockEntity(rackAt);
+        HexPylonBlockEntity in = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
+        helper.assertTrue(in.toggleLink(link(helper, rackAt, Direction.UP)), "linked to the rack");
+        HexPylonBlockEntity out = place(helper, ModBlocks.SENDING_PYLON.get(), rackAt.above());
+        helper.assertTrue(out.toggleLink(link(helper, end, Direction.UP)), "linked from the rack");
+        helper.succeedWhen(() -> helper.assertTrue(vials(to, Brew.ACID) == 3 && vials(from, Brew.ACID) == 0 && rack.filled() == 0,
+                "the vials went through the rack"));
+    }
+
+    @HexTest(maxTicks = 300)
+    public static void sendingPylonFuelsASetDownJetTank(GameTestHelper helper) {
+        clear(helper, 6);
+        helper.setBlock(BASE, Blocks.CHEST);
+        Container from = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(BASE);
+        from.setItem(0, ChemVialItem.of(Brew.EMBER_OIL, 2));
+        from.setItem(1, ChemVialItem.of(Brew.ACID, 1));
+        BlockPos target = BASE.offset(4, 0, 0);
+        helper.setBlock(target, ModBlocks.CHEM_JET_TANK.get());
+        ChemTankBlockEntity tank = helper.<ChemTankBlockEntity>getBlockEntity(target);
+        HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
+        helper.assertTrue(pylon.toggleLink(link(helper, target, Direction.UP)), "linked");
+        helper.succeedWhen(() -> {
+            helper.assertTrue(tank.contents().vials() == 2 && vials(from, Brew.EMBER_OIL) == 0, "the fuel was poured in");
+            helper.assertTrue(vials(from, Brew.ACID) == 1, "acid stays");
+        });
     }
 }

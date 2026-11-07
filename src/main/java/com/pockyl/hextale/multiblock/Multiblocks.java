@@ -57,6 +57,7 @@ public final class Multiblocks {
     public static final BigEssenceJar BIG_ESSENCE_JAR = register(new BigEssenceJar());
     public static final HexFoundry HEX_FOUNDRY = register(new HexFoundry());
     public static final ChemVat CHEM_VAT = register(new ChemVat());
+    public static final VaultGate VAULT_GATE = register(new VaultGate());
 
     private Multiblocks() {
     }
@@ -168,7 +169,7 @@ public final class Multiblocks {
         BlockState part = ModBlocks.MULTIBLOCK_PART.get().defaultBlockState();
         for (int i = 0; i < cells.size(); i++) {
             BlockPos pos = cells.get(i);
-            if (pos.equals(controllerPos)) {
+            if (pos.equals(controllerPos) || pattern.cells().get(i).key().kept()) {
                 continue;
             }
             level.setBlock(pos, part, Block.UPDATE_ALL);

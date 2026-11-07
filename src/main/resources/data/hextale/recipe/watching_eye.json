@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    " C ",
+    "CPC",
+    " C "
+  ],
+  "key": {
+    "C": {
+      "item": "hextale:void_chitin"
+    },
+    "P": {
+      "item": "hextale:void_pearl"
+    }
+  },
+  "result": {
+    "id": "hextale:watching_eye",
+    "count": 4
+  }
+}

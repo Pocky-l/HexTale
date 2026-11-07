@@ -1,0 +1,16 @@
+{
+  "region": "circle",
+  "stage": "late",
+  "icon": "hextale:pocket_terminal",
+  "parents": [
+    "hex_terminal"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:pocket_terminal"
+  },
+  "pos": [
+    1520,
+    -110
+  ]
+}

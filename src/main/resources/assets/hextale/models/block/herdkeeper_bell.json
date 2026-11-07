@@ -1,0 +1,395 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/herdkeeper",
+    "sheet": "hextale:block/herdkeeper"
+  },
+  "elements": [
+    {
+      "name": "bell_crown",
+      "from": [
+        5.9,
+        21.9,
+        6.9
+      ],
+      "to": [
+        8.1,
+        25.1,
+        9.1
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4.25,
+            6.875,
+            4.5,
+            7.25
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            4.625,
+            6.875,
+            4.875,
+            7.25
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            5,
+            6.875,
+            5.25,
+            7.25
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            5.375,
+            6.875,
+            5.625,
+            7.25
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            4.25,
+            7.375,
+            4.5,
+            7.625
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            4.625,
+            7.375,
+            4.875,
+            7.625
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "bell_shoulder",
+      "from": [
+        5,
+        22,
+        6
+      ],
+      "to": [
+        9,
+        24,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            8.5,
+            0.5,
+            8.75
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            0.625,
+            8.5,
+            1.125,
+            8.75
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            1.25,
+            8.5,
+            1.75,
+            8.75
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            1.875,
+            8.5,
+            2.375,
+            8.75
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            2.5,
+            8.5,
+            3,
+            9
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "bell_body",
+      "from": [
+        4,
+        17,
+        5
+      ],
+      "to": [
+        10,
+        22,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            4,
+            0.75,
+            4.625
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            0.875,
+            4,
+            1.625,
+            4.625
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            1.75,
+            4,
+            2.5,
+            4.625
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            2.625,
+            4,
+            3.375,
+            4.625
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            4.75,
+            0.75,
+            5.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "bell_lip",
+      "from": [
+        3,
+        15,
+        4
+      ],
+      "to": [
+        11,
+        17,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3.5,
+            4,
+            4.5,
+            4.25
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            4.625,
+            4,
+            5.625,
+            4.25
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            5.75,
+            4,
+            6.75,
+            4.25
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            6.875,
+            4,
+            7.875,
+            4.25
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            3.5,
+            4.375,
+            4.5,
+            5.375
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            4.625,
+            4.375,
+            5.625,
+            5.375
+          ],
+          "texture": "#sheet"
+        }
+      }
+    }
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        1.5,
+        0
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        1.5,
+        0
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        -1,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        -135,
+        0
+      ],
+      "translation": [
+        0,
+        -1,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.2,
+        0.2,
+        0.2
+      ]
+    },
+    "gui": {
+      "rotation": [
+        25,
+        135,
+        0
+      ],
+      "translation": [
+        0,
+        -3.5,
+        0
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
+      ]
+    },
+    "head": {
+      "translation": [
+        0,
+        8,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        -180,
+        0
+      ],
+      "translation": [
+        0,
+        -3.5,
+        0
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
+      ]
+    }
+  }
+}

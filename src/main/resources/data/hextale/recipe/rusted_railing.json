@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PBP",
+    "PBP"
+  ],
+  "key": {
+    "B": {
+      "item": "minecraft:iron_bars"
+    },
+    "P": {
+      "item": "hextale:rusted_plating"
+    }
+  },
+  "result": {
+    "id": "hextale:rusted_railing",
+    "count": 6
+  }
+}

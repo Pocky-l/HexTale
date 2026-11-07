@@ -1,0 +1,20 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    " B ",
+    "P P",
+    "PBP"
+  ],
+  "key": {
+    "P": {
+      "item": "hextale:rusted_plating"
+    },
+    "B": {
+      "item": "minecraft:iron_bars"
+    }
+  },
+  "result": {
+    "id": "hextale:vial_rack"
+  },
+  "charge": 1
+}

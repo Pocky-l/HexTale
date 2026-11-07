@@ -83,6 +83,12 @@
       "predicate": {
         "hextale:select": 0.14
       },
+      "model": "hextale:item/guide/unmaking"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.15
+      },
       "model": "hextale:item/guide/advanced_transmutation"
     }
   ]

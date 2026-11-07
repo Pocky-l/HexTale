@@ -1,0 +1,17 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:seers_eye",
+  "parents": [
+    "seers_eye"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "prosector_slain"
+  },
+  "aura": "void",
+  "pos": [
+    470,
+    1430
+  ]
+}

@@ -49,6 +49,7 @@ public final class WeaponFx {
     private static final float POP_HEIGHT = 0.6F;
     private static final float CRACK_TICKS = 14;
     private static final float BLINK_TICKS = 10;
+    private static final float TRAIL_TICKS = 9;
     private static final float BURST_TICKS = 9;
     private static final float SWEEP_TICKS = 6;
     private static final float RIPPLE_TICKS = 26;
@@ -81,6 +82,7 @@ public final class WeaponFx {
             return switch (payload.shape()) {
                 case WAVE -> lastStep(payload) + POP + CRACK_TICKS;
                 case BLINK -> BLINK_TICKS;
+                case TRAIL -> TRAIL_TICKS;
                 case BURST -> BURST_TICKS + 4;
                 case VORTEX -> (float) payload.to().x + 6;
                 case SWEEP -> SWEEP_TICKS + 2;
@@ -150,6 +152,7 @@ public final class WeaponFx {
                 case SCORCH -> scorchParticles(current, payload, age, random);
                 case SUNBEAM -> sunbeamParticles(current, payload, age, random);
                 case BEAM -> beamParticles(current, payload, age, random);
+                case TRAIL -> trailParticles(current, payload, age, random);
             }
         }
     }
@@ -186,6 +189,23 @@ public final class WeaponFx {
             level.addParticle(ModParticles.spark(payload.color()), pos.getX() + 0.5, top, pos.getZ() + 0.5,
                     (random.nextDouble() - 0.5) * 0.1, 0.12, (random.nextDouble() - 0.5) * 0.1);
         }
+    }
+
+    private static void trailParticles(ClientLevel level, WeaponFxPayload payload, int age, RandomSource random) {
+        if (age != 0) {
+            return;
+        }
+        // Steam out of the vents and sparks shed along the way; a ring of pressure at every stretch.
+        Vec3 from = payload.from();
+        Vec3 to = payload.to();
+        for (int i = 0; i < 4; i++) {
+            Vec3 p = from.lerp(to, random.nextDouble());
+            level.addParticle(ModParticles.vapour(ModParticles.SOOT), p.x + (random.nextDouble() - 0.5) * 0.5, p.y + (random.nextDouble() - 0.5) * 0.5,
+                    p.z + (random.nextDouble() - 0.5) * 0.5, 0, 0.02, 0);
+            level.addParticle(ModParticles.glint(payload.color()), p.x, p.y, p.z, (random.nextDouble() - 0.5) * 0.2, (random.nextDouble() - 0.5) * 0.2,
+                    (random.nextDouble() - 0.5) * 0.2);
+        }
+        level.addParticle(ModParticles.ring(payload.color()), from.x, from.y, from.z, 0, 0, 0);
     }
 
     private static void blinkParticles(ClientLevel level, WeaponFxPayload payload, int age, RandomSource random) {
@@ -360,7 +380,7 @@ public final class WeaponFx {
         if (age % 3 != 0 || age > SUNBEAM_TICKS - 8) {
             return;
         }
-        // Motes of sunlight drifting down the shaft into the battery.
+        // Motes of sunlight drifting down the shaft into the worktop.
         Vec3 c = payload.from();
         double top = payload.size() * (0.6 + 0.4 * random.nextDouble());
         level.addParticle(ModParticles.glint(SUNLIGHT), c.x + (random.nextDouble() - 0.5) * 0.4, c.y + top, c.z + (random.nextDouble() - 0.5) * 0.4,
@@ -406,6 +426,7 @@ public final class WeaponFx {
                     collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> crack(consumer, pose, payload, age, camera, eye));
                 }
                 case BLINK -> collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> blink(consumer, pose, payload, age, camera, eye));
+                case TRAIL -> collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> trail(consumer, pose, payload, age, camera, eye));
                 case BURST -> collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> burst(consumer, pose, payload, age, camera, eye));
                 case VORTEX -> collector.submitCustomGeometry(poseStack, HexGlow.TYPE,
                         (pose, consumer) -> vortex(consumer, pose, payload, age, camera, eye, shown.seed()));
@@ -508,6 +529,18 @@ public final class WeaponFx {
         // The silhouette where the player stood, thinning upwards.
         Vec3[] figure = {from.add(0, 0.05, 0), from.add(0, height, 0)};
         JarStreamFx.strip(consumer, pose, figure, light, eye, 0.55F, payload.color(), 0.22F * fade);
+    }
+
+    /** One tick's stretch of a Strike Gauntlet flight: a wide soft streak round a hot core, thinning as it cools. */
+    private static void trail(VertexConsumer consumer, PoseStack.Pose pose, WeaponFxPayload payload, float age, Vec3 camera, Vector3f eye) {
+        float fade = 1 - age / TRAIL_TICKS;
+        if (fade <= 0) {
+            return;
+        }
+        Vec3[] streak = {payload.from().subtract(camera), payload.to().subtract(camera)};
+        float[] light = {1, 1};
+        JarStreamFx.strip(consumer, pose, streak, light, eye, payload.size() * fade, payload.color(), 0.3F * fade);
+        JarStreamFx.strip(consumer, pose, streak, light, eye, 0.1F * fade, RuneDrawing.mix(payload.color(), 0xFFFFFF, 0.6F), 0.85F * fade);
     }
 
     private static void burst(VertexConsumer consumer, PoseStack.Pose pose, WeaponFxPayload payload, float age, Vec3 camera, Vector3f eye) {
@@ -703,7 +736,7 @@ public final class WeaponFx {
         JarStreamFx.strip(consumer, pose, points, heart, eye, 0.12F, FIRE_HEART, 0.85F * fade);
     }
 
-    /** A soft shaft of sunlight falling into the battery, swelling and fading, with a ring of light where it lands. */
+    /** A soft shaft of sunlight falling into the worktop, swelling and fading, with a ring of light where it lands. */
     private static void sunbeam(VertexConsumer consumer, PoseStack.Pose pose, WeaponFxPayload payload, float age, Vec3 camera, Vector3f eye) {
         float glow = Mth.sin(Mth.PI * Math.min(1, age / SUNBEAM_TICKS));
         if (glow <= 0) {

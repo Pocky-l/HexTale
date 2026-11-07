@@ -1,0 +1,14 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "tag": "minecraft:terracotta"
+  },
+  "essences": {
+    "water": 4,
+    "decay": 2
+  },
+  "result": {
+    "id": "minecraft:clay"
+  },
+  "research": "unmaking"
+}

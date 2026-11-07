@@ -1,0 +1,8 @@
+{
+  "gui_light": "front",
+  "parent": "hextale:block/chem_carboy",
+  "textures": {
+    "particle": "hextale:block/chem_carboy_creative",
+    "sheet": "hextale:block/chem_carboy_creative"
+  }
+}

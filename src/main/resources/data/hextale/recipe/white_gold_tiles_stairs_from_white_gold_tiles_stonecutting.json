@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "hextale:white_gold_tiles"
+  },
+  "result": {
+    "id": "hextale:white_gold_tiles_stairs"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:dripstone_block"
+  },
+  "essences": {
+    "decay": 2
+  },
+  "result": {
+    "id": "minecraft:pointed_dripstone",
+    "count": 4
+  },
+  "research": "unmaking"
+}

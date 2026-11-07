@@ -58,9 +58,22 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.LapidaryBlockEntity>> LAPIDARY =
             BLOCK_ENTITIES.register("hex_lapidary", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.LapidaryBlockEntity::new,
                     ModBlocks.HEX_LAPIDARY.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChemCarboyBlockEntity>> CHEM_CARBOY =
+            BLOCK_ENTITIES.register("chem_carboy", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.ChemCarboyBlockEntity::new,
+                    ModBlocks.CHEM_CARBOY.get(), ModBlocks.CREATIVE_CHEM_CARBOY.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ValveWheelBlockEntity>> VALVE_WHEEL =
+            BLOCK_ENTITIES.register("valve_wheel", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.ValveWheelBlockEntity::new,
+                    ModBlocks.VALVE_WHEEL.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.VialRackBlockEntity>> VIAL_RACK =
+            BLOCK_ENTITIES.register("vial_rack", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.VialRackBlockEntity::new,
+                    ModBlocks.VIAL_RACK.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChemTankBlockEntity>> CHEM_TANK =
             BLOCK_ENTITIES.register("chem_tank", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.ChemTankBlockEntity::new,
-                    ModBlocks.CHEM_TANK.get()));
+                    ModBlocks.CHEM_TANK.get(), ModBlocks.CHEM_JET_TANK.get()));
+    /** The lines of a Chain Post (its base half) or a Chain Claw. */
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChainAnchorBlockEntity>> CHAIN_ANCHOR =
+            BLOCK_ENTITIES.register("chain_anchor", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.ChainAnchorBlockEntity::new,
+                    ModBlocks.CHAIN_POST.get(), ModBlocks.CHAIN_CLAW.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChemVatBlockEntity>> CHEM_VAT =
             BLOCK_ENTITIES.register("chem_vat", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.ChemVatBlockEntity::new,
                     ModBlocks.CHEM_VAT.get()));
@@ -75,6 +88,9 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexSawmillBlockEntity>> HEX_SAWMILL =
             BLOCK_ENTITIES.register("hex_sawmill", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.HexSawmillBlockEntity::new,
                     ModBlocks.HEX_SAWMILL.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HerdkeeperBlockEntity>> HERDKEEPER =
+            BLOCK_ENTITIES.register("herdkeeper", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.HerdkeeperBlockEntity::new,
+                    ModBlocks.HERDKEEPER.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexWispBlock.Glow>> HEX_WISP =
             BLOCK_ENTITIES.register("hex_wisp", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.HexWispBlock.Glow::new,
                     ModBlocks.wisps().toArray(net.minecraft.world.level.block.Block[]::new)));
@@ -148,6 +164,10 @@ public final class ModBlockEntities {
             BLOCK_ENTITIES.register("pedestal", () -> com.pockyl.hextale.port.PortTypes.blockEntity(PedestalBlockEntity::new, ModBlocks.PEDESTAL.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RuneCircleBlockEntity>> RUNE_CIRCLE =
             BLOCK_ENTITIES.register("rune_circle", () -> com.pockyl.hextale.port.PortTypes.blockEntity(RuneCircleBlockEntity::new, ModBlocks.RUNE_CIRCLE.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexVaultBlockEntity>> HEX_VAULT =
+            BLOCK_ENTITIES.register("hex_vault", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.HexVaultBlockEntity::new, ModBlocks.HEX_VAULT.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexTerminalBlockEntity>> HEX_TERMINAL =
+            BLOCK_ENTITIES.register("hex_terminal", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.HexTerminalBlockEntity::new, ModBlocks.HEX_TERMINAL.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HexcoreBlockEntity>> HEXCORE =
             BLOCK_ENTITIES.register("hexcore", () -> com.pockyl.hextale.port.PortTypes.blockEntity(HexcoreBlockEntity::new, ModBlocks.HEXCORE.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RuneSteleBlockEntity>> RUNE_STELE =

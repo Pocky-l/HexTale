@@ -36,6 +36,9 @@ public final class ModCapabilities {
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.HEX_FOUNDRY.get(), WorldlyContainerWrapper::new);
         // A structure that shares its items takes and gives them through every block, as its controller would.
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.MULTIBLOCK_PART.get(), (part, side) -> {
+            if (part.core() instanceof com.pockyl.hextale.block.HexVaultBlockEntity vault) {
+                return vault.getLevel() instanceof net.minecraft.server.level.ServerLevel && vault.usable() ? ResourceHandler.asItemHandler(vault.contents()) : null;
+            }
             net.minecraft.world.WorldlyContainer container = part.sharedContainer();
             return container == null ? null : new WorldlyContainerWrapper(container, side);
         });
@@ -54,6 +57,19 @@ public final class ModCapabilities {
         // Crystal in, cut stone out: the cut itself stays the worker's (top: crystals, sides: discs, bottom: the result).
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.LAPIDARY.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.CRYSTAL_BATTERY.get(), (battery, side) -> ResourceHandler.asItemHandler(battery.intake()));
+        // Vials in, nothing out, the bottles lost: what a hopper gets. A rack is a plain container of eight vials.
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.CHEM_CARBOY.get(), (carboy, side) -> ResourceHandler.asItemHandler(carboy.intake()));
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.CHEM_TANK.get(), (tank, side) -> ResourceHandler.asItemHandler(tank.intake()));
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.VIAL_RACK.get(), (rack, side) -> VanillaContainerWrapper.of(rack));
+        // A vault in its gate is a normal inventory for everything that moves items, through its door too; asleep it
+        // gives nothing to machines. A carboy's stand-in is its upper half. A Hex Terminal has no handler at all.
+        // What a vault holds lives on the server: a client asking (Jade does, every tick it looks at one) gets nothing.
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.HEX_VAULT.get(),
+                (vault, side) -> vault.getLevel() instanceof net.minecraft.server.level.ServerLevel && vault.usable() ? ResourceHandler.asItemHandler(vault.contents()) : null);
+        event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, entity, side) -> {
+            net.minecraft.world.level.block.entity.BlockEntity device = level.getBlockEntity(com.pockyl.hextale.block.ShapePartBlock.device(state, pos));
+            return device instanceof com.pockyl.hextale.block.ChemCarboyBlockEntity carboy ? ResourceHandler.asItemHandler(carboy.intake()) : null;
+        }, com.pockyl.hextale.registry.ModBlocks.SHAPE_PART.get());
         // Only the crystal socket: the grid stays the crafter's.
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.HEX_WORKBENCH.get(), (bench, side) ->
                 ResourceHandler.asItemHandler(insertOnly(RangedResourceHandler.ofSingleIndex(VanillaContainerWrapper.of(bench), HexWorkbenchBlockEntity.CRYSTAL))));

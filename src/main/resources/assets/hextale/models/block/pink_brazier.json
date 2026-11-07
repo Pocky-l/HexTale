@@ -1,4 +1,5 @@
 {
+  "gui_light": "front",
   "parent": "minecraft:block/block",
   "textures": {
     "particle": "hextale:block/pink_brazier_coals",

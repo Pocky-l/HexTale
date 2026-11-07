@@ -34,19 +34,28 @@
   <img src="docs/showcase/reaper.gif" alt="The Whirl Reaper" width="264">
   <img src="docs/showcase/sawmill.gif" alt="The Whirl Sawmill" width="264">
 </p>
-<p align="center"><i>Pylons carry items into chests, the reaper harvests the field around it, and the sawmill cuts trees<br>and plants new ones. They all run on essence from the jars nearby.</i></p>
+<p align="center"><i>Pylons carry items into chests, the reaper harvests the field around it, and the sawmill cuts trees<br>and plants new ones. They all run on essence from the jars nearby. The herdkeeper by the barn gathers wool and eggs<br>from my animals without hurting them.</i></p>
 
 <h3 align="center">Page 22. The Void</h3>
 <p align="center"><img src="docs/showcase/void.gif" alt="A breach of the Void, voidlings at its feet" width="720"></p>
 <p align="center"><i>I think I used too much magic around the house. The grass is going grey, there's a purple haze in the evenings,<br>and a few days ago a rift opened behind the barn. I haven't decided yet whether to close it or see what happens if I feed it.</i></p>
 
+<h3 align="center">Page 24. Chemtech</h3>
+<p align="center"><i>The Lab Bench gave me a faster road than magic. Brews wait in tall carboys and the burners around them drink by themselves.<br>The tank on my back feeds a respirator, a second jump and two jets, and a harpoon strings ziplines from post to post.<br>One dose of shimmer turned my cat into a panther that carries me up walls. It wears off in a few days.</i></p>
+
 <h3 align="center">Page 26. Arsenal</h3>
 <p align="center"><img src="docs/showcase/arsenal.gif" alt="Four levels of Bulwark armour with their swords and daggers" width="720"></p>
 <p align="center"><i>Iron with a crystal in it was only the start. Then came charged hexsteel, then an alloy that keeps glowing after a night on the Hexcore,<br>and at last a metal brought back from the Void. Every new set of armour holds more runes than the one before.</i></p>
 
+<h3 align="center">Page 29. The vault</h3>
+<p align="center"><i>After the Hexcore I stopped building chests. The vault hangs over its platform as a brass door held by nothing, and when I walk up<br>it parts on a space of its own. Each thing weighs its essences, so cobblestone is light and gemstones are heavy, and Storage Cubes around it give more room.<br>A terminal opens it from anywhere, even from another dimension, for a little rift essence per take.</i></p>
+
 <h3 align="center">Page 31. Beyond the breach</h3>
 <p align="center"><img src="docs/showcase/realm.gif" alt="Inside the Void: a gate home and Sinew Willows" width="720"></p>
 <p align="center"><i>Once the breach was held, I stepped through. There is no ground in there, only old shells drifting in a violet haze,<br>trees made of sinew and something that watches from the dark. The gate home stays open behind me. I won't stay long.</i></p>
+
+<h3 align="center">Page 33. The heart of the vortex</h3>
+<p align="center"><i>Something behind the Seers was taking notes on me. I built an Eye from what they left and called it up, and whatever I hurt it with<br>it wrote down, kept in a jar and turned on me. Then I learned what happens when the jar breaks.</i></p>
 
 <h3 align="center">Every page. The diary</h3>
 <p align="center"><img src="docs/showcase/diary.gif" alt="The Researcher's Diary" width="720"></p>
@@ -74,6 +83,15 @@ land around a base (the Thinning); `thinning = false` in `hextale-synced.toml` t
 | Link a pylon | *Use* the pylon, then *Use* the target |
 | Set a pipe side | *Sneak* + *Use* the pipe with an empty hand |
 | Fly with the skypack | *Jump*, then *Jump* again in the air |
+| Fire the chem jets | Hold *Jump* in the air (with a skypack or elytra on, a tap opens those) |
+| Hold height with the jets | `H` |
+| Shoot a zipline | *Use* the chain launcher |
+| Ride a zipline | *Use* the chain; forward drives, back brakes, *Sneak* lets go |
+| Dash with the strike gauntlet | Hold *Use*, then let go |
+| Put things into the vault | *Use* it to open its screen, then Shift + click a stack or drag it onto the grid |
+| Link a terminal | *Sneak* + *Use* Unstable Hextech on the vault, then *Use* the Rift Link Crystal on the terminal |
+| Ride a Shimmer Panther or Raptor | *Use* it with an empty hand; *Jump* flaps the Raptor's wings |
+| See how long a mutation lasts | *Sneak* + *Use* the shimmer injector on the animal |
 | Listen with the tuning fork | Hold *Use* |
 | Swing on the grapple | Hold *Use*; *Jump* reels in, *Sneak* lets out |
 | Wind the recall charm | *Use* a jar of rift essence with the charm |

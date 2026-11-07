@@ -19,7 +19,7 @@ import java.util.List;
  * Detonator's burst, a Whirlpool, a Whirlwind's circle - and the moments of the gear runes drawn the same way: a
  * Wavewalk step's ripple, a Static spark from {@code from} to {@code to}, a Mirage's figure of light ({@code size} = its
  * height), a Flamethrower's tongue of fire from the jets ({@code size} = its width at the end), the light a Sunlight Cell
- * drinks, an Arc Spire's Beam.
+ * drinks, an Arc Spire's Beam. A Strike Gauntlet flight's trail ({@code TRAIL}) is made on the client, tick by tick.
  */
 public record WeaponFxPayload(int kind, Vec3 from, Vec3 to, List<BlockPos> blocks, List<Integer> steps, int color, float size)
         implements CustomPacketPayload {
@@ -37,7 +37,8 @@ public record WeaponFxPayload(int kind, Vec3 from, Vec3 to, List<BlockPos> block
         MIRAGE,
         SCORCH,
         SUNBEAM,
-        BEAM
+        BEAM,
+        TRAIL
     }
 
     public static final Type<WeaponFxPayload> TYPE = new Type<>(Hextale.id("weapon_fx"));

@@ -1,0 +1,14 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "tag": "minecraft:wool"
+  },
+  "essences": {
+    "decay": 2
+  },
+  "result": {
+    "id": "minecraft:string",
+    "count": 4
+  },
+  "research": "unmaking"
+}

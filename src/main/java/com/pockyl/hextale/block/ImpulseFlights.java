@@ -18,9 +18,10 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Things in the air after an aimed Impulse Plate's throw. Near the target the fall is cushioned (where the thing moves
- * itself: a player's client) so the landing is soft and stays on the target; the server marks the landing with a
- * puff of light and a soft whump, and leaves a short trail behind the flyer.
+ * Things in the air after an aimed Impulse Plate's throw. Near the target the fall is cushioned wherever the thing is
+ * simulated (a player: their client and the server's copy of them, which also clears the fall the server counts) so the
+ * landing is soft and stays on the target; the server marks the landing with a puff of light and a soft whump, and
+ * leaves a short trail behind the flyer.
  */
 @EventBusSubscriber(modid = Hextale.MOD_ID)
 public final class ImpulseFlights {

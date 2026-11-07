@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "hextale:white_gold_tiles"
+    }
+  },
+  "result": {
+    "id": "hextale:white_gold_tiles_slab",
+    "count": 6
+  }
+}

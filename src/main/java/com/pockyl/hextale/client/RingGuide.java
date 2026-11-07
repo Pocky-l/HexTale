@@ -13,7 +13,9 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 import com.pockyl.hextale.block.DeviceCrystals;
+import com.pockyl.hextale.block.HexVaultBlockEntity;
 import com.pockyl.hextale.block.VoidAnchorBlockEntity;
+import com.pockyl.hextale.essence.JarReach;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.thevoid.TheVoid;
@@ -28,6 +30,7 @@ import com.pockyl.hextale.thevoid.VoidLayout;
 public final class RingGuide {
     /** How far from a breach a player sees its ring. */
     private static final double SEES = 24;
+    private static final int CUBE_HELD = 0xE9C66D;
 
     private RingGuide() {
     }
@@ -40,7 +43,10 @@ public final class RingGuide {
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
         ClientLevel level = minecraft.level;
-        if (player == null || level == null || minecraft.isPaused() || player.tickCount % 5 != 0 || !building(player)) {
+        if (player == null || level == null || minecraft.isPaused() || player.tickCount % 5 != 0) {
+            return;
+        }
+        if (!building(player)) {
             return;
         }
         AABB around = player.getBoundingBox().inflate(SEES);

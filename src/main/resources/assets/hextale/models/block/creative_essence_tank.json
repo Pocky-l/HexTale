@@ -1,4 +1,5 @@
 {
+  "gui_light": "front",
   "parent": "hextale:block/essence_tank",
   "textures": {
     "lid": "hextale:block/creative_essence_jar_lid"

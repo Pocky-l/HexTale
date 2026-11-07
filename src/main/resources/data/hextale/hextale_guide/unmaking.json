@@ -1,0 +1,117 @@
+{
+  "region": "chemtech",
+  "sign": {
+    "id": "hextale:guide_mark",
+    "components": {
+      "minecraft:custom_model_data": -195012860
+    }
+  },
+  "icon": [
+    "minecraft:white_wool",
+    "minecraft:glass",
+    "minecraft:hay_block",
+    "minecraft:bricks",
+    "minecraft:brick",
+    "minecraft:clay",
+    "minecraft:terracotta",
+    "minecraft:snow_block",
+    "minecraft:glowstone",
+    "minecraft:quartz_block",
+    "minecraft:amethyst_block",
+    "minecraft:honeycomb_block",
+    "minecraft:dripstone_block",
+    "minecraft:prismarine",
+    "minecraft:paper",
+    "minecraft:sugar",
+    "minecraft:mud",
+    "minecraft:packed_mud",
+    "minecraft:tnt"
+  ],
+  "parents": [
+    "transmutation",
+    "lab_bench"
+  ],
+  "display": [
+    {
+      "kind": "crucible",
+      "result": "hextale:unmaking/wool"
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:unmaking/glass"
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:unmaking/hay_block"
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:unmaking/bricks"
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:unmaking/brick"
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:unmaking/clay"
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:unmaking/terracotta"
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:unmaking/snow_block"
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:unmaking/glowstone"
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:unmaking/quartz_block"
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:unmaking/amethyst_block"
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:unmaking/honeycomb_block"
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:unmaking/dripstone_block"
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:unmaking/prismarine"
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:unmaking/paper"
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:unmaking/sugar"
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:unmaking/mud"
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:unmaking/packed_mud"
+    },
+    {
+      "kind": "crucible",
+      "result": "hextale:unmaking/tnt"
+    }
+  ],
+  "research": "unmaking",
+  "pos": [
+    -742,
+    -30
+  ]
+}

@@ -1,4 +1,5 @@
 {
+  "gui_light": "front",
 	"format_version": "26.3",
 	"textures": {
 		"particle": "hextale:item/chem_steel/sword",

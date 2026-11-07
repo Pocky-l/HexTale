@@ -1,5 +1,6 @@
 {
   "loader": "hextale:free_rotation",
+  "gui_light": "front",
   "textures": {
     "particle": "hextale:item/riftforged_pickaxe",
     "sheet": "hextale:item/riftforged_pickaxe"

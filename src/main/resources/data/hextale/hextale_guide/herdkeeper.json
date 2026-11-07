@@ -1,0 +1,22 @@
+{
+  "region": "chemtech",
+  "stage": "mid",
+  "icon": "hextale:herdkeeper",
+  "parents": [
+    "lab_bench",
+    "brass"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:herdkeeper",
+    "then": {
+      "kind": "runes",
+      "result": "herdkeeper"
+    }
+  },
+  "research": "herdkeeper",
+  "pos": [
+    -665,
+    95
+  ]
+}

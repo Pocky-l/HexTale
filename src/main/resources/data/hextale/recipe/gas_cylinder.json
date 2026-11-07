@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "B",
+    "P",
+    "P"
+  ],
+  "key": {
+    "B": {
+      "item": "minecraft:iron_bars"
+    },
+    "P": {
+      "item": "hextale:rusted_plating"
+    }
+  },
+  "result": {
+    "id": "hextale:gas_cylinder",
+    "count": 2
+  }
+}

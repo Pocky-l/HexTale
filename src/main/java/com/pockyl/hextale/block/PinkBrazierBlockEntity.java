@@ -32,6 +32,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.chem.Brew;
+import com.pockyl.hextale.chem.CarboyReach;
 import com.pockyl.hextale.chem.ChemVialItem;
 import com.pockyl.hextale.network.ModNetwork;
 import com.pockyl.hextale.network.WarmthPayload;
@@ -45,6 +46,7 @@ import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.ToolEffects;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -69,6 +71,7 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
 
     private ItemStack fuel = ItemStack.EMPTY;
     private int burn;
+    private final CarboyReach.Look look = new CarboyReach.Look();
     private PickaxeRunes runes = PickaxeRunes.EMPTY;
     /** Client: the plants the last breaths warmed, each with the tick the warmth set out. */
     private final List<Warmth> warmths = new ArrayList<>();
@@ -86,7 +89,7 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
 
     private void tick(ServerLevel level, BlockState state) {
         if (burn <= 0) {
-            refuel(level);
+            refuel(level, state.getValue(PinkBrazierBlock.LIT));
         }
         boolean lit = burn > 0;
         if (lit) {
@@ -138,12 +141,19 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
         return brew == Brew.RAW_SHIMMER ? RAW_TICKS : 0;
     }
 
-    private void refuel(ServerLevel level) {
+    /** A vial, else the raw shimmer the carboys around hold (a lit flame reaches for it at once). */
+    private void refuel(ServerLevel level, boolean burning) {
         int ticks = burnTicks(fuel);
-        if (ticks <= 0) {
-            return;
+        if (ticks > 0) {
+            fuel.shrink(1);
+        } else {
+            Brew drawn = burning || look.due(level, worldPosition) ? look.draw(level, worldPosition, Vec3.atCenterOf(worldPosition),
+                    CarboyReach.burns(Brew::shimmer), Comparator.comparingInt(Brew::burnTicks)) : null;
+            if (drawn == null) {
+                return;
+            }
+            ticks = RAW_TICKS;
         }
-        fuel.shrink(1);
         int flame = strength(BrazierRune.ETERNAL_FLAME);
         if (flame > 0 && level.getRandom().nextFloat() < HolderRune.at(BrazierRune.LONGER_BURN, flame)) {
             ticks *= 2;

@@ -98,7 +98,7 @@ public final class VoidShapes {
 
     /** A mass the Void is digesting, hanging in a gap: its flat bottom at y, a gnawed cone rising out of it. */
     /** The heart of a vortex: a sealed sphere of chitin petals, seams of light between them, a core of flesh inside. */
-    record Heart(double x, double y, double z, double radius, int salt) {
+    public record Heart(double x, double y, double z, double radius, int salt) {
     }
 
     /** A sheet of skin sagging between rims of chitin over a gap: veins run to a crystal knot at its lowest point. */

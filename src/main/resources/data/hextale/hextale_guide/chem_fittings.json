@@ -1,0 +1,151 @@
+{
+  "region": "chemtech",
+  "stage": "mid",
+  "icon": [
+    "hextale:gas_cylinder",
+    "hextale:gas_cylinder_rust",
+    "hextale:gas_cylinder_shimmer",
+    "hextale:valve_wheel",
+    "hextale:rusted_catwalk",
+    "hextale:rusted_railing",
+    "hextale:hazard_plating",
+    "hextale:rusted_ladder"
+  ],
+  "parents": [
+    "chem_lumen",
+    "lab_bench"
+  ],
+  "display": [
+    {
+      "kind": "shaped",
+      "ingredients": [
+        "",
+        "minecraft:iron_bars",
+        "",
+        "",
+        "hextale:rusted_plating",
+        "",
+        "",
+        "hextale:rusted_plating",
+        ""
+      ],
+      "result": "hextale:gas_cylinder",
+      "count": 2
+    },
+    {
+      "kind": "shaped",
+      "ingredients": [
+        "hextale:gas_cylinder",
+        "#c:dyes/brown",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "result": "hextale:gas_cylinder_rust"
+    },
+    {
+      "kind": "shaped",
+      "ingredients": [
+        "hextale:gas_cylinder",
+        "#c:dyes/purple",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "result": "hextale:gas_cylinder_shimmer"
+    },
+    {
+      "kind": "shaped",
+      "ingredients": [
+        "",
+        "minecraft:iron_bars",
+        "",
+        "minecraft:iron_bars",
+        "hextale:rusted_plating",
+        "minecraft:iron_bars",
+        "",
+        "minecraft:iron_bars",
+        ""
+      ],
+      "result": "hextale:valve_wheel",
+      "count": 2
+    },
+    {
+      "kind": "shaped",
+      "ingredients": [
+        "minecraft:iron_bars",
+        "",
+        "minecraft:iron_bars",
+        "hextale:rusted_plating",
+        "hextale:rusted_plating",
+        "hextale:rusted_plating",
+        "",
+        "",
+        ""
+      ],
+      "result": "hextale:rusted_catwalk",
+      "count": 6
+    },
+    {
+      "kind": "shaped",
+      "ingredients": [
+        "hextale:rusted_plating",
+        "minecraft:iron_bars",
+        "hextale:rusted_plating",
+        "hextale:rusted_plating",
+        "minecraft:iron_bars",
+        "hextale:rusted_plating",
+        "",
+        "",
+        ""
+      ],
+      "result": "hextale:rusted_railing",
+      "count": 6
+    },
+    {
+      "kind": "shaped",
+      "ingredients": [
+        "hextale:rusted_plating",
+        "hextale:rusted_plating",
+        "hextale:rusted_plating",
+        "hextale:rusted_plating",
+        "#c:dyes/yellow",
+        "hextale:rusted_plating",
+        "hextale:rusted_plating",
+        "hextale:rusted_plating",
+        "hextale:rusted_plating"
+      ],
+      "result": "hextale:hazard_plating",
+      "count": 8
+    },
+    {
+      "kind": "shaped",
+      "ingredients": [
+        "hextale:rusted_plating",
+        "",
+        "hextale:rusted_plating",
+        "hextale:rusted_plating",
+        "hextale:rusted_plating",
+        "hextale:rusted_plating",
+        "hextale:rusted_plating",
+        "",
+        "hextale:rusted_plating"
+      ],
+      "result": "hextale:rusted_ladder",
+      "count": 16
+    }
+  ],
+  "research": "chem_fittings",
+  "pos": [
+    -1130,
+    -60
+  ]
+}

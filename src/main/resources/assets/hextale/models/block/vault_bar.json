@@ -1,0 +1,456 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "#vault_bar",
+    "vault_bar": "hextale:block/vault_bar"
+  },
+  "elements": [
+    {
+      "name": "body",
+      "from": [
+        -6,
+        5,
+        3
+      ],
+      "to": [
+        22,
+        11,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            7,
+            1.5
+          ],
+          "texture": "#vault_bar"
+        },
+        "south": {
+          "uv": [
+            8,
+            0,
+            15,
+            1.5
+          ],
+          "texture": "#vault_bar"
+        },
+        "up": {
+          "uv": [
+            0,
+            2,
+            7,
+            5.25
+          ],
+          "texture": "#vault_bar"
+        },
+        "down": {
+          "uv": [
+            8,
+            2,
+            15,
+            5.25
+          ],
+          "texture": "#vault_bar"
+        }
+      }
+    },
+    {
+      "name": "lip",
+      "from": [
+        -5,
+        4,
+        4
+      ],
+      "to": [
+        21,
+        5,
+        15
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            5.75,
+            6.5,
+            6
+          ],
+          "texture": "#vault_bar"
+        },
+        "east": {
+          "uv": [
+            7,
+            5.75,
+            7.5,
+            6
+          ],
+          "texture": "#vault_bar"
+        },
+        "south": {
+          "uv": [
+            8,
+            5.75,
+            14.5,
+            6
+          ],
+          "texture": "#vault_bar"
+        },
+        "west": {
+          "uv": [
+            15,
+            5.75,
+            15.5,
+            6
+          ],
+          "texture": "#vault_bar"
+        },
+        "down": {
+          "uv": [
+            0,
+            6.5,
+            6.5,
+            9.25
+          ],
+          "texture": "#vault_bar"
+        }
+      }
+    },
+    {
+      "name": "cap",
+      "from": [
+        -2,
+        11,
+        5
+      ],
+      "to": [
+        18,
+        13,
+        14
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            8,
+            6.5,
+            13,
+            7
+          ],
+          "texture": "#vault_bar"
+        },
+        "east": {
+          "uv": [
+            13.5,
+            6.5,
+            15.75,
+            7
+          ],
+          "texture": "#vault_bar"
+        },
+        "south": {
+          "uv": [
+            8,
+            7.25,
+            13,
+            7.75
+          ],
+          "texture": "#vault_bar"
+        },
+        "west": {
+          "uv": [
+            13.5,
+            7.25,
+            15.75,
+            7.75
+          ],
+          "texture": "#vault_bar"
+        },
+        "up": {
+          "uv": [
+            8,
+            8,
+            13,
+            10.25
+          ],
+          "texture": "#vault_bar"
+        }
+      }
+    },
+    {
+      "name": "boss",
+      "from": [
+        4,
+        13,
+        7
+      ],
+      "to": [
+        12,
+        14,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            9.75,
+            2,
+            10
+          ],
+          "texture": "#vault_bar"
+        },
+        "east": {
+          "uv": [
+            5,
+            9.75,
+            6.25,
+            10
+          ],
+          "texture": "#vault_bar"
+        },
+        "south": {
+          "uv": [
+            2.5,
+            9.75,
+            4.5,
+            10
+          ],
+          "texture": "#vault_bar"
+        },
+        "west": {
+          "uv": [
+            5,
+            10.25,
+            6.25,
+            10.5
+          ],
+          "texture": "#vault_bar"
+        },
+        "up": {
+          "uv": [
+            0,
+            10.25,
+            2,
+            11.5
+          ],
+          "texture": "#vault_bar"
+        }
+      }
+    },
+    {
+      "name": "strip",
+      "from": [
+        -4,
+        6,
+        2
+      ],
+      "to": [
+        20,
+        10,
+        3
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            8,
+            10.75,
+            14,
+            11.75
+          ],
+          "texture": "#vault_bar"
+        },
+        "east": {
+          "uv": [
+            14.5,
+            10.75,
+            14.75,
+            11.75
+          ],
+          "texture": "#vault_bar"
+        },
+        "west": {
+          "uv": [
+            15,
+            10.75,
+            15.25,
+            11.75
+          ],
+          "texture": "#vault_bar"
+        },
+        "up": {
+          "uv": [
+            8,
+            12,
+            14,
+            12.25
+          ],
+          "texture": "#vault_bar"
+        },
+        "down": {
+          "uv": [
+            8,
+            12.5,
+            14,
+            12.75
+          ],
+          "texture": "#vault_bar"
+        }
+      }
+    },
+    {
+      "name": "end_right",
+      "from": [
+        20.5,
+        6,
+        4
+      ],
+      "to": [
+        24.5,
+        10,
+        15
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "z",
+        "origin": [
+          22.5,
+          8,
+          9.5
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            12,
+            1,
+            13
+          ],
+          "texture": "#vault_bar"
+        },
+        "east": {
+          "uv": [
+            2.5,
+            10.75,
+            5.25,
+            11.75
+          ],
+          "texture": "#vault_bar"
+        },
+        "south": {
+          "uv": [
+            1.5,
+            12,
+            2.5,
+            13
+          ],
+          "texture": "#vault_bar"
+        },
+        "west": {
+          "uv": [
+            0,
+            13.5,
+            2.75,
+            14.5
+          ],
+          "texture": "#vault_bar"
+        },
+        "up": {
+          "uv": [
+            3,
+            12,
+            4,
+            14.75
+          ],
+          "texture": "#vault_bar"
+        },
+        "down": {
+          "uv": [
+            4.5,
+            12,
+            5.5,
+            14.75
+          ],
+          "texture": "#vault_bar"
+        }
+      }
+    },
+    {
+      "name": "end_left",
+      "from": [
+        -8.5,
+        6,
+        4
+      ],
+      "to": [
+        -4.5,
+        10,
+        15
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "z",
+        "origin": [
+          -6.5,
+          8,
+          9.5
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            8,
+            13.25,
+            9,
+            14.25
+          ],
+          "texture": "#vault_bar"
+        },
+        "east": {
+          "uv": [
+            3,
+            15,
+            5.75,
+            16
+          ],
+          "texture": "#vault_bar"
+        },
+        "south": {
+          "uv": [
+            9.5,
+            13.25,
+            10.5,
+            14.25
+          ],
+          "texture": "#vault_bar"
+        },
+        "west": {
+          "uv": [
+            6,
+            15,
+            8.75,
+            16
+          ],
+          "texture": "#vault_bar"
+        },
+        "up": {
+          "uv": [
+            11,
+            13.25,
+            12,
+            16
+          ],
+          "texture": "#vault_bar"
+        },
+        "down": {
+          "uv": [
+            12.5,
+            13.25,
+            13.5,
+            16
+          ],
+          "texture": "#vault_bar"
+        }
+      }
+    }
+  ]
+}

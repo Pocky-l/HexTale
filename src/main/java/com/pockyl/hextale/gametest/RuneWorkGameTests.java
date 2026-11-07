@@ -152,7 +152,7 @@ public final class RuneWorkGameTests {
                 new ItemStack(ModItems.HEXSTEEL_INGOT.get()), new ItemStack(ModItems.HEXSTEEL_INGOT.get()));
         EssenceMix essence = EssenceMix.of(Map.of(Essence.MAGIC, 32, Essence.CIRCUIT, 24, Essence.CRYSTAL, 16));
         HextechAltarBlockEntity altar = circle(helper, new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), items, essence);
-        List<ItemStack> more = List.of(new ItemStack(ModItems.CRYSTAL_BATTERY.get()), new ItemStack(ModItems.REGENERATIVE_SLIME.get()),
+        List<ItemStack> more = List.of(new ItemStack(ModItems.RUNE_STELE.get()), new ItemStack(ModItems.REGENERATIVE_SLIME.get()),
                 new ItemStack(Items.LIGHTNING_ROD));
         List<BlockPos> corners = List.of(new BlockPos(5, 2, 1), new BlockPos(5, 2, 5), new BlockPos(1, 2, 5));
         for (int i = 0; i < corners.size(); i++) {
@@ -424,6 +424,23 @@ public final class RuneWorkGameTests {
             helper.assertTrue(PickaxeRunes.of(altar.center()).stars(PickaxeRune.SMELTING) == 2, "Smelting with two stars");
             EssenceMix left = helper.<EssenceTankBlockEntity>getBlockEntity(TANK).tank().contents();
             helper.assertTrue(left.get(cost.pureEssence()) == 0 && left.get(Essence.ORE) == 10, "only the rune's essence was drawn, left " + left);
+        });
+    }
+
+    /** An Awakened Workbench alone in the Rune Circle takes a rune like any device, and keeps the charge it came with. */
+    @HexTest(maxTicks = 300)
+    public static void theRuneCircleBurnsARuneIntoAWorkbench(GameTestHelper helper) {
+        com.pockyl.hextale.runework.WorkbenchRune rune = com.pockyl.hextale.runework.WorkbenchRune.CACHE;
+        ItemStack bench = new ItemStack(ModItems.HEX_WORKBENCH.get());
+        bench.set(com.pockyl.hextale.registry.ModDataComponents.WORKBENCH_CHARGE.get(), 40);
+        HextechAltarBlockEntity altar = runeCircle(helper, bench, rune.cost(2).plus(EssenceMix.pure(Essence.ORE, 10)));
+        helper.setBlock(STELE, ModBlocks.RUNE_STELE.get());
+        helper.<RuneSteleBlockEntity>getBlockEntity(STELE).choose(rune.rune(), 2);
+        altar.startOrAbort(null);
+        helper.assertTrue(altar.active() && altar.kind() == Ritual.Kind.ENGRAVE, "the rune burning starts");
+        helper.succeedWhen(() -> {
+            helper.assertTrue(RuneHolder.WORKBENCH.runes(altar.center()).stars(rune.rune()) == 2, "Hoard with two stars");
+            helper.assertTrue(altar.center().getOrDefault(com.pockyl.hextale.registry.ModDataComponents.WORKBENCH_CHARGE.get(), 0) == 40, "the charge stays");
         });
     }
 

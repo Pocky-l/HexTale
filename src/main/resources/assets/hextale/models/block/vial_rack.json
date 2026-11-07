@@ -1,0 +1,420 @@
+{
+  "gui_light": "front",
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/vial_rack",
+    "sheet": "hextale:block/vial_rack"
+  },
+  "elements": [
+    {
+      "name": "iron_foot",
+      "from": [
+        2,
+        0,
+        3
+      ],
+      "to": [
+        14,
+        1,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5.5,
+            0,
+            7,
+            0.125
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            7.125,
+            0,
+            8.375,
+            0.125
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            8.5,
+            0,
+            10,
+            0.125
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            10.125,
+            0,
+            11.375,
+            0.125
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            11.5,
+            0,
+            13,
+            1.25
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            13.125,
+            0,
+            14.625,
+            1.25
+          ],
+          "texture": "#sheet",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "iron_step",
+      "from": [
+        2,
+        1,
+        8
+      ],
+      "to": [
+        14,
+        5,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5.5,
+            1.375,
+            7,
+            1.875
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            7.125,
+            1.375,
+            7.75,
+            1.875
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            7.875,
+            1.375,
+            9.375,
+            1.875
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            9.5,
+            1.375,
+            10.125,
+            1.875
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            10.25,
+            1.375,
+            11.75,
+            2
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "iron_side_e",
+      "from": [
+        15,
+        0,
+        3
+      ],
+      "to": [
+        15,
+        15,
+        13
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            0,
+            0,
+            1.25,
+            1.875
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            1.375,
+            0,
+            2.625,
+            1.875
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "iron_side_w",
+      "from": [
+        1,
+        0,
+        3
+      ],
+      "to": [
+        1,
+        15,
+        13
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            2.75,
+            0,
+            4,
+            1.875
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            4.125,
+            0,
+            5.375,
+            1.875
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "copper_rail_front",
+      "from": [
+        0,
+        5,
+        3
+      ],
+      "to": [
+        16,
+        6,
+        4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            2.125,
+            2,
+            2.25
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            2.125,
+            2.125,
+            2.25,
+            2.25
+          ],
+          "texture": "#sheet",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            2.375,
+            2.125,
+            4.375,
+            2.25
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            4.5,
+            2.125,
+            4.625,
+            2.25
+          ],
+          "texture": "#sheet",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            4.75,
+            2.125,
+            6.75,
+            2.25
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            6.875,
+            2.125,
+            8.875,
+            2.25
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "copper_rail_back",
+      "from": [
+        0,
+        9,
+        8
+      ],
+      "to": [
+        16,
+        10,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            2.375,
+            2,
+            2.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            2.125,
+            2.375,
+            2.25,
+            2.5
+          ],
+          "texture": "#sheet",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            2.375,
+            2.375,
+            4.375,
+            2.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            4.5,
+            2.375,
+            4.625,
+            2.5
+          ],
+          "texture": "#sheet",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            4.75,
+            2.375,
+            6.75,
+            2.5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            6.875,
+            2.375,
+            8.875,
+            2.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "copper_handle",
+      "from": [
+        0,
+        13,
+        11
+      ],
+      "to": [
+        16,
+        14,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            2.625,
+            2,
+            2.75
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            2.125,
+            2.625,
+            2.25,
+            2.75
+          ],
+          "texture": "#sheet",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            2.375,
+            2.625,
+            4.375,
+            2.75
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            4.5,
+            2.625,
+            4.625,
+            2.75
+          ],
+          "texture": "#sheet",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            4.75,
+            2.625,
+            6.75,
+            2.75
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            6.875,
+            2.625,
+            8.875,
+            2.75
+          ],
+          "texture": "#sheet"
+        }
+      }
+    }
+  ],
+  "render_type": "minecraft:cutout"
+}

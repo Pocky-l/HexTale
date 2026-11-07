@@ -158,10 +158,23 @@ public final class ModBlocks {
                     .requiresCorrectToolForDrops().strength(1.0F, 3.0F).sound(SoundType.POINTED_DRIPSTONE).noOcclusion()
                     .dynamicShape().offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.DESTROY));
     /** Void Crystals: grow on Void Rock round a held breach (level 4 gem; sealed in nullstone before any craft). */
-    public static final DeferredBlock<net.minecraft.world.level.block.AmethystClusterBlock> VOID_CRYSTAL_CLUSTER = BLOCKS.registerBlock(
-            "void_crystal_cluster", properties -> new net.minecraft.world.level.block.AmethystClusterBlock(7.0F, 3.0F, properties),
-            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).forceSolidOn().noOcclusion().strength(1.5F)
-                    .requiresCorrectToolForDrops().lightLevel(state -> 5).sound(SoundType.AMETHYST_CLUSTER).pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<com.pockyl.hextale.block.VoidCrystalBudBlock> VOID_CRYSTAL_CLUSTER = BLOCKS.registerBlock(
+            "void_crystal_cluster", properties -> new com.pockyl.hextale.block.VoidCrystalBudBlock(7.0F, 3.0F, properties),
+            () -> voidCrystalProperties(5).sound(SoundType.AMETHYST_CLUSTER));
+    public static final DeferredBlock<com.pockyl.hextale.block.VoidCrystalBudBlock> LARGE_VOID_CRYSTAL_BUD = BLOCKS.registerBlock("large_void_crystal_bud",
+            properties -> new com.pockyl.hextale.block.VoidCrystalBudBlock(5.0F, 3.0F, properties),
+            () -> voidCrystalProperties(4).sound(SoundType.LARGE_AMETHYST_BUD));
+    public static final DeferredBlock<com.pockyl.hextale.block.VoidCrystalBudBlock> MEDIUM_VOID_CRYSTAL_BUD = BLOCKS.registerBlock("medium_void_crystal_bud",
+            properties -> new com.pockyl.hextale.block.VoidCrystalBudBlock(4.0F, 3.0F, properties),
+            () -> voidCrystalProperties(2).sound(SoundType.MEDIUM_AMETHYST_BUD));
+    public static final DeferredBlock<com.pockyl.hextale.block.VoidCrystalBudBlock> SMALL_VOID_CRYSTAL_BUD = BLOCKS.registerBlock("small_void_crystal_bud",
+            properties -> new com.pockyl.hextale.block.VoidCrystalBudBlock(3.0F, 4.0F, properties),
+            () -> voidCrystalProperties(1).sound(SoundType.SMALL_AMETHYST_BUD));
+    /** Grows those buds on its open sides; found in the Void past the Threshold, gives nothing when broken, no piston moves it. */
+    public static final DeferredBlock<com.pockyl.hextale.block.BuddingVoidCrystalBlock> BUDDING_VOID_CRYSTAL = BLOCKS.registerBlock("budding_void_crystal",
+            com.pockyl.hextale.block.BuddingVoidCrystalBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).randomTicks().strength(3.0F).requiresCorrectToolForDrops()
+                    .lightLevel(state -> 3).sound(SoundType.AMETHYST).pushReaction(PushReaction.BLOCK));
     // Hextech crystals: amethyst the strike woke all the way, in the four amethyst sizes (sizes and sounds as vanilla).
     public static final DeferredBlock<com.pockyl.hextale.block.HextechClusterBlock> HEXTECH_CLUSTER = BLOCKS.registerBlock("hextech_cluster",
             properties -> new com.pockyl.hextale.block.HextechClusterBlock(7.0F, 3.0F, properties),
@@ -332,6 +345,11 @@ public final class ModBlocks {
             com.pockyl.hextale.block.HexSawmillBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).strength(2.5F, 6.0F).sound(SoundType.WOOD).noOcclusion()
                     .lightLevel(state -> 4));
+    /** A feed trough with a crook and a bell: gathers from the passive animals around it without hurting them. */
+    public static final DeferredBlock<com.pockyl.hextale.block.HerdkeeperBlock> HERDKEEPER = BLOCKS.registerBlock("herdkeeper",
+            com.pockyl.hextale.block.HerdkeeperBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).strength(2.5F, 6.0F).sound(SoundType.WOOD).noOcclusion()
+                    .lightLevel(state -> state.getValue(com.pockyl.hextale.block.HerdkeeperBlock.ACTIVE) ? 6 : 2));
     /** A two-block brass-and-walnut street lamp whose gem burns off the dirt of the work around it. */
     public static final DeferredBlock<com.pockyl.hextale.block.HextechLamppostBlock> HEXTECH_LAMPPOST = BLOCKS.registerBlock("hextech_lamppost",
             com.pockyl.hextale.block.HextechLamppostBlock::new,
@@ -474,6 +492,63 @@ public final class ModBlocks {
             com.pockyl.hextale.block.ChemTankBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F, 6.0F).sound(SoundType.COPPER).noOcclusion()
                     .requiresCorrectToolForDrops());
+    /** The Chem Jet Tank set down: the tank with its two nozzles, filled and pumped like the plain one. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ChemTankBlock> CHEM_JET_TANK = BLOCKS.registerBlock("chem_jet_tank",
+            com.pockyl.hextale.block.ChemTankBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F, 6.0F).sound(SoundType.COPPER).noOcclusion()
+                    .requiresCorrectToolForDrops());
+    /** The Chem Carboy: a two-block flask holding one brew for the devices around it. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ChemCarboyBlock> CHEM_CARBOY = BLOCKS.registerBlock("chem_carboy",
+            com.pockyl.hextale.block.ChemCarboyBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F, 6.0F).sound(SoundType.COPPER).noOcclusion()
+                    .requiresCorrectToolForDrops());
+    public static final DeferredBlock<com.pockyl.hextale.block.CreativeChemCarboyBlock> CREATIVE_CHEM_CARBOY = BLOCKS.registerBlock(
+            "creative_chem_carboy", com.pockyl.hextale.block.CreativeChemCarboyBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).strength(-1.0F, 3600000.0F).sound(SoundType.COPPER)
+                    .noOcclusion().noLootTable());
+    /** The Vial Rack: eight vials of any brew on show, on a floor or a wall. */
+    public static final DeferredBlock<com.pockyl.hextale.block.VialRackBlock> VIAL_RACK = BLOCKS.registerBlock("vial_rack",
+            com.pockyl.hextale.block.VialRackBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F, 6.0F).sound(SoundType.COPPER).noOcclusion()
+                    .requiresCorrectToolForDrops());
+    /** The Chem Lumen: a gas street lamp burning for good on a floor, a wall or a ceiling. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ChemLumenBlock> CHEM_LUMEN = BLOCKS.registerBlock("chem_lumen",
+            com.pockyl.hextale.block.ChemLumenBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F, 6.0F).sound(SoundType.LANTERN).noOcclusion()
+                    .requiresCorrectToolForDrops().lightLevel(state -> 15).pushReaction(PushReaction.DESTROY));
+    /** Gas Cylinders: decor, one block per band colour. */
+    public static final DeferredBlock<com.pockyl.hextale.block.GasCylinderBlock> GAS_CYLINDER = BLOCKS.registerBlock("gas_cylinder",
+            com.pockyl.hextale.block.GasCylinderBlock::new, ModBlocks::cylinderProperties);
+    public static final DeferredBlock<com.pockyl.hextale.block.GasCylinderBlock> GAS_CYLINDER_RUST = BLOCKS.registerBlock("gas_cylinder_rust",
+            com.pockyl.hextale.block.GasCylinderBlock::new, ModBlocks::cylinderProperties);
+    public static final DeferredBlock<com.pockyl.hextale.block.GasCylinderBlock> GAS_CYLINDER_SHIMMER = BLOCKS.registerBlock("gas_cylinder_shimmer",
+            com.pockyl.hextale.block.GasCylinderBlock::new, ModBlocks::cylinderProperties);
+    /** A Wall Valve Wheel: decor whose wheel turns on a click. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ValveWheelBlock> VALVE_WHEEL = BLOCKS.registerBlock("valve_wheel",
+            com.pockyl.hextale.block.ValveWheelBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F, 6.0F).sound(SoundType.COPPER).noOcclusion()
+                    .requiresCorrectToolForDrops().pushReaction(PushReaction.DESTROY));
+    /** The walkway of a chemtech yard: a grate deck in the lower or upper half of the cell. */
+    public static final DeferredBlock<com.pockyl.hextale.block.RustedCatwalkBlock> RUSTED_CATWALK = BLOCKS.registerBlock("rusted_catwalk",
+            com.pockyl.hextale.block.RustedCatwalkBlock::new, ModBlocks::openPlatingProperties);
+    /** Rails along the edges of a cell. */
+    public static final DeferredBlock<com.pockyl.hextale.block.RustedRailingBlock> RUSTED_RAILING = BLOCKS.registerBlock("rusted_railing",
+            com.pockyl.hextale.block.RustedRailingBlock::new, ModBlocks::openPlatingProperties);
+    public static final DeferredBlock<Block> HAZARD_PLATING = BLOCKS.registerBlock("hazard_plating", Block::new, ModBlocks::platingProperties);
+    public static final DeferredBlock<net.minecraft.world.level.block.LadderBlock> RUSTED_LADDER = BLOCKS.registerBlock("rusted_ladder",
+            net.minecraft.world.level.block.LadderBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).strength(1.5F, 6.0F).sound(SoundType.COPPER).noOcclusion()
+                    .requiresCorrectToolForDrops().pushReaction(PushReaction.DESTROY));
+    /** A Chain Launcher line's end where its user stood or on a floor / ceiling: a two-block pole; joins lines. No item. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ChainPostBlock> CHAIN_POST = BLOCKS.registerBlock("chain_post",
+            com.pockyl.hextale.block.ChainPostBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F, 6.0F).sound(SoundType.CHAIN).noOcclusion()
+                    .noLootTable().pushReaction(net.minecraft.world.level.material.PushReaction.BLOCK));
+    /** A launcher line's end in a wall: the harpoon head bitten into a block. No item, drops nothing. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ChainClawBlock> CHAIN_CLAW = BLOCKS.registerBlock("chain_claw",
+            com.pockyl.hextale.block.ChainClawBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.0F, 6.0F).sound(SoundType.CHAIN).noOcclusion()
+                    .noCollission().noLootTable().pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY));
     /** Chem-steel: iron tempered in acid and shimmer, the metal of chemtech gear; its block and plating are decor. */
     public static final DeferredBlock<Block> CHEM_STEEL_BLOCK = BLOCKS.registerBlock("chem_steel_block", Block::new,
             () -> platingProperties().strength(6.0F, 12.0F).sound(SoundType.NETHERITE_BLOCK));
@@ -621,6 +696,21 @@ public final class ModBlocks {
             ModBlocks::nullstoneProperties);
     public static final DeferredBlock<Block> NULLSTONE_BRICKS = BLOCKS.registerBlock("nullstone_bricks", Block::new,
             () -> nullstoneProperties().sound(SoundType.DEEPSLATE_BRICKS));
+    /** Nine nested rings round a gem: a store of items that outlives its block, reached from anywhere by terminals. */
+    public static final DeferredBlock<com.pockyl.hextale.block.HexVaultBlock> HEX_VAULT = BLOCKS.registerBlock("hex_vault",
+            com.pockyl.hextale.block.HexVaultBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(4.0F, 1200.0F).sound(SoundType.METAL).noOcclusion()
+                    .lightLevel(state -> 7));
+    /** On the platform of a Hex Vault's gate, or against it, each gives the vault more room. */
+    public static final DeferredBlock<com.pockyl.hextale.block.StorageCubeBlock> STORAGE_CUBE = BLOCKS.registerBlock("storage_cube",
+            com.pockyl.hextale.block.StorageCubeBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(3.0F, 6.0F).sound(SoundType.METAL).noOcclusion()
+                    .requiresCorrectToolForDrops().lightLevel(state -> state.getValue(com.pockyl.hextale.block.StorageCubeBlock.ACTIVE) ? 7 : 0));
+    /** A screen tied to a Hex Vault by a link crystal. */
+    public static final DeferredBlock<com.pockyl.hextale.block.HexTerminalBlock> HEX_TERMINAL = BLOCKS.registerBlock("hex_terminal",
+            com.pockyl.hextale.block.HexTerminalBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(2.5F, 6.0F).sound(SoundType.METAL).noOcclusion()
+                    .requiresCorrectToolForDrops().lightLevel(state -> state.getValue(com.pockyl.hextale.block.HexTerminalBlock.LINKED) ? 5 : 0));
     /** A brass cage around a crystal core that keeps hextech charge and feeds the workbenches around it. */
     public static final DeferredBlock<com.pockyl.hextale.block.CrystalBatteryBlock> CRYSTAL_BATTERY = BLOCKS.registerBlock("crystal_battery",
             com.pockyl.hextale.block.CrystalBatteryBlock::new,
@@ -640,6 +730,20 @@ public final class ModBlocks {
     private static BlockBehaviour.Properties magicStoneProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.SAND).instrument(NoteBlockInstrument.BASEDRUM)
                 .requiresCorrectToolForDrops().strength(2.0F, 6.0F);
+    }
+
+    // The Hex Vault's cream stone with gold and blue set in it: floors and walls for the room round it.
+    public static final DeferredBlock<Block> WHITE_GOLD_TILES = BLOCKS.registerBlock("white_gold_tiles", Block::new, ModBlocks::whiteGoldProperties);
+    public static final DeferredBlock<StairBlock> WHITE_GOLD_TILES_STAIRS = BLOCKS.registerBlock("white_gold_tiles_stairs",
+            properties -> new StairBlock(WHITE_GOLD_TILES.get().defaultBlockState(), properties), () -> whiteGoldProperties());
+    public static final DeferredBlock<SlabBlock> WHITE_GOLD_TILES_SLAB = BLOCKS.registerBlock("white_gold_tiles_slab", SlabBlock::new,
+            () -> whiteGoldProperties());
+    public static final DeferredBlock<Block> WHITE_GOLD_INLAY = BLOCKS.registerBlock("white_gold_inlay", Block::new, ModBlocks::whiteGoldProperties);
+    public static final DeferredBlock<RotatedPillarBlock> WHITE_GOLD_PILLAR = BLOCKS.registerBlock("white_gold_pillar", RotatedPillarBlock::new,
+            ModBlocks::whiteGoldProperties);
+
+    private static BlockBehaviour.Properties whiteGoldProperties() {
+        return magicStoneProperties().mapColor(MapColor.QUARTZ).sound(SoundType.POLISHED_TUFF);
     }
 
     // The Void's blight: ground it has touched, its growth, and bricks cut from its rock.
@@ -672,6 +776,15 @@ public final class ModBlocks {
 
     // The Void itself (the dimension): the ribs' chitin, the skin between them, the stone it swallowed, its ores.
     public static final DeferredBlock<Block> HUSK_CHITIN = BLOCKS.registerBlock("husk_chitin", Block::new, ModBlocks::huskChitinProperties);
+    // Decorative blocks that came with the Prosector.
+    public static final DeferredBlock<Block> THEATRE_TILES = BLOCKS.registerBlock("theatre_tiles", Block::new, () -> huskChitinProperties().isValidSpawn(Blocks::never));
+    public static final DeferredBlock<StairBlock> THEATRE_TILE_STAIRS = BLOCKS.registerBlock("theatre_tile_stairs",
+            properties -> new StairBlock(THEATRE_TILES.get().defaultBlockState(), properties), () -> huskChitinProperties());
+    public static final DeferredBlock<SlabBlock> THEATRE_TILE_SLAB = BLOCKS.registerBlock("theatre_tile_slab", SlabBlock::new, ModBlocks::huskChitinProperties);
+    /** One of the Seers' eyes. */
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.boss.ProsectorBlocks.Eye> WATCHING_EYE = BLOCKS.registerBlock("watching_eye",
+            com.pockyl.hextale.thevoid.boss.ProsectorBlocks.Eye::new, () -> huskChitinProperties().isValidSpawn(Blocks::never)
+                    .lightLevel(state -> state.getValue(com.pockyl.hextale.thevoid.boss.ProsectorBlocks.Eye.OPEN) ? 5 : 0));
     /** The gold-lit crest along the top of a rib. */
     public static final DeferredBlock<Block> HUSK_CHITIN_RIDGE = BLOCKS.registerBlock("husk_chitin_ridge", Block::new,
             () -> huskChitinProperties().lightLevel(state -> 6));
@@ -890,6 +1003,17 @@ public final class ModBlocks {
                 .requiresCorrectToolForDrops().strength(4.0F, 6.0F).sound(SoundType.COPPER);
     }
 
+    private static BlockBehaviour.Properties cylinderProperties() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.METAL).instrument(NoteBlockInstrument.IRON_XYLOPHONE).strength(2.0F, 6.0F)
+                .sound(SoundType.COPPER).noOcclusion().requiresCorrectToolForDrops();
+    }
+
+    /** Thin rusted ironwork: nothing spawns on it, it carries no signal and suffocates nobody. */
+    private static BlockBehaviour.Properties openPlatingProperties() {
+        return platingProperties().strength(2.0F, 6.0F).sound(SoundType.COPPER_GRATE).noOcclusion().isValidSpawn((state, level, pos, type) -> false)
+                .isRedstoneConductor((state, level, pos) -> false).isSuffocating((state, level, pos) -> false);
+    }
+
     private static BlockBehaviour.Properties fireBrickProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.SAND).instrument(net.minecraft.world.level.block.state.properties.NoteBlockInstrument.BASEDRUM)
                 .requiresCorrectToolForDrops().strength(2.0F, 6.0F).sound(SoundType.MUD_BRICKS);
@@ -899,6 +1023,11 @@ public final class ModBlocks {
         return BlockBehaviour.Properties.of().mapColor(MapColor.NONE).strength(0.6F).sound(SoundType.GLASS).noOcclusion().dynamicShape()
                 .isValidSpawn((state, level, pos, type) -> false).isRedstoneConductor((state, level, pos) -> false)
                 .isSuffocating((state, level, pos) -> false).isViewBlocking((state, level, pos) -> false);
+    }
+
+    private static BlockBehaviour.Properties voidCrystalProperties(int light) {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).forceSolidOn().noOcclusion().strength(1.5F)
+                .requiresCorrectToolForDrops().lightLevel(state -> light).pushReaction(PushReaction.DESTROY);
     }
 
     private static BlockBehaviour.Properties hextechCrystalProperties(int light) {

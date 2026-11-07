@@ -54,10 +54,44 @@ public class RiftLinkCrystalItem extends Item {
         return stack;
     }
 
+    /** A crystal pressed to a Hex Vault: it ties one Hex Terminal or Pocket Terminal to that vault. */
+    public static ItemStack rememberingVault(UUID vault, net.minecraft.core.BlockPos pos) {
+        ItemStack stack = new ItemStack(ModItems.RIFT_LINK_CRYSTAL.get());
+        stack.set(ModDataComponents.VAULT_LINK.get(), new com.pockyl.hextale.storage.VaultLink(vault, pos));
+        return stack;
+    }
+
+    /** Pressed to a Hex Terminal, a crystal from a vault ties the two and is spent. */
+    private static InteractionResult tieTerminal(UseOnContext context, com.pockyl.hextale.block.HexTerminalBlockEntity terminal) {
+        ItemStack stack = context.getItemInHand();
+        com.pockyl.hextale.storage.VaultLink link = stack.get(ModDataComponents.VAULT_LINK.get());
+        Player player = context.getPlayer();
+        if (link == null) {
+            return InteractionResult.PASS;
+        }
+        if (context.getLevel() instanceof ServerLevel level) {
+            terminal.tie(link.vault());
+            if (player == null || !player.hasInfiniteMaterials()) {
+                stack.shrink(1);
+            }
+            message(player, "block.hextale.hex_terminal.linked");
+            Vec3 centre = Vec3.atCenterOf(terminal.getBlockPos());
+            level.playSound(null, terminal.getBlockPos(), ModSounds.RIFT_LINK.get(), SoundSource.BLOCKS, 0.7F, 1.3F);
+            level.sendParticles(ModParticles.glint(RiftGateBlock.RIFT), centre.x, centre.y, centre.z, 16, 0.25, 0.25, 0.25, 0.04);
+        }
+        return InteractionResult.SUCCESS;
+    }
+
     /** Pressed to a gate: ties it with the gate remembered (sneaking or not - so it is the item's own use). */
     @Override
     public InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
+        if (level.getBlockEntity(context.getClickedPos()) instanceof com.pockyl.hextale.block.HexTerminalBlockEntity terminal) {
+            return tieTerminal(context, terminal);
+        }
+        if (context.getItemInHand().has(ModDataComponents.VAULT_LINK.get())) {
+            return InteractionResult.PASS;
+        }
         if (!(level.getBlockEntity(context.getClickedPos()) instanceof RiftGateBlock.Gate gate)) {
             return InteractionResult.PASS;
         }
@@ -114,7 +148,7 @@ public class RiftLinkCrystalItem extends Item {
 
     @Override
     public boolean isFoil(ItemStack stack) {
-        return stack.has(ModDataComponents.RIFT_LINK.get());
+        return stack.has(ModDataComponents.RIFT_LINK.get()) || stack.has(ModDataComponents.VAULT_LINK.get());
     }
 
     @Override
@@ -124,6 +158,13 @@ public class RiftLinkCrystalItem extends Item {
         if (memory != null) {
             tooltip.accept(Component.translatable("item.hextale.rift_link_crystal.gate", memory.gate().pos().getX(), memory.gate().pos().getY(),
                     memory.gate().pos().getZ()).withStyle(ChatFormatting.DARK_PURPLE));
+        }
+        com.pockyl.hextale.storage.VaultLink vault = stack.get(ModDataComponents.VAULT_LINK.get());
+        if (vault != null) {
+            tooltip.accept(Component.translatable("item.hextale.rift_link_crystal.vault", vault.pos().getX(), vault.pos().getY(), vault.pos().getZ())
+                    .withStyle(ChatFormatting.DARK_PURPLE));
+            tooltip.accept(Component.translatable("item.hextale.rift_link_crystal.vault.hint").withStyle(ChatFormatting.GRAY));
+            return;
         }
         tooltip.accept(Component.translatable("item.hextale.rift_link_crystal.hint").withStyle(ChatFormatting.GRAY));
     }

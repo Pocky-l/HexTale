@@ -1,0 +1,10 @@
+{
+  "type": "hextale:lab_experiment",
+  "topic": "chem_jets",
+  "target": "magma",
+  "amount": 10,
+  "purity": 0.7,
+  "sample": {
+    "item": "minecraft:firework_rocket"
+  }
+}

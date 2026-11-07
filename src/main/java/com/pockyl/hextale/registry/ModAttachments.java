@@ -47,8 +47,22 @@ public final class ModAttachments {
                     .copyOnDeath().build()),
             com.pockyl.hextale.chem.ShimmerVeins.Veins.STREAM_CODEC);
 
+    /** A companion changed by the Shimmer Injector (see {@link com.pockyl.hextale.chem.ShimmerMutations}); saved while set, synced. */
+    public static final Supplier<AttachmentType<com.pockyl.hextale.chem.ShimmerMutations.Mutation>> SHIMMER_MUTATION = com.pockyl.hextale.port.PortSync.synced(ATTACHMENT_TYPES.register("shimmer_mutation",
+            () -> AttachmentType.builder(() -> com.pockyl.hextale.chem.ShimmerMutations.Mutation.NONE)
+                    .serialize(com.pockyl.hextale.chem.ShimmerMutations.Mutation.CODEC, mutation -> mutation.kind() != com.pockyl.hextale.chem.ShimmerMutations.Kind.NONE)
+                    .build()), com.pockyl.hextale.chem.ShimmerMutations.Mutation.STREAM_CODEC);
+    /** 1.21.1 has no saddle slot: the saddle on a Panther (see {@link com.pockyl.hextale.port.PortSaddle}); saved while set, synced. */
+    public static final Supplier<AttachmentType<Boolean>> PANTHER_SADDLE = com.pockyl.hextale.port.PortSync.synced(ATTACHMENT_TYPES.register("panther_saddle",
+            () -> AttachmentType.builder(() -> false).serialize(com.mojang.serialization.Codec.BOOL, saddled -> saddled).build()),
+            net.minecraft.network.codec.ByteBufCodecs.BOOL);
+
     /** The tick a creature put to sleep by a Slumber rune wakes (see {@link com.pockyl.hextale.runework.Slumber}); saved while set. */
     public static final Supplier<AttachmentType<Long>> SLUMBER = ATTACHMENT_TYPES.register("slumber",
+            () -> AttachmentType.builder(() -> 0L).serialize(com.mojang.serialization.Codec.LONG, until -> until > 0).build());
+
+    /** The tick an animal a Herdkeeper tended may be tended again (see {@link com.pockyl.hextale.farm.Herding}); saved while set. */
+    public static final Supplier<AttachmentType<Long>> HERD_REST = ATTACHMENT_TYPES.register("herd_rest",
             () -> AttachmentType.builder(() -> 0L).serialize(com.mojang.serialization.Codec.LONG, until -> until > 0).build());
 
     /** Where a player in the Void came in from (see {@link com.pockyl.hextale.thevoid.realm.VoidPassage}); saved while set. */

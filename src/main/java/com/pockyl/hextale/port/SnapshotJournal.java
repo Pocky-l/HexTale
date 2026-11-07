@@ -27,15 +27,13 @@ public abstract class SnapshotJournal<S> {
         if (open == transaction) {
             return;
         }
+        TransactionContext outer = open;
         open = transaction;
         S snapshot = createSnapshot();
-        transaction.onCommit(() -> {
-            open = null;
-            onRootCommit(snapshot);
-        });
-        transaction.onAbort(() -> {
-            open = null;
-            revertToSnapshot(snapshot);
-        });
+        if (outer == null) {
+            transaction.onCommit(() -> onRootCommit(snapshot));
+        }
+        transaction.onClose(() -> open = outer);
+        transaction.onAbort(() -> revertToSnapshot(snapshot));
     }
 }

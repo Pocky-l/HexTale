@@ -1,0 +1,10 @@
+{
+  "type": "hextale:lab_experiment",
+  "topic": "vial_rack",
+  "target": "sap",
+  "amount": 6,
+  "purity": 0.6,
+  "sample": {
+    "item": "minecraft:glass_bottle"
+  }
+}

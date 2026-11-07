@@ -4,6 +4,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 
 import com.pockyl.hextale.Hextale;
@@ -13,7 +14,14 @@ public final class ModDamageTypes {
     /** Chemtech fumes: go through armour, push nobody and eat the undead too, which poison cannot. */
     public static final ResourceKey<DamageType> MIASMA = ResourceKey.create(Registries.DAMAGE_TYPE, Hextale.id("miasma"));
 
+    /** The Prosector's hits: {@code thevoid.boss.ProsectorDamage} works out the armour itself, so this type skips it. */
+    public static final ResourceKey<DamageType> DISSECTION = ResourceKey.create(Registries.DAMAGE_TYPE, Hextale.id("dissection"));
+
     private ModDamageTypes() {
+    }
+
+    public static DamageSource dissection(Level level, Entity by) {
+        return level.damageSources().source(DISSECTION, by);
     }
 
     public static DamageSource miasma(Level level) {

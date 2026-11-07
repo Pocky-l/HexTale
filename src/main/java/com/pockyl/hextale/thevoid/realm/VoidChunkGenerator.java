@@ -134,6 +134,9 @@ public class VoidChunkGenerator extends ChunkGenerator {
     private static final byte SAC_FACING = 80;
     private static final byte PEARL_FACING = 86;
     private static final byte MIMIC_FACING = 92;
+    /** A Budding Void Crystal, and what it has grown: 6 kinds per stage (a {@link Direction} each) from {@link #BUD_FACING}. */
+    private static final byte BUDDING = 100;
+    private static final byte BUD_FACING = 101;
     private static final net.minecraft.resources.ResourceKey<net.minecraft.world.level.storage.loot.LootTable> RUIN_LOOT =
             net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
                     com.pockyl.hextale.Hextale.id("chests/swallowed_ruin"));
@@ -211,6 +214,105 @@ public class VoidChunkGenerator extends ChunkGenerator {
                         kinds[above] = HOLLOW;
                     }
                 }
+            }
+        }
+        clutch(kinds, x0, z0);
+    }
+
+    /** The share of chunks with a clutch of Budding Void Crystal: none at the Threshold, more the deeper in. */
+    private static double clutchChance(VoidZones.Zone zone) {
+        return switch (zone) {
+            case THRESHOLD -> 0;
+            case REACH -> 0.04;
+            case SHOALS -> 0.06;
+            case DRIFT -> 0.1;
+            case VORTEX -> 0.16;
+        };
+    }
+
+    /** What may give way to a clutch's crystal: open space and the small growths of the flesh. */
+    private static boolean open(byte kind) {
+        return kind == VoidShapes.AIR || kind == FLORA || kind == CILIA || kind == SPORE || kind == CRYSTAL_UP;
+    }
+
+    private static boolean exposed(byte[] kinds, int x, int y, int z) {
+        for (Direction side : Direction.values()) {
+            int nx = x + side.getStepX(), nz = z + side.getStepZ();
+            if (nx >= 0 && nx < 16 && nz >= 0 && nz < 16 && open(kinds[VoidShapes.index(nx, y + side.getStepY(), nz)])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * A clutch: the flesh round one open spot of the chunk turned to Budding Void Crystal, already grown with buds and
+     * clusters in every stage, so it reads from afar and has something to cut on the first visit.
+     */
+    private static void clutch(byte[] kinds, int x0, int z0) {
+        if (VoidShapes.hash(x0, 3, z0, 0xB0D5) >= clutchChance(VoidZones.zone(x0 + 8, z0 + 8))) {
+            return;
+        }
+        int sx = -1, sy = -1, sz = -1;
+        double best = 2;
+        for (int y = 3; y < VoidShapes.HEIGHT - 3; y++) {
+            for (int z = 2; z < 14; z++) {
+                for (int x = 2; x < 14; x++) {
+                    if (kinds[VoidShapes.index(x, y, z)] == VoidShapes.FLESH && open(kinds[VoidShapes.index(x, y + 1, z)])) {
+                        double roll = VoidShapes.hash(x0 + x, y, z0 + z, 0xB0D6);
+                        if (roll < best) {
+                            best = roll;
+                            sx = x;
+                            sy = y;
+                            sz = z;
+                        }
+                    }
+                }
+            }
+        }
+        if (sx < 0) {
+            return;
+        }
+        for (int dy = -2; dy <= 2; dy++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                for (int dx = -2; dx <= 2; dx++) {
+                    int x = sx + dx, y = sy + dy, z = sz + dz;
+                    boolean centre = dx == 0 && dy == 0 && dz == 0;
+                    if (dx * dx + dy * dy + dz * dz <= 5 && kinds[VoidShapes.index(x, y, z)] == VoidShapes.FLESH && exposed(kinds, x, y, z)
+                            && (centre || VoidShapes.hash(x0 + x, y, z0 + z, 0xB0D7) < 0.6)) {
+                        kinds[VoidShapes.index(x, y, z)] = BUDDING;
+                    }
+                }
+            }
+        }
+        for (int dy = -2; dy <= 2; dy++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                for (int dx = -2; dx <= 2; dx++) {
+                    if (kinds[VoidShapes.index(sx + dx, sy + dy, sz + dz)] == BUDDING) {
+                        dress(kinds, sx + dx, sy + dy, sz + dz, x0, z0);
+                    }
+                }
+            }
+        }
+    }
+
+    /** The open sides of a budding block: about half carry a bud or a cluster, plants left on top of it give way. */
+    private static void dress(byte[] kinds, int x, int y, int z, int x0, int z0) {
+        for (Direction side : Direction.values()) {
+            int nx = x + side.getStepX(), ny = y + side.getStepY(), nz = z + side.getStepZ();
+            if (nx < 0 || nx > 15 || nz < 0 || nz > 15) {
+                continue;
+            }
+            int i = VoidShapes.index(nx, ny, nz);
+            if (!open(kinds[i])) {
+                continue;
+            }
+            double roll = VoidShapes.hash(x0 + nx, ny, z0 + nz, 0xB0D8 + side.ordinal());
+            if (roll < 0.55) {
+                int stage = roll < 0.2 ? 0 : roll < 0.37 ? 1 : roll < 0.48 ? 2 : 3;
+                kinds[i] = (byte) (BUD_FACING + stage * 6 + side.ordinal());
+            } else if (side == Direction.UP) {
+                kinds[i] = VoidShapes.AIR;
             }
         }
     }
@@ -502,8 +604,19 @@ public class VoidChunkGenerator extends ChunkGenerator {
             case RUIN_BRICKS -> ModBlocks.GNAWED_BRICKS.get().defaultBlockState();
             case CHEST, CHEST + 1, CHEST + 2, CHEST + 3 -> Blocks.CHEST.defaultBlockState()
                     .setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.from2DDataValue(kind - CHEST));
-            default -> sac(kind);
+            case BUDDING -> ModBlocks.BUDDING_VOID_CRYSTAL.get().defaultBlockState();
+            default -> kind >= BUD_FACING ? bud(kind) : sac(kind);
         };
+    }
+
+    private static BlockState bud(byte kind) {
+        var block = switch ((kind - BUD_FACING) / 6) {
+            case 0 -> ModBlocks.SMALL_VOID_CRYSTAL_BUD;
+            case 1 -> ModBlocks.MEDIUM_VOID_CRYSTAL_BUD;
+            case 2 -> ModBlocks.LARGE_VOID_CRYSTAL_BUD;
+            default -> ModBlocks.VOID_CRYSTAL_CLUSTER;
+        };
+        return block.get().defaultBlockState().setValue(AmethystClusterBlock.FACING, Direction.values()[(kind - BUD_FACING) % 6]);
     }
 
     private static BlockState sac(byte kind) {

@@ -954,7 +954,7 @@ public final class ResearchGameTests {
         source.tank().set(EssenceMix.pure(Essence.FIRE, 12));
         helper.succeedWhen(() -> {
             helper.assertTrue(target.tank().contents().equals(EssenceMix.pure(Essence.FIRE, 12)),
-                    "the fire was pumped into the other jar from below, got " + target.tank().contents());
+                    "the fire was pumped into the other jar from below, got " + target.tank().contents() + ", left " + source.tank().contents());
             helper.assertTrue(source.tank().isEmpty(), "the first jar is empty");
         });
     }

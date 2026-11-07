@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "hextale:block/chem_carboy"
+    },
+    "facing=east": {
+      "model": "hextale:block/chem_carboy",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "hextale:block/chem_carboy",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "hextale:block/chem_carboy",
+      "y": 270
+    }
+  }
+}

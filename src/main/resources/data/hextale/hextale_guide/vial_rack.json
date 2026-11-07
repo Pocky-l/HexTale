@@ -1,0 +1,18 @@
+{
+  "region": "chemtech",
+  "stage": "mid",
+  "icon": "hextale:vial_rack",
+  "parents": [
+    "chem_carboy",
+    "lab_bench"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:vial_rack"
+  },
+  "research": "vial_rack",
+  "pos": [
+    -1040,
+    100
+  ]
+}

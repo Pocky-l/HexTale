@@ -1,0 +1,15 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:quartz_block"
+  },
+  "essences": {
+    "crystal": 1,
+    "decay": 2
+  },
+  "result": {
+    "id": "minecraft:quartz",
+    "count": 4
+  },
+  "research": "unmaking"
+}

@@ -11,17 +11,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "hextale:crystal_battery",
-          "functions": [
-            {
-              "function": "minecraft:copy_components",
-              "include": [
-                "hextale:battery_runes",
-                "hextale:battery_charge"
-              ],
-              "source": "block_entity"
-            }
-          ]
+          "name": "hextale:crystal_battery"
         }
       ],
       "bonus_rolls": 0.0

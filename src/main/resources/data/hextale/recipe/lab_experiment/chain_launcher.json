@@ -1,0 +1,10 @@
+{
+  "type": "hextale:lab_experiment",
+  "topic": "chain_launcher",
+  "target": "steam",
+  "amount": 8,
+  "purity": 0.6,
+  "sample": {
+    "item": "minecraft:chain"
+  }
+}

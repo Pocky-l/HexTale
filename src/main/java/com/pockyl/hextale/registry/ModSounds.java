@@ -31,6 +31,7 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> SHIMMER_RUSH = register("shimmer.rush");
     public static final DeferredHolder<SoundEvent, SoundEvent> SHIMMER_FADE = register("shimmer.fade");
     public static final DeferredHolder<SoundEvent, SoundEvent> VEINS_WASH = register("shimmer.wash");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RAPTOR_FLAP = register("shimmer.raptor_flap");
     public static final DeferredHolder<SoundEvent, SoundEvent> PINK_BRAZIER_IGNITE = register("pink_brazier.ignite");
     public static final DeferredHolder<SoundEvent, SoundEvent> PINK_BRAZIER_BREATH = register("pink_brazier.breath");
     /** The Hextech Skypack: its jets catching, their steady roar (looped while they burn), a cough when the air is gone. */
@@ -154,6 +155,10 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> WHIRL_LAUNCH = register("whirl.launch");
     /** A whirl reaps a plant. */
     public static final DeferredHolder<SoundEvent, SoundEvent> WHIRL_REAP = register("whirl.reap");
+    /** A Herdkeeper's bell, when it tends an animal. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> HERDKEEPER_BELL = register("herdkeeper.bell");
+    /** Produce settles into a Herdkeeper's trough. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> HERDKEEPER_GATHER = register("herdkeeper.gather");
     /** A Hex Sawmill's saw flies out. */
     public static final DeferredHolder<SoundEvent, SoundEvent> SAW_LAUNCH = register("saw.launch");
     /** The saw bites into a trunk. */
@@ -175,9 +180,34 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> GRAPPLE_ATTACH = register("grapple.attach");
     public static final DeferredHolder<SoundEvent, SoundEvent> GRAPPLE_REEL = register("grapple.reel");
     public static final DeferredHolder<SoundEvent, SoundEvent> GRAPPLE_RELEASE = register("grapple.release");
+    /** The Biter Grenade: the jaw biting in, its ticking fuse, the blast, and a miss clattering down. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> BITER_GRENADE_BITE = register("biter_grenade.bite");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BITER_GRENADE_FUSE = register("biter_grenade.fuse");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BITER_GRENADE_BLAST = register("biter_grenade.blast");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BITER_GRENADE_CLATTER = register("biter_grenade.clatter");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BITER_GRENADE_HOP = register("biter_grenade.hop");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VAULT_DOOR_OPEN = register("vault.door_open");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VAULT_DOOR_SHUT = register("vault.door_shut");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VAULT_FORMED = register("vault.formed");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BITER_GRENADE_CHATTER = register("biter_grenade.chatter");
+    /** The Strike Gauntlet: the piston throwing its wearer off, the end of the flight, a fist's blow on the ground. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> STRIKE_GAUNTLET_DASH = register("strike_gauntlet.dash");
+    public static final DeferredHolder<SoundEvent, SoundEvent> STRIKE_GAUNTLET_IMPACT = register("strike_gauntlet.impact");
+    public static final DeferredHolder<SoundEvent, SoundEvent> STRIKE_GAUNTLET_FIST = register("strike_gauntlet.fist");
+    /** The Chain Launcher: the pneumatic shot, the claw biting in, the trolley rolling along the chain and braking. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHAIN_LAUNCHER_FIRE = register("chain_launcher.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHAIN_CLAW_BITE = register("chain_launcher.bite");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ZIPLINE_RIDE = register("zipline.ride");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ZIPLINE_BRAKE = register("zipline.brake");
     /** The Impulse Plate fires; what it threw at a target lands softly. */
     public static final DeferredHolder<SoundEvent, SoundEvent> IMPULSE_LAUNCH = register("impulse.launch");
     public static final DeferredHolder<SoundEvent, SoundEvent> IMPULSE_LAND = register("impulse.land");
+    /** The Hex Vault: something settling in, something drawn out, a refusal, a terminal waking up. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> VAULT_STORE = register("hex_vault.store");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VAULT_TAKE = register("hex_vault.take");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VAULT_REFUSE = register("hex_vault.refuse");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VAULT_TERMINAL = register("hex_vault.terminal");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VAULT_HUM = register("hex_vault.hum");
     /** Lesser Rift Gates: two tied together, something drawn in, something coming out, a gate left alone. */
     public static final DeferredHolder<SoundEvent, SoundEvent> RIFT_LINK = register("rift_gate.link");
     public static final DeferredHolder<SoundEvent, SoundEvent> RIFT_SEND = register("rift_gate.send");
@@ -192,6 +222,11 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> CHALK_CLOSE = register("binding_chalk.close");
     /** A Miasma Vent breathes out its fumes. */
     public static final DeferredHolder<SoundEvent, SoundEvent> MIASMA_HISS = register("miasma.hiss");
+    /** Chem-steel gear: the boots' jump in the air, a fall they soften, a respirator's breath under water. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHEM_BOOTS_PUFF = register("chem_boots.puff");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHEM_BOOTS_HISS = register("chem_boots.hiss");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHEM_JETS_ROAR = register("chem_jets.roar");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHEM_HELMET_BREATH = register("chem_helmet.breath");
     /** A rune doing its work (every proc, played by ToolEffects.puff; throttled per place). */
     public static final DeferredHolder<SoundEvent, SoundEvent> RUNE_PROC = register("rune.proc");
     /** A rune learned from a scroll or notes. */
@@ -282,6 +317,47 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> RUNE_GUST = register("rune.gust");
     /** The Thinning eating into the ground (its own voice instead of the vanilla sculk spread). */
     public static final DeferredHolder<SoundEvent, SoundEvent> THINNING_BLIGHT = register("thinning.blight");
+
+    /** The Prosector and its fight. Vanilla sounds stand in for all of these in sounds.json until their own are made. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_AMBIENT = register("prosector.ambient");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_HURT = register("prosector.hurt");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_DEATH = register("prosector.death");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_DULL = register("prosector.dull");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_WAKE = register("prosector.wake");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PREPARE_INCISION = register("prosector.prepare.incision");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PREPARE_PROBE = register("prosector.prepare.probe");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PREPARE_RETRACTOR = register("prosector.prepare.retractor");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PREPARE_EXCISION = register("prosector.prepare.excision");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PREPARE_SECTION = register("prosector.prepare.section");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PREPARE_RIPOSTE = register("prosector.prepare.riposte");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PREPARE_VOLLEY = register("prosector.prepare.volley");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PREPARE_CHARGE = register("prosector.prepare.charge");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PREPARE_CIRCLE = register("prosector.prepare.circle");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_CUT = register("prosector.cut");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_BEAM = register("prosector.beam");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_HOOK = register("prosector.hook");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_SNAG = register("prosector.snag");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PLUG_RISE = register("prosector.plug_rise");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PLUG_SLAM = register("prosector.plug_slam");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_FLOOR_DROP = register("prosector.floor_drop");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_SWEEP = register("prosector.sweep");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_QUILL = register("prosector.quill");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_CYST_BURST = register("prosector.cyst_burst");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_CIRCLE = register("prosector.circle");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_WRITE = register("prosector.write");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_SPECIMEN_HIT = register("prosector.specimen_hit");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_SPECIMEN_BREAK = register("prosector.specimen_break");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_FORGET = register("prosector.forget");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_TURN_DISSECTION = register("prosector.turn_dissection");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_TURN_PROOF = register("prosector.turn_proof");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PROOF_FORM = register("prosector.proof_form");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PROOF_HURT = register("prosector.proof_hurt");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_PROOF_DEATH = register("prosector.proof_death");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_FALL = register("prosector.fall");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_LOOP = register("prosector.loop");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_SUMMON = register("prosector.summon");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_SUMMON_RING = register("prosector.summon_ring");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_EYE_WAY = register("prosector.eye_way");
 
     private ModSounds() {
     }

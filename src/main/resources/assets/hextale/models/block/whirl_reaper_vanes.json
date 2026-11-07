@@ -1,5 +1,6 @@
 {
   "loader": "hextale:free_rotation",
+  "gui_light": "front",
   "parent": "minecraft:block/block",
   "textures": {
     "particle": "hextale:block/brass",

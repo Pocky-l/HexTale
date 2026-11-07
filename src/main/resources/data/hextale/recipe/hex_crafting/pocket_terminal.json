@@ -1,0 +1,26 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    " C ",
+    "GTG",
+    " H "
+  ],
+  "key": {
+    "G": {
+      "tag": "c:ingots/gold"
+    },
+    "C": {
+      "item": "hextale:hextech_gemstone"
+    },
+    "T": {
+      "item": "hextale:hex_terminal"
+    },
+    "H": {
+      "item": "hextale:hexsteel_ingot"
+    }
+  },
+  "result": {
+    "id": "hextale:pocket_terminal"
+  },
+  "charge": 8
+}

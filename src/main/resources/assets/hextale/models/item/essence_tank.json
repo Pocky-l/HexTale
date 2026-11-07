@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:builtin/entity",
-  "gui_light": "side",
+  "gui_light": "front",
   "display": {
     "gui": {
       "rotation": [

@@ -4,7 +4,14 @@
   "package": "com.pockyl.hextale.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "AbstractHorseMixin",
+    "CatMixin",
+    "ParrotMixin",
     "WorldDimensionsMixin"
+  ],
+  "client": [
+    "LivingEntityRendererMixin",
+    "ParrotRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

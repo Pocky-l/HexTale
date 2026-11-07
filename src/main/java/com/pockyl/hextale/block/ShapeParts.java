@@ -41,6 +41,8 @@ import org.jspecify.annotations.Nullable;
 @EventBusSubscriber(modid = Hextale.MOD_ID)
 public final class ShapeParts {
     public static final TagKey<Block> OWNERS = TagKey.create(Registries.BLOCK, Hextale.id("shape_part_owners"));
+    /** How many layers over a device its parts reach: the Hex Vault's rings are the tallest. */
+    public static final int MAX_UP = 3;
     /** Devices of freshly loaded chunks, checked on the next tick (a chunk must not be changed while it loads). */
     private static final Map<ResourceKey<Level>, Set<BlockPos>> PENDING = new HashMap<>();
 
@@ -55,7 +57,7 @@ public final class ShapeParts {
         }
         Player who = actor != null ? actor : WorldEdits.owner(level, level.getBlockEntity(pos));
         VoxelShape shape = device.getShape(level, pos);
-        for (int dy = 0; dy <= 1; dy++) {
+        for (int dy = 0; dy <= MAX_UP; dy++) {
             for (int dx = -1; dx <= 1; dx++) {
                 for (int dz = -1; dz <= 1; dz++) {
                     if ((dx != 0 || dy != 0 || dz != 0) && reaches(shape, dx, dy, dz)) {

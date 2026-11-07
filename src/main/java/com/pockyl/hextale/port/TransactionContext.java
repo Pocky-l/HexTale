@@ -12,6 +12,9 @@ public interface TransactionContext {
     /** Runs when the transaction closes without a commit. */
     void onAbort(Runnable revert);
 
+    /** Runs when this transaction ends, committed or not (a nested commit included), before anything else it holds. */
+    void onClose(Runnable end);
+
     /**
      * How much has already been promised to or from one slot of a 1.21.1 handler in this transaction: those handlers
      * only simulate until the commit, so a second call must count what the first one will do.

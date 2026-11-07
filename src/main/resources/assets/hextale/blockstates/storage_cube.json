@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "active=false": {
+      "model": "hextale:block/storage_cube"
+    },
+    "active=true": {
+      "model": "hextale:block/storage_cube_active"
+    }
+  }
+}

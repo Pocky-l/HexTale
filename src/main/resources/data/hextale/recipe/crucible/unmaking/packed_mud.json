@@ -1,0 +1,13 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "item": "minecraft:packed_mud"
+  },
+  "essences": {
+    "decay": 2
+  },
+  "result": {
+    "id": "minecraft:mud"
+  },
+  "research": "unmaking"
+}

@@ -1,0 +1,11 @@
+{
+  "parent": "hextale:item/pocket_terminal_unlinked",
+  "overrides": [
+    {
+      "predicate": {
+        "hextale:condition": 1
+      },
+      "model": "hextale:item/pocket_terminal"
+    }
+  ]
+}

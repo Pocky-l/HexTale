@@ -108,34 +108,190 @@ public final class ArsenalGameTests {
         helper.succeed();
     }
 
-    /** A full Strike Gauntlet punch at stone breaks a 3 x 3 face two deep; into the air it throws a zombie back. */
+    /** The server's side of a flight: moves the wearer the way their client would, up to the first wall, till it ends. */
+    private static void flyOut(net.minecraft.server.level.ServerPlayer flier) {
+        for (int i = 0; i < 40 && com.pockyl.hextale.runework.StrikeDash.flying(flier); i++) {
+            Vec3 dir = com.pockyl.hextale.runework.StrikeDash.of(flier).dir();
+            Vec3 middle = flier.getBoundingBox().getCenter();
+            var hit = flier.level().clip(new net.minecraft.world.level.ClipContext(middle, middle.add(dir.scale(4)),
+                    net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE, flier));
+            double gap = hit.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK ? hit.getLocation().distanceTo(middle) - 0.31 : 4;
+            Vec3 next = flier.position().add(dir.scale(Math.max(0, Math.min(com.pockyl.hextale.runework.StrikeDash.SPEED, gap))));
+            flier.moveTo(next.x, next.y, next.z, flier.getYRot(), flier.getXRot());
+            com.pockyl.hextale.runework.StrikeDash.tick(flier);
+        }
+    }
+
+    /** Releases a gauntlet in the main hand at the given charge stage. */
+    private static void release(GameTestHelper helper, net.minecraft.server.level.ServerPlayer flier, int stage) {
+        ItemStack fist = flier.getMainHandItem();
+        flier.getCooldowns().removeCooldown(fist.getItem());
+        fist.releaseUsing(helper.getLevel(), flier, fist.getUseDuration(flier) - stage * com.pockyl.hextale.runework.StrikeGauntletItem.STAGE_TICKS);
+    }
+
+    private static net.minecraft.server.level.ServerPlayer gauntleted(GameTestHelper helper, boolean pair, double x, double y, double z, float yaw) {
+        net.minecraft.server.level.ServerPlayer player = MockPlayers.inLevel(helper);
+        Vec3 at = helper.absoluteVec(new Vec3(x, y, z));
+        player.moveTo(at.x, at.y, at.z, yaw, 0);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.STRIKE_GAUNTLET.get()));
+        if (pair) {
+            player.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, new ItemStack(ModItems.STRIKE_GAUNTLET.get()));
+        }
+        return player;
+    }
+
+    /**
+     * The server runs its own {@code travel} for a player, so its copy would sink under gravity between the client's
+     * positions: the flight's wall check would then look a block too low, and the blow would dig into the floor.
+     */
     @HexTest(padding = 4)
-    public static void theStrikeGauntletBreaksRockAndThrows(GameTestHelper helper) {
+    public static void aDashStrikesAtTheHeightItFlies(GameTestHelper helper) {
         for (int x = 0; x <= 2; x++) {
-            for (int y = 1; y <= 3; y++) {
-                for (int z = 4; z <= 6; z++) {
+            for (int z = 0; z <= 10; z++) {
+                helper.setBlock(new BlockPos(x, 0, z), net.minecraft.world.level.block.Blocks.DIRT);
+                for (int y = 1; y <= 5 && z >= 8; y++) {
                     helper.setBlock(new BlockPos(x, y, z), net.minecraft.world.level.block.Blocks.STONE);
                 }
             }
         }
-        net.minecraft.server.level.ServerPlayer smith = MockPlayers.inLevel(helper);
-        Vec3 at = helper.absoluteVec(new Vec3(1.5, 1.4, 1.5));
-        smith.moveTo(at.x, at.y, at.z, 0, 0);
-        ItemStack fist = new ItemStack(ModItems.STRIKE_GAUNTLET.get());
-        smith.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, fist);
-        int held = com.pockyl.hextale.runework.StrikeGauntletItem.STAGES * com.pockyl.hextale.runework.StrikeGauntletItem.STAGE_TICKS;
-        fist.releaseUsing(helper.getLevel(), smith, fist.getUseDuration(smith) - held);
-        helper.assertBlockPresent(net.minecraft.world.level.block.Blocks.AIR, new BlockPos(1, 2, 4));
-        helper.assertBlockPresent(net.minecraft.world.level.block.Blocks.AIR, new BlockPos(0, 2, 5));
-        helper.assertBlockPresent(net.minecraft.world.level.block.Blocks.AIR, new BlockPos(2, 2, 4));
-        helper.assertBlockPresent(net.minecraft.world.level.block.Blocks.STONE, new BlockPos(1, 2, 6));
-        Mob target = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, new BlockPos(1, 1, 3));
-        smith.getCooldowns().removeCooldown(fist.getItem());
-        smith.moveTo(at.x, at.y, at.z, 180, 0);
-        net.minecraft.world.phys.Vec3 behind = helper.absoluteVec(new Vec3(1.5, 1, 0.5));
-        target.moveTo(behind.x, behind.y, behind.z, 0, 0);
-        fist.releaseUsing(helper.getLevel(), smith, fist.getUseDuration(smith) - held);
-        helper.assertTrue(target.getHealth() < target.getMaxHealth(), "the shockwave hurt the zombie");
+        double height = 2.1;
+        net.minecraft.server.level.ServerPlayer flier = gauntleted(helper, false, 1.5, height, 1.5, 0);
+        release(helper, flier, 3);
+        double reported = flier.getY();
+        for (int i = 0; i < 20 && com.pockyl.hextale.runework.StrikeDash.flying(flier); i++) {
+            Vec3 next = flier.position().add(0, 0, 0.5);
+            flier.moveTo(next.x, reported, next.z, flier.getYRot(), flier.getXRot());
+            flier.doTick();
+            helper.assertTrue(Math.abs(flier.getY() - reported) < 1.0E-6, "the server's copy stays where the client says: " + flier.getY());
+        }
+        helper.assertTrue(!com.pockyl.hextale.runework.StrikeDash.flying(flier), "the wall ends it");
+        helper.assertBlockPresent(net.minecraft.world.level.block.Blocks.AIR, new BlockPos(1, 2, 8));
+        helper.assertBlockPresent(net.minecraft.world.level.block.Blocks.DIRT, new BlockPos(1, 0, 8));
+        helper.succeed();
+    }
+
+    /** A full charge flown at stone: the end of the path breaks a 3 x 3 face two deep and throws what stands by the wall. */
+    @HexTest(padding = 4)
+    public static void aDashBreaksRockAtTheEndOfItsPath(GameTestHelper helper) {
+        for (int x = 0; x <= 2; x++) {
+            for (int y = 1; y <= 3; y++) {
+                for (int z = 6; z <= 8; z++) {
+                    helper.setBlock(new BlockPos(x, y, z), net.minecraft.world.level.block.Blocks.STONE);
+                }
+            }
+        }
+        Mob bystander = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, new BlockPos(3, 1, 1));
+        net.minecraft.server.level.ServerPlayer flier = gauntleted(helper, false, 1.5, 1.4, 1.5, 0);
+        release(helper, flier, 3);
+        helper.assertTrue(com.pockyl.hextale.runework.StrikeDash.flying(flier), "the release starts a flight");
+        flyOut(flier);
+        helper.assertTrue(!com.pockyl.hextale.runework.StrikeDash.flying(flier), "the wall ends it");
+        helper.assertBlockPresent(net.minecraft.world.level.block.Blocks.AIR, new BlockPos(1, 2, 6));
+        helper.assertBlockPresent(net.minecraft.world.level.block.Blocks.AIR, new BlockPos(0, 2, 7));
+        helper.assertBlockPresent(net.minecraft.world.level.block.Blocks.AIR, new BlockPos(2, 2, 6));
+        helper.assertBlockPresent(net.minecraft.world.level.block.Blocks.STONE, new BlockPos(1, 2, 8));
+        helper.assertTrue(bystander.getHealth() < bystander.getMaxHealth(), "the bystander was on the way or in the wave");
+        helper.succeed();
+    }
+
+    /** A flight hurts every enemy on its path once, the further ones too, and leaves villagers and whoever is off the path. */
+    @HexTest(padding = 8)
+    public static void aDashHurtsEveryEnemyOnThePathOnce(GameTestHelper helper) {
+        Mob first = helper.spawnWithNoFreeWill(EntityType.IRON_GOLEM, new BlockPos(1, 1, 3));
+        Mob second = helper.spawnWithNoFreeWill(EntityType.IRON_GOLEM, new BlockPos(1, 1, 7));
+        Mob aside = helper.spawnWithNoFreeWill(EntityType.IRON_GOLEM, new BlockPos(7, 1, 5));
+        Mob villager = helper.spawnWithNoFreeWill(EntityType.VILLAGER, new BlockPos(1, 1, 5));
+        net.minecraft.server.level.ServerPlayer flier = gauntleted(helper, false, 1.5, 1.4, 0.5, 0);
+        release(helper, flier, 1);
+        flyOut(flier);
+        float path = com.pockyl.hextale.runework.StrikeDash.PATH_DAMAGE[0];
+        helper.assertTrue(first.getMaxHealth() - first.getHealth() == path, "the first takes the path's damage once: " + first.getHealth());
+        helper.assertTrue(second.getMaxHealth() - second.getHealth() == path, "and so does the one behind it: " + second.getHealth());
+        helper.assertTrue(aside.getHealth() == aside.getMaxHealth(), "off the path nothing happens");
+        helper.assertTrue(villager.getHealth() == villager.getMaxHealth(), "a villager on the path is spared");
+        helper.succeed();
+    }
+
+    /** A pair doubles the flight's damage; a longer charge hurts more and flies longer. */
+    @HexTest(padding = 8)
+    public static void aPairDoublesTheDash(GameTestHelper helper) {
+        Mob golem = helper.spawnWithNoFreeWill(EntityType.IRON_GOLEM, new BlockPos(1, 1, 3));
+        net.minecraft.server.level.ServerPlayer flier = gauntleted(helper, true, 1.5, 1.4, 0.5, 0);
+        release(helper, flier, 2);
+        flyOut(flier);
+        float lost = golem.getMaxHealth() - golem.getHealth();
+        helper.assertTrue(lost == 2 * com.pockyl.hextale.runework.StrikeDash.PATH_DAMAGE[1], "a pair hits twice as hard: " + lost);
+        helper.assertTrue(com.pockyl.hextale.runework.StrikeDash.TICKS[2] > com.pockyl.hextale.runework.StrikeDash.TICKS[0], "and a full charge flies longer");
+        helper.succeed();
+    }
+
+    /** Neither the flight nor the first landing after it hurts; the next fall does. */
+    @HexTest(padding = 8)
+    public static void theLandingAfterADashIsSoft(GameTestHelper helper) {
+        net.minecraft.server.level.ServerPlayer flier = gauntleted(helper, false, 1.5, 4, 0.5, 0);
+        flier.fallDistance = 40;
+        release(helper, flier, 1);
+        helper.assertTrue(flier.fallDistance == 0, "taking off clears the fall");
+        flyOut(flier);
+        // The mock player is creative and takes no fall damage: ask the event that cancels it.
+        var bus = net.neoforged.neoforge.common.NeoForge.EVENT_BUS;
+        helper.assertTrue(bus.post(new net.neoforged.neoforge.event.entity.living.LivingFallEvent(flier, 30, 1)).isCanceled(), "the first landing is soft");
+        helper.assertTrue(!bus.post(new net.neoforged.neoforge.event.entity.living.LivingFallEvent(flier, 30, 1)).isCanceled(), "the second fall is a fall");
+        helper.succeed();
+    }
+
+    /** A real blow: hard on the target, the area round it hurt too, nothing far off; a pair doubles both. */
+    @HexTest(padding = 8)
+    public static void fistBlowsHitHardAndAround(GameTestHelper helper) {
+        for (boolean pair : new boolean[]{false, true}) {
+            int z = pair ? 6 : 1;
+            Mob target = helper.spawnWithNoFreeWill(EntityType.IRON_GOLEM, new BlockPos(1, 1, z));
+            Mob near = helper.spawnWithNoFreeWill(EntityType.IRON_GOLEM, new BlockPos(3, 1, z));
+            Mob far = helper.spawnWithNoFreeWill(EntityType.IRON_GOLEM, new BlockPos(9, 1, z));
+            net.minecraft.server.level.ServerPlayer boxer = gauntleted(helper, pair, 0.5, 1, z + 0.5, -90);
+            for (int i = 0; i < 40; i++) {
+                boxer.doTick();
+            }
+            boxer.attack(target);
+            float power = pair ? 2 : 1;
+            float lost = target.getMaxHealth() - target.getHealth();
+            helper.assertTrue(lost == com.pockyl.hextale.runework.StrikeGauntletItem.FIST_DAMAGE * power, "the blow: " + lost);
+            float side = near.getMaxHealth() - near.getHealth();
+            helper.assertTrue(side == com.pockyl.hextale.runework.StrikeGauntletItem.AREA_DAMAGE * power, "round the target: " + side);
+            helper.assertTrue(far.getHealth() == far.getMaxHealth(), "far off nothing happens");
+        }
+        helper.succeed();
+    }
+
+    /** A half-charged swing strikes only its target. */
+    @HexTest(padding = 8)
+    public static void aHastySwingStrikesOnlyTheTarget(GameTestHelper helper) {
+        Mob target = helper.spawnWithNoFreeWill(EntityType.IRON_GOLEM, new BlockPos(1, 1, 1));
+        Mob near = helper.spawnWithNoFreeWill(EntityType.IRON_GOLEM, new BlockPos(3, 1, 1));
+        net.minecraft.server.level.ServerPlayer boxer = gauntleted(helper, false, 0.5, 1, 1.5, -90);
+        boxer.doTick();
+        boxer.attack(target);
+        helper.assertTrue(near.getHealth() == near.getMaxHealth(), "no area without a full swing");
+        helper.succeed();
+    }
+
+    /** The only recipe of the Strike Gauntlet in the whole game is the one on the Hexcore. */
+    @HexTest
+    public static void theGauntletIsMadeOnlyOnTheHexcore(GameTestHelper helper) {
+        var resources = helper.getLevel().getServer().getResourceManager();
+        java.util.List<String> found = new java.util.ArrayList<>();
+        resources.listResources("recipe", id -> id.getPath().endsWith(".json")).forEach((id, resource) -> {
+            try (var reader = resource.openAsReader()) {
+                com.google.gson.JsonObject recipe = com.google.gson.JsonParser.parseReader(reader).getAsJsonObject();
+                com.google.gson.JsonElement result = recipe.get("result");
+                if (result != null && result.toString().contains("hextale:strike_gauntlet")) {
+                    found.add(id.getPath() + (recipe.has("hexcore") && recipe.get("hexcore").getAsBoolean() ? " on the hexcore" : ""));
+                }
+            } catch (java.io.IOException | RuntimeException e) {
+                helper.fail(id + ": " + e);
+            }
+        });
+        helper.assertTrue(found.equals(java.util.List.of("recipe/infusion/strike_gauntlet.json on the hexcore")), "recipes found: " + found);
         helper.succeed();
     }
 

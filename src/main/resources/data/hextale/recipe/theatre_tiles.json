@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###",
+    "#J#",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "hextale:husk_chitin_tiles"
+    },
+    "J": {
+      "item": "hextale:void_carapace"
+    }
+  },
+  "result": {
+    "id": "hextale:theatre_tiles",
+    "count": 8
+  }
+}

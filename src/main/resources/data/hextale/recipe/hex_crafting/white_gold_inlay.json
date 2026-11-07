@@ -1,0 +1,21 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "TTT",
+    "TGT",
+    "TTT"
+  ],
+  "key": {
+    "T": {
+      "item": "hextale:white_gold_tiles"
+    },
+    "G": {
+      "tag": "c:ingots/gold"
+    }
+  },
+  "result": {
+    "id": "hextale:white_gold_inlay",
+    "count": 8
+  },
+  "charge": 1
+}

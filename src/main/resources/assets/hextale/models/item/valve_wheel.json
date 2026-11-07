@@ -1,0 +1,12 @@
+{
+  "parent": "hextale:block/valve_wheel",
+  "loader": "neoforge:composite",
+  "children": {
+    "part0": {
+      "parent": "hextale:block/valve_wheel"
+    },
+    "part1": {
+      "parent": "hextale:block/valve_wheel_handle"
+    }
+  }
+}

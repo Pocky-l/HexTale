@@ -1,0 +1,17 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "T",
+    "T"
+  ],
+  "key": {
+    "T": {
+      "item": "hextale:white_gold_tiles"
+    }
+  },
+  "result": {
+    "id": "hextale:white_gold_pillar",
+    "count": 2
+  },
+  "charge": 1
+}

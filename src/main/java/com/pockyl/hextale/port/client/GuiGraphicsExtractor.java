@@ -195,6 +195,13 @@ public final class GuiGraphicsExtractor {
         blitSprite(pipeline, sprite, x, y, width, height, -1);
     }
 
+    /** A part of the sprite: {@code width} x {@code height} of a {@code textureWidth} x {@code textureHeight} sprite, from u, v. */
+    public void blitSprite(RenderPipeline pipeline, ResourceLocation sprite, int textureWidth, int textureHeight, int u, int v, int x, int y, int width, int height) {
+        begin(pipeline, -1);
+        graphics.blitSprite(sprite, textureWidth, textureHeight, u, v, x, y, width, height);
+        end(pipeline);
+    }
+
     public void blitSprite(RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height, float alpha) {
         blitSprite(pipeline, sprite, x, y, width, height, (int) (alpha * 255) << 24 | 0xFFFFFF);
     }

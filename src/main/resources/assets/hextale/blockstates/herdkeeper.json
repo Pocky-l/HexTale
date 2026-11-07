@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "active=false,facing=north": {
+      "model": "hextale:block/herdkeeper"
+    },
+    "active=false,facing=east": {
+      "model": "hextale:block/herdkeeper",
+      "y": 90
+    },
+    "active=false,facing=south": {
+      "model": "hextale:block/herdkeeper",
+      "y": 180
+    },
+    "active=false,facing=west": {
+      "model": "hextale:block/herdkeeper",
+      "y": 270
+    },
+    "active=true,facing=north": {
+      "model": "hextale:block/herdkeeper_active"
+    },
+    "active=true,facing=east": {
+      "model": "hextale:block/herdkeeper_active",
+      "y": 90
+    },
+    "active=true,facing=south": {
+      "model": "hextale:block/herdkeeper_active",
+      "y": 180
+    },
+    "active=true,facing=west": {
+      "model": "hextale:block/herdkeeper_active",
+      "y": 270
+    }
+  }
+}

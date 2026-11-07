@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "P P",
+    "PPP",
+    "P P"
+  ],
+  "key": {
+    "P": {
+      "item": "hextale:rusted_plating"
+    }
+  },
+  "result": {
+    "id": "hextale:rusted_ladder",
+    "count": 16
+  }
+}

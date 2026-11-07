@@ -54,6 +54,9 @@ public final class TableModels {
     public static final ModelResourceLocation LAPIDARY_GEAR = model("block/hex_lapidary_gear");
     public static final ModelResourceLocation WHIRL_REAPER_VANES = model("block/whirl_reaper_vanes");
     public static final ModelResourceLocation HEX_SAW_DISC = model("block/hex_sawmill_disc");
+    /** The Herdkeeper's bell and its lit parts, swung by its renderer about the hook at (7, 25, 8) px. */
+    public static final ModelResourceLocation HERDKEEPER_BELL = model("block/herdkeeper_bell");
+    public static final ModelResourceLocation HERDKEEPER_BELL_GLOW = model("block/herdkeeper_bell_glow");
     /** The Essence Sprinkler's head, turned by its renderer about the riser's axis after each spray. */
     public static final ModelResourceLocation SPRINKLER_HEAD = model("block/essence_sprinkler_head");
     /** The formed Hex Foundry round its heart, facing north, and its glowing parts (drawn at full light while hot). */
@@ -71,6 +74,9 @@ public final class TableModels {
     public static final ModelResourceLocation LEVITATION_RING = model("block/levitation_plate_ring");
     /** A Dust Charge stuck on a wall: base on its -Z face at (8, 8, 0) px. */
     public static final ModelResourceLocation DUST_CHARGE_STUCK = model("item/dust_charge_stuck");
+    /** A Biter Grenade, shut (in flight, and on each beat of its fuse) and with its jaw open (latched). */
+    public static final ModelResourceLocation BITER_GRENADE = model("item/biter_grenade");
+    public static final ModelResourceLocation BITER_GRENADE_OPEN = model("item/biter_grenade_open");
     /** A Rune Stele's body, both halves, plain and lit: drawn by its renderer turned to the circle it serves. */
     public static final ModelResourceLocation STELE_LOWER = model("block/rune_stele_lower");
     public static final ModelResourceLocation STELE_UPPER = model("block/rune_stele_upper");
@@ -79,8 +85,19 @@ public final class TableModels {
     /** The Chem Boiler's gauge needle (built pointing up from {@code ChemBoilerRenderer.NEEDLE_PIVOT}) and safety valve. */
     public static final ModelResourceLocation CHEM_BOILER_NEEDLE = model("block/chem_boiler_needle");
     public static final ModelResourceLocation CHEM_BOILER_VALVE = model("block/chem_boiler_valve");
+    /** The Wall Valve Wheel's turning wheel, on the spindle through (8, 8) px. */
+    public static final ModelResourceLocation VALVE_WHEEL_HANDLE = model("block/valve_wheel_handle");
     /** The Chem Tank as worn: shoulder and chest straps, drawn on the player's back by {@link ChemTankLayer}. */
     public static final ModelResourceLocation CHEM_TANK_WORN = model("item/chem_tank_worn");
+    public static final ModelResourceLocation CHEM_JET_TANK_WORN = model("item/chem_jet_tank_worn");
+    /** The Chain Claw (also the flying harpoon head of a shot) and the zipline trolley. */
+    public static final ModelResourceLocation CHAIN_CLAW = model("block/chain_claw");
+    public static final ModelResourceLocation ZIPLINE_TROLLEY = model("block/zipline_trolley");
+    /** The Hex Vault's door: one bar of the frame, one petal, the hub and a lamp, each drawn as often as the hexagon needs. */
+    public static final ModelResourceLocation VAULT_BAR = model("block/vault_bar");
+    public static final ModelResourceLocation VAULT_PETAL = model("block/vault_petal");
+    public static final ModelResourceLocation VAULT_HUB = model("block/vault_hub");
+    public static final ModelResourceLocation VAULT_LAMP = model("block/vault_lamp");
 
     private TableModels() {
     }
@@ -112,6 +129,14 @@ public final class TableModels {
         Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(poseStack.last(),
                 collector.buffer(Sheets.translucentCullBlockSheet()), null, model, 1, 1, 1, light, OverlayTexture.NO_OVERLAY,
                 ModelData.EMPTY, Sheets.translucentCullBlockSheet());
+    }
+
+    /** Like {@link #submit}, with {@code argb} on the quads of tint index 0. */
+    public static void submitTinted(PoseStack poseStack, SubmitNodeCollector collector, ModelResourceLocation key, int light, int argb) {
+        BakedModel model = Minecraft.getInstance().getModelManager().getModel(key);
+        Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(poseStack.last(),
+                collector.buffer(Sheets.translucentCullBlockSheet()), null, model, (argb >> 16 & 255) / 255F, (argb >> 8 & 255) / 255F, (argb & 255) / 255F,
+                light, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, Sheets.translucentCullBlockSheet());
     }
 
     /** Draws a block state's own model (any block of the world) at the pose, untinted. */

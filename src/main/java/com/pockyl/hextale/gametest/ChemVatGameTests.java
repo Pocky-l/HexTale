@@ -43,6 +43,32 @@ public final class ChemVatGameTests {
         helper.setBlock(VALVE, ModBlocks.CHEM_VAT.get().defaultBlockState().setValue(ChemVatBlock.FACING, Direction.SOUTH));
     }
 
+    /** With the carboys around holding acid, refined shimmer and fuel, the vat needs only the metal. */
+    @HexTest(maxTicks = 800)
+    public static void theVatDrawsItsBathAndFireFromCarboys(GameTestHelper helper) {
+        build(helper);
+        var found = Multiblocks.find(helper.getLevel(), helper.absolutePos(CORNER), ChemVialItem.of(Brew.ACID));
+        Multiblocks.form(helper.getLevel(), found.get().getKey(), found.get().getValue(), null);
+        ChemVatBlockEntity vat = helper.<ChemVatBlockEntity>getBlockEntity(VALVE);
+        com.pockyl.hextale.block.ChemCarboyBlockEntity[] carboys = {carboy(helper, CORNER.offset(4, 0, 0), Brew.ACID),
+                carboy(helper, CORNER.offset(4, 0, 1), Brew.REFINED_SHIMMER), carboy(helper, CORNER.offset(4, 0, 2), Brew.EMBER_OIL)};
+        helper.assertTrue(vat.insert(new ItemStack(Items.IRON_INGOT, 2)) == 2, "iron goes in");
+        helper.spawnItem(Items.NETHERITE_SCRAP, CORNER.offset(1, 3, 1));
+        helper.succeedWhen(() -> {
+            helper.assertTrue(vat.getItem(ChemVatBlockEntity.OUTPUT).is(ModItems.CHEM_STEEL_INGOT.get()), "a chem-steel ingot came out");
+            for (var carboy : carboys) {
+                helper.assertTrue(carboy.contents().doses() < 10, "every carboy gave a dose");
+            }
+        });
+    }
+
+    private static com.pockyl.hextale.block.ChemCarboyBlockEntity carboy(GameTestHelper helper, BlockPos pos, Brew brew) {
+        helper.setBlock(pos, ModBlocks.CHEM_CARBOY.get());
+        var carboy = helper.<com.pockyl.hextale.block.ChemCarboyBlockEntity>getBlockEntity(pos);
+        carboy.setContents(new com.pockyl.hextale.chem.CarboyContents(brew, 10));
+        return carboy;
+    }
+
     @HexTest(maxTicks = 800)
     public static void theVatTempersChemSteel(GameTestHelper helper) {
         build(helper);

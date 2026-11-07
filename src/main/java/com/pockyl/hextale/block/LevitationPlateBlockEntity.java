@@ -43,7 +43,7 @@ import org.jspecify.annotations.Nullable;
  * The Levitation Plate: a column of still air above it lifts whatever stands in it - creatures, players, dropped items
  * - up to the top of the column and holds it there, bobbing; a sneaking player sinks back down. Nobody in the column is
  * hurt by falling. Runs on both sides like a bubble column: every entity is moved where its movement is simulated
- * ({@link Entity#canSimulateMovement()}), so a player's own client lifts them without lag. The column ends at the first
+ * ({@link Entity#com.pockyl.hextale.port.PortEntities.canSimulateMovement(this)}), so a player's own client lifts them without lag. The column ends at the first
  * solid block above. Takes runes (Shift, Motor, Breath, Cache: items at the top go into the container that caps the
  * column; Slumber: creatures in it hang asleep).
  */

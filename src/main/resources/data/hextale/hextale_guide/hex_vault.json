@@ -1,0 +1,27 @@
+{
+  "region": "circle",
+  "stage": "late",
+  "icon": "hextale:hex_vault",
+  "parents": [
+    "hexcore",
+    "rift_gate"
+  ],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:hex_vault",
+    "then": {
+      "kind": "runes",
+      "result": "hex_vault",
+      "then": {
+        "kind": "hex_crafting",
+        "result": "hextale:white_gold_tiles"
+      }
+    }
+  },
+  "research": "hex_vault",
+  "station": true,
+  "pos": [
+    1360,
+    -70
+  ]
+}

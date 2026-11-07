@@ -20,6 +20,7 @@ import net.minecraft.world.phys.AABB;
 public abstract class MobRenderer<T extends Mob, S extends LivingEntityRenderState, M extends EntityModel<S>>
         extends net.minecraft.client.renderer.entity.MobRenderer<T, MobRenderer.Adapter<T, S>> {
     protected final M portModel;
+    protected final ItemModelResolver itemModelResolver = ItemModelResolver.INSTANCE;
     private S current;
 
     protected MobRenderer(EntityRendererProvider.Context context, M model, float shadowRadius) {

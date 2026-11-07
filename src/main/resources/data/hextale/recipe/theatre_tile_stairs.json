@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "#  ",
+    "## ",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "hextale:theatre_tiles"
+    }
+  },
+  "result": {
+    "id": "hextale:theatre_tile_stairs",
+    "count": 4
+  }
+}
