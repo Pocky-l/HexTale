@@ -3000,5 +3000,88 @@
         "volume": 0.8
       }
     ]
+  },
+  "rift_staff.cast": {
+    "subtitle": "subtitles.hextale.rift_staff.cast",
+    "sounds": [
+      {
+        "name": "hextale:rift_staff_cast1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:rift_staff_cast2",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:rift_staff_cast3",
+        "volume": 0.6
+      }
+    ]
+  },
+  "rift_staff.impact": {
+    "subtitle": "subtitles.hextale.rift_staff.impact",
+    "sounds": [
+      {
+        "name": "hextale:rift_staff_impact1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:rift_staff_impact2",
+        "volume": 0.6
+      }
+    ]
+  },
+  "rift_staff.lance": {
+    "subtitle": "subtitles.hextale.rift_staff.lance",
+    "sounds": [
+      {
+        "name": "hextale:rift_staff_lance",
+        "volume": 0.8
+      }
+    ]
+  },
+  "rift_staff.ready": {
+    "subtitle": "subtitles.hextale.rift_staff.ready",
+    "sounds": [
+      {
+        "name": "hextale:rift_staff_ready",
+        "volume": 0.5
+      }
+    ]
+  },
+  "rift_staff.ward_up": {
+    "subtitle": "subtitles.hextale.rift_staff.ward_up",
+    "sounds": [
+      {
+        "name": "hextale:rift_staff_ward_up",
+        "volume": 0.5
+      }
+    ]
+  },
+  "rift_staff.ward_hit": {
+    "subtitle": "subtitles.hextale.rift_staff.ward_hit",
+    "sounds": [
+      {
+        "name": "hextale:rift_staff_ward_hit1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:rift_staff_ward_hit2",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:rift_staff_ward_hit3",
+        "volume": 0.7
+      }
+    ]
+  },
+  "rift_staff.ward_break": {
+    "subtitle": "subtitles.hextale.rift_staff.ward_break",
+    "sounds": [
+      {
+        "name": "hextale:rift_staff_ward_break",
+        "volume": 0.8
+      }
+    ]
   }
 }

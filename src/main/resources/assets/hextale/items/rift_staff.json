@@ -1,0 +1,80 @@
+{
+  "model": {
+    "type": "hextale:animated",
+    "model": {
+      "type": "minecraft:composite",
+      "models": [
+        {
+          "type": "minecraft:select",
+          "property": "minecraft:component",
+          "component": "hextale:staff_charge",
+          "cases": [
+            {
+              "when": 1,
+              "model": {
+                "type": "minecraft:model",
+                "model": "hextale:item/rift_staff_charge_1",
+                "tints": [
+                  {
+                    "type": "hextale:pickaxe_runes"
+                  }
+                ]
+              }
+            },
+            {
+              "when": 2,
+              "model": {
+                "type": "minecraft:model",
+                "model": "hextale:item/rift_staff_charge_2",
+                "tints": [
+                  {
+                    "type": "hextale:pickaxe_runes"
+                  }
+                ]
+              }
+            }
+          ],
+          "fallback": {
+            "type": "minecraft:model",
+            "model": "hextale:item/rift_staff",
+            "tints": [
+              {
+                "type": "hextale:pickaxe_runes"
+              }
+            ]
+          }
+        },
+        {
+          "type": "minecraft:special",
+          "base": "hextale:item/rift_staff",
+          "model": {
+            "type": "hextale:tool_aura",
+            "kind": "void",
+            "from": [
+              8,
+              -14,
+              8
+            ],
+            "to": [
+              8,
+              32,
+              8
+            ],
+            "profile": [
+              1.4,
+              1.3,
+              1.2,
+              1.2,
+              1.2,
+              1.3,
+              2.8,
+              4.4,
+              4.8,
+              3.2
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

@@ -35,7 +35,7 @@ public final class GameTests {
             RuneGiftGameTests.class, ChemGameTests.class, ShimmerGameTests.class, DualityGameTests.class, LabGameTests.class,
             SkypackGameTests.class, VoidGameTests.class, GateGameTests.class, FunnelGameTests.class, SpireGameTests.class, ShackleGameTests.class, CondenserGameTests.class, FoundryGameTests.class, VentGameTests.class, CreativeJarGameTests.class, ThinningGameTests.class, HollowbloomGameTests.class, HealingGameTests.class, VoidRoadGameTests.class, VoidRealmGameTests.class, VoidLifeGameTests.class, StruckGeodeGameTests.class, ForkGameTests.class, GadgetGameTests.class, BiterGrenadeGameTests.class,
             RecipeGameTests.class, ProtectionGameTests.class, AutomationGameTests.class, QuestHookGameTests.class,
-            EssenceFluidGameTests.class, WeaponRuneGameTests.class, ArsenalGameTests.class, TransmutationGameTests.class, UnmakingGameTests.class, ChemVatGameTests.class, ChemTankGameTests.class, ChemJetGameTests.class, ShimmerMutationGameTests.class, LootTableGameTests.class, ChemCarboyGameTests.class, ChemDecorGameTests.class,
+            EssenceFluidGameTests.class, WeaponRuneGameTests.class, ArsenalGameTests.class, RiftStaffGameTests.class, TransmutationGameTests.class, UnmakingGameTests.class, ChemVatGameTests.class, ChemTankGameTests.class, ChemJetGameTests.class, ShimmerMutationGameTests.class, LootTableGameTests.class, ChemCarboyGameTests.class, ChemDecorGameTests.class,
             ZiplineGameTests.class, HerdkeeperGameTests.class, WorkbenchGameTests.class, VaultGameTests.class, ProsectorGameTests.class);
     /**
      * Ticks a test may wait for the chunks round its spot to tick their creatures before its body runs; added to every

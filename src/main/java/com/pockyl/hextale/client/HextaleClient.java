@@ -197,7 +197,9 @@ public final class HextaleClient {
         WardRipple.register();
         com.pockyl.hextale.client.render.RuneEffects.register();
         com.pockyl.hextale.client.render.WeaponFx.register();
+        com.pockyl.hextale.client.render.StaffFx.register();
         WeaponInput.register();
+        StaffInput.register();
         ShapeHits.register();
         ThinningAtmosphere.register(modBus);
         modBus.addListener(ThinningTint::register);
@@ -293,6 +295,7 @@ public final class HextaleClient {
             com.pockyl.hextale.client.render.EssenceFx.forget();
             com.pockyl.hextale.client.render.RuneEffects.forget();
             com.pockyl.hextale.client.render.WeaponFx.forget();
+            com.pockyl.hextale.client.render.StaffFx.forget();
             com.pockyl.hextale.runework.StrikeDash.forget();
             com.pockyl.hextale.entity.GrappleHook.forget(true);
             ClientPylons.forget();

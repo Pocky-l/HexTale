@@ -71,6 +71,7 @@ public final class Hextale {
         com.pockyl.hextale.runework.ToolEffects.register();
         com.pockyl.hextale.thevoid.boss.ProsectorEvents.register();
         com.pockyl.hextale.runework.WeaponRunes.register();
+        com.pockyl.hextale.runework.RiftStaff.register();
         com.pockyl.hextale.farm.FunnelEvents.register();
         com.pockyl.hextale.farm.ShackleEvents.register();
         com.pockyl.hextale.runework.Slumber.register();
@@ -240,6 +241,7 @@ public final class Hextale {
         output.accept(ModItems.RADIANT_TENDRIL_DAGGER);
         output.accept(ModItems.RIFTFORGED_TENDRIL_DAGGER);
         output.accept(ModItems.STRIKE_GAUNTLET);
+        output.accept(ModItems.RIFT_STAFF);
         output.accept(ModItems.BULWARK_HELMET);
         output.accept(ModItems.BULWARK_CHESTPLATE);
         output.accept(ModItems.BULWARK_LEGGINGS);
@@ -294,6 +296,7 @@ public final class Hextale {
         output.accept(ModItems.HOLLOW_CRYSTAL);
         output.accept(ModItems.VOID_PEARL);
         output.accept(ModItems.SEERS_EYE);
+        output.accept(ModItems.PROSECTOR_PROBE);
         output.accept(ModItems.BUDDING_VOID_CRYSTAL);
         output.accept(ModItems.SMALL_VOID_CRYSTAL_BUD);
         output.accept(ModItems.MEDIUM_VOID_CRYSTAL_BUD);
@@ -630,6 +633,7 @@ public final class Hextale {
             event.accept(ModItems.RADIANT_TENDRIL_DAGGER);
             event.accept(ModItems.RIFTFORGED_TENDRIL_DAGGER);
             event.accept(ModItems.STRIKE_GAUNTLET);
+            event.accept(ModItems.RIFT_STAFF);
             event.accept(ModItems.BITER_GRENADE);
             event.accept(ModItems.HEXSTEEL_SWORD);
             event.accept(ModItems.HEXSTEEL_AXE);

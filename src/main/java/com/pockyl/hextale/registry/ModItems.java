@@ -246,6 +246,12 @@ public final class ModItems {
     /** The key to a vortex heart: shows the way there and opens the seal, once. */
     public static final DeferredItem<com.pockyl.hextale.thevoid.boss.SeersEyeItem> SEERS_EYE = ITEMS.registerItem("seers_eye",
             properties -> new com.pockyl.hextale.thevoid.boss.SeersEyeItem(properties.rarity(Rarity.EPIC).stacksTo(16)));
+    /** The Prosector's beam arm, left by every kill: the heart of the Rift Staff. */
+    public static final DeferredItem<com.pockyl.hextale.item.NotedItem> PROSECTOR_PROBE = ITEMS.registerItem("prosector_probe",
+            properties -> new com.pockyl.hextale.item.NotedItem(properties.rarity(Rarity.EPIC).stacksTo(16).fireResistant()));
+    /** The Rift Staff: bolts on the left click, every third a lance; a ward of hexagons on the right. */
+    public static final DeferredItem<com.pockyl.hextale.runework.RiftStaffItem> RIFT_STAFF = ITEMS.registerItem("rift_staff",
+            properties -> new com.pockyl.hextale.runework.RiftStaffItem(com.pockyl.hextale.runework.RiftStaffItem.properties(properties)));
     /** Void Chitin softened in the crucible and pressed into a plate: the riftforged armour's shell. */
     public static final DeferredItem<Item> VOID_CARAPACE = ITEMS.registerItem("void_carapace", properties -> new Item(properties.rarity(Rarity.RARE)));
     /** Level 2 gem: a diamond cut to a brilliant with a groove that holds hextech. */

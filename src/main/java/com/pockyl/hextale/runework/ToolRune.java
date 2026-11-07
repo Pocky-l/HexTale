@@ -17,7 +17,7 @@ import org.jspecify.annotations.Nullable;
 public enum ToolRune implements HolderRune {
     // Shared
     /** Wear may be shrugged off and mended a point. */
-    MENDING("life_metal", Tool.AXE, Tool.SHOVEL, Tool.SWORD),
+    MENDING("life_metal", Tool.AXE, Tool.SHOVEL, Tool.SWORD, Tool.STAFF),
     /** A chance of Haste while chopping or digging. */
     HASTE("spark_life", Tool.AXE, Tool.SHOVEL),
     // Axe
@@ -38,19 +38,19 @@ public enum ToolRune implements HolderRune {
     FERTILITY("earth_life", Tool.SHOVEL),
     // Sword
     /** A blow may heal the wielder. */
-    WITHERING("shadow_life", Tool.SWORD),
+    WITHERING("shadow_life", Tool.SWORD, Tool.STAFF),
     /** A blow may let out a spark: it bites the struck creature and leaps on to the ones around. */
-    CHAIN_LIGHTNING("spark_air", Tool.SWORD),
+    CHAIN_LIGHTNING("spark_air", Tool.SWORD, Tool.STAFF),
     /** More loot from creatures, as with Looting. */
-    SPOILS("earth_shadow", Tool.SWORD),
+    SPOILS("earth_shadow", Tool.SWORD, Tool.STAFF),
     /** More experience from creatures. */
-    RADIANCE("life_light", Tool.SWORD),
+    RADIANCE("life_light", Tool.SWORD, Tool.STAFF),
     /** A kill may fan the wielder's strength. */
-    BELLOWS("air_fire", Tool.SWORD),
+    BELLOWS("air_fire", Tool.SWORD, Tool.STAFF),
     /** The first blow on an unhurt creature strikes harder. */
-    FLASH("spark_light", Tool.SWORD),
+    FLASH("spark_light", Tool.SWORD, Tool.STAFF),
     /** A kill may leave the creature's head. */
-    ENGRAVING("light_metal", Tool.SWORD),
+    ENGRAVING("light_metal", Tool.SWORD, Tool.STAFF),
     // Weapon powers: one per weapon (they clash), worked by hand
     /** A charged swing at the ground sends a wave through it: the ground heaves, creatures on its path are hurt and tossed. */
     SHOCKWAVE("earth_spark", true, Tool.AXE, Tool.SWORD),
@@ -58,19 +58,24 @@ public enum ToolRune implements HolderRune {
     BLINK("spark_shadow", true, Tool.SWORD),
     // Sword, in battle
     /** A creature it kills bursts, hurting the ones around. */
-    DETONATOR("spark_fire", Tool.SWORD),
+    DETONATOR("spark_fire", Tool.SWORD, Tool.STAFF),
     /** A blow may open a whirlpool at the struck creature that drags the others in. */
-    WHIRLPOOL("water_shadow", Tool.SWORD),
+    WHIRLPOOL("water_shadow", Tool.SWORD, Tool.STAFF),
     /** Every third blow in a row sweeps all round in a circle of light. */
     WHIRLWIND("air_spark", Tool.SWORD),
     // Blades (the Tendril Dagger and the Strike Gauntlet take the sword's runes too)
     /** A blow from behind strikes harder. */
     BACKSTAB("shadow_light", Tool.SWORD),
     /** A blow may open a wound that keeps bleeding. */
-    BLEEDING("shadow_metal", Tool.SWORD),
+    BLEEDING("shadow_metal", Tool.SWORD, Tool.STAFF),
     // Only the Prosector leaves this one
     /** The more of a kind of creature this sword has killed, the harder it strikes that kind. */
-    ANATOMY("metal_life", Tool.SWORD);
+    ANATOMY("metal_life", Tool.SWORD, Tool.STAFF),
+    // The Rift Staff's ward
+    /** The ward sends what it stops back: a shot flies back at the shooter, a blow stings the striker. */
+    MIRROR("metal_light", Tool.STAFF),
+    /** The ward holds more before it breaks. */
+    REINFORCEMENT("earth_metal", Tool.STAFF);
 
     /** Chance of Haste per block (shared with the pickaxe's). */
     public static final float[] HASTE_CHANCE = {0.04F, 0.07F, 0.10F, 0.13F};
@@ -121,6 +126,10 @@ public enum ToolRune implements HolderRune {
     /** Whirlwind: the sweep's reach and damage. */
     public static final float[] SWEEP_RADIUS = {3F, 3.5F, 4F, 4.5F};
     public static final float[] SWEEP_DAMAGE = {3F, 4.5F, 6F, 7F};
+    /** Mirror: the share of a blow the ward stopped that stings the striker back. */
+    public static final float[] MIRROR_SHARE = {0.3F, 0.45F, 0.6F, 0.75F};
+    /** Reinforcement: how much more the ward holds. */
+    public static final float[] WARD_MORE = {0.3F, 0.6F, 1.0F, 1.3F};
 
     private final ComplexRune rune;
     private final boolean power;
@@ -204,13 +213,16 @@ public enum ToolRune implements HolderRune {
             case BACKSTAB -> "+" + HolderRune.percent(HolderRune.at(BACK_BONUS, i));
             case BLEEDING -> HolderRune.percent(HolderRune.at(BLEED_CHANCE, i));
             case ANATOMY -> "+" + HolderRune.percent(HolderRune.at(ANATOMY_STEP, i));
+            case MIRROR -> HolderRune.percent(HolderRune.at(MIRROR_SHARE, i));
+            case REINFORCEMENT -> "+" + HolderRune.percent(HolderRune.at(WARD_MORE, i));
         };
     }
 
-    /** The three hextech tools besides the pickaxe. */
+    /** The three hextech tools besides the pickaxe, and the Rift Staff (it takes the sword's runes that work from afar). */
     public enum Tool {
         AXE,
         SHOVEL,
-        SWORD
+        SWORD,
+        STAFF
     }
 }

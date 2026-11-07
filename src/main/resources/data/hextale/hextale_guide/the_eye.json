@@ -1,7 +1,10 @@
 {
   "region": "void",
   "stage": "late",
-  "icon": "hextale:seers_eye",
+  "icon": [
+    "hextale:seers_eye",
+    "hextale:prosector_probe"
+  ],
   "parents": [
     "seers_eye"
   ],

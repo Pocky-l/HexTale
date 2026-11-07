@@ -358,6 +358,14 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_SUMMON = register("prosector.summon");
     public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_SUMMON_RING = register("prosector.summon_ring");
     public static final DeferredHolder<SoundEvent, SoundEvent> PROSECTOR_EYE_WAY = register("prosector.eye_way");
+    // The Rift Staff
+    public static final DeferredHolder<SoundEvent, SoundEvent> STAFF_CAST = register("rift_staff.cast");
+    public static final DeferredHolder<SoundEvent, SoundEvent> STAFF_IMPACT = register("rift_staff.impact");
+    public static final DeferredHolder<SoundEvent, SoundEvent> STAFF_LANCE = register("rift_staff.lance");
+    public static final DeferredHolder<SoundEvent, SoundEvent> STAFF_READY = register("rift_staff.ready");
+    public static final DeferredHolder<SoundEvent, SoundEvent> STAFF_WARD_UP = register("rift_staff.ward_up");
+    public static final DeferredHolder<SoundEvent, SoundEvent> STAFF_WARD_HIT = register("rift_staff.ward_hit");
+    public static final DeferredHolder<SoundEvent, SoundEvent> STAFF_WARD_BREAK = register("rift_staff.ward_break");
 
     private ModSounds() {
     }

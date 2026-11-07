@@ -98,6 +98,7 @@ public final class ClientPayloads {
         event.register(com.pockyl.hextale.network.EssenceFxPayload.TYPE, (payload, context) -> com.pockyl.hextale.client.render.EssenceFx.accept(payload));
         event.register(com.pockyl.hextale.network.RuneEffectPayload.TYPE, (payload, context) -> com.pockyl.hextale.client.render.RuneEffects.accept(payload));
         event.register(com.pockyl.hextale.network.WeaponFxPayload.TYPE, (payload, context) -> com.pockyl.hextale.client.render.WeaponFx.accept(payload));
+        event.register(com.pockyl.hextale.network.StaffFxPayload.TYPE, (payload, context) -> com.pockyl.hextale.client.render.StaffFx.accept(payload));
         event.register(com.pockyl.hextale.network.BiterBlastPayload.TYPE, (payload, context) -> com.pockyl.hextale.client.render.BiterBlastFx.accept(payload));
         event.register(com.pockyl.hextale.network.ProsectorMarkerPayload.TYPE, (payload, context) -> com.pockyl.hextale.client.render.ProsectorFx.accept(payload));
         event.register(com.pockyl.hextale.network.StrikeDashPayload.TYPE, (payload, context) -> com.pockyl.hextale.client.render.StrikeGauntletClient.accept(payload));

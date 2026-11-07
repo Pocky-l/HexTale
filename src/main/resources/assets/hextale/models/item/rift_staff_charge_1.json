@@ -1,0 +1,7 @@
+{
+  "parent": "hextale:item/rift_staff",
+  "textures": {
+    "particle": "hextale:item/rift_staff_charge_1",
+    "sheet": "hextale:item/rift_staff_charge_1"
+  }
+}

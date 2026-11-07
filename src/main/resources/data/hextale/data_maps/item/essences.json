@@ -2285,6 +2285,22 @@
       },
       "tier": 3
     },
+    "hextale:prosector_probe": {
+      "essences": {
+        "rift": 5,
+        "spark": 3,
+        "shadow": 2
+      },
+      "tier": 3
+    },
+    "hextale:rift_staff": {
+      "essences": {
+        "rift": 6,
+        "spark": 3,
+        "metal": 2
+      },
+      "tier": 3
+    },
     "hextale:seers_eye": {
       "essences": {
         "rift": 4,

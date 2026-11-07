@@ -17,11 +17,18 @@ public final class ModDamageTypes {
     /** The Prosector's hits: {@code thevoid.boss.ProsectorDamage} works out the armour itself, so this type skips it. */
     public static final ResourceKey<DamageType> DISSECTION = ResourceKey.create(Registries.DAMAGE_TYPE, Hextale.id("dissection"));
 
+    /** The Rift Staff's bolts and lance: magic the wielder casts. */
+    public static final ResourceKey<DamageType> RIFT_STAFF = ResourceKey.create(Registries.DAMAGE_TYPE, Hextale.id("rift_staff"));
+
     private ModDamageTypes() {
     }
 
     public static DamageSource dissection(Level level, Entity by) {
         return level.damageSources().source(DISSECTION, by);
+    }
+
+    public static DamageSource riftStaff(Level level, Entity by) {
+        return level.damageSources().source(RIFT_STAFF, by);
     }
 
     public static DamageSource miasma(Level level) {

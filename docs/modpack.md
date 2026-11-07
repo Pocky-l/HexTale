@@ -219,6 +219,8 @@ Sorting Matrix fills by itself), `hextale:whirl_crops`, `hextale:whirl_gourds`, 
 
 Items: `hextale:gas_cylinders` (the three bands). Damage types: `hextale:vault_survives` (what the item of a Hex
 Vault survives lying on the ground: fire, blasts, lightning, cactus, anvils and a few more).
+`hextale:rift_staff` is the damage of the Rift Staff's bolts and lance (its wielder's, so mods that read the attacker
+see the player).
 
 ## World generation
 
@@ -361,6 +363,12 @@ in both directions, while it stands in its finished gate. Out of it, it offers n
 - Refused: items holding items (`minecraft:container`, `minecraft:bundle_contents`, the item capability of other mods'
   backpacks) and vaults that remember a store. 4,096 different entries at most; items with different data are different entries.
 - Entries of items whose mod was removed stay in the file and come back with the mod.
+
+## Boss loot
+
+The Prosector drops its loot from `data/hextale/loot_table/entities/prosector.json` on the ground when its long death
+ends. The first pool always gives one Prosector's Probe, the centre of the Rift Staff's Hexcore ritual
+(`recipe/infusion/rift_staff.json`); keep a way to get it if you change the table.
 
 ## Quests and advancements
 

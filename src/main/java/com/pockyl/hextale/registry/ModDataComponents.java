@@ -266,6 +266,16 @@ public final class ModDataComponents {
                     .persistent(com.pockyl.hextale.thevoid.BreachHeart.CODEC)
                     .networkSynchronized(com.pockyl.hextale.thevoid.BreachHeart.STREAM_CODEC));
 
+    /** The Rift Staff's run of blows: 0-2 casts made, the next after 2 is the lance. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> STAFF_CHARGE =
+            COMPONENTS.registerComponentType("staff_charge", builder -> builder
+                    .persistent(com.mojang.serialization.Codec.intRange(0, com.pockyl.hextale.runework.RiftStaff.LANCE_AFTER))
+                    .networkSynchronized(net.minecraft.network.codec.ByteBufCodecs.VAR_INT));
+    /** What the Rift Staff's ward has taken since it last rested whole. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Float>> STAFF_WARD =
+            COMPONENTS.registerComponentType("staff_ward", builder -> builder
+                    .persistent(com.mojang.serialization.Codec.floatRange(0, 1000))
+                    .networkSynchronized(net.minecraft.network.codec.ByteBufCodecs.FLOAT));
     /** The crystal heart of a Bulwark chestplate: its charge, and whether it cracked. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.runework.BulwarkHeart.Charge>> HEART_CHARGE =
             COMPONENTS.registerComponentType("heart_charge", builder -> builder

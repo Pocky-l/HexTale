@@ -1,0 +1,19 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:rift_staff",
+  "parents": [
+    "the_eye",
+    "riftforged_tools",
+    "void_carapace"
+  ],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:rift_staff"
+  },
+  "research": "rift_staff",
+  "pos": [
+    470,
+    1530
+  ]
+}

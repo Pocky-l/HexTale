@@ -183,6 +183,7 @@ public final class ResearchTopics {
             ModItems.RIFTFORGED_BULWARK_HELMET, ModItems.RIFTFORGED_BULWARK_CHESTPLATE, ModItems.RIFTFORGED_BULWARK_LEGGINGS,
             ModItems.RIFTFORGED_BULWARK_BOOTS);
     public static final ResearchTopic STRIKE_GAUNTLET = add("strike_gauntlet", 3, Essence.SPARK, Essence.EARTH, ModItems.STRIKE_GAUNTLET);
+    public static final ResearchTopic RIFT_STAFF = add("rift_staff", 3, Essence.SHADOW, Essence.SPARK, ModItems.RIFT_STAFF);
     // One research refines every tool of a tier (the topic ids are the pickaxe's, released before the other tools).
     public static final ResearchTopic REFINED_PICKAXE = add("refined_hextech_pickaxe", 3, Essence.METAL, Essence.SPARK,
             ModItems.pickaxe(HextechPickaxe.REFINED), ModItems.REFINED_AXE, ModItems.REFINED_SHOVEL, ModItems.REFINED_SWORD,

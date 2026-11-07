@@ -106,6 +106,7 @@ public final class ToolEffects {
             case AXE -> ToolRune.Tool.AXE;
             case SHOVEL -> ToolRune.Tool.SHOVEL;
             case SWORD -> ToolRune.Tool.SWORD;
+            case STAFF -> ToolRune.Tool.STAFF;
             default -> null;
         };
     }
@@ -113,7 +114,12 @@ public final class ToolEffects {
     /** The strength a tool rune works with on this stack, 0 when the stack is not that tool or lacks the rune. */
     public static int strength(ItemStack stack, ToolRune.Tool tool, ToolRune rune) {
         RuneHolder holder = RuneHolder.of(stack);
-        if (holder == null || tool(holder) != tool || !rune.on(tool)) {
+        ToolRune.Tool own = holder == null ? null : tool(holder);
+        // The Rift Staff answers for the sword's runes it takes: its bolts and its lance are its blows.
+        if (own == ToolRune.Tool.STAFF && tool == ToolRune.Tool.SWORD) {
+            tool = ToolRune.Tool.STAFF;
+        }
+        if (own == null || own != tool || !rune.on(tool)) {
             return 0;
         }
         return PickaxeRunes.of(stack).strength(rune.rune());

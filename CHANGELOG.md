@@ -4,6 +4,20 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0] - Unreleased
+### Added
+- Every Prosector kill now leaves the Prosector's Probe, its beam arm.
+- Rift Staff (research after the first Prosector kill, forged on the Hexcore round the Probe). Left click casts a rift bolt
+  whenever the attack indicator is full, and holding the button keeps casting. Every third cast is a lance that goes
+  through everything in its line and bursts where it meets a block. The claws on the head light up one by one, so you see
+  when the lance is ready.
+- Hold right click to raise a ward of hexagons before you. It stops blows and shots from the front like a shield, but only
+  as long as it holds: its outer cells go dark as it takes damage, and a blow that is too much breaks it for 5 seconds.
+  Lowered and left alone, it heals. Every blow it stops counts towards the lance. The Prosector's Retractor hooks snag on it.
+- The staff takes the sword's runes that work from afar (Chain Lightning, Withering, Detonator, Anatomy and others), up to
+  four, and two runes of its own for the ward: Mirror sends shots back at the shooter and stings attackers, Reinforcement
+  makes the ward hold more.
+
 ## [1.10.0] - 2026-11-07
 ### Added
 - The Prosector, the first boss. Research and make a Seer's Eye on the altar, then right click the ground anywhere in your world: the

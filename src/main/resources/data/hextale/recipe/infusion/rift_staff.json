@@ -1,0 +1,21 @@
+{
+  "type": "hextale:infusion",
+  "center": "hextale:prosector_probe",
+  "pedestals": [
+    "hextale:riftmetal_ingot",
+    "hextale:riftmetal_ingot",
+    "hextale:sealed_void_crystal",
+    "hextale:hextech_gemstone",
+    "hextale:radiant_alloy_ingot",
+    "hextale:void_carapace",
+    "hextale:void_pearl",
+    "minecraft:breeze_rod"
+  ],
+  "essences": {
+    "rift": 48,
+    "spark": 32,
+    "magic": 24
+  },
+  "result": "hextale:rift_staff",
+  "hexcore": true
+}
