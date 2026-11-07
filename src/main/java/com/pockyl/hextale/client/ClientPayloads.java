@@ -41,6 +41,13 @@ public final class ClientPayloads {
         event.register(com.pockyl.hextale.network.VoidCurrentsPayload.TYPE, (payload, context) -> VoidCurrentsClient.accept(payload));
         event.register(com.pockyl.hextale.network.ThinningPayload.TYPE, (payload, context) -> ClientThinning.accept(payload));
         event.register(com.pockyl.hextale.network.BreachCinematicPayload.TYPE, (payload, context) -> BreachCinematic.start(payload.breach()));
+        event.register(com.pockyl.hextale.network.JetFlamePayload.TYPE, (payload, context) -> ChemJetsClient.receive(payload));
+        event.register(com.pockyl.hextale.network.VaultViewPayload.TYPE, (payload, context) -> {
+            if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.containerMenu instanceof com.pockyl.hextale.menu.VaultMenu menu
+                    && menu.containerId == payload.containerId()) {
+                menu.accept(payload);
+            }
+        });
         event.register(OpenStelePayload.TYPE, (payload, context) -> Minecraft.getInstance().setScreen(new SteleScreen(payload.pos())));
         event.register(com.pockyl.hextale.network.OpenStickerPayload.TYPE, (payload, context) ->
                 Minecraft.getInstance().setScreen(new com.pockyl.hextale.client.screen.StickerScreen(payload.hand())));
@@ -91,6 +98,9 @@ public final class ClientPayloads {
         event.register(com.pockyl.hextale.network.EssenceFxPayload.TYPE, (payload, context) -> com.pockyl.hextale.client.render.EssenceFx.accept(payload));
         event.register(com.pockyl.hextale.network.RuneEffectPayload.TYPE, (payload, context) -> com.pockyl.hextale.client.render.RuneEffects.accept(payload));
         event.register(com.pockyl.hextale.network.WeaponFxPayload.TYPE, (payload, context) -> com.pockyl.hextale.client.render.WeaponFx.accept(payload));
+        event.register(com.pockyl.hextale.network.BiterBlastPayload.TYPE, (payload, context) -> com.pockyl.hextale.client.render.BiterBlastFx.accept(payload));
+        event.register(com.pockyl.hextale.network.ProsectorMarkerPayload.TYPE, (payload, context) -> com.pockyl.hextale.client.render.ProsectorFx.accept(payload));
+        event.register(com.pockyl.hextale.network.StrikeDashPayload.TYPE, (payload, context) -> com.pockyl.hextale.client.render.StrikeGauntletClient.accept(payload));
         event.register(PylonLinkPayload.TYPE, (payload, context) -> PylonLinking.clientFrom = payload.from().orElse(null));
     }
 

@@ -9,6 +9,9 @@
     "hextale:rusted_plating_stairs",
     "hextale:rusted_plating_slab",
     "hextale:riveted_rusted_plating",
-    "hextale:gnawed_iron_ore"
+    "hextale:gnawed_iron_ore",
+    "hextale:hazard_plating",
+    "hextale:rusted_catwalk",
+    "hextale:rusted_railing"
   ]
 }

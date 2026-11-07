@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "hextale:block/white_gold_tiles_slab"
+    },
+    "type=double": {
+      "model": "hextale:block/white_gold_tiles"
+    },
+    "type=top": {
+      "model": "hextale:block/white_gold_tiles_slab_top"
+    }
+  }
+}

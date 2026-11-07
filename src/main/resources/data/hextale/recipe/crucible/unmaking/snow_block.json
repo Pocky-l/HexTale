@@ -1,0 +1,12 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:snow_block",
+  "essences": {
+    "decay": 2
+  },
+  "result": {
+    "id": "minecraft:snowball",
+    "count": 4
+  },
+  "research": "unmaking"
+}

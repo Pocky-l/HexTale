@@ -8,11 +8,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.WorldlyContainerHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
@@ -31,12 +34,12 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * An invisible stand-in in a cell a device's model spreads into ({@link ShapeParts}). It knows its device by its offset
- * from it (dx and dz 0..2 for -1..1, dy 0..1 for the cell beside or above), outlines the whole device, passes clicks
+ * from it (dx and dz 0..2 for -1..1, dy 0..3 for the cell beside or above), outlines the whole device, passes clicks
  * and mining on to it and is replaced like grass when a block is put into its cell.
  */
-public class ShapePartBlock extends Block {
+public class ShapePartBlock extends Block implements WorldlyContainerHolder {
     public static final IntegerProperty DX = IntegerProperty.create("dx", 0, 2);
-    public static final IntegerProperty DY = IntegerProperty.create("dy", 0, 1);
+    public static final IntegerProperty DY = IntegerProperty.create("dy", 0, ShapeParts.MAX_UP);
     public static final IntegerProperty DZ = IntegerProperty.create("dz", 0, 2);
 
     public ShapePartBlock(Properties properties) {
@@ -105,6 +108,12 @@ public class ShapePartBlock extends Block {
         if (deviceState(level, state, pos) == null) {
             level.removeBlock(pos, false);
         }
+    }
+
+    /** A hopper over a Chem Carboy pours through the stand-in on top of it. */
+    @Override
+    public @Nullable WorldlyContainer getContainer(BlockState state, LevelAccessor level, BlockPos pos) {
+        return level.getBlockEntity(device(state, pos)) instanceof ChemCarboyBlockEntity carboy ? carboy : null;
     }
 
     @Override

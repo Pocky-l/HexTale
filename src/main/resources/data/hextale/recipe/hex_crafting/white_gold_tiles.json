@@ -1,0 +1,17 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "QQQ",
+    "QDQ",
+    "QQQ"
+  ],
+  "key": {
+    "Q": "minecraft:quartz_block",
+    "D": "hextale:gemstone_dust"
+  },
+  "result": {
+    "id": "hextale:white_gold_tiles",
+    "count": 8
+  },
+  "charge": 1
+}

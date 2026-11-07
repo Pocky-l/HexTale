@@ -1,0 +1,8 @@
+{
+  "type": "hextale:lab_experiment",
+  "topic": "biter_grenade",
+  "target": "ash",
+  "amount": 8,
+  "purity": 0.65,
+  "sample": "minecraft:gunpowder"
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/ladder",
+  "textures": {
+    "particle": "hextale:block/chem/rusted_ladder",
+    "texture": "hextale:block/chem/rusted_ladder"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:tnt",
+  "essences": {
+    "fire": 2,
+    "ash": 3,
+    "decay": 2
+  },
+  "result": {
+    "id": "minecraft:gunpowder",
+    "count": 5
+  },
+  "research": "unmaking"
+}

@@ -3,6 +3,7 @@ package com.pockyl.hextale.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -32,10 +33,12 @@ public final class ChemSteelItemRenderer implements SpecialModelRenderer<Integer
     public static final Identifier ID = Hextale.id("chem_steel");
 
     private final ChemSteelClient.Piece piece;
+    private final boolean jets;
     private final Model<Unit> model;
 
-    private ChemSteelItemRenderer(ChemSteelClient.Piece piece, ModelPart root) {
+    private ChemSteelItemRenderer(ChemSteelClient.Piece piece, ModelPart root, boolean jets) {
         this.piece = piece;
+        this.jets = jets;
         this.model = new Model<>(root, RenderTypes::armorCutoutNoCull) {
         };
     }
@@ -62,6 +65,13 @@ public final class ChemSteelItemRenderer implements SpecialModelRenderer<Integer
         if (tint != null && tint != 0) {
             collector.order(ChemSteelFuelLayer.ORDER).submitModel(model, Unit.INSTANCE, poseStack, model.renderType(ChemSteelClient.FUEL_TEXTURE), light, OverlayTexture.NO_OVERLAY, tint, null, outlineColor, null);
         }
+        if (jets) {
+            // As it is worn, so that both bells show beside the chestplate.
+            poseStack.translate(0, 6F / 16, 6.2F / 16);
+            poseStack.scale(0.75F, -0.75F, -0.75F);
+            poseStack.translate(-0.5F, -0.5F, -0.5F);
+            TableModels.submit(poseStack, collector, TableModels.CHEM_JET_TANK_WORN, light);
+        }
         poseStack.popPose();
     }
 
@@ -73,10 +83,13 @@ public final class ChemSteelItemRenderer implements SpecialModelRenderer<Integer
     }
 
     /** The JSON side. */
-    public record Unbaked(ChemSteelClient.Piece piece) implements SpecialModelRenderer.Unbaked<Integer> {
+    public record Unbaked(ChemSteelClient.Piece piece, boolean jets) implements SpecialModelRenderer.Unbaked<Integer> {
         private static final Codec<ChemSteelClient.Piece> PIECE = StringRepresentable.fromEnum(PieceName::values)
                 .xmap(PieceName::piece, piece -> PieceName.valueOf(piece.name()));
-        public static final MapCodec<Unbaked> MAP_CODEC = PIECE.fieldOf("piece").xmap(Unbaked::new, Unbaked::piece);
+        public static final MapCodec<Unbaked> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                PIECE.fieldOf("piece").forGetter(Unbaked::piece),
+                Codec.BOOL.optionalFieldOf("jets", false).forGetter(Unbaked::jets)
+        ).apply(instance, Unbaked::new));
 
         @Override
         public MapCodec<Unbaked> type() {
@@ -85,7 +98,7 @@ public final class ChemSteelItemRenderer implements SpecialModelRenderer<Integer
 
         @Override
         public ChemSteelItemRenderer bake(SpecialModelRenderer.BakingContext context) {
-            return new ChemSteelItemRenderer(piece, context.entityModelSet().bakeLayer(piece.layer));
+            return new ChemSteelItemRenderer(piece, context.entityModelSet().bakeLayer(piece.layer), jets);
         }
     }
 

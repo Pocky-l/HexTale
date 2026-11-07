@@ -1,0 +1,27 @@
+{
+  "region": "chemtech",
+  "stage": "late",
+  "icon": [
+    "hextale:chem_jet_tank",
+    "hextale:jet_nozzle"
+  ],
+  "parents": [
+    "chem_tank",
+    "lab_bench"
+  ],
+  "display": [
+    {
+      "kind": "hex_crafting",
+      "result": "hextale:chem_jet_tank"
+    },
+    {
+      "kind": "hex_crafting",
+      "result": "hextale:jet_nozzle"
+    }
+  ],
+  "research": "chem_jets",
+  "pos": [
+    -1350,
+    210
+  ]
+}

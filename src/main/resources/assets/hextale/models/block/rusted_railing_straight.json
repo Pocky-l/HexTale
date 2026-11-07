@@ -1,0 +1,286 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/rusted_plating",
+    "grate": "hextale:block/chem/rusted_catwalk_grate",
+    "plating": "hextale:block/rusted_plating",
+    "iron": "hextale:block/chem/chem_iron"
+  },
+  "elements": [
+    {
+      "name": "rail_top",
+      "from": [
+        0,
+        13,
+        1
+      ],
+      "to": [
+        16,
+        15,
+        3
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            3,
+            16,
+            5
+          ],
+          "texture": "#grate"
+        },
+        "south": {
+          "uv": [
+            0,
+            11,
+            16,
+            13
+          ],
+          "texture": "#grate"
+        },
+        "up": {
+          "uv": [
+            0,
+            3,
+            16,
+            5
+          ],
+          "texture": "#grate"
+        },
+        "down": {
+          "uv": [
+            0,
+            11,
+            16,
+            13
+          ],
+          "texture": "#grate"
+        }
+      }
+    },
+    {
+      "name": "rail_mid",
+      "from": [
+        0,
+        8,
+        1
+      ],
+      "to": [
+        16,
+        9,
+        3
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            3,
+            16,
+            4
+          ],
+          "texture": "#grate"
+        },
+        "south": {
+          "uv": [
+            0,
+            11,
+            16,
+            12
+          ],
+          "texture": "#grate"
+        },
+        "up": {
+          "uv": [
+            0,
+            3,
+            16,
+            5
+          ],
+          "texture": "#grate"
+        },
+        "down": {
+          "uv": [
+            0,
+            11,
+            16,
+            13
+          ],
+          "texture": "#grate"
+        }
+      }
+    },
+    {
+      "name": "toe_board",
+      "from": [
+        0,
+        1,
+        1
+      ],
+      "to": [
+        16,
+        4,
+        2
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            5,
+            16,
+            8
+          ],
+          "texture": "#plating"
+        },
+        "south": {
+          "uv": [
+            0,
+            13,
+            16,
+            16
+          ],
+          "texture": "#plating"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ],
+          "texture": "#plating"
+        },
+        "down": {
+          "uv": [
+            0,
+            15,
+            16,
+            16
+          ],
+          "texture": "#plating"
+        }
+      }
+    },
+    {
+      "name": "stanchion",
+      "from": [
+        6.9,
+        0.9,
+        0.9
+      ],
+      "to": [
+        9.1,
+        14.1,
+        3.1
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            1,
+            2,
+            14
+          ],
+          "texture": "#grate"
+        },
+        "east": {
+          "uv": [
+            8,
+            1,
+            10,
+            14
+          ],
+          "texture": "#grate"
+        },
+        "south": {
+          "uv": [
+            4,
+            1,
+            6,
+            14
+          ],
+          "texture": "#grate"
+        },
+        "west": {
+          "uv": [
+            12,
+            1,
+            14,
+            14
+          ],
+          "texture": "#grate"
+        }
+      }
+    },
+    {
+      "name": "stanchion_foot",
+      "from": [
+        6,
+        0,
+        0
+      ],
+      "to": [
+        10,
+        2,
+        4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1,
+            14,
+            5,
+            16
+          ],
+          "texture": "#iron",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            9,
+            14,
+            13,
+            16
+          ],
+          "texture": "#iron"
+        },
+        "south": {
+          "uv": [
+            5,
+            14,
+            9,
+            16
+          ],
+          "texture": "#iron"
+        },
+        "west": {
+          "uv": [
+            12,
+            14,
+            16,
+            16
+          ],
+          "texture": "#iron"
+        },
+        "up": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#iron"
+        },
+        "down": {
+          "uv": [
+            2,
+            6,
+            6,
+            10
+          ],
+          "texture": "#iron",
+          "cullface": "down"
+        }
+      }
+    }
+  ]
+}

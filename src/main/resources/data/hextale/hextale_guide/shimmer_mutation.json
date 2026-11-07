@@ -1,0 +1,22 @@
+{
+  "region": "chemtech",
+  "stage": "late",
+  "icon": "hextale:shimmer_injector",
+  "parents": [
+    "shimmer_veins",
+    "lab_bench"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "shimmer_mutation"
+  },
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:shimmer_injector"
+  },
+  "research": "shimmer_mutation",
+  "pos": [
+    -1095,
+    430
+  ]
+}

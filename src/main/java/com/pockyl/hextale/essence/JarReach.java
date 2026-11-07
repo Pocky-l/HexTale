@@ -45,13 +45,18 @@ public final class JarReach {
 
     /** The jars within {@link #RADIUS} of the box {@code min..max} (a machine of several blocks), nearest first. */
     public static List<EssenceTankBlockEntity> around(Level level, BlockPos min, BlockPos max) {
+        return within(level, min, max, EssenceTankBlockEntity.class);
+    }
+
+    /** The block entities of a kind within {@link #RADIUS} of the box {@code min..max}, nearest first. */
+    public static <T extends BlockEntity> List<T> within(Level level, BlockPos min, BlockPos max, Class<T> kind) {
         int x0 = min.getX() - RADIUS;
         int y0 = min.getY() - RADIUS;
         int z0 = min.getZ() - RADIUS;
         int x1 = max.getX() + RADIUS;
         int y1 = max.getY() + RADIUS;
         int z1 = max.getZ() + RADIUS;
-        List<EssenceTankBlockEntity> jars = new ArrayList<>();
+        List<T> found = new ArrayList<>();
         for (int cx = x0 >> 4; cx <= x1 >> 4; cx++) {
             for (int cz = z0 >> 4; cz <= z1 >> 4; cz++) {
                 if (!level.hasChunk(cx, cz)) {
@@ -59,19 +64,19 @@ public final class JarReach {
                 }
                 for (BlockEntity entity : level.getChunk(cx, cz).getBlockEntities().values()) {
                     BlockPos pos = entity.getBlockPos();
-                    if (entity instanceof EssenceTankBlockEntity jar && !jar.isRemoved()
+                    if (kind.isInstance(entity) && !entity.isRemoved()
                             && pos.getX() >= x0 && pos.getX() <= x1 && pos.getY() >= y0 && pos.getY() <= y1
                             && pos.getZ() >= z0 && pos.getZ() <= z1) {
-                        jars.add(jar);
+                        found.add(kind.cast(entity));
                     }
                 }
             }
         }
-        // The chunk maps have no order: sort, so the same jar is drawn first every time.
+        // The chunk maps have no order: sort, so the same one is drawn first every time.
         Vec3 middle = new Vec3((min.getX() + max.getX()) / 2.0, (min.getY() + max.getY()) / 2.0, (min.getZ() + max.getZ()) / 2.0);
-        jars.sort(Comparator.<EssenceTankBlockEntity>comparingDouble(jar -> jar.getBlockPos().distToLowCornerSqr(middle.x, middle.y, middle.z))
-                .thenComparingLong(jar -> jar.getBlockPos().asLong()));
-        return jars;
+        found.sort(Comparator.<T>comparingDouble(entity -> entity.getBlockPos().distToLowCornerSqr(middle.x, middle.y, middle.z))
+                .thenComparingLong(entity -> entity.getBlockPos().asLong()));
+        return found;
     }
 
     /** Whether the jars around {@code center} hold at least {@code amount} mB of one essence between them (nothing is drawn). */

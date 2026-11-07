@@ -1,0 +1,476 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/chem/chem_iron",
+    "chem_iron": "hextale:block/chem/chem_iron",
+    "chem_copper": "hextale:block/chem/chem_copper"
+  },
+  "elements": [
+    {
+      "name": "iron_plate",
+      "from": [
+        5,
+        0,
+        5
+      ],
+      "to": [
+        11,
+        2,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            14,
+            11,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "east": {
+          "uv": [
+            5,
+            14,
+            11,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            5,
+            14,
+            11,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "west": {
+          "uv": [
+            5,
+            14,
+            11,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "up": {
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ],
+          "texture": "#chem_iron"
+        },
+        "down": {
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ],
+          "texture": "#chem_iron",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "copper_hub",
+      "from": [
+        6,
+        2,
+        6
+      ],
+      "to": [
+        10,
+        4,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            12,
+            10,
+            14
+          ],
+          "texture": "#chem_copper"
+        },
+        "east": {
+          "uv": [
+            6,
+            12,
+            10,
+            14
+          ],
+          "texture": "#chem_copper"
+        },
+        "south": {
+          "uv": [
+            6,
+            12,
+            10,
+            14
+          ],
+          "texture": "#chem_copper"
+        },
+        "west": {
+          "uv": [
+            6,
+            12,
+            10,
+            14
+          ],
+          "texture": "#chem_copper"
+        },
+        "up": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#chem_copper"
+        }
+      }
+    },
+    {
+      "name": "iron_eye",
+      "from": [
+        7,
+        4,
+        7
+      ],
+      "to": [
+        9,
+        6,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            10,
+            9,
+            12
+          ],
+          "texture": "#chem_iron"
+        },
+        "east": {
+          "uv": [
+            7,
+            10,
+            9,
+            12
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            7,
+            10,
+            9,
+            12
+          ],
+          "texture": "#chem_iron"
+        },
+        "west": {
+          "uv": [
+            7,
+            10,
+            9,
+            12
+          ],
+          "texture": "#chem_iron"
+        },
+        "up": {
+          "uv": [
+            7,
+            7,
+            9,
+            9
+          ],
+          "texture": "#chem_iron"
+        }
+      }
+    },
+    {
+      "name": "iron_prong_n",
+      "from": [
+        7,
+        0,
+        2
+      ],
+      "to": [
+        9,
+        1,
+        6
+      ],
+      "rotation": {
+        "angle": -22.5,
+        "axis": "x",
+        "origin": [
+          8,
+          1,
+          6
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            15,
+            9,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "east": {
+          "uv": [
+            10,
+            15,
+            14,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "west": {
+          "uv": [
+            2,
+            15,
+            6,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "up": {
+          "uv": [
+            7,
+            2,
+            9,
+            6
+          ],
+          "texture": "#chem_iron"
+        },
+        "down": {
+          "uv": [
+            7,
+            10,
+            9,
+            14
+          ],
+          "texture": "#chem_iron"
+        }
+      }
+    },
+    {
+      "name": "iron_prong_s",
+      "from": [
+        7,
+        0,
+        10
+      ],
+      "to": [
+        9,
+        1,
+        14
+      ],
+      "rotation": {
+        "angle": 22.5,
+        "axis": "x",
+        "origin": [
+          8,
+          1,
+          10
+        ]
+      },
+      "faces": {
+        "east": {
+          "uv": [
+            2,
+            15,
+            6,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            7,
+            15,
+            9,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "west": {
+          "uv": [
+            10,
+            15,
+            14,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "up": {
+          "uv": [
+            7,
+            10,
+            9,
+            14
+          ],
+          "texture": "#chem_iron"
+        },
+        "down": {
+          "uv": [
+            7,
+            2,
+            9,
+            6
+          ],
+          "texture": "#chem_iron"
+        }
+      }
+    },
+    {
+      "name": "iron_prong_w",
+      "from": [
+        2,
+        0,
+        7
+      ],
+      "to": [
+        6,
+        1,
+        9
+      ],
+      "rotation": {
+        "angle": 22.5,
+        "axis": "z",
+        "origin": [
+          6,
+          1,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            10,
+            15,
+            14,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            2,
+            15,
+            6,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "west": {
+          "uv": [
+            7,
+            15,
+            9,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "up": {
+          "uv": [
+            2,
+            7,
+            6,
+            9
+          ],
+          "texture": "#chem_iron"
+        },
+        "down": {
+          "uv": [
+            2,
+            7,
+            6,
+            9
+          ],
+          "texture": "#chem_iron"
+        }
+      }
+    },
+    {
+      "name": "iron_prong_e",
+      "from": [
+        10,
+        0,
+        7
+      ],
+      "to": [
+        14,
+        1,
+        9
+      ],
+      "rotation": {
+        "angle": -22.5,
+        "axis": "z",
+        "origin": [
+          10,
+          1,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            15,
+            6,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "east": {
+          "uv": [
+            7,
+            15,
+            9,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            10,
+            15,
+            14,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "up": {
+          "uv": [
+            10,
+            7,
+            14,
+            9
+          ],
+          "texture": "#chem_iron"
+        },
+        "down": {
+          "uv": [
+            10,
+            7,
+            14,
+            9
+          ],
+          "texture": "#chem_iron"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "NTN"
+  ],
+  "key": {
+    "N": "hextale:jet_nozzle",
+    "T": "hextale:chem_steel_tank_chestplate"
+  },
+  "result": {
+    "id": "hextale:chem_jet_tank_chestplate"
+  },
+  "charge": 4
+}

@@ -1,0 +1,25 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    " C ",
+    "BPB",
+    "RVR"
+  ],
+  "key": {
+    "C": "minecraft:iron_chain",
+    "B": "#c:bars/copper",
+    "P": "minecraft:piston",
+    "R": "hextale:rusted_plating",
+    "V": {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "hextale:chem_vial",
+      "components": {
+        "hextale:brew": "fuel"
+      }
+    }
+  },
+  "result": {
+    "id": "hextale:chain_launcher"
+  },
+  "charge": 2
+}

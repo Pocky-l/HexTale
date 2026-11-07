@@ -1,0 +1,17 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "GCG",
+    "GPG",
+    " G "
+  ],
+  "key": {
+    "G": "#c:ingots/gold",
+    "C": "hextale:hextech_crystal",
+    "P": "minecraft:ender_eye"
+  },
+  "result": {
+    "id": "hextale:hex_terminal"
+  },
+  "charge": 4
+}

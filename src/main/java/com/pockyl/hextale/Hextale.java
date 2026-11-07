@@ -64,7 +64,12 @@ public final class Hextale {
                 event.register(com.pockyl.hextale.block.WorldAnchorBlock.TICKETS));
         PickaxeEffects.register();
         com.pockyl.hextale.chem.ChemGear.register();
+        com.pockyl.hextale.chem.Respirator.register();
+        com.pockyl.hextale.chem.PneumaticBoots.register();
+        com.pockyl.hextale.chem.ChemJets.register();
+        com.pockyl.hextale.entity.ZiplineTrolley.register();
         com.pockyl.hextale.runework.ToolEffects.register();
+        com.pockyl.hextale.thevoid.boss.ProsectorEvents.register();
         com.pockyl.hextale.runework.WeaponRunes.register();
         com.pockyl.hextale.farm.FunnelEvents.register();
         com.pockyl.hextale.farm.ShackleEvents.register();
@@ -81,6 +86,7 @@ public final class Hextale {
         PockyModsTab.register(modBus, () -> new ItemStack(ModItems.HEXCORE.get()), Hextale::fillCreativeTab);
 
         container.registerConfig(ModConfig.Type.SERVER, Config.SPEC);
+        container.registerConfig(ModConfig.Type.SERVER, com.pockyl.hextale.thevoid.boss.ProsectorConfig.SPEC, "hextale-prosector.toml");
         container.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
     }
 
@@ -100,7 +106,6 @@ public final class Hextale {
 
         // Workshop: crafting and processing stations with what they run on.
         output.accept(ModItems.HEX_WORKBENCH);
-        output.accept(ModItems.CRYSTAL_BATTERY);
         output.accept(ModItems.HEX_LAPIDARY);
         output.accept(ModItems.CUTTING_DISC);
         output.accept(ModItems.MASTER_CUTTING_DISC);
@@ -137,6 +142,22 @@ public final class Hextale {
         output.accept(ModItems.CHEM_STILL);
         output.accept(ModItems.CHEM_VAT);
         output.accept(ModItems.CHEM_TANK);
+        output.accept(ModItems.JET_NOZZLE);
+        output.accept(ModItems.SHIMMER_INJECTOR);
+        output.accept(ModItems.CHEM_JET_TANK);
+        output.accept(ModItems.CHEM_CARBOY);
+        output.accept(ModItems.VIAL_RACK);
+        output.accept(ModItems.CHEM_LUMEN);
+        output.accept(ModItems.GAS_CYLINDER);
+        output.accept(ModItems.GAS_CYLINDER_RUST);
+        output.accept(ModItems.GAS_CYLINDER_SHIMMER);
+        output.accept(ModItems.VALVE_WHEEL);
+        output.accept(ModItems.RUSTED_CATWALK);
+        output.accept(ModItems.RUSTED_RAILING);
+        output.accept(ModItems.HAZARD_PLATING);
+        output.accept(ModItems.RUSTED_LADDER);
+        output.accept(ModItems.CHAIN_LAUNCHER);
+        output.accept(ModItems.BITER_GRENADE);
         output.accept(ModItems.CHEM_STEEL_PICKAXE);
         output.accept(ModItems.CHEM_STEEL_AXE);
         output.accept(ModItems.CHEM_STEEL_SHOVEL);
@@ -144,6 +165,7 @@ public final class Hextale {
         output.accept(ModItems.CHEM_STEEL_HELMET);
         output.accept(ModItems.CHEM_STEEL_CHESTPLATE);
         output.accept(ModItems.CHEM_STEEL_TANK_CHESTPLATE);
+        output.accept(ModItems.CHEM_JET_TANK_CHESTPLATE);
         output.accept(ModItems.CHEM_STEEL_LEGGINGS);
         output.accept(ModItems.CHEM_STEEL_BOOTS);
         output.accept(ModItems.CHEM_BOILER);
@@ -174,6 +196,7 @@ public final class Hextale {
         // Automation: farms, mob handling, defence.
         output.accept(ModItems.WHIRL_REAPER);
         output.accept(ModItems.HEX_SAWMILL);
+        output.accept(ModItems.HERDKEEPER);
         output.accept(ModItems.GREEDY_FUNNEL);
         output.accept(ModItems.XP_CONDENSER);
         output.accept(ModItems.ARC_SPIRE);
@@ -194,6 +217,10 @@ public final class Hextale {
         output.accept(ModItems.RIFT_GATE);
         output.accept(ModItems.RIFT_LINK_CRYSTAL);
         output.accept(ModItems.WORLD_ANCHOR);
+        output.accept(ModItems.HEX_VAULT);
+        output.accept(ModItems.STORAGE_CUBE);
+        output.accept(ModItems.HEX_TERMINAL);
+        output.accept(ModItems.POCKET_TERMINAL);
         output.accept(ModItems.DISINTEGRATOR);
         ModItems.PICKAXES.values().forEach(output::accept);
         output.accept(ModItems.HEXTECH_AXE);
@@ -266,6 +293,11 @@ public final class Hextale {
         output.accept(ModItems.RIFTMETAL_INGOT);
         output.accept(ModItems.HOLLOW_CRYSTAL);
         output.accept(ModItems.VOID_PEARL);
+        output.accept(ModItems.SEERS_EYE);
+        output.accept(ModItems.BUDDING_VOID_CRYSTAL);
+        output.accept(ModItems.SMALL_VOID_CRYSTAL_BUD);
+        output.accept(ModItems.MEDIUM_VOID_CRYSTAL_BUD);
+        output.accept(ModItems.LARGE_VOID_CRYSTAL_BUD);
         output.accept(ModItems.VOID_CRYSTAL_CLUSTER);
         output.accept(ModItems.VOID_CRYSTAL);
         output.accept(ModItems.SEALED_VOID_CRYSTAL);
@@ -302,6 +334,11 @@ public final class Hextale {
         output.accept(ModItems.VOID_CARAPACE_TILES);
 
         // Building blocks, one family after another.
+        output.accept(ModItems.WHITE_GOLD_TILES);
+        output.accept(ModItems.WHITE_GOLD_TILES_STAIRS);
+        output.accept(ModItems.WHITE_GOLD_TILES_SLAB);
+        output.accept(ModItems.WHITE_GOLD_INLAY);
+        output.accept(ModItems.WHITE_GOLD_PILLAR);
         output.accept(ModItems.MAGIC_STONE);
         output.accept(ModItems.POLISHED_MAGIC_STONE);
         output.accept(ModItems.WHORLED_MAGIC_STONE);
@@ -393,6 +430,10 @@ public final class Hextale {
         output.accept(ModItems.HUSK_CHITIN_TILES_STAIRS);
         output.accept(ModItems.HUSK_CHITIN_TILES_SLAB);
         output.accept(ModItems.HUSK_CHITIN_PILLAR);
+        output.accept(ModItems.THEATRE_TILES);
+        output.accept(ModItems.THEATRE_TILE_STAIRS);
+        output.accept(ModItems.THEATRE_TILE_SLAB);
+        output.accept(ModItems.WATCHING_EYE);
         output.accept(ModItems.GNAWED_COBBLESTONE);
         output.accept(ModItems.GNAWED_STONE_BRICKS);
         output.accept(ModItems.GNAWED_BRICKS);
@@ -451,10 +492,12 @@ public final class Hextale {
         }
 
         // Research notes of every topic.
-        com.pockyl.hextale.research.ResearchTopics.all().forEach(topic -> output.accept(com.pockyl.hextale.item.ResearchNotesItem.of(topic)));
+        com.pockyl.hextale.research.ResearchTopics.all().stream().filter(topic -> topic != com.pockyl.hextale.research.ResearchTopics.CRYSTAL_BATTERY)
+                .forEach(topic -> output.accept(com.pockyl.hextale.item.ResearchNotesItem.of(topic)));
 
         // Creative only: the Creative Essence Jar (every essence, endless) is the one jar of essence.
         output.accept(ModItems.CREATIVE_ESSENCE_TANK);
+        output.accept(ModItems.CREATIVE_CHEM_CARBOY);
         output.accept(ModItems.SCROLL_OF_OMNISCIENCE);
         output.accept(ModItems.SCROLL_OF_OBLIVION);
         output.accept(ModItems.VOID_SHARD);
@@ -587,6 +630,7 @@ public final class Hextale {
             event.accept(ModItems.RADIANT_TENDRIL_DAGGER);
             event.accept(ModItems.RIFTFORGED_TENDRIL_DAGGER);
             event.accept(ModItems.STRIKE_GAUNTLET);
+            event.accept(ModItems.BITER_GRENADE);
             event.accept(ModItems.HEXSTEEL_SWORD);
             event.accept(ModItems.HEXSTEEL_AXE);
             event.accept(ModItems.HEXSTEEL_HELMET);

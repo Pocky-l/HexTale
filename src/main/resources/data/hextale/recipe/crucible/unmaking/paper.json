@@ -1,0 +1,11 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:paper",
+  "essences": {
+    "decay": 2
+  },
+  "result": {
+    "id": "minecraft:sugar_cane"
+  },
+  "research": "unmaking"
+}

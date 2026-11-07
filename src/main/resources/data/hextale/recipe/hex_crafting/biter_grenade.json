@@ -1,0 +1,21 @@
+{
+  "type": "hextale:hex_crafting",
+  "ingredients": [
+    "hextale:rusted_plating",
+    "hextale:rusted_plating",
+    {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "hextale:chem_vial",
+      "components": {
+        "hextale:brew": "fuel"
+      }
+    },
+    "minecraft:gunpowder",
+    "#c:nuggets/iron"
+  ],
+  "result": {
+    "id": "hextale:biter_grenade",
+    "count": 3
+  },
+  "charge": 1
+}

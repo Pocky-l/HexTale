@@ -67,7 +67,7 @@ public class GrappleHook extends Projectile {
     /** Strength of the Gravity rune (yank a bitten creature to the wearer) and of Blades (cut it); 0 = the claw passes creatures. */
     private int gravity;
     private int blades;
-    /** The rope's length on this side, or -1 until the side that moves the wearer has measured it. */
+    /** The rope's length on this side, or -1 until it was measured here or, on the server, reported by the wearer's client. */
     private double length = -1;
     private Vec3 launch = Vec3.ZERO;
     @Nullable
@@ -170,7 +170,7 @@ public class GrappleHook extends Projectile {
         return length >= 0 ? length : entityData.get(LENGTH);
     }
 
-    /** Whether this side has measured the rope itself (it moves the wearer). */
+    /** Whether this side has its own length for the rope, which it needs to hold its copy of the wearer on it. */
     public boolean measured() {
         return length >= 0;
     }
@@ -184,7 +184,7 @@ public class GrappleHook extends Projectile {
 
     /** Server: the wearer's client says how long the rope is now. */
     public void reportLength(double value) {
-        entityData.set(LENGTH, (float) Math.max(MIN_LENGTH, Math.min(reach(), value)));
+        setLength(value);
     }
 
     @Nullable

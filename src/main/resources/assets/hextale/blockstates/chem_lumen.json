@@ -1,0 +1,49 @@
+{
+  "variants": {
+    "face=floor,facing=north": {
+      "model": "hextale:block/chem_lumen"
+    },
+    "face=floor,facing=east": {
+      "model": "hextale:block/chem_lumen",
+      "y": 90
+    },
+    "face=floor,facing=south": {
+      "model": "hextale:block/chem_lumen",
+      "y": 180
+    },
+    "face=floor,facing=west": {
+      "model": "hextale:block/chem_lumen",
+      "y": 270
+    },
+    "face=wall,facing=north": {
+      "model": "hextale:block/chem_lumen_wall"
+    },
+    "face=wall,facing=east": {
+      "model": "hextale:block/chem_lumen_wall",
+      "y": 90
+    },
+    "face=wall,facing=south": {
+      "model": "hextale:block/chem_lumen_wall",
+      "y": 180
+    },
+    "face=wall,facing=west": {
+      "model": "hextale:block/chem_lumen_wall",
+      "y": 270
+    },
+    "face=ceiling,facing=north": {
+      "model": "hextale:block/chem_lumen_hanging"
+    },
+    "face=ceiling,facing=east": {
+      "model": "hextale:block/chem_lumen_hanging",
+      "y": 90
+    },
+    "face=ceiling,facing=south": {
+      "model": "hextale:block/chem_lumen_hanging",
+      "y": 180
+    },
+    "face=ceiling,facing=west": {
+      "model": "hextale:block/chem_lumen_hanging",
+      "y": 270
+    }
+  }
+}

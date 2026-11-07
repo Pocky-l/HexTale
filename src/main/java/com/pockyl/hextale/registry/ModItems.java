@@ -102,12 +102,42 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> RUSTED_GRATE = ITEMS.registerSimpleBlockItem(ModBlocks.RUSTED_GRATE);
     public static final DeferredItem<BlockItem> CHEM_TUBES = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_TUBES);
     public static final DeferredItem<BlockItem> CHEM_VAT = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_VAT);
+    /** Thrown, it bites the first creature it hits and bursts on it. */
+    public static final DeferredItem<com.pockyl.hextale.item.BiterGrenadeItem> BITER_GRENADE = ITEMS.registerItem("biter_grenade",
+            properties -> new com.pockyl.hextale.item.BiterGrenadeItem(properties.stacksTo(16)));
+    /** The Chain Launcher: a hand-held harpoon that shoots ziplines between Chain Posts; wears out after a few lines. */
+    public static final DeferredItem<com.pockyl.hextale.item.ChainLauncherItem> CHAIN_LAUNCHER = ITEMS.registerItem("chain_launcher",
+            properties -> new com.pockyl.hextale.item.ChainLauncherItem(properties.durability(com.pockyl.hextale.item.ChainLauncherItem.SHOTS)
+                    .rarity(Rarity.UNCOMMON)));
     /** The Chem Tank: worn on the back (chest slot or the Curios back slot) it feeds chemtech gear; set down it is a block. */
     public static final DeferredItem<com.pockyl.hextale.item.ChemTankItem> CHEM_TANK = ITEMS.registerItem("chem_tank",
             properties -> new com.pockyl.hextale.item.ChemTankItem(ModBlocks.CHEM_TANK.get(), properties.stacksTo(1).rarity(Rarity.RARE)
                     .useBlockDescriptionPrefix()
                     .component(DataComponents.EQUIPPABLE, Equippable.builder(EquipmentSlot.CHEST)
                             .setEquipSound(SoundEvents.ARMOR_EQUIP_LEATHER).setDamageOnHurt(false).build())));
+    /** The Chem Tank with two Jet Nozzles: all the tank does, and it flies its wearer. */
+    public static final DeferredItem<com.pockyl.hextale.item.ChemTankItem> CHEM_JET_TANK = ITEMS.registerItem("chem_jet_tank",
+            properties -> new com.pockyl.hextale.item.ChemTankItem(ModBlocks.CHEM_JET_TANK.get(), properties.stacksTo(1).rarity(Rarity.EPIC)
+                    .useBlockDescriptionPrefix()
+                    .component(DataComponents.EQUIPPABLE, Equippable.builder(EquipmentSlot.CHEST)
+                            .setEquipSound(SoundEvents.ARMOR_EQUIP_LEATHER).setDamageOnHurt(false).build())));
+    /** A rocket bell of chem-steel and copper: two of them make a tank a Chem Jet Tank. */
+    public static final DeferredItem<Item> JET_NOZZLE = ITEMS.registerSimpleItem("jet_nozzle");
+    public static final DeferredItem<com.pockyl.hextale.item.ShimmerInjectorItem> SHIMMER_INJECTOR = ITEMS.registerItem("shimmer_injector",
+            properties -> new com.pockyl.hextale.item.ShimmerInjectorItem(properties.stacksTo(1).rarity(Rarity.RARE)));
+    public static final DeferredItem<com.pockyl.hextale.item.ChemCarboyItem> CHEM_CARBOY = ITEMS.registerItem("chem_carboy",
+            properties -> new com.pockyl.hextale.item.ChemCarboyItem(ModBlocks.CHEM_CARBOY.get(), properties.stacksTo(16).useBlockDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> CREATIVE_CHEM_CARBOY = ITEMS.registerSimpleBlockItem(ModBlocks.CREATIVE_CHEM_CARBOY);
+    public static final DeferredItem<BlockItem> VIAL_RACK = ITEMS.registerSimpleBlockItem(ModBlocks.VIAL_RACK);
+    public static final DeferredItem<BlockItem> CHEM_LUMEN = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_LUMEN);
+    public static final DeferredItem<BlockItem> GAS_CYLINDER = ITEMS.registerSimpleBlockItem(ModBlocks.GAS_CYLINDER);
+    public static final DeferredItem<BlockItem> GAS_CYLINDER_RUST = ITEMS.registerSimpleBlockItem(ModBlocks.GAS_CYLINDER_RUST);
+    public static final DeferredItem<BlockItem> GAS_CYLINDER_SHIMMER = ITEMS.registerSimpleBlockItem(ModBlocks.GAS_CYLINDER_SHIMMER);
+    public static final DeferredItem<BlockItem> VALVE_WHEEL = ITEMS.registerSimpleBlockItem(ModBlocks.VALVE_WHEEL);
+    public static final DeferredItem<BlockItem> RUSTED_CATWALK = ITEMS.registerSimpleBlockItem(ModBlocks.RUSTED_CATWALK);
+    public static final DeferredItem<BlockItem> RUSTED_RAILING = ITEMS.registerSimpleBlockItem(ModBlocks.RUSTED_RAILING);
+    public static final DeferredItem<BlockItem> HAZARD_PLATING = ITEMS.registerSimpleBlockItem(ModBlocks.HAZARD_PLATING);
+    public static final DeferredItem<BlockItem> RUSTED_LADDER = ITEMS.registerSimpleBlockItem(ModBlocks.RUSTED_LADDER);
     public static final DeferredItem<Item> CHEM_STEEL_INGOT = ITEMS.registerSimpleItem("chem_steel_ingot");
     /**
      * Chemtech tools: registered at full strength (hextech level 4), unbreakable, as strong as the fuel in the tank on
@@ -192,6 +222,10 @@ public final class ModItems {
     public static final DeferredItem<Item> RADIANT_ALLOY_INGOT = ITEMS.registerItem("radiant_alloy_ingot",
             properties -> new Item(properties.rarity(Rarity.RARE)));
     public static final DeferredItem<BlockItem> VOID_CRYSTAL_CLUSTER = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_CRYSTAL_CLUSTER);
+    public static final DeferredItem<BlockItem> LARGE_VOID_CRYSTAL_BUD = ITEMS.registerSimpleBlockItem(ModBlocks.LARGE_VOID_CRYSTAL_BUD);
+    public static final DeferredItem<BlockItem> MEDIUM_VOID_CRYSTAL_BUD = ITEMS.registerSimpleBlockItem(ModBlocks.MEDIUM_VOID_CRYSTAL_BUD);
+    public static final DeferredItem<BlockItem> SMALL_VOID_CRYSTAL_BUD = ITEMS.registerSimpleBlockItem(ModBlocks.SMALL_VOID_CRYSTAL_BUD);
+    public static final DeferredItem<BlockItem> BUDDING_VOID_CRYSTAL = ITEMS.registerSimpleBlockItem(ModBlocks.BUDDING_VOID_CRYSTAL);
     /** Level 4 gem, raw: broken off a cluster round a held breach. Too hungry to use as it is. */
     public static final DeferredItem<Item> VOID_CRYSTAL = ITEMS.registerItem("void_crystal", properties -> new Item(properties.rarity(Rarity.RARE)));
     /** A Void Crystal held in a nullstone setting: the stone drinks what it pulls, so it can go into a craft. */
@@ -209,6 +243,9 @@ public final class ModItems {
     /** A black pearl the Void grows in its sacs (and some maws carry): it keeps the Void's turning inside. */
     public static final DeferredItem<com.pockyl.hextale.item.NotedItem> VOID_PEARL = ITEMS.registerItem("void_pearl",
             properties -> new com.pockyl.hextale.item.NotedItem(properties.rarity(Rarity.RARE)));
+    /** The key to a vortex heart: shows the way there and opens the seal, once. */
+    public static final DeferredItem<com.pockyl.hextale.thevoid.boss.SeersEyeItem> SEERS_EYE = ITEMS.registerItem("seers_eye",
+            properties -> new com.pockyl.hextale.thevoid.boss.SeersEyeItem(properties.rarity(Rarity.EPIC).stacksTo(16)));
     /** Void Chitin softened in the crucible and pressed into a plate: the riftforged armour's shell. */
     public static final DeferredItem<Item> VOID_CARAPACE = ITEMS.registerItem("void_carapace", properties -> new Item(properties.rarity(Rarity.RARE)));
     /** Level 2 gem: a diamond cut to a brilliant with a groove that holds hextech. */
@@ -223,6 +260,11 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> HEXSTEEL_PLATING = ITEMS.registerSimpleBlockItem(ModBlocks.HEXSTEEL_PLATING);
     public static final DeferredItem<BlockItem> RADIANT_ALLOY_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.RADIANT_ALLOY_BLOCK);
     public static final DeferredItem<BlockItem> RADIANT_TRIM = ITEMS.registerSimpleBlockItem(ModBlocks.RADIANT_TRIM);
+    public static final DeferredItem<BlockItem> WHITE_GOLD_TILES = ITEMS.registerSimpleBlockItem(ModBlocks.WHITE_GOLD_TILES);
+    public static final DeferredItem<BlockItem> WHITE_GOLD_TILES_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.WHITE_GOLD_TILES_STAIRS);
+    public static final DeferredItem<BlockItem> WHITE_GOLD_TILES_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.WHITE_GOLD_TILES_SLAB);
+    public static final DeferredItem<BlockItem> WHITE_GOLD_INLAY = ITEMS.registerSimpleBlockItem(ModBlocks.WHITE_GOLD_INLAY);
+    public static final DeferredItem<BlockItem> WHITE_GOLD_PILLAR = ITEMS.registerSimpleBlockItem(ModBlocks.WHITE_GOLD_PILLAR);
     public static final DeferredItem<BlockItem> RIFTMETAL_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.RIFTMETAL_BLOCK, properties -> properties.fireResistant());
     public static final DeferredItem<BlockItem> VOID_CARAPACE_TILES = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_CARAPACE_TILES);
     public static final DeferredItem<Item> RAW_ZINC = ITEMS.registerSimpleItem("raw_zinc");
@@ -278,6 +320,8 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> WHIRL_REAPER = ITEMS.registerSimpleBlockItem(ModBlocks.WHIRL_REAPER,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> HEX_SAWMILL = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_SAWMILL,
+            properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> HERDKEEPER = ITEMS.registerSimpleBlockItem(ModBlocks.HERDKEEPER,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> GREEDY_FUNNEL = ITEMS.registerSimpleBlockItem(ModBlocks.GREEDY_FUNNEL,
             properties -> properties.rarity(Rarity.UNCOMMON));
@@ -351,6 +395,15 @@ public final class ModItems {
     public static final DeferredItem<com.pockyl.hextale.item.RiftLinkCrystalItem> RIFT_LINK_CRYSTAL = ITEMS.registerItem("rift_link_crystal",
             properties -> new com.pockyl.hextale.item.RiftLinkCrystalItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)));
     public static final DeferredItem<BlockItem> DISINTEGRATOR = ITEMS.registerSimpleBlockItem(ModBlocks.DISINTEGRATOR);
+    /** Everything a vault held waits for this one item, so on the ground fire, blasts and thorns leave it alone. */
+    public static final DeferredItem<com.pockyl.hextale.item.HexVaultItem> HEX_VAULT = ITEMS.registerItem("hex_vault",
+            properties -> new com.pockyl.hextale.item.HexVaultItem(ModBlocks.HEX_VAULT.get(), properties.useBlockDescriptionPrefix().stacksTo(1).rarity(Rarity.EPIC)
+                    .delayedComponent(net.minecraft.core.component.DataComponents.DAMAGE_RESISTANT, context -> new net.minecraft.world.item.component.DamageResistant(
+                            context.getOrThrow(com.pockyl.hextale.registry.ModTags.VAULT_SURVIVES)))));
+    public static final DeferredItem<BlockItem> STORAGE_CUBE = ITEMS.registerSimpleBlockItem(ModBlocks.STORAGE_CUBE, properties -> properties.rarity(Rarity.RARE));
+    public static final DeferredItem<BlockItem> HEX_TERMINAL = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_TERMINAL, properties -> properties.rarity(Rarity.RARE));
+    public static final DeferredItem<com.pockyl.hextale.item.PocketTerminalItem> POCKET_TERMINAL = ITEMS.registerItem("pocket_terminal",
+            properties -> new com.pockyl.hextale.item.PocketTerminalItem(properties.stacksTo(1).rarity(Rarity.RARE)));
     public static final DeferredItem<BlockItem> WORLD_ANCHOR = ITEMS.registerSimpleBlockItem(ModBlocks.WORLD_ANCHOR,
             properties -> properties.rarity(Rarity.RARE));
     public static final DeferredItem<com.pockyl.hextale.item.FloatingStoneItem> FLOATING_STONE = ITEMS.registerItem("floating_stone",
@@ -441,7 +494,9 @@ public final class ModItems {
             properties -> new com.pockyl.hextale.runework.TendrilDaggerItem(properties.sword(PICKAXE_MATERIALS[3], 1.5F, -1.6F).rarity(Rarity.EPIC).fireResistant()));
     /** The Strike Gauntlet: a charged punch that breaks rock or throws creatures back (late, radiant level). */
     public static final DeferredItem<com.pockyl.hextale.runework.StrikeGauntletItem> STRIKE_GAUNTLET = ITEMS.registerItem("strike_gauntlet",
-            properties -> new com.pockyl.hextale.runework.StrikeGauntletItem(properties.durability(1800).rarity(Rarity.EPIC).fireResistant()));
+            properties -> new com.pockyl.hextale.runework.StrikeGauntletItem(properties.durability(1800).rarity(Rarity.EPIC).fireResistant()
+                    .attributes(com.pockyl.hextale.runework.StrikeGauntletItem.attributes())
+                    .component(net.minecraft.core.component.DataComponents.WEAPON, new net.minecraft.world.item.component.Weapon(1))));
     // Level 4, forged with the Void on the Hexcore.
     public static final DeferredItem<HextechToolItem> RIFTFORGED_AXE = ITEMS.registerItem("riftforged_axe",
             properties -> new HextechToolItem(properties.axe(PICKAXE_MATERIALS[3], 5.0F, -3.0F).rarity(Rarity.EPIC).fireResistant()));
@@ -493,6 +548,10 @@ public final class ModItems {
     /** The chem-steel chestplate with a built-in tank: armour and fuel tank in one piece. */
     public static final DeferredItem<com.pockyl.hextale.item.ChemTankChestplateItem> CHEM_STEEL_TANK_CHESTPLATE = ITEMS.registerItem(
             "chem_steel_tank_chestplate", properties -> new com.pockyl.hextale.item.ChemTankChestplateItem(
+                    chemTool(properties.humanoidArmor(CHEM_STEEL_ARMOR, ArmorType.CHESTPLATE))));
+    /** The tank chestplate with Jet Nozzles on its tank. */
+    public static final DeferredItem<com.pockyl.hextale.item.ChemTankChestplateItem> CHEM_JET_TANK_CHESTPLATE = ITEMS.registerItem(
+            "chem_jet_tank_chestplate", properties -> new com.pockyl.hextale.item.ChemTankChestplateItem(
                     chemTool(properties.humanoidArmor(CHEM_STEEL_ARMOR, ArmorType.CHESTPLATE))));
     public static final DeferredItem<com.pockyl.hextale.item.ChemArmourItem> CHEM_STEEL_BOOTS = ITEMS.registerItem("chem_steel_boots",
             properties -> new com.pockyl.hextale.item.ChemArmourItem(ArmorType.BOOTS, chemTool(properties.humanoidArmor(CHEM_STEEL_ARMOR, ArmorType.BOOTS))));
@@ -608,6 +667,10 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> POLISHED_HUSK_CHITIN = ITEMS.registerSimpleBlockItem(ModBlocks.POLISHED_HUSK_CHITIN);
     public static final DeferredItem<BlockItem> POLISHED_HUSK_CHITIN_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.POLISHED_HUSK_CHITIN_STAIRS);
     public static final DeferredItem<BlockItem> POLISHED_HUSK_CHITIN_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.POLISHED_HUSK_CHITIN_SLAB);
+    public static final DeferredItem<BlockItem> THEATRE_TILES = ITEMS.registerSimpleBlockItem(ModBlocks.THEATRE_TILES);
+    public static final DeferredItem<BlockItem> THEATRE_TILE_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.THEATRE_TILE_STAIRS);
+    public static final DeferredItem<BlockItem> THEATRE_TILE_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.THEATRE_TILE_SLAB);
+    public static final DeferredItem<BlockItem> WATCHING_EYE = ITEMS.registerSimpleBlockItem(ModBlocks.WATCHING_EYE);
     public static final DeferredItem<BlockItem> HUSK_CHITIN_TILES = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_TILES);
     public static final DeferredItem<BlockItem> HUSK_CHITIN_TILES_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_TILES_STAIRS);
     public static final DeferredItem<BlockItem> HUSK_CHITIN_TILES_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.HUSK_CHITIN_TILES_SLAB);

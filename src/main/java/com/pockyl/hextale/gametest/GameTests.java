@@ -33,14 +33,21 @@ public final class GameTests {
             RuneWorkGameTests.class, HextechGameTests.class, CraftingGameTests.class, PylonGameTests.class,
             MultiblockGameTests.class, CrucibleGameTests.class, GardenGameTests.class, MagicTreeGameTests.class, WhirlReaperGameTests.class, SawmillGameTests.class,
             RuneGiftGameTests.class, ChemGameTests.class, ShimmerGameTests.class, DualityGameTests.class, LabGameTests.class,
-            SkypackGameTests.class, VoidGameTests.class, GateGameTests.class, FunnelGameTests.class, SpireGameTests.class, ShackleGameTests.class, CondenserGameTests.class, FoundryGameTests.class, VentGameTests.class, CreativeJarGameTests.class, ThinningGameTests.class, HollowbloomGameTests.class, HealingGameTests.class, VoidRoadGameTests.class, VoidRealmGameTests.class, VoidLifeGameTests.class, StruckGeodeGameTests.class, ForkGameTests.class, GadgetGameTests.class,
+            SkypackGameTests.class, VoidGameTests.class, GateGameTests.class, FunnelGameTests.class, SpireGameTests.class, ShackleGameTests.class, CondenserGameTests.class, FoundryGameTests.class, VentGameTests.class, CreativeJarGameTests.class, ThinningGameTests.class, HollowbloomGameTests.class, HealingGameTests.class, VoidRoadGameTests.class, VoidRealmGameTests.class, VoidLifeGameTests.class, StruckGeodeGameTests.class, ForkGameTests.class, GadgetGameTests.class, BiterGrenadeGameTests.class,
             RecipeGameTests.class, ProtectionGameTests.class, AutomationGameTests.class, QuestHookGameTests.class,
-            EssenceFluidGameTests.class, WeaponRuneGameTests.class, ArsenalGameTests.class, TransmutationGameTests.class, ChemVatGameTests.class, ChemTankGameTests.class);
+            EssenceFluidGameTests.class, WeaponRuneGameTests.class, ArsenalGameTests.class, TransmutationGameTests.class, UnmakingGameTests.class, ChemVatGameTests.class, ChemTankGameTests.class, ChemJetGameTests.class, ShimmerMutationGameTests.class, LootTableGameTests.class, ChemCarboyGameTests.class, ChemDecorGameTests.class,
+            ZiplineGameTests.class, HerdkeeperGameTests.class, WorkbenchGameTests.class, VaultGameTests.class, ProsectorGameTests.class);
     /**
      * Ticks a test may wait for the chunks round its spot to tick their creatures before its body runs; added to every
      * test's {@link HexTest#maxTicks()}, so the wait never eats into the test's own time.
      */
     static final int WARM_UP = 1200;
+    /** How far round a test's spot, sideways and upwards, what earlier tests left is cleared before the test starts. */
+    private static final int ROOM = 16;
+    private static final int ROOM_UP = 32;
+    /** Chunk tasks run per tick of the warm-up, and how long a tick with none ready waits for the chunk workers, see {@link #settle}. */
+    private static final int CHUNK_TASKS = 64;
+    private static final long CHUNK_WAIT_NANOS = 2_000_000L;
     private static final org.slf4j.Logger LOGGER = com.mojang.logging.LogUtils.getLogger();
     private static final DeferredRegister<Consumer<GameTestHelper>> FUNCTIONS = DeferredRegister.create(Registries.TEST_FUNCTION, Hextale.MOD_ID);
 
@@ -105,8 +112,8 @@ public final class GameTests {
                 helper.getLevel().setChunkForced((spot.getX() >> 4) + dx, (spot.getZ() >> 4) + dz, true);
             }
         }
-        // A chunk forced just now ticks its creatures only once its entities are loaded, which under a full run can take
-        // tens of ticks: creatures of the test standing still for a while made many tests flaky. Start once they tick.
+        // A chunk forced just now ticks its blocks and creatures only some time later, which under a full run can take
+        // over a thousand ticks: blocks and creatures of the test standing still made many tests flaky. Start once they tick.
         if (ticking(helper.getLevel(), spot)) {
             start(method, helper, 0);
             return;
@@ -116,6 +123,7 @@ public final class GameTests {
         helper.startSequence()
                 .thenWaitUntil(() -> {
                     if (!ticking(helper.getLevel(), spot) && helper.getTick() - asked < WARM_UP) {
+                        settle(helper.getLevel());
                         throw helper.assertionException("the chunks round the spot do not tick yet");
                     }
                 })
@@ -128,8 +136,50 @@ public final class GameTests {
         } else if (waited > 0) {
             LOGGER.debug("[hextale] {} waited {} ticks for the chunks round its spot", method.getName(), waited);
         }
+        clearRound(helper);
         STARTED.put(helper, helper.getTick());
         invoke(method, helper);
+    }
+
+    /**
+     * The test server runs ticks back to back, and the server polls chunk tasks only when a tick leaves time over, so a
+     * chunk that was forced waits for them far longer than in a game. Run some of them from here. Ticks fly by at
+     * thousands a second, so a tick with nothing to run also gives the workers time: at the start of a run, chunks that
+     * are still being generated took longer than all of {@link #WARM_UP} otherwise.
+     */
+    private static void settle(net.minecraft.server.level.ServerLevel level) {
+        for (int i = 0; i < CHUNK_TASKS; i++) {
+            if (!level.getChunkSource().pollTask()) {
+                java.util.concurrent.locks.LockSupport.parkNanos(CHUNK_WAIT_NANOS);
+                return;
+            }
+        }
+    }
+
+    /**
+     * Spots lie a few blocks apart in a random order and tests run one at a time, so everything near a spot is what
+     * earlier tests left: a jar over the ground a test blights, a jar of light in a purifier's reach, experience orbs.
+     * The 3x3 chunks kept loaded for the test reach {@link #ROOM} blocks from the spot wherever it lies in its chunk.
+     */
+    private static void clearRound(GameTestHelper helper) {
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        net.minecraft.core.BlockPos spot = helper.absolutePos(net.minecraft.core.BlockPos.ZERO);
+        // The layer the test blocks stand on, right above the flat ground.
+        int floor = (int) helper.getBoundsWithPadding().minY - 1;
+        net.minecraft.world.level.levelgen.structure.BoundingBox box = new net.minecraft.world.level.levelgen.structure.BoundingBox(
+                spot.getX() - ROOM, floor, spot.getZ() - ROOM, spot.getX() + ROOM, spot.getY() + ROOM_UP, spot.getZ() + ROOM);
+        for (net.minecraft.core.BlockPos pos : net.minecraft.core.BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
+            net.minecraft.world.level.block.state.BlockState state = level.getBlockState(pos);
+            if (!state.isAir() && !state.is(net.minecraft.world.level.block.Blocks.TEST_INSTANCE_BLOCK) && !state.is(net.minecraft.world.level.block.Blocks.BARRIER)) {
+                level.setBlock(pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS
+                        | net.minecraft.world.level.block.Block.UPDATE_KNOWN_SHAPE | net.minecraft.world.level.block.Block.UPDATE_SUPPRESS_DROPS);
+            }
+        }
+        level.getBlockTicks().clearArea(box);
+        level.getFluidTicks().clearArea(box);
+        level.clearBlockEvents(box);
+        level.getEntities((net.minecraft.world.entity.Entity) null, net.minecraft.world.phys.AABB.of(box),
+                entity -> !(entity instanceof net.minecraft.world.entity.player.Player)).forEach(net.minecraft.world.entity.Entity::discard);
     }
 
     private static boolean ticking(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos spot) {
@@ -138,6 +188,10 @@ public final class GameTests {
             for (int dz = -1; dz <= 1; dz++) {
                 net.minecraft.world.level.ChunkPos chunk = new net.minecraft.world.level.ChunkPos((spot.getX() >> 4) + dx, (spot.getZ() >> 4) + dz);
                 if (!level.areEntitiesActuallyLoadedAndTicking(chunk) && !resync(level, chunk)) {
+                    all = false;
+                }
+                // Scheduled block ticks wait for this one, which may come long after the creatures tick.
+                if (!level.isPositionTickingWithEntitiesLoaded(chunk.pack())) {
                     all = false;
                 }
             }

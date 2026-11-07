@@ -47,7 +47,9 @@ public class HextaleJeiPlugin implements IModPlugin {
         // The diary's step pictures are no items anyone can have.
         runtime.getIngredientManager().removeIngredientsAtRuntime(mezz.jei.api.constants.VanillaTypes.ITEM_STACK,
                 java.util.List.of(new net.minecraft.world.item.ItemStack(ModItems.GUIDE_MARK.get()),
-                        new net.minecraft.world.item.ItemStack(ModItems.ESSENCE_BUCKET.get())));
+                        new net.minecraft.world.item.ItemStack(ModItems.ESSENCE_BUCKET.get()),
+                        // Retired: it lives on only in old worlds.
+                        new net.minecraft.world.item.ItemStack(ModItems.CRYSTAL_BATTERY.get())));
         // The essence fluid without a kind is no essence at all: only the 22 pure ones are shown.
         runtime.getIngredientManager().removeIngredientsAtRuntime(mezz.jei.api.neoforge.NeoForgeTypes.FLUID_STACK,
                 java.util.List.of(new net.neoforged.neoforge.fluids.FluidStack(com.pockyl.hextale.registry.ModFluids.ESSENCE.get(),
@@ -176,10 +178,15 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.IMPULSE_PLATE.get(), "impulse_plate");
         info(registration, ModItems.RIFT_GATE.get(), "rift_gate");
         info(registration, ModItems.RIFT_LINK_CRYSTAL.get(), "rift_link_crystal");
+        info(registration, ModItems.HEX_VAULT.get(), "hex_vault");
+        info(registration, ModItems.STORAGE_CUBE.get(), "storage_cube");
+        info(registration, ModItems.HEX_TERMINAL.get(), "hex_terminal");
+        info(registration, ModItems.POCKET_TERMINAL.get(), "pocket_terminal");
         info(registration, ModItems.WORLD_ANCHOR.get(), "world_anchor");
         info(registration, ModItems.DISINTEGRATOR.get(), "disintegrator");
         info(registration, ModItems.RECALL_CHARM.get(), "recall_charm");
         info(registration, ModItems.GRAPPLE_GAUNTLET.get(), "grapple_gauntlet");
+        info(registration, ModItems.STRIKE_GAUNTLET.get(), "strike_gauntlet");
         info(registration, ModItems.SOUL_FLASK.get(), "soul_flask");
         info(registration, ModItems.SPAWNER_CAGE.get(), "spawner_cage");
         info(registration, ModItems.WARD_GLASS.get(), "ward_glass");
@@ -204,6 +211,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.HOLLOWBLOOM.get(), "hollowbloom");
         info(registration, ModItems.VOID_CHITIN.get(), "void_chitin");
         info(registration, ModItems.HOLLOW_CRYSTAL.get(), "hollow_crystal");
+        info(registration, ModItems.BUDDING_VOID_CRYSTAL.get(), "budding_void_crystal");
         info(registration, ModItems.CLOUDED_CRYSTAL.get(), "clouded_crystal");
         info(registration, ModItems.BREACH_HEART.get(), "breach_heart");
         info(registration, ModItems.HEXTECH_PURIFIER.get(), "hextech_purifier");
@@ -213,6 +221,20 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.CHEM_STILL.get(), "chem_still");
         info(registration, ModItems.CHEM_VAT.get(), "chem_vat");
         info(registration, ModItems.CHEM_TANK.get(), "chem_tank");
+        info(registration, ModItems.CHEM_JET_TANK.get(), "chem_jet_tank");
+        info(registration, ModItems.SHIMMER_INJECTOR.get(), "shimmer_injector");
+        info(registration, ModItems.CHEM_JET_TANK_CHESTPLATE.get(), "chem_jet_tank");
+        info(registration, ModItems.CHEM_CARBOY.get(), "chem_carboy");
+        info(registration, ModItems.CREATIVE_CHEM_CARBOY.get(), "creative_chem_carboy");
+        info(registration, ModItems.VIAL_RACK.get(), "vial_rack");
+        info(registration, ModItems.CHEM_LUMEN.get(), "chem_lumen");
+        info(registration, ModItems.GAS_CYLINDER.get(), "gas_cylinder");
+        info(registration, ModItems.GAS_CYLINDER_RUST.get(), "gas_cylinder");
+        info(registration, ModItems.GAS_CYLINDER_SHIMMER.get(), "gas_cylinder");
+        info(registration, ModItems.RUSTED_CATWALK.get(), "rusted_catwalk");
+        info(registration, ModItems.RUSTED_RAILING.get(), "rusted_railing");
+        info(registration, ModItems.CHAIN_LAUNCHER.get(), "chain_launcher");
+        info(registration, ModItems.BITER_GRENADE.get(), "biter_grenade");
         info(registration, ModItems.CHEM_BOILER.get(), "chem_boiler");
         info(registration, ModItems.HEXTECH_LAMPPOST.get(), "hextech_lamppost");
         info(registration, ModItems.LAB_BENCH.get(), "lab_bench");
@@ -233,6 +255,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.HEXCORE.get(), "hexcore");
         info(registration, ModItems.WHIRL_REAPER.get(), "whirl_reaper");
         info(registration, ModItems.HEX_SAWMILL.get(), "hex_sawmill");
+        info(registration, ModItems.HERDKEEPER.get(), "herdkeeper");
         info(registration, ModItems.GREEDY_FUNNEL.get(), "greedy_funnel");
         info(registration, ModItems.ARC_SPIRE.get(), "arc_spire");
         info(registration, ModItems.BINDING_CHALK.get(), "binding_chalk");
@@ -245,7 +268,6 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.HEXTECH_LAMP.get(), "hextech_lamp");
         info(registration, ModItems.RUNE_CHALK.get(), "rune_chalk");
         info(registration, ModItems.NULLSTONE.get(), "nullstone");
-        info(registration, ModItems.CRYSTAL_BATTERY.get(), "crystal_battery");
         info(registration, ModItems.MAGIC_STONE.get(), "magic_stone");
         info(registration, ModItems.MAGIC_SAPLING.get(), "magic_sapling");
         info(registration, ModItems.ALEMBIC.get(), "alembic");
@@ -258,6 +280,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.BLANK_SCROLL.get(), "blank_scroll");
         info(registration, ModItems.RUNE_SCROLL.get(), "rune_scroll");
         info(registration, ModItems.RESEARCH_NOTES.get(), "research_notes");
+        info(registration, ModItems.SEERS_EYE.get(), "seers_eye");
         registration.addRecipes(NotesCategory.TYPE, NotesCategory.pages(List.of(new ItemStack(ModItems.ESSENCE_FLASK.get())),
                 Component.translatable("jei.hextale.info.essence_flask")));
     }

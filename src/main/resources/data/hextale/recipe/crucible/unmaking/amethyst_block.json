@@ -1,0 +1,13 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:amethyst_block",
+  "essences": {
+    "spark": 1,
+    "decay": 2
+  },
+  "result": {
+    "id": "minecraft:amethyst_shard",
+    "count": 4
+  },
+  "research": "unmaking"
+}

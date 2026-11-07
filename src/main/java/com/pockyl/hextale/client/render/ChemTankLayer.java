@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.entity.Avatar;
@@ -26,7 +27,7 @@ import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEve
  * Blockbench model of the worn tank.
  */
 public class ChemTankLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
-    public record Worn(float level, int color, boolean glows, float time, boolean overArmour) {
+    public record Worn(float level, int color, boolean glows, float time, boolean overArmour, boolean jets, float heat) {
     }
 
     public static final ContextKey<Worn> WORN = new ContextKey<>(Hextale.id("chem_tank"));
@@ -40,6 +41,9 @@ public class ChemTankLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
     private static final float MAX = 11.85F / 16;
     private static final float BOTTOM = 2.15F / 16;
     private static final float HEIGHT = 12.75F / 16;
+    /** The mouths of the Jet Tank's two nozzles in model pixels. */
+    private static final float[][] NOZZLES = {{2, 1, 8}, {14, 1, 8}};
+    private static final float FLAME_REACH = 0.7F;
 
     public ChemTankLayer(RenderLayerParent<AvatarRenderState, PlayerModel> renderer) {
         super(renderer);
@@ -73,7 +77,8 @@ public class ChemTankLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
         state.showCape = false;
         state.setRenderData(WORN, new Worn(fuel.isEmpty() ? 0 : fuel.level(), fuel.color(),
                 !fuel.isEmpty() && fuel.fuel().brew() != Brew.EMBER_OIL, HexFx.time(entity.level(), state.partialTick),
-                entity.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST).getItem() instanceof com.pockyl.hextale.item.ChemArmourItem));
+                entity.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST).getItem() instanceof com.pockyl.hextale.item.ChemArmourItem,
+                ChemTank.hasJets(tank), com.pockyl.hextale.client.ChemJetsClient.heat(entity)));
     }
 
     @Override
@@ -87,10 +92,20 @@ public class ChemTankLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
         poseStack.translate(0, Y, worn.overArmour() ? Z_OVER_ARMOUR : Z);
         poseStack.scale(SCALE, -SCALE, -SCALE);
         poseStack.translate(-0.5F, -0.5F, -0.5F);
-        TableModels.submit(poseStack, collector, TableModels.CHEM_TANK_WORN, lightCoords);
+        TableModels.submit(poseStack, collector, worn.jets() ? TableModels.CHEM_JET_TANK_WORN : TableModels.CHEM_TANK_WORN, lightCoords);
         if (worn.level() > 0) {
             float top = BOTTOM + HEIGHT * Math.max(0.03F, worn.level());
             submitLiquid(poseStack, collector, top, worn.color(), worn.glows(), worn.time(), lightCoords);
+        }
+        if (worn.heat() > 0) {
+            int core = ARGB.srgbLerp(0.7F, worn.color(), 0xFFFFFF);
+            for (int i = 0; i < NOZZLES.length; i++) {
+                float[] n = NOZZLES[i];
+                poseStack.pushPose();
+                poseStack.translate(n[0] / 16, n[1] / 16, n[2] / 16);
+                SkypackLayer.flame(poseStack, collector, worn.time() + i * 7.3F, worn.heat(), FLAME_REACH, i, worn.color(), core);
+                poseStack.popPose();
+            }
         }
         poseStack.popPose();
     }

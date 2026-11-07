@@ -60,6 +60,8 @@ public final class VoidLensView {
                 colour = 0xF2F0FA;
             } else if (state.is(ModBlocks.WORN_VOID_MEMBRANE.get())) {
                 colour = 0xFF6FA8;
+            } else if (state.is(ModBlocks.BUDDING_VOID_CRYSTAL.get())) {
+                colour = 0xB080EC;
             } else {
                 continue;
             }

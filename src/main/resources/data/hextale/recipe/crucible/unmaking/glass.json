@@ -1,0 +1,11 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:glass",
+  "essences": {
+    "ash": 2
+  },
+  "result": {
+    "id": "minecraft:sand"
+  },
+  "research": "unmaking"
+}

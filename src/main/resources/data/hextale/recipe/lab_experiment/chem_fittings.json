@@ -1,0 +1,8 @@
+{
+  "type": "hextale:lab_experiment",
+  "topic": "chem_fittings",
+  "target": "steam",
+  "amount": 6,
+  "purity": 0.6,
+  "sample": "minecraft:iron_bars"
+}

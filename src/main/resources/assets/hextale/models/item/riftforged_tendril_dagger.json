@@ -1,4 +1,5 @@
 {
+  "gui_light": "front",
   "textures": {
     "particle": "hextale:item/riftforged_tendril_dagger",
     "sheet": "hextale:item/riftforged_tendril_dagger"

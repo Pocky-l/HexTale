@@ -1,0 +1,57 @@
+{
+  "variants": {
+    "face=ceiling,facing=east": {
+      "model": "hextale:block/chain_claw",
+      "x": 180,
+      "y": 270
+    },
+    "face=ceiling,facing=north": {
+      "model": "hextale:block/chain_claw",
+      "x": 180,
+      "y": 180
+    },
+    "face=ceiling,facing=south": {
+      "model": "hextale:block/chain_claw",
+      "x": 180
+    },
+    "face=ceiling,facing=west": {
+      "model": "hextale:block/chain_claw",
+      "x": 180,
+      "y": 90
+    },
+    "face=floor,facing=east": {
+      "model": "hextale:block/chain_claw",
+      "y": 90
+    },
+    "face=floor,facing=north": {
+      "model": "hextale:block/chain_claw"
+    },
+    "face=floor,facing=south": {
+      "model": "hextale:block/chain_claw",
+      "y": 180
+    },
+    "face=floor,facing=west": {
+      "model": "hextale:block/chain_claw",
+      "y": 270
+    },
+    "face=wall,facing=east": {
+      "model": "hextale:block/chain_claw",
+      "x": 90,
+      "y": 90
+    },
+    "face=wall,facing=north": {
+      "model": "hextale:block/chain_claw",
+      "x": 90
+    },
+    "face=wall,facing=south": {
+      "model": "hextale:block/chain_claw",
+      "x": 90,
+      "y": 180
+    },
+    "face=wall,facing=west": {
+      "model": "hextale:block/chain_claw",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

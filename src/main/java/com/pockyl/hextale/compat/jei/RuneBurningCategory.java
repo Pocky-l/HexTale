@@ -54,6 +54,9 @@ public class RuneBurningCategory extends AbstractRecipeCategory<RuneBurningCateg
         static List<Recipe> all() {
             List<Recipe> out = new java.util.ArrayList<>();
             for (RuneHolder holder : RuneHolder.values()) {
+                if (holder.retired()) {
+                    continue;
+                }
                 for (ComplexRune rune : holder.takes()) {
                     out.add(new Recipe(holder, rune));
                 }

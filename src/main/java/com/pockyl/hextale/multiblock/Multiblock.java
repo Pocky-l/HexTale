@@ -67,6 +67,11 @@ public abstract class Multiblock {
         return Shapes.block();
     }
 
+    /** The same for a shape that is not alike from every side: {@code rotation} is how the structure was found turned. */
+    public VoxelShape partShape(BlockPos offset, net.minecraft.world.level.block.Rotation rotation) {
+        return partShape(offset);
+    }
+
     /** What must be researched before the structure can be woken, or null. */
     public com.pockyl.hextale.research.@org.jspecify.annotations.Nullable ResearchTopic topic() {
         return null;

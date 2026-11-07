@@ -72,6 +72,8 @@ public final class HextaleCommand {
                                 .executes(context -> resetQuests(context.getSource()))))
                 .then(KnowledgeCommands.research())
                 .then(KnowledgeCommands.guide())
+                .then(Commands.literal("prosector")
+                        .executes(context -> prosector(context.getSource())))
                 .then(Commands.literal("void")
                         .then(Commands.literal("get")
                                 .executes(context -> getThinning(context.getSource())))
@@ -161,6 +163,13 @@ public final class HextaleCommand {
         Research.of(player).forgetQuests();
         Research.sync(player);
         source.sendSuccess(() -> Component.translatable("commands.hextale.quests.reset", player.getDisplayName()), true);
+        return 1;
+    }
+
+    /** Test: calls a Prosector to the caller's spot, as a Seer's Eye does. */
+    private static int prosector(CommandSourceStack source) {
+        com.pockyl.hextale.thevoid.boss.Prosector.summon(source.getLevel(), net.minecraft.core.BlockPos.containing(source.getPosition()));
+        source.sendSuccess(() -> Component.literal("Prosector summoned."), false);
         return 1;
     }
 

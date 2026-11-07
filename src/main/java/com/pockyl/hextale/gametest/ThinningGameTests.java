@@ -57,6 +57,8 @@ public final class ThinningGameTests {
         BlockPos pos = helper.absolutePos(AT);
         LevelChunk centre = level.getChunkAt(pos);
         LevelChunk east = level.getChunkAt(pos.east(16));
+        // The flow passes only through loaded chunks: this one lies beyond those kept for the test and may not be up yet.
+        LevelChunk ring = level.getChunkAt(pos.east(32));
         Thinning.setAround(level, pos, 2, 0);
         Thinning.set(level, centre, 500);
         for (int i = 0; i < 400; i++) {
@@ -65,7 +67,7 @@ public final class ThinningGameTests {
         float near = Thinning.get(east);
         helper.assertTrue(Thinning.get(centre) == 500, "the sick chunk keeps all of it, got " + Thinning.get(centre));
         helper.assertTrue(near > 500 * Thinning.FALLOFF - 10 && near <= 500 * Thinning.FALLOFF, "the land beside settles at its share, got " + near);
-        float far = Thinning.get(level.getChunkAt(pos.east(32)));
+        float far = Thinning.get(ring);
         helper.assertTrue(far > 0 && far < near, "and the ring after it at less, got " + far);
         Thinning.set(level, centre, 50);
         Thinning.flow(level);

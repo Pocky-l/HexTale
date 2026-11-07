@@ -1,0 +1,18 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    " P ",
+    "BGB",
+    " P "
+  ],
+  "key": {
+    "P": "hextale:rusted_plating",
+    "B": "#c:bars/copper",
+    "G": "hextale:chem_glass"
+  },
+  "result": {
+    "id": "hextale:chem_lumen",
+    "count": 2
+  },
+  "charge": 1
+}

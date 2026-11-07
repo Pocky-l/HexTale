@@ -463,6 +463,29 @@ public final class HexFx {
         }
     }
 
+    /** A {@link #glowSegment} that climbs: lies between two points of the pose's space, its width across in the XZ plane. */
+    public static void glowRibbon(VertexConsumer consumer, PoseStack.Pose pose, Vector3fc from, Vector3fc to, float width, int color, float alpha) {
+        float dx = to.x() - from.x();
+        float dz = to.z() - from.z();
+        float length = Mth.sqrt(dx * dx + dz * dz);
+        if (length < 1.0E-4F) {
+            return;
+        }
+        float h = width / 2;
+        float nx = -dz / length * h;
+        float nz = dx / length * h;
+        int centre = argbOf(color, alpha);
+        int edge = argbOf(color, 0);
+        for (int side = -1; side <= 1; side += 2) {
+            float sx = nx * side;
+            float sz = nz * side;
+            consumer.addVertex(pose, from.x(), from.y(), from.z()).setColor(centre);
+            consumer.addVertex(pose, from.x() + sx, from.y(), from.z() + sz).setColor(edge);
+            consumer.addVertex(pose, to.x() + sx, to.y(), to.z() + sz).setColor(edge);
+            consumer.addVertex(pose, to.x(), to.y(), to.z()).setColor(centre);
+        }
+    }
+
     private static void glow(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, int argb) {
         consumer.addVertex(pose, x, y, 0).setColor(argb);
     }

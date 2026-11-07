@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.pockyl.hextale.chem.ChemTank;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -61,6 +62,19 @@ public record HexCraftingRecipe(Either<ShapedRecipePattern, List<Ingredient>> sh
             }
             return RecipeMatcher.findMatches(items, ingredients) != null;
         });
+    }
+
+    /** What the grid makes: the result, with the fuel of a tank that goes into a tank. */
+    public ItemStack assemble(CraftingInput input) {
+        ItemStack made = result.create();
+        if (ChemTank.is(made)) {
+            for (ItemStack item : input.items()) {
+                if (ChemTank.is(item)) {
+                    ChemTank.setContents(made, ChemTank.contents(item));
+                }
+            }
+        }
+        return made;
     }
 
     /** The nine grid cells as the guide and JEI draw them, row by row (empty where nothing goes). */

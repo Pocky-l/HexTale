@@ -1,4 +1,5 @@
 {
+  "gui_light": "front",
   "textures": {
     "particle": "hextale:item/tendril_dagger",
     "sheet": "hextale:item/tendril_dagger"

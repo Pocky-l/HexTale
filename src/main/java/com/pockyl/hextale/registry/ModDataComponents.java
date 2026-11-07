@@ -20,6 +20,12 @@ public final class ModDataComponents {
             DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Hextale.MOD_ID);
 
     /** The complex rune written on a rune scroll. */
+    /** The rune Anatomy's tally on a sword: kills by creature type. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<java.util.Map<net.minecraft.resources.Identifier, Integer>>> ANATOMY =
+            COMPONENTS.registerComponentType("anatomy", builder -> builder
+                    .persistent(com.mojang.serialization.Codec.unboundedMap(net.minecraft.resources.Identifier.CODEC, com.mojang.serialization.Codec.INT))
+                    .networkSynchronized(net.minecraft.network.codec.ByteBufCodecs.map(java.util.HashMap::new, net.minecraft.resources.Identifier.STREAM_CODEC,
+                            net.minecraft.network.codec.ByteBufCodecs.VAR_INT)));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<ComplexRune>> RUNE =
             COMPONENTS.registerComponentType("rune", builder -> builder
                     .persistent(ComplexRunes.CODEC).networkSynchronized(ComplexRunes.STREAM_CODEC));
@@ -45,6 +51,11 @@ public final class ModDataComponents {
             COMPONENTS.registerComponentType("diary_owner", builder -> builder
                     .persistent(DiaryOwner.CODEC).networkSynchronized(DiaryOwner.STREAM_CODEC));
 
+    /** Doses of refined shimmer in a Shimmer Injector. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> SHIMMER_DOSES =
+            COMPONENTS.registerComponentType("shimmer_doses", builder -> builder
+                    .persistent(Codec.intRange(0, com.pockyl.hextale.item.ShimmerInjectorItem.MAX_DOSES)).networkSynchronized(ByteBufCodecs.VAR_INT));
+
     /** The runes burned into a hextech pickaxe. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> PICKAXE_RUNES =
             COMPONENTS.registerComponentType("pickaxe_runes", builder -> builder
@@ -63,6 +74,10 @@ public final class ModDataComponents {
     /** The runes burned into a Hex Sawmill. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> SAWMILL_RUNES =
             COMPONENTS.registerComponentType("sawmill_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    /** The runes burned into a Herdkeeper. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> HERDKEEPER_RUNES =
+            COMPONENTS.registerComponentType("herdkeeper_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
 
     /** The runes burned into a Greedy Funnel. */
@@ -95,6 +110,27 @@ public final class ModDataComponents {
             COMPONENTS.registerComponentType("furnace_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
 
+    /** The runes burned into an Awakened Workbench. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> WORKBENCH_RUNES =
+            COMPONENTS.registerComponentType("workbench_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    /** The runes burned into a Hex Vault. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> VAULT_RUNES =
+            COMPONENTS.registerComponentType("vault_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    /** Which store a Hex Vault taken off the ground belongs to. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.storage.VaultMemory>> VAULT_MEMORY =
+            COMPONENTS.registerComponentType("vault_memory", builder -> builder
+                    .persistent(com.pockyl.hextale.storage.VaultMemory.CODEC).networkSynchronized(com.pockyl.hextale.storage.VaultMemory.STREAM_CODEC));
+    /** The Hex Vault a pressed crystal or a Pocket Terminal is tied to. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.storage.VaultLink>> VAULT_LINK =
+            COMPONENTS.registerComponentType("vault_link", builder -> builder
+                    .persistent(com.pockyl.hextale.storage.VaultLink.CODEC).networkSynchronized(com.pockyl.hextale.storage.VaultLink.STREAM_CODEC));
+    /** Charge kept in an Awakened Workbench taken off the ground. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> WORKBENCH_CHARGE =
+            COMPONENTS.registerComponentType("workbench_charge", builder -> builder
+                    .persistent(Codec.intRange(0, 100000)).networkSynchronized(ByteBufCodecs.VAR_INT));
+
     /** The settings of a Pylon Filter. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.transport.ItemFilter>> ITEM_FILTER =
             COMPONENTS.registerComponentType("item_filter", builder -> builder
@@ -114,6 +150,11 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.chem.Brew>> BREW =
             COMPONENTS.registerComponentType("brew", builder -> builder
                     .persistent(com.pockyl.hextale.chem.Brew.CODEC).networkSynchronized(com.pockyl.hextale.chem.Brew.STREAM_CODEC));
+
+    /** The brew in a Chem Carboy (item and placed block). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.chem.CarboyContents>> CHEM_CARBOY =
+            COMPONENTS.registerComponentType("chem_carboy", builder -> builder
+                    .persistent(com.pockyl.hextale.chem.CarboyContents.CODEC).networkSynchronized(com.pockyl.hextale.chem.CarboyContents.STREAM_CODEC));
 
     /** The fuel in a Chem Tank (item and placed block). */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.chem.TankFuel>> CHEM_TANK =

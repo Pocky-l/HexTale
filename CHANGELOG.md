@@ -4,9 +4,148 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.10.0+26.1.2] - Unreleased
 ### Added
 - [Hostile Neural Networks](https://www.curseforge.com/minecraft/mc-mods/hostile-neural-networks) (#8): data models for the Void Mite, Voidling, Rib Crawler, Pit Maw and Seer.
+- The Prosector, the first boss. Research and make a Seer's Eye on the altar, then right click the ground anywhere in your world: the
+  ground is marked ring by ring and it comes up through it. The Eye is spent. Refused on Peaceful.
+- It hits hard and heals: every living Specimen gives it health back, up to its last milestone. More players make it tougher.
+- What hurts it, it studies. Damage of one kind (blade, shot, blast or magic) fills that kind's sac; then it writes the kind down as a
+  Specimen that hangs in the air nearby. While that jar lives the kind does little damage, and it answers with a mimic of your own
+  tool, a copy of which it holds up: a giant sweep, quills fired back, a lobbed cyst, a rune circle under your feet. Break the
+  jar, with anything, and it forgets and drops low and open.
+- Three phases: Observation, Dissection, where hexagon cells of the ground open in patterns and throw off whoever stands on them, and
+  Proof, where it hides behind a wrong-jointed copy of the player who hurt it most. Its moves all start with their own sound and show on the
+  ground first, laid over the hills. Excision pays for its power by sticking its scalpel in the ground, and a raised shield snags the Retractor's hooks.
+- It fights round the spot it was called to and breaks no block. Hits from outside the fight do nothing. Leaving is safe: with nobody
+  left it keeps the last milestone and sleeps at that spot until someone comes near. Every number is in `hextale-prosector.toml`.
+- A kill drops random loot: Riftmetal, Void Pearls, Hextech Gemstones and other high materials, something rare like a Nether Star or a
+  totem, three star rune scrolls, a step in the diary and, rarely, the rune Anatomy for swords: the more of one creature kind a sword has killed, the harder it hits that kind.
+- Theatre Tiles with stairs and a slab, and the Watching Eye.
+- Hex Vault (research after the Hexcore, made on the Hexcore only): a store of items behind a floating door. Its gate is a
+  stone platform 7 wide and 5 deep with two White Gold Pillars and a White Gold Inlay under the door. Set the vault between
+  the pillars and use Hextech Dust on the gate: the vault rises and unfolds into a hexagon of six bars and six petals held by
+  nothing, and it works at once. While the gate is broken a vault only gives items back.
+- Items in it take no slots: each weighs its essence points, at least 1, and all share one capacity, so cheap bulk is light
+  and treasure is heavy. Lamps on the frame fill with what is held, and a full vault refuses and flashes. The door parts
+  for anyone who comes near, and the kinds that take up the most room drift in the space behind it. Items live with the world: a broken vault drops one item that remembers
+  everything, and that item survives fire and blasts and never despawns. Hoppers, pipes and pylons use it as a normal
+  inventory, a comparator reads how full it is, Jade and the goggles show the totals. Containers holding items stay out;
+  4,096 kinds at most. Runes: Hoard (more room), Thrift, Mending (worn tools inside mend), Radiance (experience for new
+  heights only).
+- Its screen, the same at the vault, a terminal and a Pocket Terminal: the grid grows with the window up to 18 columns and
+  14 rows, amounts read 1.2K and 3.4M, and tabs of the nine essences filter studied items. The search field is ready as soon
+  as it opens, remembers what it held and finds names and, for studied items, essence names; sorting by count, name or
+  weight, either way round. Left click takes a stack, right click half, Shift + click sends to the inventory, Shift + wheel
+  moves one item out or back, a double click fills the inventory, a stack dragged onto the grid goes in, one button stores the
+  inventory but not the hotbar, and a middle click or Alt + click pins an item to the row on top, where it stays with
+  nothing left. A capacity bar sits over the grid and a line under it says what taking costs and why a vault refuses. JEI's
+  keys work on what is under the mouse. A right click on the vault or its door only opens the screen.
+- Storage Cube: on the gate's platform or against it it gives more room, twelve at most.
+- Storage Terminal: the same screen from any distance and any dimension, tied by Unstable Hextech used on the vault while sneaking
+  and the Rift Link Crystal it gives used on the terminal. Storing is free; each take through it costs an eighth of a mB of rift essence from jars
+  nearby, and with dry jars takes only slow down to one every 3 seconds. Hoppers and pipes do not work on it. Taking at the
+  vault and all automation stay free.
+- Pocket Terminal: a terminal in the hand, tied by using it with the crystal in the other hand. It pays from jars around you,
+  so on the road it runs at the slow rate.
+- White gold stone for the vault's gate: White Gold Tiles with stairs and a slab, White Gold Inlay and White Gold Pillar. The
+  storage research opens them; the Awakened Workbench makes the tiles from quartz blocks and gemstone dust, and the inlay and
+  the pillar from the tiles.
+- Shimmer Mutations (chemtech, Lab Bench research `Shimmer Mutation`): a Shimmer Injector holds four vials of refined shimmer,
+  one dose per shot, for an adult animal you tamed. The animal grows, gets glowing eyes, violet veins and motes, and keeps
+  the gifts for 5 in-game days unless dosed again; then it turns back unharmed. A dose adds a little Thinning. Wolf: Shimmer
+  Hound, three times the health, regenerates, pounces from up to 8 blocks and its bite knocks back. Horse, donkey, mule or
+  camel: Shimmer Steed, big speed and jump, no fall damage, and it swims with its rider. Cat: Shimmer Panther, takes a
+  saddle, carries you fast and rears up to climb walls. Parrot: Shimmer Raptor, carries you in the air, jump flaps at the cost of its
+  wind (a bar over the experience bar), it glides with its wings spread without any and rests on the ground. Sneak-click with the injector shows
+  the days left. A mutation never ends under a rider.
+- Chem Jet Tank (chemtech, Lab Bench research `Chem Jets`): a Chem Tank or Tank Chestplate with two Jet Nozzles at the Hex
+  Workbench, and the fuel stays in. Hold jump in the air to climb, up to 6, 9 or 12 blocks a second by fuel, and steer with
+  the movement keys. H (a key of its own) holds height: jump climbs, sneak sinks, a landing ends it. One action per 4 ticks
+  of thrust, a full tank lasts about half an hour, no Thinning. Flames in the fuel's colour from both nozzles and a low roar,
+  seen and heard by everyone near. Chem-steel boots jump first, then a tap of jump in the air opens a Skypack or elytra and
+  a hold fires the jets.
+- Chem Carboy (chemtech, Lab Bench research): a two-block flask that holds one brew, 256 doses. Vials, hoppers, pylons, other
+  mods' pipes and a crucible beside it fill it, and an empty bottle takes a vial at the tap. Chem Burners, Stills, Vats, Pink Braziers and set-down
+  Chem Tanks within 5 blocks draw from it by themselves; burners and braziers take the weakest fuel in reach first, and
+  fires never draw refined shimmer (a vial put in by hand still burns). The
+  brew shows in the windows with a level line and bubbles, shimmer glows, and the plate on the neck shows the brew. A
+  comparator reads the level, Jade and the goggles show the doses, and a broken carboy keeps its brew. A creative carboy
+  comes with it: a vial picks the brew, and it never runs out.
+- Vial Rack (chemtech, Lab Bench research): shows 8 vials of any brew, standing on a floor or hung on a wall. Each place is
+  clicked by itself, like a chiseled bookshelf. Hoppers, pylons and other mods' pipes fill and empty it, a comparator counts the vials.
+- Chem Lumen (chemtech, Lab Bench research): a gas street lamp for a floor, a wall or a ceiling. Light 15 with a green flame
+  and a thread of smoke, and it needs no fuel.
+- Chem Fittings (chemtech, one Lab Bench research for the whole set): Gas Cylinders with a green, rust or shimmer band
+  (sneak to lay one down, dye changes the band), a Wall Valve Wheel that turns on a click and does nothing else, Rusted
+  Catwalks in the lower or upper half of a block, Rusted Railings along a block's edges with posts on their free ends
+  (over a lower-half catwalk they stand on its deck),
+  Hazard Plating and a Rusted Ladder.
+- Herdkeeper (hextech, Lab Bench research): a trough with a crook and a bell. For a little life essence from nearby jars
+  it gathers from grown passive animals around it what they would drop, without hurting or breeding them: leather and
+  beef from cows, feathers, chicken and eggs from chickens, and so on, modded animals too. Each animal then rests for
+  5 minutes, so a bigger herd gives more. Produce goes into a container touching it, or pops out of the trough. Takes runes.
+- Chain Launcher (chemtech, Lab Bench research): a hand-held pneumatic harpoon that shoots ziplines of 4 to 50 blocks,
+  at most 60 degrees steep. While you hold it, a hologram shows the line. A Chain Post rises where you stand; the chain
+  raises another post on a floor or a ceiling, and bites into a wall with a claw. Shoot again from a post to join a
+  second line to it: rides run on through a post where lines meet. It takes no chains and lasts six lines. Click the
+  chain or an end to hang on a trolley: downhill rides are free and reach 19 blocks a second, forward drives the trolley's motor on
+  the fuel of a worn Chem Tank at 9, 12 or 15 by fuel, back brakes, Shift lets go and keeps your speed. A last end slows you softly
+  and sets you down still moving. Over low ground you draw
+  up towards the chain and ride on. You walk through Chain Posts. Breaking an end takes its lines down.
+- Biter Grenades (chemtech, Lab Bench research): thrown, a grenade clamps its jaw onto the first creature it hits, rides
+  along with it and bursts 2 seconds later. The blast hurts everything close by, you too, but breaks no blocks and spares
+  your pets. A throw that hits nobody lands and hops at enemies it sees, three times at most, then bursts where it is.
+  Its blast carries far, the thrower always hears the bite, and it goes off in a staged fireball with a shake of the view.
+- Unmaking (chemtech, Lab Bench research after Transmutation): a little essence in the Crucible takes made things
+  apart again: wool into string, glass into sand, bricks and terracotta into clay, quartz and amethyst blocks into their
+  shards, and more. The diary and JEI show all of them.
+- Transmutation: leather and rotten flesh turn into each other.
+- Chem-Steel Helmet: a respirator. While your worn tank holds fuel you breathe under water, for 1 action every 10 seconds
+  there, and bubbles rise from the filters.
+- Chem-Steel Boots: pneumatics. While your worn tank holds fuel you can jump once more in the air for 1 action, 1 to 1.5
+  blocks high by fuel, with steam from the heels. Falls hurt 50 to 80% less by fuel. Press jump again to open a glider.
+- Budding Void Crystal (#8): rock that grows Void Crystal buds on its free sides, up to full clusters, slower than budding
+  amethyst. It lies in clutches in the Void past the Threshold, more of them further in. No piston moves it and it drops
+  nothing, so it is farmed where it lies. The Void Lens shows it, and `buddingVoidCrystalGrowth` in `hextale-synced.toml` sets the speed.
+### Changed
+- A set-down Chem Tank or Chem Jet Tank takes fuel vials from pylons and other mods' pipes, not only from hoppers.
+- The Crystal Battery is retired. The Awakened Workbench now takes runes at the altar, up to three: Hoard (holds 150, 300 or
+  600 charge), Chain Lightning (shares charge with the benches in reach, reaches further and feeds faster), Thrift (a
+  crystal may give 50% more) and Sunlight Cell (charges itself by day under open sky or glass). A comparator reads a
+  bench's charge, and a broken bench keeps its runes and charge.
+- Every Awakened Workbench feeds a Bulwark heart within 4 blocks, no rune needed; a refill there uses up as much Unstable Hextech as one by hand.
+- The Hexcore ritual takes a Rune Stele where it took a Crystal Battery.
+- Old worlds: Crystal Batteries keep working, but have no recipe and are gone from the creative tab, JEI and the diary.
+  Breaking one gives back its runes as Rune Scrolls with their stars and its charge as Unstable Hextech.
+- A tank that goes into an Awakened Workbench recipe keeps its fuel: a Chem Tank made into a Tank Chestplate no longer comes out empty.
+- Strike Gauntlet: the charge is now a dash. Release it and you fly where you look, like a Riptide trident without the
+  rain; a longer charge flies further. Every enemy on the way is hurt, and the end of the flight still breaks rock and
+  throws creatures back. Falling does not hurt during the flight or at the landing after it. Fist blows now hit hard
+  and also hurt what stands round the target. One gauntlet in each hand doubles all its damage. On a mount it still
+  punches on the spot.
+- Grapple Gauntlet: a new look, a rope reel on a leather bracer with a rail and a loaded claw.
+- Nullstone is now called Dampstone, and the Null Lantern the Dampening Lantern, so the names say what they do. Blocks
+  already in your world stay as they are.
+
+### Fixed
+- The 3D model in the Multiblocks category of [JEI](https://www.curseforge.com/minecraft/mc-mods/jei) turns and builds
+  itself again; it stood still on one frame (#10).
+- Item slots: 3D items are lit from the front, so tools, hand items and devices no longer read dark. The Chain Launcher and
+  Grapple Gauntlet turn their working end towards you, the Biter Grenade shows its jaw.
+- Texts that named no real action now say the key, the item and the target: linking a Storage Terminal, folding a breach,
+  linking Rift Gates, waking blocks with Hextech Dust, sealing the Chem Vat and about sixty more, in guide goals, status lines
+  and JEI pages, in English and Russian.
+- Loot tables written the old way ignored their rules on 26.3, now they work: Crystal Cane gives a pod only when it has one,
+  unripe Ember Wheat and Shimmer Bulbs give no harvest, Fortune works on those crops and on hollow and void crystal clusters
+  and Rift Ore, void plants and curtains need shears or Silk Touch, tall ones drop once, explosions destroy part of the
+  drops. A Chem Planter, Essence Sprinkler or Sap Tap keeps its runes when broken.
+- Grapple Gauntlet: a fall caught by a rope you reeled in no longer hurts.
+
+### 26.1.2 differences
+- `hextale-prosector.toml` is a per-world server config in `serverconfig`, like the mod's main config on 26.1.2.
+- As before on 26.1.2, poplar saplings are not Magic Tree catalysts and overlapping translucent effects are drawn without
+  order-independent transparency.
 
 ## [1.9.0+26.1.2] - 2026-11-04
 ### Added

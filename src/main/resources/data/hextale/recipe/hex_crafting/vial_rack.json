@@ -1,0 +1,16 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    " B ",
+    "P P",
+    "PBP"
+  ],
+  "key": {
+    "P": "hextale:rusted_plating",
+    "B": "#c:bars/copper"
+  },
+  "result": {
+    "id": "hextale:vial_rack"
+  },
+  "charge": 1
+}

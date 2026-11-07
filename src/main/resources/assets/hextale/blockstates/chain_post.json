@@ -1,0 +1,18 @@
+{
+  "variants": {
+    "half=lower,hanging=false": {
+      "model": "hextale:block/chain_post_base"
+    },
+    "half=upper,hanging=false": {
+      "model": "hextale:block/chain_post_top"
+    },
+    "half=upper,hanging=true": {
+      "model": "hextale:block/chain_post_base",
+      "x": 180
+    },
+    "half=lower,hanging=true": {
+      "model": "hextale:block/chain_post_top",
+      "x": 180
+    }
+  }
+}

@@ -1,6 +1,7 @@
 package com.pockyl.hextale.block;
 
 import com.pockyl.hextale.chem.Brew;
+import com.pockyl.hextale.chem.CarboyReach;
 import com.pockyl.hextale.chem.ChemVialItem;
 import com.pockyl.hextale.crafting.TemperingRecipe;
 import com.pockyl.hextale.multiblock.MultiblockCore;
@@ -34,6 +35,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.jspecify.annotations.Nullable;
@@ -65,6 +67,8 @@ public class ChemVatBlockEntity extends BlockEntity implements WorldlyContainer,
     private int progress;
     private int recipeTime;
     private @Nullable Formed formed;
+    private final CarboyReach.Look bathLook = new CarboyReach.Look();
+    private final CarboyReach.Look fireLook = new CarboyReach.Look();
     private boolean dirty;
 
     public ChemVatBlockEntity(BlockPos pos, BlockState state) {
@@ -129,8 +133,11 @@ public class ChemVatBlockEntity extends BlockEntity implements WorldlyContainer,
         }
         TemperingRecipe.Found found = TemperingRecipe.find(inputs(), false);
         boolean ready = found != null && acid >= found.recipe().acid() && shimmer >= found.recipe().shimmer() && fits(found.recipe());
+        if (found != null && !ready && fits(found.recipe()) && bathLook.due(level, worldPosition)) {
+            drawBath(level, found.recipe());
+        }
         if (ready && fuelTicks <= 0) {
-            burnNextVial();
+            burnNextVial(level, state.getValue(ChemVatBlock.LIT));
         }
         boolean working = ready && fuelTicks > 0;
         if (working) {
@@ -164,12 +171,31 @@ public class ChemVatBlockEntity extends BlockEntity implements WorldlyContainer,
         return out.isEmpty() || ItemStack.isSameItemSameComponents(out, made) && out.getCount() + made.getCount() <= out.getMaxStackSize();
     }
 
-    private void burnNextVial() {
+    /** The fire under the bath: a vial, else fuel from the carboys around (a burning fire reaches for it at once). */
+    private void burnNextVial(ServerLevel level, boolean burning) {
         ItemStack vials = items.get(VIALS);
         Brew brew = ChemVialItem.brew(vials);
         if (isFuel(brew)) {
             fuelTicks = brew.burnTicks();
             vials.shrink(1);
+        } else if (burning || fireLook.due(level, worldPosition)) {
+            Brew drawn = fireLook.draw(level, heart(), Vec3.atCenterOf(heart()), CarboyReach.burns(ChemVatBlockEntity::isFuel), Comparator.comparingInt(Brew::burnTicks));
+            if (drawn != null) {
+                fuelTicks = drawn.burnTicks();
+            }
+        }
+    }
+
+    /** A bath too thin for the metal in the slots takes a dose of what it lacks from the carboys around. */
+    private void drawBath(ServerLevel level, TemperingRecipe recipe) {
+        Vec3 bath = Vec3.atCenterOf(heart());
+        if (acid < recipe.acid() && bathLook.draw(level, heart(), bath, brew -> brew == Brew.ACID) != null) {
+            pour(Brew.ACID);
+            dirty = true;
+        }
+        if (shimmer < recipe.shimmer() && bathLook.draw(level, heart(), bath, brew -> brew == Brew.REFINED_SHIMMER) != null) {
+            pour(Brew.REFINED_SHIMMER);
+            dirty = true;
         }
     }
 

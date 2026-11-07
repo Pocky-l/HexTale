@@ -26,6 +26,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.chem.Brew;
+import com.pockyl.hextale.chem.CarboyReach;
 import com.pockyl.hextale.chem.ChemVialItem;
 import com.pockyl.hextale.chem.HeatUser;
 import com.pockyl.hextale.essence.EssenceMix;
@@ -38,6 +39,8 @@ import com.pockyl.hextale.runework.BurnerRune;
 import com.pockyl.hextale.runework.HolderRune;
 import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.ToolEffects;
+
+import java.util.Comparator;
 
 import org.jspecify.annotations.Nullable;
 
@@ -66,6 +69,7 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
     /** Whether the portion burning now is shimmer: the flame turns pink. */
     private boolean pink;
     private PickaxeRunes runes = PickaxeRunes.EMPTY;
+    private final CarboyReach.Look look = new CarboyReach.Look();
     private boolean dirty;
 
     public ChemBurnerBlockEntity(BlockPos pos, BlockState state) {
@@ -89,7 +93,7 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
         boolean lit = false;
         if (wanted()) {
             if (burn <= 0) {
-                refuel(level);
+                refuel(level, state.getValue(ChemBurnerBlock.LIT));
             }
             if (burn > 0) {
                 // A machine that only waits hot (an idle crucible) needs a quarter of the flame.
@@ -132,8 +136,12 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
         return level != null && level.getBlockEntity(worldPosition.above()) instanceof HeatUser user && user.wantsHeat();
     }
 
-    /** The next portion of fuel: essence from the tank first, then a vial. Eternal Flame may make it last twice as long. */
-    private void refuel(ServerLevel level) {
+    /**
+     * The next portion of fuel: essence from the tank first, then a vial, then the weakest fuel the carboys around hold,
+     * refined shimmer left alone (a lit flame reaches for it at once, so it never gutters between doses). Eternal Flame may
+     * make it last twice as long.
+     */
+    private void refuel(ServerLevel level, boolean burning) {
         int ticks;
         if (tank.unknown() > 0) {
             tank = tank.minus(EssenceMix.unknown(1));
@@ -145,12 +153,15 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
             Brew brew = ChemVialItem.brew(fuel);
             ticks = brew.burnTicks();
             fuel.shrink(1);
-            if (pink != brew.shimmer()) {
-                pink = brew.shimmer();
-                sync();
-            }
+            setPink(brew.shimmer());
         } else {
-            return;
+            Brew drawn = burning || look.due(level, worldPosition) ? look.draw(level, worldPosition, ChemBurnerBlock.window(getBlockState(), worldPosition),
+                    CarboyReach.burns(brew -> brew.burnTicks() > 0), Comparator.comparingInt(Brew::burnTicks)) : null;
+            if (drawn == null) {
+                return;
+            }
+            ticks = drawn.burnTicks();
+            setPink(drawn.shimmer());
         }
         if (ticks < VIAL_TICKS && pink) {
             pink = false;
@@ -168,6 +179,13 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
         burn = ticks;
         burnFull = ticks;
         setChanged();
+    }
+
+    private void setPink(boolean shimmer) {
+        if (pink != shimmer) {
+            pink = shimmer;
+            sync();
+        }
     }
 
     /** Fireproofing: the players beside the lit burner keep Fire Resistance. */

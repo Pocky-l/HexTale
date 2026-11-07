@@ -1,7 +1,9 @@
 package com.pockyl.hextale.item;
 
+import com.pockyl.hextale.chem.ChemFuel;
 import com.pockyl.hextale.chem.ChemGear;
 import com.pockyl.hextale.chem.ChemTank;
+import com.pockyl.hextale.chem.PneumaticBoots;
 import com.pockyl.hextale.chem.TankFuel;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.CommonComponents;
@@ -10,16 +12,20 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.equipment.ArmorType;
 
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A piece of chem-steel armour: no runes, never breaks, protects as well as the fuel in the tank on its wearer's back
  * lets it ({@link ChemGear}); every hit taken spends one action of fuel. Its bar is that tank's level, and its tooltip
  * lists the protection it gives with that fuel (the item's own attribute lines always show the full one, so they are
- * hidden).
+ * hidden). The helmet is a respirator ({@link com.pockyl.hextale.chem.Respirator}), the boots are pneumatic
+ * ({@link PneumaticBoots}).
  */
 public class ChemArmourItem extends Item {
     private final ArmorType type;
@@ -66,5 +72,21 @@ public class ChemArmourItem extends Item {
         if (armour[2] > 0) {
             tooltip.accept(ChemToolItem.plus(Attributes.KNOCKBACK_RESISTANCE, armour[2] * 10));
         }
+        ChemFuel fuel = tank.isEmpty() ? null : tank.fuel();
+        if (type == ArmorType.HELMET) {
+            tooltip.accept(gift(fuel, fuel == null ? "respirator_off" : "respirator"));
+        } else if (type == ArmorType.BOOTS) {
+            if (fuel == null) {
+                tooltip.accept(gift(null, "boots_off"));
+            } else {
+                tooltip.accept(gift(fuel, "air_jump", ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(PneumaticBoots.jumpHeight(fuel))));
+                tooltip.accept(gift(fuel, "soft_fall", Math.round(PneumaticBoots.cushion(fuel) * 100)));
+            }
+        }
+    }
+
+    /** A line on what the piece gives: blue like the stats above it, grey while there is no fuel for it. */
+    private static Component gift(@Nullable ChemFuel fuel, String key, Object... args) {
+        return Component.translatable("item.hextale.chem_gear." + key, args).withStyle(fuel == null ? ChatFormatting.GRAY : ChatFormatting.BLUE);
     }
 }

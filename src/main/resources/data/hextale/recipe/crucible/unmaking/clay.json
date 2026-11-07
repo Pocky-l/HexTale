@@ -1,0 +1,12 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "minecraft:clay",
+  "essences": {
+    "decay": 2
+  },
+  "result": {
+    "id": "minecraft:clay_ball",
+    "count": 4
+  },
+  "research": "unmaking"
+}

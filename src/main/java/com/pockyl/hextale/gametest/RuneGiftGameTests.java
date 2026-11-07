@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.block.HexFurnaceBlockEntity;
+import com.pockyl.hextale.block.HexWorkbenchBlockEntity;
 import com.pockyl.hextale.farm.Felling;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModItems;
@@ -25,6 +26,7 @@ import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.RuneHolder;
 import com.pockyl.hextale.runework.ToolEffects;
 import com.pockyl.hextale.runework.ToolRune;
+import com.pockyl.hextale.runework.WorkbenchRune;
 
 import java.util.HashSet;
 import java.util.List;
@@ -303,40 +305,56 @@ public final class RuneGiftGameTests {
     }
 
     /**
-     * Sunlight Cell: a battery under the open sky drinks charge while the sun is up and the weather dry; one under a roof
-     * never does.
+     * Sunlight Cell: a bench under the open sky or a glass skylight drinks charge while the sun is up and the weather dry;
+     * one under a roof never does.
      */
-    @HexTest(maxTicks = 220)
+    @HexTest(maxTicks = 240)
     public static void aSunlightCellDrinksTheDaylight(GameTestHelper helper) {
         BlockPos open = AT;
-        BlockPos roofed = AT.offset(2, 0, 0);
+        BlockPos glazed = AT.offset(2, 0, 0);
+        BlockPos roofed = AT.offset(4, 0, 0);
         helper.setBlock(open.above(), Blocks.AIR);
         helper.setBlock(open.above(2), Blocks.AIR);
+        helper.setBlock(glazed.above(), Blocks.AIR);
+        helper.setBlock(glazed.above(2), Blocks.GLASS);
         helper.setBlock(roofed.above(), Blocks.STONE);
-        ItemStack runed = new ItemStack(ModItems.CRYSTAL_BATTERY.get());
-        RuneHolder.BATTERY.set(runed, PickaxeRunes.EMPTY.with(com.pockyl.hextale.runework.BatteryRune.SUNLIGHT_CELL.rune(), 3));
-        List<com.pockyl.hextale.block.CrystalBatteryBlockEntity> batteries = new java.util.ArrayList<>();
-        for (BlockPos at : List.of(open, roofed)) {
-            helper.setBlock(at, ModBlocks.CRYSTAL_BATTERY.get());
-            com.pockyl.hextale.block.CrystalBatteryBlockEntity battery = helper.getBlockEntity(at, com.pockyl.hextale.block.CrystalBatteryBlockEntity.class);
-            battery.applyComponentsFromItemStack(runed);
-            batteries.add(battery);
-        }
         ServerLevel level = helper.getLevel();
+        // Earlier tests leave the world's clock and weather anywhere: this one needs a clear noon.
+        var server = level.getServer();
+        server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "time set noon");
+        server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "weather clear");
+        int settled = 10;
+        int every = HolderRune.at(WorkbenchRune.SUN_TICKS, 3);
+        List<HexWorkbenchBlockEntity> benches = new java.util.ArrayList<>();
         boolean[] sunnyAll = {true};
         boolean[] sunnyAny = {false};
-        helper.onEachTick(() -> {
-            boolean sunny = com.pockyl.hextale.block.CrystalBatteryBlockEntity.sunlit(level, helper.absolutePos(open));
-            sunnyAll[0] &= sunny;
-            sunnyAny[0] |= sunny;
+        // The benches go down once the light has settled round the new roofs.
+        helper.runAfterDelay(settled, () -> {
+            helper.assertTrue(level.canSeeSky(helper.absolutePos(glazed.above())), "the sky shows through the glass");
+            helper.assertFalse(level.canSeeSky(helper.absolutePos(roofed.above())), "the sky does not show through stone");
+            ItemStack runed = new ItemStack(ModItems.HEX_WORKBENCH.get());
+            RuneHolder.WORKBENCH.set(runed, PickaxeRunes.EMPTY.with(WorkbenchRune.SUNLIGHT_CELL.rune(), 3));
+            for (BlockPos at : List.of(open, glazed, roofed)) {
+                helper.setBlock(at, ModBlocks.HEX_WORKBENCH.get());
+                HexWorkbenchBlockEntity bench = helper.getBlockEntity(at, HexWorkbenchBlockEntity.class);
+                bench.applyComponentsFromItemStack(runed);
+                benches.add(bench);
+            }
         });
-        int every = HolderRune.at(com.pockyl.hextale.runework.BatteryRune.SUN_TICKS, 3);
-        helper.runAfterDelay(every * 2 + 10, () -> {
-            helper.assertTrue(batteries.get(1).charge() == 0, "the roofed battery stays empty, got " + batteries.get(1).charge());
+        helper.onEachTick(() -> {
+            if (!benches.isEmpty()) {
+                boolean sunny = HexWorkbenchBlockEntity.sunlit(level, helper.absolutePos(open));
+                helper.assertTrue(sunny == HexWorkbenchBlockEntity.sunlit(level, helper.absolutePos(glazed)), "glass lets the same sun through");
+                sunnyAll[0] &= sunny;
+                sunnyAny[0] |= sunny;
+            }
+        });
+        helper.runAfterDelay(settled + every * 2 + 10, () -> {
+            helper.assertTrue(benches.get(2).charge() == 0, "the roofed bench stays empty, got " + benches.get(2).charge());
+            helper.assertTrue(sunnyAny[0], "the test world has daylight, or this test proves nothing");
             if (sunnyAll[0]) {
-                helper.assertTrue(batteries.get(0).charge() >= 2, "in the sun it drank charge, got " + batteries.get(0).charge());
-            } else if (!sunnyAny[0]) {
-                helper.assertTrue(batteries.get(0).charge() == 0, "no sun, no charge, got " + batteries.get(0).charge());
+                helper.assertTrue(benches.get(0).charge() >= 2, "in the sun it drank charge, got " + benches.get(0).charge());
+                helper.assertTrue(benches.get(1).charge() >= 2, "under glass it drank charge, got " + benches.get(1).charge());
             }
             helper.succeed();
         });

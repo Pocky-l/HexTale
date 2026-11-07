@@ -47,6 +47,7 @@ public class HextaleJadePlugin implements IWailaPlugin {
             return accessor;
         });
         registration.registerBlockComponent(Machines.INSTANCE, EssenceTankBlock.class);
+        registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.HexVaultBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, SeparatorBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, AlembicBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.CrucibleBlock.class);
@@ -55,6 +56,7 @@ public class HextaleJadePlugin implements IWailaPlugin {
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.ChemStillBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.ChemVatBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.ChemTankBlock.class);
+        registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.ChemCarboyBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.ChemBoilerBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.HextechLamppostBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.PinkBrazierBlock.class);
@@ -67,6 +69,7 @@ public class HextaleJadePlugin implements IWailaPlugin {
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.HexPylonBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.WhirlReaperBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.HexSawmillBlock.class);
+        registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.HerdkeeperBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.GreedyFunnelBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.HexFoundryBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.ArcSpireBlock.class);
@@ -97,6 +100,9 @@ public class HextaleJadePlugin implements IWailaPlugin {
             }
             if (entity instanceof EssenceTankBlockEntity tank) {
                 tooltip.add(contents(tank.tank()));
+            } else if (entity instanceof com.pockyl.hextale.block.HexVaultBlockEntity vault) {
+                tooltip.add(Component.translatable("goggles.hextale.vault.filled", vault.used(), vault.capacity()));
+                tooltip.add(Component.translatable("goggles.hextale.vault.kinds", vault.kinds(), com.pockyl.hextale.storage.VaultRules.MAX_ENTRIES));
             } else if (entity instanceof SeparatorBlockEntity separator) {
                 tooltip.add(Component.translatable("jade.hextale.mixture").append(": ").append(contents(separator.mix())));
                 tooltip.add(Component.translatable("jade.hextale.concentrate").append(": ").append(contents(separator.extract())));
@@ -134,6 +140,8 @@ public class HextaleJadePlugin implements IWailaPlugin {
                 tooltip.add(still.status());
             } else if (entity instanceof com.pockyl.hextale.block.ChemVatBlockEntity vat) {
                 tooltip.add(vat.status());
+            } else if (entity instanceof com.pockyl.hextale.block.ChemCarboyBlockEntity carboy) {
+                tooltip.add(com.pockyl.hextale.block.ChemCarboyBlock.status(carboy.contents()));
             } else if (entity instanceof com.pockyl.hextale.block.ChemTankBlockEntity tank) {
                 tooltip.add(com.pockyl.hextale.block.ChemTankBlock.status(tank.contents()));
             } else if (entity instanceof com.pockyl.hextale.block.HextechLamppostBlockEntity post) {
@@ -166,14 +174,15 @@ public class HextaleJadePlugin implements IWailaPlugin {
                     tooltip.add(Component.translatable("gui.hextale.hex_furnace." + furnace.blocked()).withStyle(ChatFormatting.RED));
                 }
             } else if (entity instanceof com.pockyl.hextale.block.HexWorkbenchBlockEntity bench) {
-                tooltip.add(Component.translatable("jade.hextale.charge", bench.charge(),
-                        com.pockyl.hextale.block.HexWorkbenchBlockEntity.MAX_CHARGE).withStyle(ChatFormatting.AQUA));
+                tooltip.add(Component.translatable("jade.hextale.charge", bench.charge(), bench.capacity()).withStyle(ChatFormatting.AQUA));
             } else if (entity instanceof com.pockyl.hextale.block.HexFoundryBlockEntity foundry) {
                 if (accessor.getBlockState().getValue(com.pockyl.hextale.block.HexFoundryBlock.FORMED)) {
                     tooltip.add(com.pockyl.hextale.block.HexFoundryBlock.status(foundry).copy().withStyle(ChatFormatting.GRAY));
                 }
             } else if (entity instanceof com.pockyl.hextale.block.HexSawmillBlockEntity mill) {
                 tooltip.add(com.pockyl.hextale.block.HexSawmillBlock.status(mill).copy().withStyle(ChatFormatting.GRAY));
+            } else if (entity instanceof com.pockyl.hextale.block.HerdkeeperBlockEntity keeper) {
+                tooltip.add(com.pockyl.hextale.block.HerdkeeperBlock.status(keeper).copy().withStyle(ChatFormatting.GRAY));
             } else if (entity instanceof com.pockyl.hextale.block.MiasmaVentBlockEntity) {
                 tooltip.add(com.pockyl.hextale.block.MiasmaVentBlock.status(accessor.getBlockState()).copy().withStyle(ChatFormatting.GRAY));
             } else if (entity instanceof com.pockyl.hextale.block.XpCondenserBlockEntity condenser) {

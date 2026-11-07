@@ -96,7 +96,7 @@ public class ResearchNotesItem extends Item {
                 continue;
             }
             for (ComplexRune rune : holder.takes()) {
-                if (!knowledge.knows(rune) && !unknown.contains(rune)) {
+                if (!knowledge.knows(rune) && !unknown.contains(rune) && rune != com.pockyl.hextale.runework.ToolRune.ANATOMY.rune()) {
                     unknown.add(rune);
                 }
             }
