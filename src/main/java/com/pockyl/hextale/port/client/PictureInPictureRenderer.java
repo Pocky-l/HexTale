@@ -48,8 +48,12 @@ public abstract class PictureInPictureRenderer<T extends PictureInPictureRenderS
         graphics.flush();
         graphics.enableScissor(state.x0(), state.y0(), state.x1(), state.y1());
         PoseStack poseStack = graphics.pose();
+        // The box is in screen coordinates, as on 26.x: a caller's pose (JEI's recipe offset) is already in it, and the
+        // scissor above ignores poses. Drawing under that pose would apply it twice and put the scene outside the box.
+        float callerDepth = poseStack.last().pose().m32();
         poseStack.pushPose();
-        poseStack.translate(state.x0() + width / 2.0F, state.y0() + renderer.getTranslateY(height * guiScale, guiScale) / guiScale, DEPTH);
+        poseStack.setIdentity();
+        poseStack.translate(state.x0() + width / 2.0F, state.y0() + renderer.getTranslateY(height * guiScale, guiScale) / guiScale, callerDepth + DEPTH);
         poseStack.scale(state.scale(), state.scale(), -state.scale());
         renderer.renderToTexture(state, poseStack, new SubmitNodeCollector(graphics.bufferSource()));
         graphics.flush();

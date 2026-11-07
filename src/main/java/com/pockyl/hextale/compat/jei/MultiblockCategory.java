@@ -12,6 +12,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.RecipeType;
 import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
+import net.minecraft.Util;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.network.chat.Component;
@@ -88,7 +89,7 @@ public class MultiblockCategory extends AbstractRecipeCategory<Multiblock> {
         @Override
         public void drawWidget(net.minecraft.client.gui.GuiGraphics portGraphics, double mouseX, double mouseY) {
             GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
-            preview.render(graphics, 0, 0, WIDTH, SCENE, (int) mouseX, (int) mouseY, System.currentTimeMillis() / 50F);
+            preview.render(graphics, 0, 0, WIDTH, SCENE, (int) mouseX, (int) mouseY, Util.getMillis() / 50F);
         }
 
         @Override
