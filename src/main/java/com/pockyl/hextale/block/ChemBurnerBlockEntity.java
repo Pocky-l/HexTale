@@ -69,6 +69,7 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
     /** Whether the portion burning now is shimmer: the flame turns pink. */
     private boolean pink;
     private PickaxeRunes runes = PickaxeRunes.EMPTY;
+    private final CarboyReach.Look look = new CarboyReach.Look();
     private boolean dirty;
 
     public ChemBurnerBlockEntity(BlockPos pos, BlockState state) {
@@ -136,8 +137,9 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
     }
 
     /**
-     * The next portion of fuel: essence from the tank first, then a vial, then the weakest fuel the carboys around hold (a
-     * lit flame reaches for it at once, so it never gutters between doses). Eternal Flame may make it last twice as long.
+     * The next portion of fuel: essence from the tank first, then a vial, then the weakest fuel the carboys around hold,
+     * refined shimmer left alone (a lit flame reaches for it at once, so it never gutters between doses). Eternal Flame may
+     * make it last twice as long.
      */
     private void refuel(ServerLevel level, boolean burning) {
         int ticks;
@@ -153,8 +155,8 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
             fuel.shrink(1);
             setPink(brew.shimmer());
         } else {
-            Brew drawn = burning || CarboyReach.due(level, worldPosition) ? CarboyReach.draw(level, worldPosition,
-                    ChemBurnerBlock.window(getBlockState(), worldPosition), brew -> brew.burnTicks() > 0, Comparator.comparingInt(Brew::burnTicks)) : null;
+            Brew drawn = burning || look.due(level, worldPosition) ? look.draw(level, worldPosition, ChemBurnerBlock.window(getBlockState(), worldPosition),
+                    CarboyReach.burns(brew -> brew.burnTicks() > 0), Comparator.comparingInt(Brew::burnTicks)) : null;
             if (drawn == null) {
                 return;
             }

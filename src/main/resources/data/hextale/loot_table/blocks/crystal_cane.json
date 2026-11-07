@@ -12,15 +12,13 @@
     },
     {
       "rolls": 1,
-      "conditions": [
-        {
-          "condition": "minecraft:block_state_property",
-          "block": "hextale:crystal_cane",
-          "properties": {
-            "podded": "true"
-          }
+      "condition": {
+        "type": "minecraft:match_block",
+        "blocks": "hextale:crystal_cane",
+        "state": {
+          "podded": "true"
         }
-      ],
+      },
       "entries": [
         {
           "type": "minecraft:item",

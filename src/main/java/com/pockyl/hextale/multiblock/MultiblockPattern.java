@@ -27,9 +27,21 @@ import java.util.function.Supplier;
  * The shape is found in the world in any of the four turns around the vertical axis, from any of its blocks.
  */
 public final class MultiblockPattern {
-    /** What may stand in a cell, and the items that show it in the book. */
-    public record Key(Predicate<BlockState> test, Supplier<List<ItemStack>> shown) {
+    /**
+     * What may stand in a cell, and the items that show it in the book. A {@code kept} cell stays the block it is when the
+     * structure forms; the others turn into invisible parts.
+     */
+    public record Key(Predicate<BlockState> test, Supplier<List<ItemStack>> shown, boolean kept) {
         public static final Key AIR = new Key(BlockState::isAir, List::of);
+
+        public Key(Predicate<BlockState> test, Supplier<List<ItemStack>> shown) {
+            this(test, shown, false);
+        }
+
+        /** The same blocks, left standing in sight when the structure forms. */
+        public Key walls() {
+            return new Key(test, shown, true);
+        }
 
         public static Key block(Supplier<? extends Block> block) {
             return new Key(state -> state.is(block.get()), () -> List.of(new ItemStack(block.get())));

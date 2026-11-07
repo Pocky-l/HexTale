@@ -41,6 +41,7 @@ public final class IrisCompat {
             assign(assign, assignShadow, instance, program, shadowProgram, HexGlow.PIPELINE, "BASIC", "SHADOW_LIGHTNING");
             assign(assign, assignShadow, instance, program, shadowProgram, HexGlow.TEXTURED_PIPELINE, "EMISSIVE_ENTITIES", "SHADOW_ENTITIES");
             // Not drawn while a pack is on; mapped all the same so a frame caught between the two never draws raw.
+            assign(assign, assignShadow, instance, program, shadowProgram, com.pockyl.hextale.client.render.VaultSpacePipeline.PIPELINE, "ENTITIES", "SHADOW_ENTITIES");
             assign(assign, assignShadow, instance, program, shadowProgram, VoidPipelines.BODY, "ENTITIES", "SHADOW_ENTITIES");
             assign(assign, assignShadow, instance, program, shadowProgram, VoidPipelines.HALO, "ENTITIES_TRANSLUCENT", "SHADOW_ENTITIES");
             assign(assign, assignShadow, instance, program, shadowProgram, com.pockyl.hextale.client.render.VoidSky.OVER_PACK, "BASIC",

@@ -73,6 +73,7 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
 
     private ItemStack fuel = ItemStack.EMPTY;
     private int burn;
+    private final CarboyReach.Look look = new CarboyReach.Look();
     private PickaxeRunes runes = PickaxeRunes.EMPTY;
     /** Client: the plants the last breaths warmed, each with the tick the warmth set out. */
     private final List<Warmth> warmths = new ArrayList<>();
@@ -142,18 +143,18 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
         return brew == Brew.RAW_SHIMMER ? RAW_TICKS : 0;
     }
 
-    /** A vial, else the weakest shimmer the carboys around hold (a lit flame reaches for it at once). */
+    /** A vial, else the raw shimmer the carboys around hold (a lit flame reaches for it at once). */
     private void refuel(ServerLevel level, boolean burning) {
         int ticks = burnTicks(fuel);
         if (ticks > 0) {
             fuel.shrink(1);
         } else {
-            Brew drawn = burning || CarboyReach.due(level, worldPosition) ? CarboyReach.draw(level, worldPosition, Vec3.atCenterOf(worldPosition),
-                    Brew::shimmer, Comparator.comparingInt(Brew::burnTicks)) : null;
+            Brew drawn = burning || look.due(level, worldPosition) ? look.draw(level, worldPosition, Vec3.atCenterOf(worldPosition),
+                    CarboyReach.burns(Brew::shimmer), Comparator.comparingInt(Brew::burnTicks)) : null;
             if (drawn == null) {
                 return;
             }
-            ticks = drawn == Brew.REFINED_SHIMMER ? REFINED_TICKS : RAW_TICKS;
+            ticks = RAW_TICKS;
         }
         int flame = strength(BrazierRune.ETERNAL_FLAME);
         if (flame > 0 && level.getRandom().nextFloat() < HolderRune.at(BrazierRune.LONGER_BURN, flame)) {

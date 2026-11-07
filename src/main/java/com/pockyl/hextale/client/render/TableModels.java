@@ -87,9 +87,15 @@ public final class TableModels {
     public static final StandaloneModelKey<BlockStateModelPart> VALVE_WHEEL_HANDLE = model("block/valve_wheel_handle");
     /** The Chem Tank as worn: shoulder and chest straps, drawn on the player's back by {@link ChemTankLayer}. */
     public static final StandaloneModelKey<BlockStateModelPart> CHEM_TANK_WORN = model("item/chem_tank_worn");
+    public static final StandaloneModelKey<BlockStateModelPart> CHEM_JET_TANK_WORN = model("item/chem_jet_tank_worn");
     /** The Chain Claw (also the flying harpoon head of a shot) and the zipline trolley. */
     public static final StandaloneModelKey<BlockStateModelPart> CHAIN_CLAW = model("block/chain_claw");
     public static final StandaloneModelKey<BlockStateModelPart> ZIPLINE_TROLLEY = model("block/zipline_trolley");
+    /** The Hex Vault's door: one bar of the frame, one petal, the hub and a lamp, each drawn as often as the hexagon needs. */
+    public static final StandaloneModelKey<BlockStateModelPart> VAULT_BAR = model("block/vault_bar");
+    public static final StandaloneModelKey<BlockStateModelPart> VAULT_PETAL = model("block/vault_petal");
+    public static final StandaloneModelKey<BlockStateModelPart> VAULT_HUB = model("block/vault_hub");
+    public static final StandaloneModelKey<BlockStateModelPart> VAULT_LAMP = model("block/vault_lamp");
 
     private TableModels() {
     }
@@ -119,6 +125,12 @@ public final class TableModels {
     public static void submit(PoseStack poseStack, SubmitNodeCollector collector, StandaloneModelKey<BlockStateModelPart> key, int light) {
         BlockStateModelPart part = Minecraft.getInstance().getModelManager().getStandaloneModel(key);
         collector.submitMultiLayerBlockModel(poseStack, List.of(part), false, NO_TINTS, light, OverlayTexture.NO_OVERLAY, 0);
+    }
+
+    /** Like {@link #submit}, with {@code argb} on the quads of tint index 0. */
+    public static void submitTinted(PoseStack poseStack, SubmitNodeCollector collector, StandaloneModelKey<BlockStateModelPart> key, int light, int argb) {
+        BlockStateModelPart part = Minecraft.getInstance().getModelManager().getStandaloneModel(key);
+        collector.submitMultiLayerBlockModel(poseStack, List.of(part), false, new int[]{argb}, light, OverlayTexture.NO_OVERLAY, 0);
     }
 
     /** Draws a block state's own model (any block of the world) at the pose, untinted. */

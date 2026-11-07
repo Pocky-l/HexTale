@@ -1,4 +1,5 @@
 {
+  "gui_light": "front",
   "textures": {
     "particle": "hextale:item/grapple_gauntlet",
     "sheet": "hextale:item/grapple_gauntlet"
@@ -1588,7 +1589,7 @@
     "gui": {
       "rotation": [
         15,
-        -70,
+        -110,
         0
       ],
       "translation": [

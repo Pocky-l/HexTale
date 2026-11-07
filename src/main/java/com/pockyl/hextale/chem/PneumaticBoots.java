@@ -90,6 +90,11 @@ public final class PneumaticBoots {
                 && !player.isFallFlying() && !StrikeDash.flying(player) && GrappleHook.of(player) == null;
     }
 
+    /** Whether the boots still have their jump in this flight. Server only: the client keeps its own count. */
+    public static boolean jumpLeft(Player player) {
+        return !SPENT.contains(player) && canJump(player);
+    }
+
     /** The server's half of a jump: checks it, spends the fuel, forgets the fall so far, shows the puff. */
     public static boolean jump(Player player) {
         ChemFuel fuel = ChemGear.power(player);

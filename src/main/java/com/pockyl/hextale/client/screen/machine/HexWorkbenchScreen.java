@@ -35,8 +35,6 @@ public class HexWorkbenchScreen extends AbstractContainerScreen<HexWorkbenchMenu
     private static final int GAUGE_Y = 19;
     private static final int GAUGE_W = 10;
     private static final int GAUGE_H = 44;
-    /** Charge that fills the tube; more than this shows a full tube. */
-    private static final int GAUGE_FULL = HexWorkbenchBlockEntity.MAX_CHARGE;
     public static final int ARROW_X = 106;
     public static final int ARROW_Y = 40;
 
@@ -61,17 +59,17 @@ public class HexWorkbenchScreen extends AbstractContainerScreen<HexWorkbenchMenu
                 HexPlate.slot(graphics, x + slot.x, y + slot.y);
             }
         }
-        gauge(graphics, x + GAUGE_X, y + GAUGE_Y, menu.charge(), menu.why() == HexWorkbenchMenu.Why.NO_CHARGE);
+        gauge(graphics, x + GAUGE_X, y + GAUGE_Y, menu.charge(), menu.capacity(), menu.why() == HexWorkbenchMenu.Why.NO_CHARGE);
         PixelArt.flush(graphics);
         MachineScreen.arrow(graphics, x + ARROW_X, y + ARROW_Y, 16, menu.slots.get(HexWorkbenchBlockEntity.SIZE).hasItem() ? 1 : 0);
         PixelArt.flush(graphics);
     }
 
     /** A glass tube of charge over the crystal socket: cyan light rising with the charge, a red pulse when short. */
-    private static void gauge(GuiGraphicsExtractor graphics, int x, int y, int charge, boolean short_) {
+    private static void gauge(GuiGraphicsExtractor graphics, int x, int y, int charge, int full, boolean short_) {
         HexPlate.well(graphics, x - 1, y - 1, GAUGE_W + 2, GAUGE_H + 2);
         PixelArt.fill(graphics, x, y, x + GAUGE_W, y + GAUGE_H, PixelArt.argb(0x1A120B, 1));
-        int filled = Math.round(GAUGE_H * Mth.clamp(charge / (float) GAUGE_FULL, 0, 1));
+        int filled = Math.round(GAUGE_H * Mth.clamp(charge / (float) full, 0, 1));
         long now = Util.getMillis();
         for (int row = 0; row < filled; row++) {
             float wave = 0.5F + 0.5F * Mth.sin(now / 240.0F - row * 0.5F);
@@ -113,7 +111,7 @@ public class HexWorkbenchScreen extends AbstractContainerScreen<HexWorkbenchMenu
             graphics.setComponentTooltipForNextFrame(font, List.of(
                     Component.translatable("gui.hextale.hex_workbench.charge", menu.charge()),
                     Component.translatable("gui.hextale.hex_workbench.charge.hint", HexWorkbenchBlockEntity.UNSTABLE_CHARGE,
-                            HexWorkbenchBlockEntity.SYNTHETIC_CHARGE, HexWorkbenchBlockEntity.MAX_CHARGE).withStyle(ChatFormatting.GRAY)),
+                            HexWorkbenchBlockEntity.SYNTHETIC_CHARGE, menu.capacity()).withStyle(ChatFormatting.GRAY)),
                     mouseX, mouseY);
         } else if (menu.why() == HexWorkbenchMenu.Why.LOCKED && mouseX >= x + ARROW_X - 20 && mouseX < x + ARROW_X + 40
                 && mouseY >= y + ARROW_Y - 14 && mouseY < y + ARROW_Y + 10) {

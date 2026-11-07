@@ -25,7 +25,8 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The Rusted Catwalk: a grate deck on a thin frame, in the lower or the upper half of the cell by the slab rule. Its
- * bearing bars run the way the player was looking. Only a deck in the upper half meets a Rusted Railing above it.
+ * bearing bars run the way the player was looking. A Rusted Railing above stands on the deck in either half: over the lower
+ * half its low pieces reach down to it.
  */
 public class RustedCatwalkBlock extends Block implements SimpleWaterloggedBlock {
     public static final EnumProperty<Half> HALF = BlockStateProperties.HALF;

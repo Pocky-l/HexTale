@@ -9,11 +9,9 @@
           "name": "hextale:spring_blister"
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ]
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      }
     }
   ],
   "random_sequence": "hextale:blocks/spring_blister"

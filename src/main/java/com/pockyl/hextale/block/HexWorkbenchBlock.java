@@ -29,7 +29,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * The Hex Workbench: a crafting table woken with hextech dust. Its flat worktop of polished stone has a 3 x 3 grid of
  * glowing channels carved into it; the hextech in its socket soaks in as charge, spent on every craft. Almost every
- * device of the mod is made here.
+ * device of the mod is made here. A comparator reads how full of charge it is.
  */
 public class HexWorkbenchBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
@@ -55,6 +55,16 @@ public class HexWorkbenchBlock extends BaseEntityBlock {
             player.openMenu(bench, buf -> buf.writeBlockPos(pos));
         }
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    protected boolean hasAnalogOutputSignal(BlockState state) {
+        return true;
+    }
+
+    @Override
+    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
+        return level.getBlockEntity(pos) instanceof HexWorkbenchBlockEntity bench ? bench.signal() : 0;
     }
 
     @Override

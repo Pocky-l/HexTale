@@ -206,6 +206,11 @@ public final class GogglesView {
             }
             return new Reading(name, rows);
         }
+        if (entity instanceof com.pockyl.hextale.block.HexVaultBlockEntity vault) {
+            rows.add(Row.heading(Component.translatable(KEY + "vault.filled", vault.used(), vault.capacity())));
+            rows.add(Row.heading(Component.translatable(KEY + "vault.kinds", vault.kinds(), com.pockyl.hextale.storage.VaultRules.MAX_ENTRIES)));
+            rows.add(Row.heading(Component.translatable(KEY + "vault.cubes", vault.cubes())));
+        }
         if (entity instanceof com.pockyl.hextale.block.AxolotlTankBlockEntity tank) {
             rows.add(Row.heading(tank.status()));
             rows.add(Row.heading(Component.translatable(KEY + "tank.meals", tank.meals() + tank.getItem(com.pockyl.hextale.block.AxolotlTankBlockEntity.FOOD).getCount())));

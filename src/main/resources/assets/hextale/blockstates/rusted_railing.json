@@ -2,7 +2,8 @@
   "multipart": [
     {
       "when": {
-        "north": "true"
+        "north": "true",
+        "low": "false"
       },
       "apply": {
         "model": "hextale:block/rusted_railing_straight"
@@ -10,7 +11,8 @@
     },
     {
       "when": {
-        "east": "true"
+        "east": "true",
+        "low": "false"
       },
       "apply": {
         "model": "hextale:block/rusted_railing_straight",
@@ -19,7 +21,8 @@
     },
     {
       "when": {
-        "south": "true"
+        "south": "true",
+        "low": "false"
       },
       "apply": {
         "model": "hextale:block/rusted_railing_straight",
@@ -28,7 +31,8 @@
     },
     {
       "when": {
-        "west": "true"
+        "west": "true",
+        "low": "false"
       },
       "apply": {
         "model": "hextale:block/rusted_railing_straight",
@@ -38,7 +42,8 @@
     {
       "when": {
         "north": "true",
-        "east": "true"
+        "east": "true",
+        "low": "false"
       },
       "apply": {
         "model": "hextale:block/rusted_railing_corner"
@@ -47,7 +52,8 @@
     {
       "when": {
         "east": "true",
-        "south": "true"
+        "south": "true",
+        "low": "false"
       },
       "apply": {
         "model": "hextale:block/rusted_railing_corner",
@@ -57,7 +63,8 @@
     {
       "when": {
         "south": "true",
-        "west": "true"
+        "west": "true",
+        "low": "false"
       },
       "apply": {
         "model": "hextale:block/rusted_railing_corner",
@@ -67,7 +74,8 @@
     {
       "when": {
         "west": "true",
-        "north": "true"
+        "north": "true",
+        "low": "false"
       },
       "apply": {
         "model": "hextale:block/rusted_railing_corner",
@@ -76,7 +84,8 @@
     },
     {
       "when": {
-        "post_ne": "true"
+        "post_ne": "true",
+        "low": "false"
       },
       "apply": {
         "model": "hextale:block/rusted_railing_post"
@@ -84,7 +93,8 @@
     },
     {
       "when": {
-        "post_se": "true"
+        "post_se": "true",
+        "low": "false"
       },
       "apply": {
         "model": "hextale:block/rusted_railing_post",
@@ -93,7 +103,8 @@
     },
     {
       "when": {
-        "post_sw": "true"
+        "post_sw": "true",
+        "low": "false"
       },
       "apply": {
         "model": "hextale:block/rusted_railing_post",
@@ -102,10 +113,132 @@
     },
     {
       "when": {
-        "post_nw": "true"
+        "post_nw": "true",
+        "low": "false"
       },
       "apply": {
         "model": "hextale:block/rusted_railing_post",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "low": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_straight_low"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "low": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_straight_low",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "low": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_straight_low",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "low": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_straight_low",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "east": "true",
+        "low": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_corner_low"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "south": "true",
+        "low": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_corner_low",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "west": "true",
+        "low": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_corner_low",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "north": "true",
+        "low": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_corner_low",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "post_ne": "true",
+        "low": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_post_low"
+      }
+    },
+    {
+      "when": {
+        "post_se": "true",
+        "low": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_post_low",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "post_sw": "true",
+        "low": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_post_low",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "post_nw": "true",
+        "low": "true"
+      },
+      "apply": {
+        "model": "hextale:block/rusted_railing_post_low",
         "y": 270
       }
     }

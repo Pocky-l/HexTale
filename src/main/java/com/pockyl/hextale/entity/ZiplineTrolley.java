@@ -8,6 +8,7 @@ import com.pockyl.hextale.registry.ModEntities;
 import com.pockyl.hextale.registry.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.PositionAndRotation;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -17,10 +18,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.InterpolationHandler;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.PositionPath;
+import net.minecraft.world.entity.SteppedInterpolationHandler;
 import net.minecraft.world.entity.player.Input;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.DismountHelper;
@@ -48,8 +53,13 @@ import org.jspecify.annotations.Nullable;
  * action per {@link Zipline#BLOCKS_PER_ACTION} blocks, no Thinning); a key against the motion brakes. Sneak lets go and
  * keeps the speed. At a post where lines join, the ride runs on along the line that goes on most nearly straight;
  * at a last end, or one with no line onwards, the rider is set down. Over ground close under the line the rider draws
- * up towards the chain and rides on; only a block too near the chain for that stops the ride in front of it. The server
- * moves it; clients see the vanilla interpolation and the synced direction, speed and draw.
+ * up towards the chain and rides on; only a block too near the chain for that stops the ride in front of it. A ride
+ * keeps the speed it was mounted with, and a last end slows it softly and sets the rider down with what is left.
+ *
+ * <p>The server decides the ride. A plain entity has no client interpolation: position packets would set it in steps
+ * while the rider and the camera follow the client's ticks, so the grip would jerk against the view. Clients therefore
+ * run the same line themselves from the synced ends, t and speed, easing towards the server's t; the trolley, its turn
+ * and the rider all come from that one value. Only while the ends are not loaded do packets move it.
  */
 public class ZiplineTrolley extends Entity {
     private static final EntityDataAccessor<Vector3fc> DIRECTION = SynchedEntityData.defineId(ZiplineTrolley.class, EntityDataSerializers.VECTOR3);
@@ -57,6 +67,10 @@ public class ZiplineTrolley extends Entity {
     private static final EntityDataAccessor<Boolean> BRAKING = SynchedEntityData.defineId(ZiplineTrolley.class, EntityDataSerializers.BOOLEAN);
     /** How far the rider is drawn up from the full hang, to clear the ground under the line. */
     private static final EntityDataAccessor<Float> LIFT = SynchedEntityData.defineId(ZiplineTrolley.class, EntityDataSerializers.FLOAT);
+    /** The line's ends and the place on it, for clients to run the ride themselves. */
+    private static final EntityDataAccessor<BlockPos> OWNER = SynchedEntityData.defineId(ZiplineTrolley.class, EntityDataSerializers.BLOCK_POS);
+    private static final EntityDataAccessor<BlockPos> OTHER = SynchedEntityData.defineId(ZiplineTrolley.class, EntityDataSerializers.BLOCK_POS);
+    private static final EntityDataAccessor<Float> PLACE = SynchedEntityData.defineId(ZiplineTrolley.class, EntityDataSerializers.FLOAT);
     /** From the chain down to the entity's own position (it hangs from the chain by its wheels). */
     public static final double BELOW_CHAIN = 0.2;
     /** Blocks from an end at which a blocked rider counts as arrived. */
@@ -65,13 +79,28 @@ public class ZiplineTrolley extends Entity {
     private static final double MAX_LIFT = Zipline.HANG - 0.3;
     /** Air kept under the (slightly deflated) body when it is drawn up over a block. */
     private static final double LIFT_GAP = 0.06;
-    /** How far ahead the rider sees the ground coming, the step between looks, and the draw that distance buys, per block. */
+    /** How far ahead the rider sees the ground coming at the least, the step between looks, and the most draw per block ahead. */
     private static final double LOOK_AHEAD = 2.5;
     private static final double LOOK_STEP = 0.25;
     private static final double LIFT_PER_BLOCK = 0.8;
-    /** Fastest draw up and down, blocks a tick (ground right under the feet overrides the first). */
+    /** Fastest draw up at a standstill and what each block a tick of speed adds, and the fastest let down, blocks a tick. */
     private static final double LIFT_RISE = 0.25;
+    private static final double LIFT_RISE_PER_SPEED = 0.35;
     private static final double LIFT_SINK = 0.06;
+    /** Speed lost to the line per tick: let go of the keys and the ride coasts far. */
+    private static final double DRAG = 0.998;
+    /** Speed a rider reaches a last end with, blocks a tick; before it the ride slows at the brake's steady rate. */
+    private static final double END_SPEED = 0.2;
+    /** Share of the distance to the server's t a client makes up per tick, and the distance in blocks it jumps at once. */
+    private static final double FOLLOW = 0.1;
+    private static final double FOLLOW_JUMP = 4;
+    /** Share of the distance to the server's draw a client makes up per tick. */
+    private static final double FOLLOW_LIFT = 0.3;
+    /** The rider's body behind the grip: degrees per block a tick of speed gained in a tick, the most, spring and damping. */
+    private static final float SWING_PER_PUSH = 420;
+    private static final float SWING_MOST = 22;
+    private static final float SWING_SPRING = 0.12F;
+    private static final float SWING_DAMPING = 0.82F;
     /** Speed a let-go rider keeps, applied the tick after the dismount teleport. */
     private static final Map<UUID, Vec3> FLING = new ConcurrentHashMap<>();
     /** Below this speed a ride does not run on at a junction: a rider swinging to rest between two lines is set down. */
@@ -91,6 +120,15 @@ public class ZiplineTrolley extends Entity {
     private boolean bumped;
     private @Nullable Vec3 arrival;
     private int noFuelSaid;
+    /** Client: the line it runs on itself, null while packets move it. */
+    private Zipline.@Nullable Line shownLine;
+    private double shownT;
+    private double shownOldT;
+    private double shownLift;
+    private double shownSpeed;
+    private float swing;
+    private float oldSwing;
+    private float swingSpeed;
 
     public ZiplineTrolley(EntityType<? extends ZiplineTrolley> type, Level level) {
         super(type, level);
@@ -103,7 +141,8 @@ public class ZiplineTrolley extends Entity {
                 Vec3 fling = FLING.remove(player.getUUID());
                 if (fling != null) {
                     player.setDeltaMovement(fling);
-                    player.needsSync = true;
+                    // needsSync would tell only those watching: a player's own client moves them and needs this.
+                    player.syncVelocity = true;
                 }
             }
         });
@@ -119,6 +158,9 @@ public class ZiplineTrolley extends Entity {
         trolley.owner = owner.immutable();
         trolley.other = other.immutable();
         trolley.t = Math.clamp(t, 0, 1);
+        // Known movement, not delta movement: the server only knows a player's speed from what the client reported.
+        trolley.speed = Math.clamp(player.getKnownMovement().dot(line.tangent(trolley.t).normalize()), -Zipline.MAX_SPEED, Zipline.MAX_SPEED);
+        trolley.entityData.set(SPEED, (float) trolley.speed);
         trolley.place(line);
         double lift = clearance(level, player, line, trolley.t);
         trolley.entityData.set(LIFT, Double.isNaN(lift) ? 0F : (float) lift);
@@ -155,7 +197,21 @@ public class ZiplineTrolley extends Entity {
 
     /** How far the rider is drawn up from the full hang. */
     public double lift() {
-        return entityData.get(LIFT);
+        return shownLine != null ? shownLift : entityData.get(LIFT);
+    }
+
+    /** Client: which way the trolley points on this frame, along the line it runs on. */
+    public Vec3 shownDirection(float partialTick) {
+        if (shownLine != null) {
+            return shownLine.tangent(Mth.lerp(partialTick, shownOldT, shownT)).normalize();
+        }
+        Vector3fc dir = direction();
+        return new Vec3(dir.x(), dir.y(), dir.z());
+    }
+
+    /** Client: how far the rider's body swings ahead of the grip along the line on this frame, in degrees. */
+    public float swing(float partialTick) {
+        return Mth.lerp(partialTick, oldSwing, swing);
     }
 
     /** Where the rider's feet are now. */
@@ -169,6 +225,57 @@ public class ZiplineTrolley extends Entity {
         builder.define(SPEED, 0F);
         builder.define(BRAKING, false);
         builder.define(LIFT, 0F);
+        builder.define(OWNER, BlockPos.ZERO);
+        builder.define(OTHER, BlockPos.ZERO);
+        builder.define(PLACE, 0F);
+    }
+
+    @Override
+    protected InterpolationHandler createInterpolationHandler() {
+        return new Packets(this);
+    }
+
+    /** Position packets count only while the client cannot run the line itself; then they interpolate as for a mob. */
+    private static final class Packets implements InterpolationHandler {
+        private final ZiplineTrolley trolley;
+        private final InterpolationHandler vanilla;
+
+        Packets(ZiplineTrolley trolley) {
+            this.trolley = trolley;
+            vanilla = SteppedInterpolationHandler.create(trolley);
+        }
+
+        @Override
+        public @Nullable PositionAndRotation target() {
+            return vanilla.target();
+        }
+
+        @Override
+        public boolean interpolateTo(@Nullable PositionPath position, float yRot, float xRot, boolean hasRotation) {
+            return trolley.shownLine != null || vanilla.interpolateTo(position, yRot, xRot, hasRotation);
+        }
+
+        @Override
+        public void interpolate() {
+            if (trolley.shownLine == null) {
+                vanilla.interpolate();
+            }
+        }
+
+        @Override
+        public void applyPredictedMovement(Vec3 delta) {
+            vanilla.applyPredictedMovement(delta);
+        }
+
+        @Override
+        public boolean hasActiveInterpolation() {
+            return vanilla.hasActiveInterpolation();
+        }
+
+        @Override
+        public void cancel() {
+            vanilla.cancel();
+        }
     }
 
     private void place(Zipline.Line line) {
@@ -176,6 +283,49 @@ public class ZiplineTrolley extends Entity {
         setPos(at.x, at.y - BELOW_CHAIN, at.z);
         Vec3 dir = line.tangent(t).normalize();
         entityData.set(DIRECTION, new Vector3f((float) dir.x, (float) dir.y, (float) dir.z));
+        entityData.set(OWNER, owner);
+        entityData.set(OTHER, other);
+        entityData.set(PLACE, (float) t);
+    }
+
+    /** Client: one tick of the ride along the line, from the synced speed, easing towards the server's place. */
+    private void tickShown() {
+        Zipline.Line line = ChainAnchorBlockEntity.line(level(), entityData.get(OWNER), entityData.get(OTHER));
+        if (line == null) {
+            shownLine = null;
+            return;
+        }
+        double server = entityData.get(PLACE);
+        double pace = entityData.get(SPEED);
+        if (!line.equals(shownLine)) {
+            // A new ride or the next line of a junction: its start is where the last one ended, so nothing jumps.
+            boolean first = shownLine == null;
+            shownLine = line;
+            shownT = server;
+            shownOldT = server;
+            if (first) {
+                shownLift = entityData.get(LIFT);
+                shownSpeed = pace;
+            }
+        }
+        double length = Math.max(0.1, line.tangent(shownT).length());
+        double ahead = shownT + pace / length;
+        double miss = server - ahead;
+        ahead = Math.abs(miss) * length > FOLLOW_JUMP ? server : ahead + miss * FOLLOW;
+        shownOldT = shownT;
+        shownT = Math.clamp(ahead, 0, 1);
+        Vec3 at = line.point(shownT);
+        setPos(at.x, at.y - BELOW_CHAIN, at.z);
+        shownLift += (entityData.get(LIFT) - shownLift) * FOLLOW_LIFT;
+
+        // The body hangs from the grip, so a change of speed swings it behind and it settles back.
+        double push = Math.abs(pace) - Math.abs(shownSpeed);
+        double way = Math.abs(pace) > 1.0E-4 ? Math.signum(pace) : Math.signum(shownSpeed);
+        shownSpeed = pace;
+        float target = Mth.clamp((float) (-push * way) * SWING_PER_PUSH, -SWING_MOST, SWING_MOST);
+        oldSwing = swing;
+        swingSpeed = (swingSpeed + (target - swing) * SWING_SPRING) * SWING_DAMPING;
+        swing += swingSpeed;
     }
 
     /** Where the rider's feet hang at {@code t}. */
@@ -211,16 +361,21 @@ public class ZiplineTrolley extends Entity {
         }
         double wanted = here;
         int way = (int) Math.signum(speed);
-        for (double ahead = LOOK_STEP; way != 0 && ahead <= LOOK_AHEAD; ahead += LOOK_STEP) {
+        // At speed the draw must start earlier and climb less per block, or the ground arrives before the feet are up.
+        double pace = Math.abs(speed);
+        double rise = LIFT_RISE + pace * LIFT_RISE_PER_SPEED;
+        double perBlock = pace > 1.0E-3 ? Math.min(LIFT_PER_BLOCK, rise / pace) : LIFT_PER_BLOCK;
+        double reach = Math.max(LOOK_AHEAD, MAX_LIFT / perBlock);
+        for (double ahead = LOOK_STEP; way != 0 && ahead <= reach; ahead += LOOK_STEP) {
             double at = t + way * ahead / length;
             double needed = at <= 0 || at >= 1 ? Double.NaN : clearance(level, rider, line, at);
             if (Double.isNaN(needed)) {
                 break;
             }
-            wanted = Math.max(wanted, needed - ahead * LIFT_PER_BLOCK);
+            wanted = Math.max(wanted, needed - ahead * perBlock);
         }
         double lift = lift();
-        lift = wanted > lift ? Math.max(here, Math.min(wanted, lift + LIFT_RISE)) : Math.max(wanted, lift - LIFT_SINK);
+        lift = wanted > lift ? Math.max(here, Math.min(wanted, lift + rise)) : Math.max(wanted, lift - LIFT_SINK);
         entityData.set(LIFT, (float) lift);
     }
 
@@ -228,6 +383,7 @@ public class ZiplineTrolley extends Entity {
     public void tick() {
         super.tick();
         if (!(level() instanceof ServerLevel server)) {
+            tickShown();
             return;
         }
         Entity passenger = getFirstPassenger();
@@ -248,16 +404,20 @@ public class ZiplineTrolley extends Entity {
         boolean braking = false;
         boolean driving = false;
         if (want != 0 && speed * want < -0.01) {
-            // Against the motion: the clamp brakes and holds the trolley against gravity.
-            speed *= Zipline.BRAKE;
+            // Against the motion: a steady brake, and the clamp holds the trolley against gravity.
+            speed -= Math.copySign(Math.min(Math.abs(speed), Zipline.BRAKE), speed);
             braking = Math.abs(speed) > 0.03;
         } else {
             ChemFuel fuel = want == 0 ? null : rider.getAbilities().instabuild ? ChemFuel.REFINED_SHIMMER : ChemGear.power(rider);
             boolean uphill = along.y * want > 0.01;
             if (fuel != null) {
                 double top = Zipline.motorSpeed(fuel);
-                if (speed * want < top) {
-                    speed = want > 0 ? Math.min(top, speed + Zipline.MOTOR_PUSH) : Math.max(-top, speed - Zipline.MOTOR_PUSH);
+                double pace = speed * want;
+                if (pace < top) {
+                    // Strong from a standstill, easing towards the top.
+                    double left = pace <= 0 ? 1 : 1 - pace / top * (pace / top);
+                    double push = Zipline.MOTOR_PUSH * Math.max(0.08, left);
+                    speed = want > 0 ? Math.min(top, speed + push) : Math.max(-top, speed - push);
                     driving = true;
                 }
             }
@@ -270,11 +430,18 @@ public class ZiplineTrolley extends Entity {
                 rider.sendOverlayMessage(Component.translatable("entity.hextale.zipline_trolley.no_fuel"));
             }
         }
-        speed *= 0.996;
+        speed *= DRAG;
         if (Math.abs(speed) < 0.003 && Math.abs(along.y) < 0.03) {
             speed = 0;
         }
         speed = Math.clamp(speed, -Zipline.MAX_SPEED, Zipline.MAX_SPEED);
+
+        double toEnd = (speed > 0 ? 1 - t : t) * line.length();
+        double softest = Math.sqrt(END_SPEED * END_SPEED + 2 * Zipline.BRAKE * toEnd);
+        if (Math.abs(speed) > softest && onward(server, line, speed > 0) == null) {
+            // A last end ahead: from here on it would take the brake's rate to arrive gently.
+            speed = Math.copySign(softest, speed);
+        }
 
         double next = t + speed / length;
         if (next >= 1 || next <= 0) {
@@ -284,7 +451,6 @@ public class ZiplineTrolley extends Entity {
             return;
         }
         boolean free = !Double.isNaN(clearance(server, rider, line, next));
-        double toEnd = (speed > 0 ? 1 - t : t) * line.length();
         if (!free && cleared && toEnd < ARRIVE_NEAR && onward(server, line, speed > 0) != null) {
             // Close to a junction post a block by the post may be in the way: the ride goes on to the next line.
             free = true;
@@ -368,14 +534,18 @@ public class ZiplineTrolley extends Entity {
         return true;
     }
 
-    /** The ride reached an end: the rider is set down beside it. */
+    /** The ride reached an end: the rider is set down beside it and goes on with the speed that is left. */
     private void arrive(ServerLevel level, Player rider, Zipline.Line line, boolean atOther) {
         BlockPos cell = atOther ? other : owner;
         Vec3 back = line.tangent(atOther ? 1 : 0).normalize().scale(atOther ? -1 : 1);
         arrival = safeSpot(level, rider, cell, back, feet(line, atOther ? 1 : 0));
+        Vec3 left = back.scale(-Math.abs(speed));
         speed = 0;
         level.playSound(null, getX(), getY(), getZ(), SoundEvents.CHAIN_PLACE, SoundSource.PLAYERS, 0.6F, 0.8F);
         rider.stopRiding();
+        if (left.lengthSqr() > 1.0E-4) {
+            FLING.put(rider.getUUID(), left);
+        }
         discard();
     }
 

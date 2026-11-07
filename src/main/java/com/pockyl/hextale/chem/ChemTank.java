@@ -19,7 +19,12 @@ public final class ChemTank {
 
     /** Whether the stack carries a tank: the Chem Tank or the chem-steel chestplate with a built-in tank. */
     public static boolean is(ItemStack stack) {
-        return stack.is(ModItems.CHEM_TANK.get()) || stack.is(ModItems.CHEM_STEEL_TANK_CHESTPLATE.get());
+        return stack.is(ModItems.CHEM_TANK.get()) || stack.is(ModItems.CHEM_STEEL_TANK_CHESTPLATE.get()) || hasJets(stack);
+    }
+
+    /** Whether the stack is a tank with Jet Nozzles ({@link ChemJets}). */
+    public static boolean hasJets(ItemStack stack) {
+        return stack.is(ModItems.CHEM_JET_TANK.get()) || stack.is(ModItems.CHEM_JET_TANK_CHESTPLATE.get());
     }
 
     /** Pours a carried stack of fuel vials into a tank item, as many as fit; returns whether any went in. */

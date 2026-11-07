@@ -67,6 +67,8 @@ public class ChemVatBlockEntity extends BlockEntity implements WorldlyContainer,
     private int progress;
     private int recipeTime;
     private @Nullable Formed formed;
+    private final CarboyReach.Look bathLook = new CarboyReach.Look();
+    private final CarboyReach.Look fireLook = new CarboyReach.Look();
     private boolean dirty;
 
     public ChemVatBlockEntity(BlockPos pos, BlockState state) {
@@ -131,7 +133,7 @@ public class ChemVatBlockEntity extends BlockEntity implements WorldlyContainer,
         }
         TemperingRecipe.Found found = TemperingRecipe.find(inputs(), false);
         boolean ready = found != null && acid >= found.recipe().acid() && shimmer >= found.recipe().shimmer() && fits(found.recipe());
-        if (found != null && !ready && fits(found.recipe()) && CarboyReach.due(level, worldPosition)) {
+        if (found != null && !ready && fits(found.recipe()) && bathLook.due(level, worldPosition)) {
             drawBath(level, found.recipe());
         }
         if (ready && fuelTicks <= 0) {
@@ -176,8 +178,8 @@ public class ChemVatBlockEntity extends BlockEntity implements WorldlyContainer,
         if (isFuel(brew)) {
             fuelTicks = brew.burnTicks();
             vials.shrink(1);
-        } else if (burning || CarboyReach.due(level, worldPosition)) {
-            Brew drawn = CarboyReach.draw(level, heart(), Vec3.atCenterOf(heart()), ChemVatBlockEntity::isFuel, Comparator.comparingInt(Brew::burnTicks));
+        } else if (burning || fireLook.due(level, worldPosition)) {
+            Brew drawn = fireLook.draw(level, heart(), Vec3.atCenterOf(heart()), CarboyReach.burns(ChemVatBlockEntity::isFuel), Comparator.comparingInt(Brew::burnTicks));
             if (drawn != null) {
                 fuelTicks = drawn.burnTicks();
             }
@@ -187,11 +189,11 @@ public class ChemVatBlockEntity extends BlockEntity implements WorldlyContainer,
     /** A bath too thin for the metal in the slots takes a dose of what it lacks from the carboys around. */
     private void drawBath(ServerLevel level, TemperingRecipe recipe) {
         Vec3 bath = Vec3.atCenterOf(heart());
-        if (acid < recipe.acid() && CarboyReach.draw(level, heart(), bath, brew -> brew == Brew.ACID) != null) {
+        if (acid < recipe.acid() && bathLook.draw(level, heart(), bath, brew -> brew == Brew.ACID) != null) {
             pour(Brew.ACID);
             dirty = true;
         }
-        if (shimmer < recipe.shimmer() && CarboyReach.draw(level, heart(), bath, brew -> brew == Brew.REFINED_SHIMMER) != null) {
+        if (shimmer < recipe.shimmer() && bathLook.draw(level, heart(), bath, brew -> brew == Brew.REFINED_SHIMMER) != null) {
             pour(Brew.REFINED_SHIMMER);
             dirty = true;
         }

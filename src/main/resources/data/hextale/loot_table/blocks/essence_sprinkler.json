@@ -10,15 +10,13 @@
         {
           "type": "minecraft:item",
           "name": "hextale:essence_sprinkler",
-          "functions": [
-            {
-              "function": "minecraft:copy_components",
-              "include": [
-                "hextale:sprinkler_runes"
-              ],
-              "source": "block_entity"
-            }
-          ]
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "include": [
+              "hextale:sprinkler_runes"
+            ],
+            "source": "block_entity"
+          }
         }
       ]
     }

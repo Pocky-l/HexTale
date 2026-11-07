@@ -2,10 +2,12 @@ package com.pockyl.hextale.block;
 
 import com.pockyl.hextale.chem.Brew;
 import com.pockyl.hextale.chem.CarboyContents;
+import com.pockyl.hextale.chem.CarboyReach;
 import com.pockyl.hextale.chem.ChemVialItem;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModParticles;
+import com.pockyl.hextale.transport.ItemIntake;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -28,13 +30,18 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+
+import java.util.List;
+import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 
 /**
- * A Chem Carboy's brew ({@link CarboyContents}). Hoppers pour vials in through one slot that empties at once; the crucible
- * beside it pours its brew straight in; devices draw doses ({@code CarboyReach}). The brew goes with the carboy when it
- * is broken (item component {@code hextale:chem_carboy}). A creative carboy never runs down and takes nothing in.
+ * A Chem Carboy's brew ({@link CarboyContents}). Hoppers pour vials in through one slot that empties at once, pylons and
+ * other mods' pipes through {@link #intake()}; the crucible beside it pours its brew straight in; devices draw doses
+ * ({@code CarboyReach}). The brew goes with the carboy when it is broken (item component {@code hextale:chem_carboy}). A
+ * creative carboy never runs down and takes nothing in.
  */
 public class ChemCarboyBlockEntity extends BlockEntity implements WorldlyContainer {
     private static final int[] SLOTS = {0};
@@ -44,6 +51,26 @@ public class ChemCarboyBlockEntity extends BlockEntity implements WorldlyContain
     private static final double STOPPER_Y = 31.0 / 16;
 
     private CarboyContents contents = CarboyContents.EMPTY;
+    /** Never a wrapper of the slot below: it keeps nothing, so a pylon's trial could not be undone and would really pour. */
+    private final ItemIntake intake = new ItemIntake(new ItemIntake.Mouth() {
+        @Override
+        public int room(ItemResource resource, List<ItemIntake.Arrival> pending, @Nullable UUID deliverer) {
+            Brew brew = ChemVialItem.brew(resource.toStack(1));
+            if (brew == null || isCreative()) {
+                return 0;
+            }
+            CarboyContents promised = contents;
+            for (ItemIntake.Arrival arrival : pending) {
+                promised = promised.plus(ChemVialItem.brew(arrival.resource().toStack(1)), arrival.count());
+            }
+            return promised.room(brew);
+        }
+
+        @Override
+        public void arrive(ItemStack stack, @Nullable UUID deliverer) {
+            setItem(0, stack);
+        }
+    });
 
     public ChemCarboyBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CHEM_CARBOY.get(), pos, state);
@@ -60,9 +87,24 @@ public class ChemCarboyBlockEntity extends BlockEntity implements WorldlyContain
         return contents;
     }
 
+    /** Vials in for whatever moves items, the bottles lost as with a hopper; nothing comes out. */
+    public ItemIntake intake() {
+        return intake;
+    }
+
     public void setContents(CarboyContents contents) {
+        boolean filled = this.contents.isEmpty() && !contents.isEmpty();
         this.contents = contents.isEmpty() ? CarboyContents.EMPTY : contents;
+        if (filled && level != null) {
+            CarboyReach.filled(level);
+        }
         sync();
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        CarboyReach.filled(level);
     }
 
     public boolean isCreative() {

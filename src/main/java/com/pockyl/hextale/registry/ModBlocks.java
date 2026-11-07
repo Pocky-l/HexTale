@@ -479,6 +479,11 @@ public final class ModBlocks {
             com.pockyl.hextale.block.ChemTankBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F, 6.0F).sound(SoundType.COPPER).noOcclusion()
                     .requiresCorrectToolForDrops());
+    /** The Chem Jet Tank set down: the tank with its two nozzles, filled and pumped like the plain one. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ChemTankBlock> CHEM_JET_TANK = BLOCKS.registerBlock("chem_jet_tank",
+            com.pockyl.hextale.block.ChemTankBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F, 6.0F).sound(SoundType.COPPER).noOcclusion()
+                    .requiresCorrectToolForDrops());
     /** The Chem Carboy: a two-block flask holding one brew for the devices around it. */
     public static final DeferredBlock<com.pockyl.hextale.block.ChemCarboyBlock> CHEM_CARBOY = BLOCKS.registerBlock("chem_carboy",
             com.pockyl.hextale.block.ChemCarboyBlock::new,
@@ -678,6 +683,21 @@ public final class ModBlocks {
             ModBlocks::nullstoneProperties);
     public static final DeferredBlock<Block> NULLSTONE_BRICKS = BLOCKS.registerBlock("nullstone_bricks", Block::new,
             () -> nullstoneProperties().sound(SoundType.DEEPSLATE_BRICKS));
+    /** Nine nested rings round a gem: a store of items that outlives its block, reached from anywhere by terminals. */
+    public static final DeferredBlock<com.pockyl.hextale.block.HexVaultBlock> HEX_VAULT = BLOCKS.registerBlock("hex_vault",
+            com.pockyl.hextale.block.HexVaultBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(4.0F, 1200.0F).sound(SoundType.METAL).noOcclusion()
+                    .lightLevel(state -> 7));
+    /** On the platform of a Hex Vault's gate, or against it, each gives the vault more room. */
+    public static final DeferredBlock<com.pockyl.hextale.block.StorageCubeBlock> STORAGE_CUBE = BLOCKS.registerBlock("storage_cube",
+            com.pockyl.hextale.block.StorageCubeBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(3.0F, 6.0F).sound(SoundType.METAL).noOcclusion()
+                    .requiresCorrectToolForDrops().lightLevel(state -> state.getValue(com.pockyl.hextale.block.StorageCubeBlock.ACTIVE) ? 7 : 0));
+    /** A screen tied to a Hex Vault by a link crystal. */
+    public static final DeferredBlock<com.pockyl.hextale.block.HexTerminalBlock> HEX_TERMINAL = BLOCKS.registerBlock("hex_terminal",
+            com.pockyl.hextale.block.HexTerminalBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(2.5F, 6.0F).sound(SoundType.METAL).noOcclusion()
+                    .requiresCorrectToolForDrops().lightLevel(state -> state.getValue(com.pockyl.hextale.block.HexTerminalBlock.LINKED) ? 5 : 0));
     /** A brass cage around a crystal core that keeps hextech charge and feeds the workbenches around it. */
     public static final DeferredBlock<com.pockyl.hextale.block.CrystalBatteryBlock> CRYSTAL_BATTERY = BLOCKS.registerBlock("crystal_battery",
             com.pockyl.hextale.block.CrystalBatteryBlock::new,
@@ -697,6 +717,20 @@ public final class ModBlocks {
     private static BlockBehaviour.Properties magicStoneProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.SAND).instrument(NoteBlockInstrument.BASEDRUM)
                 .requiresCorrectToolForDrops().strength(2.0F, 6.0F);
+    }
+
+    // The Hex Vault's cream stone with gold and blue set in it: floors and walls for the room round it.
+    public static final DeferredBlock<Block> WHITE_GOLD_TILES = BLOCKS.registerBlock("white_gold_tiles", Block::new, ModBlocks::whiteGoldProperties);
+    public static final DeferredBlock<StairBlock> WHITE_GOLD_TILES_STAIRS = BLOCKS.registerBlock("white_gold_tiles_stairs",
+            properties -> new StairBlock(WHITE_GOLD_TILES.get().defaultBlockState(), properties), () -> whiteGoldProperties());
+    public static final DeferredBlock<SlabBlock> WHITE_GOLD_TILES_SLAB = BLOCKS.registerBlock("white_gold_tiles_slab", SlabBlock::new,
+            () -> whiteGoldProperties());
+    public static final DeferredBlock<Block> WHITE_GOLD_INLAY = BLOCKS.registerBlock("white_gold_inlay", Block::new, ModBlocks::whiteGoldProperties);
+    public static final DeferredBlock<RotatedPillarBlock> WHITE_GOLD_PILLAR = BLOCKS.registerBlock("white_gold_pillar", RotatedPillarBlock::new,
+            ModBlocks::whiteGoldProperties);
+
+    private static BlockBehaviour.Properties whiteGoldProperties() {
+        return magicStoneProperties().mapColor(MapColor.QUARTZ).sound(SoundType.POLISHED_TUFF);
     }
 
     // The Void's blight: ground it has touched, its growth, and bricks cut from its rock.

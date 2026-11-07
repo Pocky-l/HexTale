@@ -120,6 +120,8 @@ public final class Thinning {
     public static final float ORB_BURST = 12;
     public static final float RITUAL_COLLAPSE = 60;
     public static final float LAB_BURST = 15;
+    /** A dose of the Shimmer Injector. */
+    public static final float DOSED = 3;
     public static final float PARCHMENT_BURN = 5;
 
     /**
@@ -158,7 +160,7 @@ public final class Thinning {
     /** What wore a chunk thin, for {@code /hextale void sources}. */
     public enum Source {
         BOILED, SEPARATED, BREWED, SPENT, DISINTEGRATED, STILLED, POURED, MIASMA, DUST_CHARGE, ORB_BURST, RITUAL_COLLAPSE,
-        LAB_BURST, PARCHMENT_BURN, BREACH, FUMES;
+        LAB_BURST, PARCHMENT_BURN, BREACH, FUMES, DOSED;
 
         public String key() {
             return "thinning.hextale.source." + name().toLowerCase(java.util.Locale.ROOT);

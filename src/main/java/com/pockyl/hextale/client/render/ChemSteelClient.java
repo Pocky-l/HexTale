@@ -40,7 +40,7 @@ public final class ChemSteelClient {
     public enum Piece {
         HELMET("chem_steel_helmet", ChemSteelHelmetLayer::createLayer, -3.5F, 1.0F, List.of(ModItems.CHEM_STEEL_HELMET)),
         CHESTPLATE("chem_steel_chestplate", ChemSteelChestplateLayer::createLayer, 6F, 0.75F,
-                List.of(ModItems.CHEM_STEEL_CHESTPLATE, ModItems.CHEM_STEEL_TANK_CHESTPLATE)),
+                List.of(ModItems.CHEM_STEEL_CHESTPLATE, ModItems.CHEM_STEEL_TANK_CHESTPLATE, ModItems.CHEM_JET_TANK_CHESTPLATE)),
         LEGGINGS("chem_steel_leggings", ChemSteelLeggingsLayer::createLayer, 16.5F, 0.9F, List.of(ModItems.CHEM_STEEL_LEGGINGS)),
         BOOTS("chem_steel_boots", ChemSteelBootsLayer::createLayer, 20.5F, 1.1F, List.of(ModItems.CHEM_STEEL_BOOTS));
 

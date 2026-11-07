@@ -532,6 +532,42 @@
       },
       "tier": 1
     },
+    "hextale:white_gold_tiles": {
+      "essences": {
+        "crystal": 2,
+        "light": 1
+      },
+      "tier": 1
+    },
+    "hextale:white_gold_tiles_stairs": {
+      "essences": {
+        "crystal": 2,
+        "light": 1
+      },
+      "tier": 1
+    },
+    "hextale:white_gold_tiles_slab": {
+      "essences": {
+        "crystal": 1,
+        "light": 1
+      },
+      "tier": 1
+    },
+    "hextale:white_gold_inlay": {
+      "essences": {
+        "crystal": 2,
+        "metal": 1,
+        "light": 1
+      },
+      "tier": 1
+    },
+    "hextale:white_gold_pillar": {
+      "essences": {
+        "crystal": 2,
+        "light": 1
+      },
+      "tier": 1
+    },
     "hextale:radiant_trim": {
       "essences": {
         "metal": 3,
@@ -2154,6 +2190,68 @@
       "essences": {
         "metal": 6,
         "water": 2
+      },
+      "tier": 3
+    },
+    "hextale:shimmer_injector": {
+      "essences": {
+        "metal": 1,
+        "life": 1
+      },
+      "tier": 3
+    },
+    "hextale:jet_nozzle": {
+      "essences": {
+        "metal": 2,
+        "air": 1
+      },
+      "tier": 3
+    },
+    "hextale:chem_jet_tank": {
+      "essences": {
+        "metal": 5,
+        "water": 2,
+        "air": 2
+      },
+      "tier": 3
+    },
+    "hextale:chem_jet_tank_chestplate": {
+      "essences": {
+        "metal": 8,
+        "water": 2,
+        "air": 2
+      },
+      "tier": 3
+    },
+    "hextale:hex_vault": {
+      "essences": {
+        "rift": 12,
+        "magic": 8,
+        "crystal": 6
+      },
+      "tier": 3
+    },
+    "hextale:storage_cube": {
+      "essences": {
+        "rift": 3,
+        "crystal": 3,
+        "metal": 2
+      },
+      "tier": 2
+    },
+    "hextale:hex_terminal": {
+      "essences": {
+        "rift": 3,
+        "crystal": 2,
+        "spark": 2
+      },
+      "tier": 2
+    },
+    "hextale:pocket_terminal": {
+      "essences": {
+        "rift": 4,
+        "crystal": 2,
+        "spark": 2
       },
       "tier": 3
     }

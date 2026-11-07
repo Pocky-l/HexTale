@@ -207,6 +207,81 @@ public final class ZiplineGameTests {
                 .thenSucceed();
     }
 
+    /** Hangs the rider on at {@code t} already moving along the line at {@code speed} blocks a tick. */
+    private static void hangMoving(GameTestHelper helper, ServerPlayer rider, BlockPos[] ends, double t, double speed) {
+        Zipline.Line line = line(helper, ends);
+        Vec3 at = line.point(t);
+        rider.teleportTo(at.x, at.y - Zipline.HANG, at.z);
+        rider.setKnownMovement(line.tangent(t).normalize().scale(speed));
+        helper.assertTrue(ZiplineTrolley.mount(helper.getLevel(), rider, ends[0], ends[1], t), "the rider hangs on");
+    }
+
+    @HexTest(padding = 15, maxTicks = 120)
+    public static void mountingKeepsThePlayersSpeedAlongTheLine(GameTestHelper helper) {
+        BlockPos[] ends = downhillLine(helper);
+        ServerPlayer rider = VoidLifeGameTests.survivor(helper);
+        helper.startSequence()
+                .thenWaitUntil(() -> helper.assertTrue(line(helper, ends) != null, "the claw bites"))
+                .thenExecute(() -> {
+                    hangMoving(helper, rider, ends, 0.3, 0.5);
+                    helper.assertTrue(rider.getVehicle() instanceof ZiplineTrolley trolley && Math.abs(trolley.speed() - 0.5) < 0.001,
+                            "a running jump onto the line keeps its speed");
+                })
+                .thenSucceed();
+    }
+
+    @HexTest(padding = 15, maxTicks = 240)
+    public static void aLastEndSlowsTheRideAndTheRiderGoesOn(GameTestHelper helper) {
+        BlockPos[] ends = downhillLine(helper);
+        ServerPlayer rider = VoidLifeGameTests.survivor(helper);
+        double[] peak = {0};
+        double[] last = {0};
+        helper.startSequence()
+                .thenWaitUntil(() -> helper.assertTrue(line(helper, ends) != null, "the claw bites"))
+                .thenExecute(() -> hang(helper, rider, ends, 0.15))
+                .thenWaitUntil(() -> {
+                    if (rider.getVehicle() instanceof ZiplineTrolley trolley) {
+                        last[0] = Math.abs(trolley.speed());
+                        peak[0] = Math.max(peak[0], last[0]);
+                    }
+                    helper.assertTrue(!rider.isPassenger(), "still riding");
+                })
+                .thenExecute(() -> {
+                    helper.assertTrue(peak[0] > 0.6, "the ride picked up speed: " + peak[0]);
+                    helper.assertTrue(last[0] < 0.35 && last[0] > 0.1, "it slowed for the end, and not to a dead stop: " + last[0]);
+                })
+                .thenExecute(() -> {
+                    // A mock player has no connection to tick it, and the speed left is handed over in the player tick.
+                    rider.doTick();
+                    helper.assertTrue(rider.getDeltaMovement().length() > 0.03, "the rider goes on with what was left: " + rider.getDeltaMovement());
+                })
+                .thenSucceed();
+    }
+
+    @HexTest(padding = 15, maxTicks = 200)
+    public static void theBrakeSlowsSteadily(GameTestHelper helper) {
+        BlockPos[] ends = downhillLine(helper);
+        ServerPlayer rider = VoidLifeGameTests.survivor(helper);
+        double[] start = {0};
+        helper.startSequence()
+                .thenWaitUntil(() -> helper.assertTrue(line(helper, ends) != null, "the claw bites"))
+                .thenExecute(() -> {
+                    rider.setYRot(0);
+                    rider.setXRot(0);
+                    rider.setLastClientInput(new Input(false, true, false, false, false, false, false));
+                    hangMoving(helper, rider, ends, 0.1, Zipline.MAX_SPEED);
+                    start[0] = ((ZiplineTrolley) rider.getVehicle()).speed();
+                })
+                .thenExecuteAfter(8, () -> {
+                    double lost = start[0] - ((ZiplineTrolley) rider.getVehicle()).speed();
+                    // An exponential brake of old would have taken about 80% by now.
+                    helper.assertTrue(lost > 6 * Zipline.BRAKE && lost < 10 * Zipline.BRAKE, "a steady brake: lost " + lost + " in 8 ticks");
+                })
+                .thenExecuteAfter(16, () -> helper.assertTrue(Math.abs(((ZiplineTrolley) rider.getVehicle()).speed()) < 0.06,
+                        "stopped in about a second"))
+                .thenSucceed();
+    }
+
     @HexTest(padding = 15, maxTicks = 200)
     public static void aBlockInTheWayStopsTheRide(GameTestHelper helper) {
         BlockPos[] ends = downhillLine(helper);

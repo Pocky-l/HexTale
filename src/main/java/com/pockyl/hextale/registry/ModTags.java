@@ -9,6 +9,7 @@ import com.pockyl.hextale.Hextale;
 
 public final class ModTags {
     /** Blocks that lightning, led in by a lightning rod standing on them, shatters into unstable hextech. */
+    public static final TagKey<net.minecraft.world.damagesource.DamageType> VAULT_SURVIVES = TagKey.create(Registries.DAMAGE_TYPE, Hextale.id("vault_survives"));
     public static final TagKey<Block> AWAKENS_INTO_HEXTECH = TagKey.create(Registries.BLOCK, Hextale.id("awakens_into_hextech"));
     /** What a Dust Charge cracks: rock in the ground, ores, gravel - never builds. */
     public static final TagKey<Block> BLASTABLE = TagKey.create(Registries.BLOCK, Hextale.id("blastable"));

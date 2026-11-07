@@ -2,12 +2,17 @@ package com.pockyl.hextale.item;
 
 import com.pockyl.hextale.chem.ChemTank;
 import com.pockyl.hextale.chem.TankFuel;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.equipment.ArmorType;
+
+import java.util.function.Consumer;
 
 /**
  * The chem-steel chestplate with a built-in tank: armour and tank in one piece, so the Curios back slot (or nothing)
@@ -22,6 +27,12 @@ public class ChemTankChestplateItem extends ChemArmourItem {
     @Override
     protected TankFuel shown(ItemStack stack) {
         return ChemTank.contents(stack);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(stack, context, display, tooltip, flag);
+        ChemTankItem.jetLines(stack, tooltip);
     }
 
     @Override

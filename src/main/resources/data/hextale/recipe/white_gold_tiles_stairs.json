@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "#  ",
+    "## ",
+    "###"
+  ],
+  "key": {
+    "#": "hextale:white_gold_tiles"
+  },
+  "result": {
+    "id": "hextale:white_gold_tiles_stairs",
+    "count": 4
+  }
+}

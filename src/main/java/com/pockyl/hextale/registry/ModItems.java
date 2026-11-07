@@ -115,6 +115,16 @@ public final class ModItems {
                     .useBlockDescriptionPrefix()
                     .component(DataComponents.EQUIPPABLE, Equippable.builder(EquipmentSlot.CHEST)
                             .setEquipSound(SoundEvents.ARMOR_EQUIP_LEATHER).setDamageOnHurt(false).build())));
+    /** The Chem Tank with two Jet Nozzles: all the tank does, and it flies its wearer. */
+    public static final DeferredItem<com.pockyl.hextale.item.ChemTankItem> CHEM_JET_TANK = ITEMS.registerItem("chem_jet_tank",
+            properties -> new com.pockyl.hextale.item.ChemTankItem(ModBlocks.CHEM_JET_TANK.get(), properties.stacksTo(1).rarity(Rarity.EPIC)
+                    .useBlockDescriptionPrefix()
+                    .component(DataComponents.EQUIPPABLE, Equippable.builder(EquipmentSlot.CHEST)
+                            .setEquipSound(SoundEvents.ARMOR_EQUIP_LEATHER).setDamageOnHurt(false).build())));
+    /** A rocket bell of chem-steel and copper: two of them make a tank a Chem Jet Tank. */
+    public static final DeferredItem<Item> JET_NOZZLE = ITEMS.registerSimpleItem("jet_nozzle");
+    public static final DeferredItem<com.pockyl.hextale.item.ShimmerInjectorItem> SHIMMER_INJECTOR = ITEMS.registerItem("shimmer_injector",
+            properties -> new com.pockyl.hextale.item.ShimmerInjectorItem(properties.stacksTo(1).rarity(Rarity.RARE)));
     public static final DeferredItem<com.pockyl.hextale.item.ChemCarboyItem> CHEM_CARBOY = ITEMS.registerItem("chem_carboy",
             properties -> new com.pockyl.hextale.item.ChemCarboyItem(ModBlocks.CHEM_CARBOY.get(), properties.stacksTo(16).useBlockDescriptionPrefix()));
     public static final DeferredItem<BlockItem> CREATIVE_CHEM_CARBOY = ITEMS.registerSimpleBlockItem(ModBlocks.CREATIVE_CHEM_CARBOY);
@@ -243,6 +253,11 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> HEXSTEEL_PLATING = ITEMS.registerSimpleBlockItem(ModBlocks.HEXSTEEL_PLATING);
     public static final DeferredItem<BlockItem> RADIANT_ALLOY_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.RADIANT_ALLOY_BLOCK);
     public static final DeferredItem<BlockItem> RADIANT_TRIM = ITEMS.registerSimpleBlockItem(ModBlocks.RADIANT_TRIM);
+    public static final DeferredItem<BlockItem> WHITE_GOLD_TILES = ITEMS.registerSimpleBlockItem(ModBlocks.WHITE_GOLD_TILES);
+    public static final DeferredItem<BlockItem> WHITE_GOLD_TILES_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.WHITE_GOLD_TILES_STAIRS);
+    public static final DeferredItem<BlockItem> WHITE_GOLD_TILES_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.WHITE_GOLD_TILES_SLAB);
+    public static final DeferredItem<BlockItem> WHITE_GOLD_INLAY = ITEMS.registerSimpleBlockItem(ModBlocks.WHITE_GOLD_INLAY);
+    public static final DeferredItem<BlockItem> WHITE_GOLD_PILLAR = ITEMS.registerSimpleBlockItem(ModBlocks.WHITE_GOLD_PILLAR);
     public static final DeferredItem<BlockItem> RIFTMETAL_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.RIFTMETAL_BLOCK, properties -> properties.fireResistant());
     public static final DeferredItem<BlockItem> VOID_CARAPACE_TILES = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_CARAPACE_TILES);
     public static final DeferredItem<Item> RAW_ZINC = ITEMS.registerSimpleItem("raw_zinc");
@@ -373,6 +388,15 @@ public final class ModItems {
     public static final DeferredItem<com.pockyl.hextale.item.RiftLinkCrystalItem> RIFT_LINK_CRYSTAL = ITEMS.registerItem("rift_link_crystal",
             properties -> new com.pockyl.hextale.item.RiftLinkCrystalItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)));
     public static final DeferredItem<BlockItem> DISINTEGRATOR = ITEMS.registerSimpleBlockItem(ModBlocks.DISINTEGRATOR);
+    /** Everything a vault held waits for this one item, so on the ground fire, blasts and thorns leave it alone. */
+    public static final DeferredItem<com.pockyl.hextale.item.HexVaultItem> HEX_VAULT = ITEMS.registerItem("hex_vault",
+            properties -> new com.pockyl.hextale.item.HexVaultItem(ModBlocks.HEX_VAULT.get(), properties.useBlockDescriptionPrefix().stacksTo(1).rarity(Rarity.EPIC)
+                    .delayedComponent(net.minecraft.core.component.DataComponents.DAMAGE_RESISTANT, context -> new net.minecraft.world.item.component.DamageResistant(
+                            context.getOrThrow(com.pockyl.hextale.registry.ModTags.VAULT_SURVIVES)))));
+    public static final DeferredItem<BlockItem> STORAGE_CUBE = ITEMS.registerSimpleBlockItem(ModBlocks.STORAGE_CUBE, properties -> properties.rarity(Rarity.RARE));
+    public static final DeferredItem<BlockItem> HEX_TERMINAL = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_TERMINAL, properties -> properties.rarity(Rarity.RARE));
+    public static final DeferredItem<com.pockyl.hextale.item.PocketTerminalItem> POCKET_TERMINAL = ITEMS.registerItem("pocket_terminal",
+            properties -> new com.pockyl.hextale.item.PocketTerminalItem(properties.stacksTo(1).rarity(Rarity.RARE)));
     public static final DeferredItem<BlockItem> WORLD_ANCHOR = ITEMS.registerSimpleBlockItem(ModBlocks.WORLD_ANCHOR,
             properties -> properties.rarity(Rarity.RARE));
     public static final DeferredItem<com.pockyl.hextale.item.FloatingStoneItem> FLOATING_STONE = ITEMS.registerItem("floating_stone",
@@ -517,6 +541,10 @@ public final class ModItems {
     /** The chem-steel chestplate with a built-in tank: armour and fuel tank in one piece. */
     public static final DeferredItem<com.pockyl.hextale.item.ChemTankChestplateItem> CHEM_STEEL_TANK_CHESTPLATE = ITEMS.registerItem(
             "chem_steel_tank_chestplate", properties -> new com.pockyl.hextale.item.ChemTankChestplateItem(
+                    chemTool(properties.humanoidArmor(CHEM_STEEL_ARMOR, ArmorType.CHESTPLATE))));
+    /** The tank chestplate with Jet Nozzles on its tank. */
+    public static final DeferredItem<com.pockyl.hextale.item.ChemTankChestplateItem> CHEM_JET_TANK_CHESTPLATE = ITEMS.registerItem(
+            "chem_jet_tank_chestplate", properties -> new com.pockyl.hextale.item.ChemTankChestplateItem(
                     chemTool(properties.humanoidArmor(CHEM_STEEL_ARMOR, ArmorType.CHESTPLATE))));
     public static final DeferredItem<com.pockyl.hextale.item.ChemArmourItem> CHEM_STEEL_BOOTS = ITEMS.registerItem("chem_steel_boots",
             properties -> new com.pockyl.hextale.item.ChemArmourItem(ArmorType.BOOTS, chemTool(properties.humanoidArmor(CHEM_STEEL_ARMOR, ArmorType.BOOTS))));

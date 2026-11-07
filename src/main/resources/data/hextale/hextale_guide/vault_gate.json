@@ -1,0 +1,20 @@
+{
+  "region": "circle",
+  "stage": "late",
+  "icon": "hextale:hex_vault",
+  "parents": [
+    "hex_vault"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "vault_formed"
+  },
+  "display": {
+    "kind": "multiblock",
+    "result": "hex_vault"
+  },
+  "pos": [
+    1520,
+    -40
+  ]
+}

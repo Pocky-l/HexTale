@@ -58,6 +58,7 @@ public final class ResearchTopics {
             ModItems.HEXSTEEL_HELMET, ModItems.HEXSTEEL_CHESTPLATE, ModItems.HEXSTEEL_LEGGINGS, ModItems.HEXSTEEL_BOOTS);
     public static final ResearchTopic MASTER_DISC = add("master_cutting_disc", 2, Essence.SPARK, Essence.LIGHT, ModItems.MASTER_CUTTING_DISC);
     public static final ResearchTopic HEXTECH_LAMP = add("hextech_lamp", 2, Essence.LIGHT, Essence.FIRE, ModItems.HEXTECH_LAMP);
+    /** The block is retired, no step leads here any more; the id stays for modpacks and the players who researched it. */
     public static final ResearchTopic CRYSTAL_BATTERY = add("crystal_battery", 2, Essence.SPARK, Essence.METAL, ModItems.CRYSTAL_BATTERY);
     public static final ResearchTopic CHEM_BURNER = lab("chem_burner", 1, Essence.FIRE, Essence.AIR, ModItems.CHEM_BURNER);
     public static final ResearchTopic DISINTEGRATOR = lab("disintegrator", 2, Essence.FIRE, Essence.SHADOW, ModItems.DISINTEGRATOR);
@@ -95,6 +96,11 @@ public final class ResearchTopics {
     /** The chestplate with a built-in tank: its own research after the armour and the tank (owner, 2026-11-02). */
     public static final ResearchTopic TANK_CHESTPLATE = lab("tank_chestplate", 3, Essence.WATER, Essence.EARTH,
             ModItems.CHEM_STEEL_TANK_CHESTPLATE);
+    /** The tank learns to fly: one research for the nozzle and both jet tanks. */
+    public static final ResearchTopic CHEM_JETS = named("chem_jets", 3, Essence.AIR, Essence.FIRE, ModItems.JET_NOZZLE, ModItems.CHEM_JET_TANK,
+            ModItems.CHEM_JET_TANK_CHESTPLATE);
+    /** Refined shimmer goes into a companion's blood. */
+    public static final ResearchTopic SHIMMER_MUTATION = named("shimmer_mutation", 3, Essence.LIFE, Essence.SHADOW, ModItems.SHIMMER_INJECTOR);
     public static final ResearchTopic PINK_BRAZIER = lab("pink_brazier", 2, Essence.FIRE, Essence.SPARK, ModItems.PINK_BRAZIER);
     public static final ResearchTopic CHEM_PLANTER = lab("chem_planter", 1, Essence.EARTH, Essence.LIFE, ModItems.CHEM_PLANTER);
     public static final ResearchTopic ESSENCE_SPRINKLER = lab("essence_sprinkler", 2, Essence.WATER, Essence.LIFE, ModItems.ESSENCE_SPRINKLER);
@@ -151,6 +157,9 @@ public final class ResearchTopics {
     public static final ResearchTopic SIPHON_PYLON = add("siphon_pylon", 3, Essence.WATER, Essence.AIR, ModItems.SIPHON_PYLON);
     public static final ResearchTopic SORTING_MATRIX = add("sorting_matrix", 3, Essence.LIGHT, Essence.METAL, ModItems.SORTING_MATRIX);
     public static final ResearchTopic HEXCORE = add("hexcore", 3, Essence.SPARK, Essence.LIGHT, ModItems.HEXCORE);
+    public static final ResearchTopic HEX_VAULT = add("hex_vault", 3, Essence.SHADOW, Essence.SPARK, ModItems.HEX_VAULT, ModItems.STORAGE_CUBE,
+            ModItems.HEX_TERMINAL, ModItems.POCKET_TERMINAL, ModItems.WHITE_GOLD_TILES, ModItems.WHITE_GOLD_TILES_STAIRS,
+            ModItems.WHITE_GOLD_TILES_SLAB, ModItems.WHITE_GOLD_INLAY, ModItems.WHITE_GOLD_PILLAR);
     public static final ResearchTopic HEXTECH_SKYPACK = add("hextech_skypack", 3, Essence.AIR, Essence.SPARK, ModItems.HEXTECH_SKYPACK);
     /** Level 2 metal (Thaumcraft order: the metal is researched before the tools made of it). */
     public static final ResearchTopic CHARGED_HEXSTEEL = add("charged_hexsteel", 2, Essence.SPARK, Essence.METAL,

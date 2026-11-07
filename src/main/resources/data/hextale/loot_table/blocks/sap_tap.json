@@ -10,15 +10,13 @@
         {
           "type": "minecraft:item",
           "name": "hextale:sap_tap",
-          "functions": [
-            {
-              "function": "minecraft:copy_components",
-              "include": [
-                "hextale:tap_runes"
-              ],
-              "source": "block_entity"
-            }
-          ]
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "include": [
+              "hextale:tap_runes"
+            ],
+            "source": "block_entity"
+          }
         }
       ]
     }

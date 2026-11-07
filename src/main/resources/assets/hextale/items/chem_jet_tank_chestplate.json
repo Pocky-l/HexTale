@@ -1,0 +1,11 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "hextale:item/chem_jet_tank_chestplate",
+    "model": {
+      "type": "hextale:chem_steel",
+      "piece": "chestplate",
+      "jets": true
+    }
+  }
+}

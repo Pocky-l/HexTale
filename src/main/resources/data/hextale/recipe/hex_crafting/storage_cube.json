@@ -1,0 +1,17 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "GCG",
+    "CEC",
+    "GCG"
+  ],
+  "key": {
+    "G": "#c:ingots/gold",
+    "C": "hextale:hextech_crystal",
+    "E": "minecraft:ender_pearl"
+  },
+  "result": {
+    "id": "hextale:storage_cube"
+  },
+  "charge": 4
+}

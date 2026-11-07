@@ -39,6 +39,10 @@ public enum RuneHolder {
     SPIRE(() -> ModDataComponents.SPIRE_RUNES.get(), SpireRune.SLOTS, SpireRune.values()),
     /** The Hex Furnace. */
     FURNACE(() -> ModDataComponents.FURNACE_RUNES.get(), FurnaceRune.SLOTS, FurnaceRune.values()),
+    /** The Awakened Workbench. */
+    WORKBENCH(() -> ModDataComponents.WORKBENCH_RUNES.get(), WorkbenchRune.SLOTS, WorkbenchRune.values()),
+    /** The Hex Vault. */
+    VAULT(() -> ModDataComponents.VAULT_RUNES.get(), VaultRune.SLOTS, VaultRune.values()),
     /** The Hex Foundry, through its hatch. */
     FOUNDRY(() -> ModDataComponents.FOUNDRY_RUNES.get(), FoundryRune.SLOTS, FoundryRune.values()),
     /** The Chem Burner. */
@@ -79,7 +83,7 @@ public enum RuneHolder {
     WORLD_ANCHOR(() -> ModDataComponents.WORLD_ANCHOR_RUNES.get(), AnchorWorldRune.SLOTS, AnchorWorldRune.values()),
     /** The Disintegrator. */
     DISINTEGRATOR(() -> ModDataComponents.DISINTEGRATOR_RUNES.get(), DisintegratorRune.SLOTS, DisintegratorRune.values()),
-    /** The Crystal Battery. */
+    /** The Crystal Battery: retired, it keeps the runes of old worlds ({@link #retired()}). */
     BATTERY(() -> ModDataComponents.BATTERY_RUNES.get(), BatteryRune.SLOTS, BatteryRune.values()),
     /** The Hextech Purifier. */
     PURIFIER(() -> ModDataComponents.PURIFIER_RUNES.get(), PurifierRune.SLOTS, PurifierRune.values()),
@@ -134,6 +138,12 @@ public enum RuneHolder {
         }
         if (item == ModItems.HEX_FURNACE.get()) {
             return FURNACE;
+        }
+        if (item == ModItems.HEX_WORKBENCH.get()) {
+            return WORKBENCH;
+        }
+        if (item == ModItems.HEX_VAULT.get()) {
+            return VAULT;
         }
         if (item == ModItems.HEX_FOUNDRY.get()) {
             return FOUNDRY;
@@ -278,6 +288,11 @@ public enum RuneHolder {
         return laddered() ? RuneTier.slots(item) : slots;
     }
 
+    /** Whether it only lives on in old worlds: no recipe, and JEI and the book do not show its runes. */
+    public boolean retired() {
+        return this == BATTERY;
+    }
+
     /** Whether the holder's items climb the rune ladder: tools, weapons and clothes. */
     public boolean laddered() {
         return switch (this) {
@@ -383,6 +398,8 @@ public enum RuneHolder {
             case FUNNEL -> List.of(new ItemStack(ModItems.GREEDY_FUNNEL.get()));
             case SPIRE -> List.of(new ItemStack(ModItems.ARC_SPIRE.get()));
             case FURNACE -> List.of(new ItemStack(ModItems.HEX_FURNACE.get()));
+            case WORKBENCH -> List.of(new ItemStack(ModItems.HEX_WORKBENCH.get()));
+            case VAULT -> List.of(new ItemStack(ModItems.HEX_VAULT.get()));
             case FOUNDRY -> List.of(new ItemStack(ModItems.HEX_FOUNDRY.get()));
             case BURNER -> List.of(new ItemStack(ModItems.CHEM_BURNER.get()));
             case TANK -> List.of(new ItemStack(ModItems.AXOLOTL_TANK.get()));

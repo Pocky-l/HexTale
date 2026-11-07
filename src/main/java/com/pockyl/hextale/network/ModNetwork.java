@@ -7,7 +7,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class ModNetwork {
-    private static final String PROTOCOL_VERSION = "19";
+    private static final String PROTOCOL_VERSION = "22";
 
     private ModNetwork() {
     }
@@ -35,6 +35,7 @@ public final class ModNetwork {
         registrar.playToClient(EssenceFxPayload.TYPE, EssenceFxPayload.STREAM_CODEC);
         registrar.playToClient(RuneEffectPayload.TYPE, RuneEffectPayload.STREAM_CODEC);
         registrar.playToClient(WeaponFxPayload.TYPE, WeaponFxPayload.STREAM_CODEC);
+        registrar.playToClient(BiterBlastPayload.TYPE, BiterBlastPayload.STREAM_CODEC);
         registrar.playToClient(StrikeDashPayload.TYPE, StrikeDashPayload.STREAM_CODEC);
         registrar.playToServer(ShockwavePayload.TYPE, ShockwavePayload.STREAM_CODEC, ShockwavePayload::handle);
         registrar.playToClient(PylonLinkPayload.TYPE, PylonLinkPayload.STREAM_CODEC);
@@ -43,11 +44,15 @@ public final class ModNetwork {
         registrar.playToClient(VoidPullPayload.TYPE, VoidPullPayload.STREAM_CODEC);
         registrar.playToClient(ThinningPayload.TYPE, ThinningPayload.STREAM_CODEC);
         registrar.playToClient(BreachCinematicPayload.TYPE, BreachCinematicPayload.STREAM_CODEC);
+        registrar.playToClient(JetFlamePayload.TYPE, JetFlamePayload.STREAM_CODEC);
+        registrar.playToClient(VaultViewPayload.TYPE, VaultViewPayload.STREAM_CODEC);
+        registrar.playToServer(VaultActionPayload.TYPE, VaultActionPayload.STREAM_CODEC, VaultActionPayload::handle);
         registrar.playToServer(ChooseStickerPayload.TYPE, ChooseStickerPayload.STREAM_CODEC, ChooseStickerPayload::handle);
         registrar.playToServer(PylonCancelPayload.TYPE, PylonCancelPayload.STREAM_CODEC, PylonCancelPayload::handle);
         registrar.playToServer(GrappleRopePayload.TYPE, GrappleRopePayload.STREAM_CODEC, GrappleRopePayload::handle);
         registrar.playToServer(ChainRidePayload.TYPE, ChainRidePayload.STREAM_CODEC, ChainRidePayload::handle);
         registrar.playToServer(PneumaticJumpPayload.TYPE, PneumaticJumpPayload.STREAM_CODEC, PneumaticJumpPayload::handle);
+        registrar.playToServer(JetModePayload.TYPE, JetModePayload.STREAM_CODEC, JetModePayload::handle);
         registrar.playToServer(SteleRunePayload.TYPE, SteleRunePayload.STREAM_CODEC, SteleRunePayload::handle);
         registrar.playToServer(LapidaryStrokePayload.TYPE, LapidaryStrokePayload.STREAM_CODEC, LapidaryStrokePayload::handle);
         registrar.playToServer(LabActionPayload.TYPE, LabActionPayload.STREAM_CODEC, LabActionPayload::handle);

@@ -69,7 +69,7 @@ public final class ModBlockEntities {
                     ModBlocks.VIAL_RACK.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChemTankBlockEntity>> CHEM_TANK =
             BLOCK_ENTITIES.register("chem_tank", () -> new BlockEntityType<>(com.pockyl.hextale.block.ChemTankBlockEntity::new,
-                    ModBlocks.CHEM_TANK.get()));
+                    ModBlocks.CHEM_TANK.get(), ModBlocks.CHEM_JET_TANK.get()));
     /** The lines of a Chain Post (its base half) or a Chain Claw. */
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChainAnchorBlockEntity>> CHAIN_ANCHOR =
             BLOCK_ENTITIES.register("chain_anchor", () -> new BlockEntityType<>(com.pockyl.hextale.block.ChainAnchorBlockEntity::new,
@@ -164,6 +164,10 @@ public final class ModBlockEntities {
             BLOCK_ENTITIES.register("pedestal", () -> new BlockEntityType<>(PedestalBlockEntity::new, ModBlocks.PEDESTAL.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RuneCircleBlockEntity>> RUNE_CIRCLE =
             BLOCK_ENTITIES.register("rune_circle", () -> new BlockEntityType<>(RuneCircleBlockEntity::new, ModBlocks.RUNE_CIRCLE.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexVaultBlockEntity>> HEX_VAULT =
+            BLOCK_ENTITIES.register("hex_vault", () -> new BlockEntityType<>(com.pockyl.hextale.block.HexVaultBlockEntity::new, ModBlocks.HEX_VAULT.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexTerminalBlockEntity>> HEX_TERMINAL =
+            BLOCK_ENTITIES.register("hex_terminal", () -> new BlockEntityType<>(com.pockyl.hextale.block.HexTerminalBlockEntity::new, ModBlocks.HEX_TERMINAL.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HexcoreBlockEntity>> HEXCORE =
             BLOCK_ENTITIES.register("hexcore", () -> new BlockEntityType<>(HexcoreBlockEntity::new, ModBlocks.HEXCORE.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RuneSteleBlockEntity>> RUNE_STELE =

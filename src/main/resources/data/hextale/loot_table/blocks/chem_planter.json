@@ -10,15 +10,13 @@
         {
           "type": "minecraft:item",
           "name": "hextale:chem_planter",
-          "functions": [
-            {
-              "function": "minecraft:copy_components",
-              "include": [
-                "hextale:planter_runes"
-              ],
-              "source": "block_entity"
-            }
-          ]
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "include": [
+              "hextale:planter_runes"
+            ],
+            "source": "block_entity"
+          }
         }
       ]
     }

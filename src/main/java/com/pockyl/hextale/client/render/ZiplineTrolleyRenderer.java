@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3fc;
 
 import com.pockyl.hextale.entity.ZiplineTrolley;
 
@@ -34,8 +33,7 @@ public class ZiplineTrolleyRenderer extends EntityRenderer<ZiplineTrolley, Zipli
     @Override
     public void extractRenderState(ZiplineTrolley trolley, State state, float partialTick) {
         super.extractRenderState(trolley, state, partialTick);
-        Vector3fc dir = trolley.direction();
-        Vec3 d = new Vec3(dir.x(), dir.y(), dir.z());
+        Vec3 d = trolley.shownDirection(partialTick);
         state.direction = d.lengthSqr() < 1.0E-6 ? new Vec3(0, 0, -1) : d.normalize();
     }
 

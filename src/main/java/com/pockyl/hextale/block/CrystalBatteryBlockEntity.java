@@ -6,6 +6,7 @@ import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -15,11 +16,14 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
+import com.pockyl.hextale.item.RuneScrollItem;
+import com.pockyl.hextale.item.UnstableHextechItem;
 import com.pockyl.hextale.network.EssenceFxPayload;
 import com.pockyl.hextale.network.RuneFxPayload;
 import com.pockyl.hextale.network.WeaponFxPayload;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModDataComponents;
+import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.runework.BatteryRune;
@@ -31,11 +35,12 @@ import com.pockyl.hextale.transport.ItemIntake;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Crystal Battery's store: up to {@link #CAPACITY} charge (more with Cache), soaked from crystals given to it and
+ * The retired Crystal Battery's store: up to {@link #CAPACITY} charge (more with Cache), soaked from crystals given to it and
  * handed on every {@link #FEED_TICKS} ticks to the Hex Workbenches within {@link #REACH} blocks (further with Chain
- * Lightning), at most {@link #FEED} to each. A stream of motes shows where the charge goes. Charge and runes stay with
- * the block when it is picked up. With a Sunlight Cell it drinks a point of charge now and then while it stands under the
- * open sky by day in dry weather ({@link #sunlit}), drawn as a shaft of light with motes drifting down into it.
+ * Lightning), at most {@link #FEED} to each. A stream of motes shows where the charge goes. With a Sunlight Cell it drinks
+ * a point of charge now and then while the sun reaches it ({@link HexWorkbenchBlockEntity#sunlit}), drawn as a shaft of
+ * light with motes drifting down into it. Broken, it comes off the ground empty: its runes come back as Rune Scrolls and
+ * its charge as raw orbs, for a workbench to take over.
  */
 public class CrystalBatteryBlockEntity extends BlockEntity {
     public static final int CAPACITY = 600;
@@ -156,16 +161,6 @@ public class CrystalBatteryBlockEntity extends BlockEntity {
         return soaked;
     }
 
-    /** Takes up to {@code amount} charge out (the Hexcore and tests draw on it); returns what was taken. */
-    public int draw(int amount) {
-        int taken = Math.min(amount, charge);
-        if (taken > 0) {
-            charge -= taken;
-            changed();
-        }
-        return taken;
-    }
-
     public int signal() {
         return charge <= 0 ? 0 : 1 + Math.round(14.0F * charge / capacity());
     }
@@ -186,13 +181,6 @@ public class CrystalBatteryBlockEntity extends BlockEntity {
         }
     }
 
-    /** Whether the sun reaches the block: nothing over it up to the sky, day, no rain. */
-    public static boolean sunlit(Level level, BlockPos pos) {
-        return level.isBrightOutside() && !level.isRaining()
-                && level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ()) <= pos.getY() + 1
-                && level.canSeeSky(pos.above());
-    }
-
     /** Sunlight Cell: a point of charge every {@link BatteryRune#SUN_TICKS} while sunlit. */
     private void bask(ServerLevel level) {
         int sun = strength(BatteryRune.SUNLIGHT_CELL);
@@ -200,7 +188,8 @@ public class CrystalBatteryBlockEntity extends BlockEntity {
             return;
         }
         int every = HolderRune.at(BatteryRune.SUN_TICKS, sun);
-        if (level.getGameTime() % every != Math.floorMod(worldPosition.asLong(), every) || charge >= capacity() || !sunlit(level, worldPosition)) {
+        if (level.getGameTime() % every != Math.floorMod(worldPosition.asLong(), every) || charge >= capacity()
+                || !HexWorkbenchBlockEntity.sunlit(level, worldPosition)) {
             return;
         }
         charge++;
@@ -213,31 +202,6 @@ public class CrystalBatteryBlockEntity extends BlockEntity {
         }
     }
 
-    /**
-     * The workbenches within {@code reach} (two blocks up and down), nearest first: the block entities of the few chunks
-     * the reach touches, never every block of it (up to 3125 lookups every second, as {@code JarReach} does it).
-     */
-    private static java.util.List<HexWorkbenchBlockEntity> benchesNear(Level level, BlockPos pos, int reach) {
-        java.util.List<HexWorkbenchBlockEntity> benches = new java.util.ArrayList<>();
-        for (int cx = (pos.getX() - reach) >> 4; cx <= (pos.getX() + reach) >> 4; cx++) {
-            for (int cz = (pos.getZ() - reach) >> 4; cz <= (pos.getZ() + reach) >> 4; cz++) {
-                if (!level.hasChunk(cx, cz)) {
-                    continue;
-                }
-                for (net.minecraft.world.level.block.entity.BlockEntity entity : level.getChunk(cx, cz).getBlockEntities().values()) {
-                    BlockPos at = entity.getBlockPos();
-                    if (entity instanceof HexWorkbenchBlockEntity bench && !bench.isRemoved() && Math.abs(at.getX() - pos.getX()) <= reach
-                            && Math.abs(at.getY() - pos.getY()) <= 2 && Math.abs(at.getZ() - pos.getZ()) <= reach) {
-                        benches.add(bench);
-                    }
-                }
-            }
-        }
-        benches.sort(java.util.Comparator.<HexWorkbenchBlockEntity>comparingDouble(bench -> bench.getBlockPos().distSqr(pos))
-                .thenComparingLong(bench -> bench.getBlockPos().asLong()));
-        return benches;
-    }
-
     public static void serverTick(Level level, BlockPos pos, BlockState state, CrystalBatteryBlockEntity battery) {
         if (level instanceof ServerLevel server) {
             battery.bask(server);
@@ -247,7 +211,7 @@ public class CrystalBatteryBlockEntity extends BlockEntity {
             return;
         }
         int reach = battery.reach();
-        for (HexWorkbenchBlockEntity bench : benchesNear(level, pos, reach)) {
+        for (HexWorkbenchBlockEntity bench : HexWorkbenchBlockEntity.near(level, pos, reach)) {
             if (battery.charge <= 0) {
                 break;
             }
@@ -281,6 +245,28 @@ public class CrystalBatteryBlockEntity extends BlockEntity {
             }
         }
         battery.changed();
+    }
+
+    /** What the player put in never goes with the block: the runes come back as scrolls, the charge as raw orbs. */
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        if (level instanceof ServerLevel server) {
+            Vec3 at = Vec3.atCenterOf(pos);
+            runes.entries().forEach(entry -> drop(server, at, RuneScrollItem.of(entry.rune(), entry.stars(), ModItems.RUNE_SCROLL.get())));
+            int orbs = (charge + HexWorkbenchBlockEntity.UNSTABLE_CHARGE - 1) / HexWorkbenchBlockEntity.UNSTABLE_CHARGE;
+            for (int left = orbs; left > 0; left -= 64) {
+                drop(server, at, new ItemStack(ModItems.UNSTABLE_HEXTECH.get(), Math.min(64, left)));
+            }
+        }
+        super.preRemoveSideEffects(pos, state);
+    }
+
+    private static void drop(ServerLevel level, Vec3 at, ItemStack stack) {
+        ItemEntity item = new ItemEntity(level, at.x, at.y, at.z, stack);
+        item.setDefaultPickUpDelay();
+        // A battery on a tower: its orbs may fall once without bursting, like orbs fresh from the storm.
+        item.addTag(UnstableHextechItem.BORN_TAG);
+        level.addFreshEntity(item);
     }
 
     @Override

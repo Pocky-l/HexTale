@@ -30,9 +30,11 @@ import com.pockyl.hextale.registry.ModSounds;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Crystal Battery: a brass cage around a crystal core that keeps hextech charge for later. A crystal (or an orb, or a
- * gemstone) given to it soaks into charge; it feeds the Hex Workbenches around it, and its core glows brighter the fuller
- * it is ({@link #LEVEL} 0-4, also the comparator's signal). An empty hand reads its charge.
+ * The Crystal Battery, retired: no recipe, not in the creative tab, JEI or the guide; the Awakened Workbench took over its
+ * work. Those standing in old worlds go on working. A brass cage around a crystal core that keeps hextech charge for later:
+ * a crystal given to it soaks into charge; it feeds the workbenches around it, and its core glows brighter the fuller it
+ * is ({@link #LEVEL} 0-4, also the comparator's signal). An empty hand reads its charge. Broken, it gives back what is in
+ * it ({@link CrystalBatteryBlockEntity#preRemoveSideEffects}).
  */
 public class CrystalBatteryBlock extends BaseEntityBlock {
     public static final IntegerProperty LEVEL = IntegerProperty.create("level", 0, 4);

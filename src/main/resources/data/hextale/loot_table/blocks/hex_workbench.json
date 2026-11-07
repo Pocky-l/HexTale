@@ -8,7 +8,15 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "hextale:hex_workbench"
+          "name": "hextale:hex_workbench",
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "include": [
+              "hextale:workbench_runes",
+              "hextale:workbench_charge"
+            ],
+            "source": "block_entity"
+          }
         }
       ],
       "rolls": 1

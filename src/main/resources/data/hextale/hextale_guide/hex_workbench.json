@@ -21,7 +21,11 @@
       "hextale:hextech_dust",
       "minecraft:crafting_table"
     ],
-    "result": "hextale:hex_workbench"
+    "result": "hextale:hex_workbench",
+    "then": {
+      "kind": "runes",
+      "result": "workbench"
+    }
   },
   "station": true,
   "pos": [-99, -13]

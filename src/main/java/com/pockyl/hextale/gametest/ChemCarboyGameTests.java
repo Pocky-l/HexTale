@@ -7,6 +7,7 @@ import com.pockyl.hextale.block.ChemCarboyBlock;
 import com.pockyl.hextale.block.ChemCarboyBlockEntity;
 import com.pockyl.hextale.block.ChemStillBlockEntity;
 import com.pockyl.hextale.block.ChemTankBlockEntity;
+import com.pockyl.hextale.block.ChemVatBlockEntity;
 import com.pockyl.hextale.block.CrucibleBlockEntity;
 import com.pockyl.hextale.block.PinkBrazierBlock;
 import com.pockyl.hextale.block.PinkBrazierBlockEntity;
@@ -16,6 +17,7 @@ import com.pockyl.hextale.block.VialRackBlock;
 import com.pockyl.hextale.block.VialRackBlockEntity;
 import com.pockyl.hextale.chem.Brew;
 import com.pockyl.hextale.chem.CarboyContents;
+import com.pockyl.hextale.chem.CarboyReach;
 import com.pockyl.hextale.chem.ChemFuel;
 import com.pockyl.hextale.chem.ChemVialItem;
 import com.pockyl.hextale.essence.EssenceMix;
@@ -41,6 +43,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 /**
  * The Chem Carboy: one brew in two blocks, filled by hand, hopper and crucible, emptied at the tap, drawn from by the
@@ -76,6 +83,27 @@ public final class ChemCarboyGameTests {
         ServerPlayer player = MockPlayers.inLevel(helper);
         player.getAbilities().instabuild = false;
         return player;
+    }
+
+    /** Puts the stack in as another mod's pipe would; without {@code commit} it is a trial that is thrown away. */
+    static int put(ResourceHandler<ItemResource> handler, ItemStack stack, boolean commit) {
+        try (Transaction transaction = Transaction.openRoot()) {
+            int moved = ResourceHandlerUtil.insertStacking(handler, ItemResource.of(stack), stack.getCount(), transaction);
+            if (commit) {
+                transaction.commit();
+            }
+            return moved;
+        }
+    }
+
+    static int take(ResourceHandler<ItemResource> handler, ItemStack stack, boolean commit) {
+        try (Transaction transaction = Transaction.openRoot()) {
+            int moved = handler.extract(ItemResource.of(stack), stack.getCount(), transaction);
+            if (commit) {
+                transaction.commit();
+            }
+            return moved;
+        }
     }
 
     private static int count(ServerPlayer player, net.minecraft.world.item.Item item) {
@@ -204,6 +232,77 @@ public final class ChemCarboyGameTests {
             helper.assertTrue(burner.burnFull() == Brew.FUEL.burnTicks(), "on combustible mix");
             helper.assertTrue(weak.contents().doses() == 4, "one dose went");
             helper.assertTrue(near.contents().doses() == 5, "the refined shimmer was left alone");
+        });
+    }
+
+    /** Refined shimmer is the best fuel: fires never draw it by themselves, a hand fill still burns, the set-down tank still takes it. */
+    @HexTest(maxTicks = 200)
+    public static void heatDevicesLeaveRefinedShimmerInTheCarboy(GameTestHelper helper) {
+        BlockPos burnerAt = new BlockPos(1, 1, 1);
+        BlockPos brazierAt = new BlockPos(1, 1, 3);
+        BlockPos tankAt = new BlockPos(5, 1, 3);
+        helper.setBlock(burnerAt, ModBlocks.CHEM_BURNER.get());
+        helper.setBlock(burnerAt.above(), ModBlocks.CRUCIBLE.get());
+        helper.getBlockEntity(burnerAt.above(), CrucibleBlockEntity.class).fillWater(CrucibleBlockEntity.BUCKET, false);
+        helper.setBlock(brazierAt, ModBlocks.PINK_BRAZIER.get());
+        ChemCarboyBlockEntity refined = carboy(helper, new BlockPos(3, 1, 1), Brew.REFINED_SHIMMER, 200);
+        ChemBurnerBlockEntity burner = helper.getBlockEntity(burnerAt, ChemBurnerBlockEntity.class);
+        helper.assertFalse(CarboyReach.burns(ChemVatBlockEntity::isFuel).test(Brew.REFINED_SHIMMER), "the vat's fire leaves it too");
+        helper.assertTrue(CarboyReach.burns(ChemVatBlockEntity::isFuel).test(Brew.FUEL), "and takes its plain fuel");
+        helper.runAfterDelay(60, () -> {
+            helper.assertFalse(ChemBurnerBlock.isLit(helper.getBlockState(burnerAt)), "the burner stays out beside refined shimmer");
+            helper.assertFalse(helper.getBlockState(brazierAt).getValue(PinkBrazierBlock.LIT), "so does the brazier");
+            helper.assertTrue(refined.contents().doses() == 200, "nothing was drawn");
+            burner.setItem(0, ChemVialItem.of(Brew.REFINED_SHIMMER));
+            helper.setBlock(tankAt, ModBlocks.CHEM_TANK.get());
+        });
+        helper.runAfterDelay(120, () -> {
+            helper.assertTrue(ChemBurnerBlock.isLit(helper.getBlockState(burnerAt)), "a vial put in by hand burns");
+            helper.assertTrue(helper.getBlockEntity(tankAt, ChemTankBlockEntity.class).contents().fuel() == ChemFuel.REFINED_SHIMMER, "the tank still draws it");
+            helper.succeed();
+        });
+    }
+
+    /** A device with nothing to find looks less and less often, and the wait stops at a limit. */
+    @HexTest
+    public static void aLookBacksOffWhileNothingIsFound(GameTestHelper helper) {
+        CarboyReach.Look look = new CarboyReach.Look();
+        long last = -1;
+        long longest = 0;
+        int looks = 0;
+        for (long now = 0; now < 4000; now++) {
+            if (look.due(now, 0, Long.MIN_VALUE)) {
+                longest = last < 0 ? 0 : Math.max(longest, now - last);
+                last = now;
+                looks++;
+            }
+        }
+        helper.assertTrue(looks < 20, "4000 ticks took " + looks + " looks, not 200");
+        helper.assertTrue(longest == 320, "the wait stops at 16 seconds, not " + longest);
+        long filled = last + 1;
+        boolean woke = false;
+        for (long now = filled; now <= filled + 20; now++) {
+            woke |= look.due(now, 0, filled);
+        }
+        helper.assertTrue(woke, "a carboy with a new brew ends the wait within a second");
+        helper.succeed();
+    }
+
+    /** The same on real blocks: a burner that has waited long finds the brew of a carboy filled beside it at once. */
+    @HexTest(maxTicks = 300)
+    public static void aWaitingBurnerWakesWhenACarboyIsFilled(GameTestHelper helper) {
+        BlockPos burnerAt = new BlockPos(1, 1, 1);
+        helper.setBlock(burnerAt, ModBlocks.CHEM_BURNER.get());
+        helper.setBlock(burnerAt.above(), ModBlocks.CRUCIBLE.get());
+        helper.getBlockEntity(burnerAt.above(), CrucibleBlockEntity.class).fillWater(CrucibleBlockEntity.BUCKET, false);
+        ChemCarboyBlockEntity carboy = carboy(helper, burnerAt.east(2), Brew.FUEL, 0);
+        helper.runAfterDelay(170, () -> {
+            helper.assertFalse(ChemBurnerBlock.isLit(helper.getBlockState(burnerAt)), "nothing to burn yet");
+            helper.assertTrue(carboy.fill(Brew.FUEL, 5) == 5, "the carboy gets a brew");
+        });
+        helper.runAfterDelay(195, () -> {
+            helper.assertTrue(ChemBurnerBlock.isLit(helper.getBlockState(burnerAt)), "the burner found it within its second");
+            helper.succeed();
         });
     }
 
@@ -354,6 +453,57 @@ public final class ChemCarboyGameTests {
         helper.setBlock(AT.above(), Blocks.AIR);
         click(helper, player, AT.below(), Vec3.atCenterOf(helper.absolutePos(AT.below())).add(0, 0.5, 0), Direction.UP);
         helper.assertTrue(helper.getBlockState(AT).getBlock() instanceof ChemCarboyBlock, "with room it stands");
+        helper.succeed();
+    }
+
+    /** Other mods' pipes get what a hopper gets: vials in through both halves, nothing out, and a trial pours nothing. */
+    @HexTest
+    public static void pipesPourVialsInAndATrialPoursNothing(GameTestHelper helper) {
+        ChemCarboyBlockEntity carboy = carboy(helper, AT, Brew.ACID, 0);
+        var level = helper.getLevel();
+        ResourceHandler<ItemResource> lower = level.getCapability(Capabilities.Item.BLOCK, helper.absolutePos(AT), Direction.NORTH);
+        ResourceHandler<ItemResource> upper = level.getCapability(Capabilities.Item.BLOCK, helper.absolutePos(AT.above()), Direction.UP);
+        helper.assertTrue(lower != null && upper != null, "both halves have a handler");
+        helper.assertTrue(level.getCapability(Capabilities.Item.BLOCK, helper.absolutePos(AT), null) != null, "also without a side");
+
+        helper.assertTrue(put(lower, ChemVialItem.of(Brew.ACID, 5), false) == 5, "a trial says five fit");
+        helper.assertTrue(carboy.contents().isEmpty(), "and pours nothing");
+        helper.assertTrue(put(lower, ChemVialItem.of(Brew.ACID, 5), true) == 5 && carboy.contents().doses() == 5, "five poured in");
+        helper.assertTrue(put(upper, ChemVialItem.of(Brew.ACID, 2), true) == 2 && carboy.contents().doses() == 7, "and two through the upper half");
+        helper.assertTrue(put(lower, ChemVialItem.of(Brew.GROWTH, 1), true) == 0, "no second brew");
+        helper.assertTrue(put(lower, new ItemStack(Items.DIRT), true) == 0, "no dirt");
+        helper.assertTrue(take(lower, ChemVialItem.of(Brew.ACID, 1), true) == 0 && take(upper, ChemVialItem.of(Brew.ACID, 1), true) == 0, "nothing comes out");
+
+        carboy.setContents(new CarboyContents(Brew.ACID, CarboyContents.CAPACITY - 1));
+        helper.assertTrue(put(lower, ChemVialItem.of(Brew.ACID, 3), true) == 1 && carboy.contents().doses() == CarboyContents.CAPACITY, "only what fits");
+
+        carboy.setContents(CarboyContents.EMPTY);
+        try (Transaction transaction = Transaction.openRoot()) {
+            helper.assertTrue(lower.insert(ItemResource.of(ChemVialItem.of(Brew.ACID)), 2, transaction) == 2, "the first brew is on its way");
+            helper.assertTrue(lower.insert(ItemResource.of(ChemVialItem.of(Brew.GROWTH)), 2, transaction) == 0, "a second one in the same move is refused");
+            transaction.commit();
+        }
+        helper.assertTrue(carboy.contents().brew() == Brew.ACID && carboy.contents().doses() == 2, "one brew went in");
+
+        BlockPos creative = AT.east(3);
+        helper.setBlock(creative, ModBlocks.CREATIVE_CHEM_CARBOY.get());
+        ResourceHandler<ItemResource> endless = level.getCapability(Capabilities.Item.BLOCK, helper.absolutePos(creative), Direction.UP);
+        helper.assertTrue(endless != null && put(endless, ChemVialItem.of(Brew.ACID, 1), true) == 0, "a creative carboy takes nothing");
+        helper.succeed();
+    }
+
+    @HexTest
+    public static void aRackIsAPlainInventoryForPipes(GameTestHelper helper) {
+        helper.setBlock(AT, ModBlocks.VIAL_RACK.get());
+        VialRackBlockEntity rack = helper.getBlockEntity(AT, VialRackBlockEntity.class);
+        ResourceHandler<ItemResource> handler = helper.getLevel().getCapability(Capabilities.Item.BLOCK, helper.absolutePos(AT), Direction.UP);
+        helper.assertTrue(handler != null, "the rack has a handler");
+        helper.assertTrue(put(handler, new ItemStack(Items.DIRT), true) == 0, "vials only");
+        helper.assertTrue(put(handler, ChemVialItem.of(Brew.ACID, 3), false) == 3 && rack.filled() == 0, "a trial fills nothing");
+        helper.assertTrue(put(handler, ChemVialItem.of(Brew.ACID, 3), true) == 3 && rack.filled() == 3, "one vial a place");
+        helper.assertTrue(put(handler, ChemVialItem.of(Brew.GLOW, 9), true) == 5 && rack.filled() == VialRackBlockEntity.SLOTS, "any brew, eight places");
+        helper.assertTrue(take(handler, ChemVialItem.of(Brew.ACID, 2), false) == 2 && rack.filled() == VialRackBlockEntity.SLOTS, "a trial takes nothing");
+        helper.assertTrue(take(handler, ChemVialItem.of(Brew.ACID, 2), true) == 2 && rack.filled() == VialRackBlockEntity.SLOTS - 2, "vials come out");
         helper.succeed();
     }
 }

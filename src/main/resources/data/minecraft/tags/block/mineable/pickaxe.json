@@ -130,6 +130,7 @@
     "hextale:chem_steel_plating_stairs",
     "hextale:chem_steel_plating_slab",
     "hextale:chem_tank",
+    "hextale:chem_jet_tank",
     "hextale:chain_post",
     "hextale:chain_claw",
     "hextale:chem_carboy",
@@ -142,6 +143,14 @@
     "hextale:rusted_catwalk",
     "hextale:rusted_railing",
     "hextale:hazard_plating",
-    "hextale:rusted_ladder"
+    "hextale:rusted_ladder",
+    "hextale:hex_vault",
+    "hextale:storage_cube",
+    "hextale:hex_terminal",
+    "hextale:white_gold_tiles",
+    "hextale:white_gold_tiles_stairs",
+    "hextale:white_gold_tiles_slab",
+    "hextale:white_gold_inlay",
+    "hextale:white_gold_pillar"
   ]
 }

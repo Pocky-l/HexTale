@@ -1,0 +1,20 @@
+{
+  "type": "hextale:infusion",
+  "center": "hextale:hextech_gemstone",
+  "pedestals": [
+    "hextale:rift_gate",
+    "hextale:rift_gate",
+    "hextale:hextech_crystal",
+    "hextale:hextech_crystal",
+    "hextale:hexsteel_ingot",
+    "hextale:hexsteel_ingot",
+    "minecraft:ender_chest"
+  ],
+  "essences": {
+    "rift": 32,
+    "magic": 24,
+    "crystal": 16
+  },
+  "result": "hextale:hex_vault",
+  "hexcore": true
+}

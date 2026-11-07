@@ -380,7 +380,7 @@ public final class WeaponFx {
         if (age % 3 != 0 || age > SUNBEAM_TICKS - 8) {
             return;
         }
-        // Motes of sunlight drifting down the shaft into the battery.
+        // Motes of sunlight drifting down the shaft into the worktop.
         Vec3 c = payload.from();
         double top = payload.size() * (0.6 + 0.4 * random.nextDouble());
         level.addParticle(ModParticles.glint(SUNLIGHT), c.x + (random.nextDouble() - 0.5) * 0.4, c.y + top, c.z + (random.nextDouble() - 0.5) * 0.4,
@@ -736,7 +736,7 @@ public final class WeaponFx {
         JarStreamFx.strip(consumer, pose, points, heart, eye, 0.12F, FIRE_HEART, 0.85F * fade);
     }
 
-    /** A soft shaft of sunlight falling into the battery, swelling and fading, with a ring of light where it lands. */
+    /** A soft shaft of sunlight falling into the worktop, swelling and fading, with a ring of light where it lands. */
     private static void sunbeam(VertexConsumer consumer, PoseStack.Pose pose, WeaponFxPayload payload, float age, Vec3 camera, Vector3f eye) {
         float glow = Mth.sin(Mth.PI * Math.min(1, age / SUNBEAM_TICKS));
         if (glow <= 0) {

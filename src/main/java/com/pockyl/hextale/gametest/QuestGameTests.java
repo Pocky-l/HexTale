@@ -159,7 +159,8 @@ public final class QuestGameTests {
             helper.assertTrue(Guide.server().byId(quest.id()) == quest, quest.id() + " is found by id");
         }
         for (ResearchTopic topic : ResearchTopics.all()) {
-            helper.assertTrue(Guide.server().forTopic(topic) != null, topic.id() + " has its step");
+            // The retired Crystal Battery keeps its topic id for modpacks and has no step any more.
+            helper.assertTrue(topic == ResearchTopics.CRYSTAL_BATTERY || Guide.server().forTopic(topic) != null, topic.id() + " has its step");
         }
         helper.succeed();
     }

@@ -47,6 +47,7 @@ public class HextaleJadePlugin implements IWailaPlugin {
             return accessor;
         });
         registration.registerBlockComponent(Machines.INSTANCE, EssenceTankBlock.class);
+        registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.HexVaultBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, SeparatorBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, AlembicBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.CrucibleBlock.class);
@@ -99,6 +100,9 @@ public class HextaleJadePlugin implements IWailaPlugin {
             }
             if (entity instanceof EssenceTankBlockEntity tank) {
                 tooltip.add(contents(tank.tank()));
+            } else if (entity instanceof com.pockyl.hextale.block.HexVaultBlockEntity vault) {
+                tooltip.add(Component.translatable("goggles.hextale.vault.filled", vault.used(), vault.capacity()));
+                tooltip.add(Component.translatable("goggles.hextale.vault.kinds", vault.kinds(), com.pockyl.hextale.storage.VaultRules.MAX_ENTRIES));
             } else if (entity instanceof SeparatorBlockEntity separator) {
                 tooltip.add(Component.translatable("jade.hextale.mixture").append(": ").append(contents(separator.mix())));
                 tooltip.add(Component.translatable("jade.hextale.concentrate").append(": ").append(contents(separator.extract())));
@@ -170,8 +174,7 @@ public class HextaleJadePlugin implements IWailaPlugin {
                     tooltip.add(Component.translatable("gui.hextale.hex_furnace." + furnace.blocked()).withStyle(ChatFormatting.RED));
                 }
             } else if (entity instanceof com.pockyl.hextale.block.HexWorkbenchBlockEntity bench) {
-                tooltip.add(Component.translatable("jade.hextale.charge", bench.charge(),
-                        com.pockyl.hextale.block.HexWorkbenchBlockEntity.MAX_CHARGE).withStyle(ChatFormatting.AQUA));
+                tooltip.add(Component.translatable("jade.hextale.charge", bench.charge(), bench.capacity()).withStyle(ChatFormatting.AQUA));
             } else if (entity instanceof com.pockyl.hextale.block.HexFoundryBlockEntity foundry) {
                 if (accessor.getBlockState().getValue(com.pockyl.hextale.block.HexFoundryBlock.FORMED)) {
                     tooltip.add(com.pockyl.hextale.block.HexFoundryBlock.status(foundry).copy().withStyle(ChatFormatting.GRAY));

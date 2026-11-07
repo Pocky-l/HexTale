@@ -50,11 +50,12 @@ public final class Zipline {
     public static final double SHOT_SPEED = 5;
     /** From the chain down to a rider's feet: they hang from the trolley's grip with raised arms. */
     public static final double HANG = 2.3;
-    /** Blocks a tick: gravity's pull along the slope per tick, the speed limit, the motor's push. */
+    /** Blocks a tick: gravity's pull along the slope per tick, the speed limit, the motor's push from a standstill. */
     public static final double GRAVITY = 0.05;
-    public static final double MAX_SPEED = 12 / 20.0;
-    public static final double MOTOR_PUSH = 0.03;
-    public static final double BRAKE = 0.82;
+    public static final double MAX_SPEED = 19 / 20.0;
+    public static final double MOTOR_PUSH = 0.06;
+    /** Speed the brake takes off per tick, steadily: about a second from full speed. */
+    public static final double BRAKE = MAX_SPEED / 20;
     /** Blocks the motor drives a rider per action of tank fuel. */
     public static final double BLOCKS_PER_ACTION = 4;
 
@@ -353,9 +354,9 @@ public final class Zipline {
     /** The motor's top speed with this fuel in the tank, blocks a tick. */
     public static double motorSpeed(ChemFuel fuel) {
         return switch (fuel) {
-            case EMBER_OIL -> 6 / 20.0;
-            case RAW_SHIMMER -> 8 / 20.0;
-            case REFINED_SHIMMER -> 10 / 20.0;
+            case EMBER_OIL -> 9 / 20.0;
+            case RAW_SHIMMER -> 12 / 20.0;
+            case REFINED_SHIMMER -> 15 / 20.0;
         };
     }
 

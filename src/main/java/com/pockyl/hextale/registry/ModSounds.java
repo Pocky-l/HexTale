@@ -31,6 +31,7 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> SHIMMER_RUSH = register("shimmer.rush");
     public static final DeferredHolder<SoundEvent, SoundEvent> SHIMMER_FADE = register("shimmer.fade");
     public static final DeferredHolder<SoundEvent, SoundEvent> VEINS_WASH = register("shimmer.wash");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RAPTOR_FLAP = register("shimmer.raptor_flap");
     public static final DeferredHolder<SoundEvent, SoundEvent> PINK_BRAZIER_IGNITE = register("pink_brazier.ignite");
     public static final DeferredHolder<SoundEvent, SoundEvent> PINK_BRAZIER_BREATH = register("pink_brazier.breath");
     /** The Hextech Skypack: its jets catching, their steady roar (looped while they burn), a cough when the air is gone. */
@@ -184,6 +185,11 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> BITER_GRENADE_FUSE = register("biter_grenade.fuse");
     public static final DeferredHolder<SoundEvent, SoundEvent> BITER_GRENADE_BLAST = register("biter_grenade.blast");
     public static final DeferredHolder<SoundEvent, SoundEvent> BITER_GRENADE_CLATTER = register("biter_grenade.clatter");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BITER_GRENADE_HOP = register("biter_grenade.hop");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VAULT_DOOR_OPEN = register("vault.door_open");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VAULT_DOOR_SHUT = register("vault.door_shut");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VAULT_FORMED = register("vault.formed");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BITER_GRENADE_CHATTER = register("biter_grenade.chatter");
     /** The Strike Gauntlet: the piston throwing its wearer off, the end of the flight, a fist's blow on the ground. */
     public static final DeferredHolder<SoundEvent, SoundEvent> STRIKE_GAUNTLET_DASH = register("strike_gauntlet.dash");
     public static final DeferredHolder<SoundEvent, SoundEvent> STRIKE_GAUNTLET_IMPACT = register("strike_gauntlet.impact");
@@ -196,6 +202,12 @@ public final class ModSounds {
     /** The Impulse Plate fires; what it threw at a target lands softly. */
     public static final DeferredHolder<SoundEvent, SoundEvent> IMPULSE_LAUNCH = register("impulse.launch");
     public static final DeferredHolder<SoundEvent, SoundEvent> IMPULSE_LAND = register("impulse.land");
+    /** The Hex Vault: something settling in, something drawn out, a refusal, a terminal waking up. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> VAULT_STORE = register("hex_vault.store");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VAULT_TAKE = register("hex_vault.take");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VAULT_REFUSE = register("hex_vault.refuse");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VAULT_TERMINAL = register("hex_vault.terminal");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VAULT_HUM = register("hex_vault.hum");
     /** Lesser Rift Gates: two tied together, something drawn in, something coming out, a gate left alone. */
     public static final DeferredHolder<SoundEvent, SoundEvent> RIFT_LINK = register("rift_gate.link");
     public static final DeferredHolder<SoundEvent, SoundEvent> RIFT_SEND = register("rift_gate.send");
@@ -213,6 +225,7 @@ public final class ModSounds {
     /** Chem-steel gear: the boots' jump in the air, a fall they soften, a respirator's breath under water. */
     public static final DeferredHolder<SoundEvent, SoundEvent> CHEM_BOOTS_PUFF = register("chem_boots.puff");
     public static final DeferredHolder<SoundEvent, SoundEvent> CHEM_BOOTS_HISS = register("chem_boots.hiss");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHEM_JETS_ROAR = register("chem_jets.roar");
     public static final DeferredHolder<SoundEvent, SoundEvent> CHEM_HELMET_BREATH = register("chem_helmet.breath");
     /** A rune doing its work (every proc, played by ToolEffects.puff; throttled per place). */
     public static final DeferredHolder<SoundEvent, SoundEvent> RUNE_PROC = register("rune.proc");

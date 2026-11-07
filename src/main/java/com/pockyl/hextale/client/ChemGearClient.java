@@ -20,8 +20,9 @@ import com.pockyl.hextale.network.PneumaticJumpPayload;
 import com.pockyl.hextale.registry.ModSounds;
 
 /**
- * The client side of the gear built into chem-steel armour: the boots' jump of the player at the keys, and the breath of
- * every respirator under water near the camera (a quiet exhale of bubbles from both filters).
+ * The client side of the gear built into chem-steel armour: the boots' jump of the player at the keys (the jets come
+ * after it, {@link ChemJetsClient}), and the breath of every respirator under water near the camera (a quiet exhale of
+ * bubbles from both filters).
  */
 public final class ChemGearClient {
     /** Blocks around the camera whose respirators are seen and heard. */
@@ -59,15 +60,27 @@ public final class ChemGearClient {
             jumpSpent = false;
         }
         ChemFuel fuel = ChemGear.power(player);
-        if (pressed && fuel != null && airJumpLeft(player)) {
-            jumpSpent = true;
-            Vec3 motion = player.getDeltaMovement();
-            player.setDeltaMovement(motion.x, PneumaticBoots.jumpSpeed(fuel), motion.z);
-            player.resetFallDistance();
-            Input keys = player.input.keyPresses;
-            player.input.keyPresses = new Input(keys.forward(), keys.backward(), keys.left(), keys.right(), true, keys.shift(), keys.sprint());
-            ClientPacketDistributor.sendToServer(PneumaticJumpPayload.INSTANCE);
+        boolean booted = pressed && fuel != null && airJumpLeft(player);
+        if (booted) {
+            airJump(player, fuel);
+            hidePress(player);
         }
+        ChemJetsClient.control(minecraft, player, down, pressed, booted);
+    }
+
+    /** The boots' jump: lifts the player at once and asks the server to pay for it. */
+    static void airJump(LocalPlayer player, ChemFuel fuel) {
+        jumpSpent = true;
+        Vec3 motion = player.getDeltaMovement();
+        player.setDeltaMovement(motion.x, PneumaticBoots.jumpSpeed(fuel), motion.z);
+        player.resetFallDistance();
+        ClientPacketDistributor.sendToServer(PneumaticJumpPayload.INSTANCE);
+    }
+
+    /** Makes this tick's press of jump look already held, so the vanilla glider check does not see it. */
+    static void hidePress(LocalPlayer player) {
+        Input keys = player.input.keyPresses;
+        player.input.keyPresses = new Input(keys.forward(), keys.backward(), keys.left(), keys.right(), true, keys.shift(), keys.sprint());
     }
 
     private static void afterTick(ClientTickEvent.Post event) {

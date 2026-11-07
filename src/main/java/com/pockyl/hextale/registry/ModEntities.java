@@ -53,7 +53,7 @@ public final class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.entity.BiterGrenade>> BITER_GRENADE =
             ENTITIES.register("biter_grenade", id -> EntityType.Builder.<com.pockyl.hextale.entity.BiterGrenade>of(
                             com.pockyl.hextale.entity.BiterGrenade::new, MobCategory.MISC).noLootTable().sized(0.3F, 0.3F)
-                    .clientTrackingRange(4).updateInterval(10).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+                    .clientTrackingRange(4).updateInterval(2).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 
     /** The Void hanging in the world: a breach the depth shows through. Big and static, seen from afar. */
     public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.TheVoid>> THE_VOID =

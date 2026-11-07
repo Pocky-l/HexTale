@@ -21,6 +21,8 @@ public final class ModMenus {
 
     public static final DeferredHolder<MenuType<?>, MenuType<AlembicMenu>> ALEMBIC =
             MENUS.register("alembic", () -> IMenuTypeExtension.create(AlembicMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<com.pockyl.hextale.menu.VaultMenu>> VAULT =
+            MENUS.register("hex_vault", () -> IMenuTypeExtension.create(com.pockyl.hextale.menu.VaultMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<com.pockyl.hextale.menu.ItemFilterMenu>> ITEM_FILTER =
             MENUS.register("item_filter", () -> IMenuTypeExtension.create(com.pockyl.hextale.menu.ItemFilterMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<com.pockyl.hextale.menu.HexWorkbenchMenu>> HEX_WORKBENCH =

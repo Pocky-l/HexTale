@@ -19,7 +19,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
-/** The eight places of a Vial Rack, one filled vial each. Hoppers fill and empty them like any container. */
+/** The eight places of a Vial Rack, one filled vial each. Hoppers, pylons and pipes fill and empty them like any container. */
 public class VialRackBlockEntity extends BlockEntity implements Container {
     public static final int SLOTS = 8;
 
@@ -40,8 +40,10 @@ public class VialRackBlockEntity extends BlockEntity implements Container {
         return filled;
     }
 
-    private void sync() {
-        setChanged();
+    /** Clients see every change here: an item handler calls only this, once its transaction has gone through. */
+    @Override
+    public void setChanged() {
+        super.setChanged();
         if (level != null && !level.isClientSide()) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
             level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
@@ -76,21 +78,31 @@ public class VialRackBlockEntity extends BlockEntity implements Container {
     @Override
     public ItemStack removeItem(int slot, int count) {
         ItemStack taken = ContainerHelper.removeItem(items, slot, count);
-        sync();
+        setChanged();
         return taken;
     }
 
     @Override
     public ItemStack removeItemNoUpdate(int slot) {
         ItemStack taken = ContainerHelper.takeItem(items, slot);
-        sync();
+        setChanged();
         return taken;
     }
 
     @Override
     public void setItem(int slot, ItemStack stack) {
         items.set(slot, stack);
-        sync();
+        setChanged();
+    }
+
+    /** Inside a transaction nothing may reach the world yet: it may be a trial that is thrown away. */
+    @Override
+    public void setItem(int slot, ItemStack stack, boolean insideTransaction) {
+        if (insideTransaction) {
+            items.set(slot, stack);
+        } else {
+            setItem(slot, stack);
+        }
     }
 
     @Override
@@ -101,7 +113,7 @@ public class VialRackBlockEntity extends BlockEntity implements Container {
     @Override
     public void clearContent() {
         items.clear();
-        sync();
+        setChanged();
     }
 
     @Override

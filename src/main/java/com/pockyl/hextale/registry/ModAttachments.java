@@ -47,6 +47,12 @@ public final class ModAttachments {
                     .serialize(com.pockyl.hextale.chem.ShimmerVeins.Veins.CODEC.fieldOf("veins"), veins -> veins.count() > 0)
                     .sync(com.pockyl.hextale.chem.ShimmerVeins.Veins.STREAM_CODEC).copyOnDeath().build());
 
+    /** A companion changed by the Shimmer Injector (see {@link com.pockyl.hextale.chem.ShimmerMutations}); saved while set, synced. */
+    public static final Supplier<AttachmentType<com.pockyl.hextale.chem.ShimmerMutations.Mutation>> SHIMMER_MUTATION = ATTACHMENT_TYPES.register("shimmer_mutation",
+            () -> AttachmentType.builder(() -> com.pockyl.hextale.chem.ShimmerMutations.Mutation.NONE)
+                    .serialize(com.pockyl.hextale.chem.ShimmerMutations.Mutation.CODEC.fieldOf("mutation"), mutation -> mutation.kind() != com.pockyl.hextale.chem.ShimmerMutations.Kind.NONE)
+                    .sync(com.pockyl.hextale.chem.ShimmerMutations.Mutation.STREAM_CODEC).build());
+
     /** The tick a creature put to sleep by a Slumber rune wakes (see {@link com.pockyl.hextale.runework.Slumber}); saved while set. */
     public static final Supplier<AttachmentType<Long>> SLUMBER = ATTACHMENT_TYPES.register("slumber",
             () -> AttachmentType.builder(() -> 0L).serialize(com.mojang.serialization.Codec.LONG.fieldOf("until"), until -> until > 0).build());

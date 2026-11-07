@@ -10,12 +10,17 @@ import com.pockyl.hextale.chem.TankFuel;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModItems;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 /**
  * The Chem Tank: one fuel at a time, filled with vials (by hand or hopper), pumps into the tank a player wears, keeps
@@ -216,6 +221,24 @@ public final class ChemTankGameTests {
         float health = bare.getHealth();
         bare.hurtServer(level, level.damageSources().fall(), 10);
         helper.assertTrue(Math.abs(health - bare.getHealth() - 10) < 0.01, "an empty tank softens nothing");
+        helper.succeed();
+    }
+
+    /** Both set-down tanks take fuel vials from pipes as they do from a hopper: nothing else, nothing out, a trial pours nothing. */
+    @HexTest
+    public static void pipesFuelASetDownTank(GameTestHelper helper) {
+        for (BlockPos at : new BlockPos[] {AT, AT.east(2)}) {
+            helper.setBlock(at, at.equals(AT) ? ModBlocks.CHEM_TANK.get() : ModBlocks.CHEM_JET_TANK.get());
+            ChemTankBlockEntity tank = helper.getBlockEntity(at, ChemTankBlockEntity.class);
+            ResourceHandler<ItemResource> handler = helper.getLevel().getCapability(Capabilities.Item.BLOCK, helper.absolutePos(at), Direction.NORTH);
+            helper.assertTrue(handler != null, "the tank has a handler");
+            helper.assertTrue(ChemCarboyGameTests.put(handler, ChemVialItem.of(Brew.EMBER_OIL, 3), false) == 3 && tank.contents().isEmpty(), "a trial pours nothing");
+            helper.assertTrue(ChemCarboyGameTests.put(handler, ChemVialItem.of(Brew.EMBER_OIL, 3), true) == 3 && tank.contents().vials() == 3, "three vials in");
+            helper.assertTrue(ChemCarboyGameTests.put(handler, ChemVialItem.of(Brew.RAW_SHIMMER, 1), true) == 0, "no second fuel");
+            helper.assertTrue(ChemCarboyGameTests.put(handler, ChemVialItem.of(Brew.ACID, 1), true) == 0, "acid is no fuel");
+            helper.assertTrue(ChemCarboyGameTests.put(handler, new ItemStack(Items.DIRT), true) == 0, "no dirt");
+            helper.assertTrue(ChemCarboyGameTests.take(handler, ChemVialItem.of(Brew.EMBER_OIL, 1), true) == 0, "nothing comes out");
+        }
         helper.succeed();
     }
 }

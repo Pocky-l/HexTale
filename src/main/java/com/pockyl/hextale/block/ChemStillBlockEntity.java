@@ -66,6 +66,7 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
     private ItemStack clarifier = ItemStack.EMPTY;
     private int progress;
     private PickaxeRunes runes = PickaxeRunes.EMPTY;
+    private final CarboyReach.Look look = new CarboyReach.Look();
     private boolean dirty;
 
     public ChemStillBlockEntity(BlockPos pos, BlockState state) {
@@ -77,7 +78,7 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
     }
 
     private void tick(ServerLevel level, BlockState state) {
-        if (CarboyReach.due(level, worldPosition)) {
+        if (wantsRaw() && look.due(level, worldPosition)) {
             drawRaw(level);
         }
         boolean working = wantsHeat() && ChemBurnerBlockEntity.under(level, worldPosition) != null;
@@ -98,13 +99,16 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
         }
     }
 
+    /** A pod in, too little raw shimmer to boil and room for the outcome. */
+    private boolean wantsRaw() {
+        return isClarifier(clarifier) && output.getCount() < output.getMaxStackSize() && input.getCount() < RAW_PER_REFINED
+                && (input.isEmpty() || isRaw(input));
+    }
+
     /** With a pod in and too little raw shimmer to boil, the carboys around top it up. */
     private void drawRaw(ServerLevel level) {
-        if (!isClarifier(clarifier) || output.getCount() >= output.getMaxStackSize() || !input.isEmpty() && !isRaw(input)) {
-            return;
-        }
         while (input.getCount() < RAW_PER_REFINED
-                && CarboyReach.draw(level, worldPosition, Vec3.atCenterOf(worldPosition), brew -> brew == Brew.RAW_SHIMMER) != null) {
+                && look.draw(level, worldPosition, Vec3.atCenterOf(worldPosition), brew -> brew == Brew.RAW_SHIMMER) != null) {
             if (input.isEmpty()) {
                 input = ChemVialItem.of(Brew.RAW_SHIMMER);
             } else {

@@ -197,6 +197,40 @@ public final class ChemDecorGameTests {
         helper.succeed();
     }
 
+    /** Over a deck in the lower half a rail stands on the deck, and a step between the two heights has a post on either end. */
+    @HexTest
+    public static void aRailingStandsOnALowDeck(GameTestHelper helper) {
+        ServerPlayer player = MockPlayers.inLevel(helper);
+        BlockPos east = AT.east();
+        BlockState lowDeck = ModBlocks.RUSTED_CATWALK.get().defaultBlockState().setValue(RustedCatwalkBlock.HALF, Half.BOTTOM);
+        BlockState highDeck = lowDeck.setValue(RustedCatwalkBlock.HALF, Half.TOP);
+        helper.setBlock(AT.below(), lowDeck);
+        helper.setBlock(east.below(), highDeck);
+        Item railing = ModItems.RUSTED_RAILING.get();
+        placeOnTop(helper, player, railing, AT, 0.5, 0.1);
+        placeOnTop(helper, player, railing, east, 0.5, 0.1);
+        BlockState low = helper.getBlockState(AT);
+        BlockState high = helper.getBlockState(east);
+        helper.assertTrue(low.getValue(RustedRailingBlock.LOW), "over the low deck the rail is low");
+        helper.assertFalse(high.getValue(RustedRailingBlock.LOW), "a deck in the upper half needs no low rail");
+        helper.assertTrue(low.getValue(RustedRailingBlock.POST_NE) && high.getValue(RustedRailingBlock.POST_NW), "the step has a post on either end");
+
+        var at = helper.absolutePos(AT);
+        helper.assertTrue(low.getCollisionShape(helper.getLevel(), at).max(Direction.Axis.Y) == 1, "as high over the deck as ever");
+        helper.assertTrue(low.getShape(helper.getLevel(), at).min(Direction.Axis.Y) == -0.5, "its outline reaches down to the deck");
+        helper.assertTrue(low.getShape(helper.getLevel(), at).max(Direction.Axis.Y) <= 0.5, "and ends 8 px lower");
+
+        helper.setBlock(AT.below(), highDeck);
+        BlockState raised = helper.getBlockState(AT);
+        helper.assertFalse(raised.getValue(RustedRailingBlock.LOW), "the deck moved up: so does the rail");
+        helper.assertFalse(raised.getValue(RustedRailingBlock.POST_NE), "and the run goes on without posts");
+        helper.assertFalse(helper.getBlockState(east).getValue(RustedRailingBlock.POST_NW), "on either side");
+        helper.assertTrue(raised.getCollisionShape(helper.getLevel(), at).max(Direction.Axis.Y) == 1.5, "as tall as a fence again");
+        helper.setBlock(AT.below(), lowDeck);
+        helper.assertTrue(helper.getBlockState(AT).getValue(RustedRailingBlock.LOW), "and back");
+        helper.succeed();
+    }
+
     /** A railing in hand never replaces an edge the cell already has. */
     @HexTest
     public static void aRailingAddsOnlyMissingEdges(GameTestHelper helper) {

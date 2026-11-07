@@ -12,7 +12,9 @@ import net.neoforged.neoforge.client.renderstate.AvatarRenderStateModifier;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 
+import com.pockyl.hextale.chem.Zipline;
 import com.pockyl.hextale.client.render.ZiplinePose;
+import com.pockyl.hextale.client.render.ZiplineSwing;
 import com.pockyl.hextale.entity.ZiplineTrolley;
 import com.pockyl.hextale.registry.ModSounds;
 
@@ -33,11 +35,14 @@ public final class ZiplineClient {
         modBus.addListener((RegisterRenderStateModifiersEvent event) -> event.registerAvatarEntityModifier(new AvatarRenderStateModifier() {
             @Override
             public <T extends Avatar & net.minecraft.client.entity.ClientAvatarEntity> void accept(T avatar, AvatarRenderState state) {
-                if (avatar.getVehicle() instanceof ZiplineTrolley) {
+                if (avatar.getVehicle() instanceof ZiplineTrolley trolley) {
                     state.isPassenger = false;
                     HumanoidModel.ArmPose hang = ZiplinePose.HANG.getValue();
                     state.rightArmPose = hang;
                     state.leftArmPose = hang;
+                    ZiplineSwing.extract(trolley, state);
+                } else {
+                    state.setRenderData(ZiplineSwing.SWING, null);
                 }
             }
         }));
@@ -63,7 +68,7 @@ public final class ZiplineClient {
                 stop();
                 return;
             }
-            float speed = Math.abs(trolley.syncedSpeed()) / 0.6F;
+            float speed = Math.abs(trolley.syncedSpeed()) / (float) Zipline.MAX_SPEED;
             float target = speed < 0.03F ? 0 : 0.08F + 0.3F * Math.min(1, speed);
             volume += (target - volume) * 0.25F;
             pitch = 0.75F + 0.5F * Math.min(1, speed);
