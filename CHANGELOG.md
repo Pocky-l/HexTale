@@ -4,7 +4,7 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.10.0+1.21.1] - Unreleased
 ### Added
 - The Prosector, the first boss. Research and make a Seer's Eye on the altar, then right click the ground anywhere in your world: the
   ground is marked ring by ring and it comes up through it. The Eye is spent. Refused on Peaceful.
@@ -39,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   moves one item out or back, a double click fills the inventory, a stack dragged onto the grid goes in, one button stores the
   inventory but not the hotbar, and a middle click or Alt + click pins an item to the row on top, where it stays with
   nothing left. A capacity bar sits over the grid and a line under it says what taking costs and why a vault refuses. JEI's
-  keys work on what is under the mouse.
+  keys work on what is under the mouse. A right click on the vault or its door only opens the screen.
 - Storage Cube: on the gate's platform or against it it gives more room, twelve at most.
 - Storage Terminal: the same screen from any distance and any dimension, tied by Unstable Hextech used on the vault while sneaking
   and the Rift Link Crystal it gives used on the terminal. Storing is free; each take through it costs an eighth of a mB of rift essence from jars
@@ -88,8 +88,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   at most 60 degrees steep. While you hold it, a hologram shows the line. A Chain Post rises where you stand; the chain
   raises another post on a floor or a ceiling, and bites into a wall with a claw. Shoot again from a post to join a
   second line to it: rides run on through a post where lines meet. It takes no chains and lasts six lines. Click the
-  chain or an end to hang on a trolley: downhill rides are free, forward drives the trolley's motor on the fuel of a
-  worn Chem Tank (faster with better fuel), back brakes, Shift lets go and keeps your speed. Over low ground you draw
+  chain or an end to hang on a trolley: downhill rides are free and reach 19 blocks a second, forward drives the trolley's motor on
+  the fuel of a worn Chem Tank at 9, 12 or 15 by fuel, back brakes, Shift lets go and keeps your speed. A last end slows you softly
+  and sets you down still moving. Over low ground you draw
   up towards the chain and ride on. You walk through Chain Posts. Breaking an end takes its lines down.
 - Biter Grenades (chemtech, Lab Bench research): thrown, a grenade clamps its jaw onto the first creature it hits, rides
   along with it and bursts 2 seconds later. The blast hurts everything close by, you too, but breaks no blocks and spares
@@ -103,7 +104,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   there, and bubbles rise from the filters.
 - Chem-Steel Boots: pneumatics. While your worn tank holds fuel you can jump once more in the air for 1 action, 1 to 1.5
   blocks high by fuel, with steam from the heels. Falls hurt 50 to 80% less by fuel. Press jump again to open a glider.
-
 - Budding Void Crystal (#8): rock that grows Void Crystal buds on its free sides, up to full clusters, slower than budding
   amethyst. It lies in clutches in the Void past the Threshold, more of them further in. No piston moves it and it drops
   nothing, so it is farmed where it lies. The Void Lens shows it, and `buddingVoidCrystalGrowth` in `hextale-synced.toml` sets the speed.
@@ -126,23 +126,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   throws creatures back. Falling does not hurt during the flight or at the landing after it. Fist blows now hit hard
   and also hurt what stands round the target. One gauntlet in each hand doubles all its damage. On a mount it still
   punches on the spot.
+- Grapple Gauntlet: a new look, a rope reel on a leather bracer with a rail and a loaded claw.
 - Nullstone is now called Dampstone, and the Null Lantern the Dampening Lantern, so the names say what they do. Blocks
   already in your world stay as they are.
 
 ### Fixed
 - The Multiblocks category of [JEI](https://www.curseforge.com/minecraft/mc-mods/jei) shows the 3D model again; its frame
   stayed empty, and the model stood still on one frame (#10).
-- Vault screen: left and right click take items again; JEI's recipe view stays on the keyboard keys over the grid.
-- Hex Vault: a right click only opens the screen and never puts the held item in, sneaking or not. Items go in on the screen, by
-  Shift + click, by dragging or with Store the inventory, and through hoppers, pipes and pylons.
-- Hex Vault: Unstable Hextech used while sneaking now works anywhere on the door, not only on the block's own cell.
-- Hex Vault: the shut gate no longer flickers. The petals, the cover and the hub no longer share planes where they overlap.
-- Hex Vault with a shader pack: the arcs from the pillars are added over the pack's picture like a breach's glow, and neither they,
-  the lamps nor the drifting items go into the pack's shadows.
-- Chain Launcher rides: the grip no longer jerks, the client runs the line itself. Up to 19 blocks a second downhill, the motor gives
-  9, 12 or 15 by fuel. Mounting keeps your speed along the line, letting go coasts far, the brake slows steadily in about a second,
-  and a last end slows you softly and sets you down still moving. Your body swings behind the grip when the speed changes.
-- Letting go of a chain at speed really throws you now: the speed never reached your own client.
 - Item slots: 3D items are lit from the front, so tools, hand items and devices no longer read dark. The Chain Launcher and
   Grapple Gauntlet turn their working end towards you, the Biter Grenade shows its jaw.
 - Texts that named no real action now say the key, the item and the target: linking a Storage Terminal, folding a breach,
