@@ -261,6 +261,22 @@ public final class ModGameTests {
     }
 
     /**
+     * Block shapes find their block by its description id while the registry does not know the block yet (a server
+     * pack built the state caches that early on 1.10.0), so every shaped block's description id must name its own id.
+     */
+    @HexTest
+    public static void shapedBlocksNameThemselves(GameTestHelper helper) {
+        for (net.minecraft.world.level.block.Block block : net.minecraft.core.registries.BuiltInRegistries.BLOCK) {
+            net.minecraft.resources.Identifier id = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(block);
+            if (id.getNamespace().equals(Hextale.MOD_ID) && com.pockyl.hextale.block.ModelShapes.covers(block)) {
+                helper.assertValueEqual(com.pockyl.hextale.block.ModelShapes.fromDescriptionId(block.getDescriptionId()), id,
+                        "id read from " + block.getDescriptionId());
+            }
+        }
+        helper.succeed();
+    }
+
+    /**
      * Every item and block id the mod has released still resolves (registered, or an alias of its new name), so packs,
      * quests and worlds never lose one. The list is docs/released-ids.txt (path from the run's system property).
      */
