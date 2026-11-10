@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   four, and two runes of its own for the ward: Mirror sends shots back at the shooter and stings attackers, Reinforcement
   makes the ward hold more.
 
+### Fixed
+- A server no longer fails to start with "No generated shape for minecraft:air" when another mod reads block shapes
+  before the mod's blocks are registered.
+
 ## [1.10.0] - 2026-11-07
 ### Added
 - The Prosector, the first boss. Research and make a Seer's Eye on the altar, then right click the ground anywhere in your world: the
