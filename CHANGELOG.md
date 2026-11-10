@@ -4,6 +4,11 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.1+1.21.1] - Unreleased
+### Fixed
+- A server no longer fails to start with "No generated shape for minecraft:air" when another mod reads block shapes
+  before the mod's blocks are registered.
+
 ## [1.10.0+1.21.1] - 2026-11-07
 ### Added
 - The Prosector, the first boss. Research and make a Seer's Eye on the altar, then right click the ground anywhere in your world: the

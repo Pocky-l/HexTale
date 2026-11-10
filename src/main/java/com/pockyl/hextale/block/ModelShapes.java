@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.pockyl.hextale.Hextale;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -42,20 +43,30 @@ public final class ModelShapes {
 
     /** Whether the block has a generated shape. */
     public static boolean covers(Block block) {
-        return ENTRIES.containsKey(BuiltInRegistries.BLOCK.getKey(block));
+        ResourceLocation id = idOf(block);
+        return id != null && ENTRIES.containsKey(id);
     }
 
     /** The shape of the state's models: the first matching variant, or every matching multipart part. */
     public static VoxelShape of(BlockState state) {
-        return CACHE.computeIfAbsent(state, s -> compute(s, BuiltInRegistries.BLOCK.getKey(s.getBlock())));
+        ResourceLocation id = idOf(state.getBlock());
+        return id == null ? Shapes.block() : CACHE.computeIfAbsent(state, s -> compute(s, id));
     }
 
     /** A further shape of the block from its {@code shapes} settings (e.g. a collision wider than the cell). */
     public static VoxelShape of(BlockState state, String name) {
-        return NAMED_CACHE.computeIfAbsent(new Named(state, name), key -> {
-            ResourceLocation id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
-            return compute(state, id.withPath(id.getPath() + "/" + name));
-        });
+        ResourceLocation id = idOf(state.getBlock());
+        return id == null ? Shapes.block()
+                : NAMED_CACHE.computeIfAbsent(new Named(state, name), key -> compute(state, id.withPath(id.getPath() + "/" + name)));
+    }
+
+    /**
+     * The block's id, or null while the registry does not know the block yet: other mods may build the state caches that
+     * early (a dedicated server crashed at loading on 1.10.0). A full cube stands in uncached until NeoForge builds the
+     * caches of the registered blocks again.
+     */
+    private static ResourceLocation idOf(Block block) {
+        return BuiltInRegistries.BLOCK.getResourceKey(block).map(ResourceKey::location).orElse(null);
     }
 
     private static VoxelShape compute(BlockState state, ResourceLocation id) {
