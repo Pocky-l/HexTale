@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import com.pockyl.hextale.Hextale;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -42,20 +43,37 @@ public final class ModelShapes {
 
     /** Whether the block has a generated shape. */
     public static boolean covers(Block block) {
-        return ENTRIES.containsKey(BuiltInRegistries.BLOCK.getKey(block));
+        return ENTRIES.containsKey(idOf(block));
     }
 
     /** The shape of the state's models: the first matching variant, or every matching multipart part. */
     public static VoxelShape of(BlockState state) {
-        return CACHE.computeIfAbsent(state, s -> compute(s, BuiltInRegistries.BLOCK.getKey(s.getBlock())));
+        return CACHE.computeIfAbsent(state, s -> compute(s, idOf(s.getBlock())));
     }
 
     /** A further shape of the block from its {@code shapes} settings (e.g. a collision wider than the cell). */
     public static VoxelShape of(BlockState state, String name) {
         return NAMED_CACHE.computeIfAbsent(new Named(state, name), key -> {
-            Identifier id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+            Identifier id = idOf(state.getBlock());
             return compute(state, id.withPath(id.getPath() + "/" + name));
         });
+    }
+
+    /**
+     * The block's own id. Other mods may build the state caches before the block is in the registry, and then the
+     * registry answers {@code minecraft:air} (a dedicated server crashed at loading on 1.10.0); the description id holds
+     * the id from construction on.
+     */
+    private static Identifier idOf(Block block) {
+        return BuiltInRegistries.BLOCK.getResourceKey(block).map(ResourceKey::identifier)
+                .orElseGet(() -> fromDescriptionId(block.getDescriptionId()));
+    }
+
+    /** {@code block.hextale.alembic} to {@code hextale:alembic}; {@code minecraft:air} when it is not a block's. */
+    public static Identifier fromDescriptionId(String descriptionId) {
+        String[] parts = descriptionId.split("\\.", 3);
+        Identifier id = parts.length == 3 && parts[0].equals("block") ? Identifier.tryBuild(parts[1], parts[2]) : null;
+        return id != null ? id : BuiltInRegistries.BLOCK.getDefaultKey();
     }
 
     private static VoxelShape compute(BlockState state, Identifier id) {
