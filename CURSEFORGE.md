@@ -61,6 +61,8 @@
 <a href="https://www.curseforge.com/minecraft/mc-mods/inventory-backups"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/more-mods/inventorybackups.png" width="48" height="48" alt="Inventory Backups" title="Inventory Backups - inventory and ender chest backups with one-click restore for admins"></a>
 <a href="https://www.curseforge.com/minecraft/mc-mods/diegesis"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/more-mods/diegesis.png" width="48" height="48" alt="Diegesis" title="Diegesis - a library for interfaces you work with right on the block, with no menu screen"></a>
 <a href="https://www.curseforge.com/minecraft/mc-mods/hands-on-delight"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/more-mods/handson_delight.png" width="48" height="48" alt="Hands-On Delight" title="Hands-On Delight - cook in Farmer's Delight with your own hands, right on its blocks"></a>
+<a href="https://www.curseforge.com/minecraft/mc-mods/hands-on-furniture"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/more-mods/handson_furniture.png" width="48" height="48" alt="Hands-On Furniture" title="Hands-On Furniture - open MrCrayfish's fridges, cabinets and drawers by hand and put food anywhere on their shelves"></a>
+<a href="https://www.curseforge.com/minecraft/mc-mods/hands-on-vanilla"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/more-mods/handson_vanilla.png" width="48" height="48" alt="Hands-On Vanilla" title="Hands-On Vanilla - craft and smelt with your own hands, right on the crafting table and the furnace, client-side"></a>
 </p>
 <!-- more-mods:end -->
 
